@@ -1,3 +1,22 @@
+<p align="center">
+    <img src="http://i65.tinypic.com/5xj2it.png" alt="JecsTools" />
+</p>
+
+<p align="center">
+  <a href="https://github.com/jecrell/JecsTools/releases/tag/1.0">
+    <img src="https://img.shields.io/badge/release-1.0-4BC51D.svg?style=flat" alt="v1.0.9.1" />
+  </a>
+  <a href="https://github.com/roxxploxx/RimWorldModGuide/wiki">
+    <img src="https://img.shields.io/badge/documentation-Wiki-4BC51D.svg?style=flat" alt="Documentation" />
+  </a>
+</p>
+
+<p align="center">
+  A library for patching, replacing and decorating .NET and Mono methods during runtime.
+</p>
+
+<hr>
+
 # JecsTools
 Adds modding components to RimWorld: vehicles, spell casting, weapon slots, oversized weapons, and more!
 
