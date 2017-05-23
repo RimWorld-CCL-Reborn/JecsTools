@@ -1,0 +1,14 @@
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\CompActivatableEffect\CompActivatableEffect\bin\Debug\Languages\English\Keyed\CompActivatableEffect.xml
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\CompActivatableEffect\CompActivatableEffect\bin\Debug\CompActivatableEffect.dll
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\CompActivatableEffect\CompActivatableEffect\bin\Debug\0Harmony.dll
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\CompActivatableEffect\CompActivatableEffect\obj\Debug\CompActivatableEffect.csprojResolveAssemblyReference.cache
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\CompActivatableEffect\CompActivatableEffect\obj\Debug\CompActivatableEffect.dll
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\CompActivatableEffect\Assemblies\Languages\English\Keyed\CompActivatableEffect.xml
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\CompActivatableEffect\Assemblies\CompActivatableEffect.dll
+D:\SteamLibrary\steamapps\common\RimWorld\CompActivatableEffect\Assemblies\Languages\English\Keyed\CompActivatableEffect.xml
+D:\SteamLibrary\steamapps\common\RimWorld\CompActivatableEffect\Assemblies\CompActivatableEffect.dll
+D:\SteamLibrary\steamapps\common\RimWorld\CompActivatableEffect\CompActivatableEffect\obj\Debug\CompActivatableEffect.csprojResolveAssemblyReference.cache
+D:\SteamLibrary\steamapps\common\RimWorld\CompActivatableEffect\CompActivatableEffect\obj\Debug\CompActivatableEffect.dll
+D:\SteamLibrary\steamapps\common\RimWorld\Mods\JecsTools\Source\AllModdingComponents\CompActivatableEffect\obj\Debug\CompActivatableEffect.csprojResolveAssemblyReference.cache
+D:\SteamLibrary\steamapps\common\RimWorld\Mods\JecsTools\Source\AllModdingComponents\CompActivatableEffect\obj\Debug\CompActivatableEffect.dll
+D:\SteamLibrary\steamapps\common\RimWorld\Mods\JecsTools\Assemblies\CompActivatableEffect.dll

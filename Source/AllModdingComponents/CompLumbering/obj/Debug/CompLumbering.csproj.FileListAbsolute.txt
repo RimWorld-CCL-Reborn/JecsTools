@@ -1,0 +1,8 @@
+D:\SteamLibrary\steamapps\common\RimWorld\CompLumbering\Assemblies\CompLumbering.dll
+D:\SteamLibrary\steamapps\common\RimWorld\CompLumbering\Source\CompExtraSounds\obj\Debug\CompLumbering.dll
+D:\SteamLibrary\steamapps\common\RimWorld\Mods\Jecrells Modding Components\Source\AllModdingComponents\CompLumbering\obj\Debug\CompLumbering.csprojResolveAssemblyReference.cache
+D:\SteamLibrary\steamapps\common\RimWorld\Mods\Jecrells Modding Components\Source\AllModdingComponents\CompLumbering\obj\Debug\CompLumbering.dll
+D:\SteamLibrary\steamapps\common\RimWorld\Mods\Jecrells Modding Components\Source\Assemblies\CompLumbering.dll
+D:\SteamLibrary\steamapps\common\RimWorld\Mods\JecsTools\Assemblies\CompLumbering.dll
+D:\SteamLibrary\steamapps\common\RimWorld\Mods\JecsTools\Source\AllModdingComponents\CompLumbering\obj\Debug\CompLumbering.csprojResolveAssemblyReference.cache
+D:\SteamLibrary\steamapps\common\RimWorld\Mods\JecsTools\Source\AllModdingComponents\CompLumbering\obj\Debug\CompLumbering.dll

@@ -1,0 +1,7 @@
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\CompDeflector\CompDeflector\bin\Release\CompDeflector.dll
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\CompDeflector\CompDeflector\obj\Release\CompDeflector.dll
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\CompDeflector\CompDeflector\bin\Release\Defs\Stats\CompDeflection_StatWorkers.xml
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\CompDeflector\CompDeflector\bin\Release\Languages\English\Keyed\CompDeflector.xml
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\CompDeflector\CompDeflector\bin\Release\0Harmony.dll
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\CompDeflector\CompDeflector\bin\Release\Defs\JobDefs\CompDeflector_Jobs.xml
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\CompDeflector\CompDeflector\obj\Release\CompDeflector.csprojResolveAssemblyReference.cache

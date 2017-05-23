@@ -1,0 +1,92 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{417B8649-7A66-4580-8C75-473E46DA9C7A}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>AbilityUser</RootNamespace>
+    <AssemblyName>AbilityUser</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType>none</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\Assemblies\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="0Harmony, Version=1.0.9.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Harmony109\0Harmony.dll</HintPath>
+    </Reference>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>..\..\..\..\..\RimWorldWin_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="UnityEngine">
+      <HintPath>..\..\..\..\..\RimWorldWin_Data\Managed\UnityEngine.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AbilityButtons.cs" />
+    <Compile Include="AbilityDef.cs" />
+    <Compile Include="AbilityDefOf.cs" />
+    <Compile Include="AbilityUserUtility.cs" />
+    <Compile Include="AoEProperties.cs" />
+    <Compile Include="ApplyHediffs.cs" />
+    <Compile Include="ApplyMentalStates.cs" />
+    <Compile Include="Command_PawnAbility.cs" />
+    <Compile Include="CompAbilityUser.cs" />
+    <Compile Include="CompProperties_AbilityUser.cs" />
+    <Compile Include="ExtraDamage.cs" />
+    <Compile Include="FlyingObject.cs" />
+    <Compile Include="FlyingObject_Equipable.cs" />
+    <Compile Include="HarmonyPatches.cs" />
+    <Compile Include="JobDriver_CastAbilitySelf.cs" />
+    <Compile Include="JobDriver_CastAbilityVerb.cs" />
+    <Compile Include="PawnAbility.cs" />
+    <Compile Include="PawnAbilityTargetCategory.cs" />
+    <Compile Include="ProjectileDef_Ability.cs" />
+    <Compile Include="Projectile_Ability.cs" />
+    <Compile Include="Projectile_AbilityBase.cs" />
+    <Compile Include="Projectile_AbilityLaser.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ProjectileDef_LaserProjectile.cs" />
+    <Compile Include="SpawnThings.cs" />
+    <Compile Include="StringsToTranslate.cs" />
+    <Compile Include="VerbProperties_Ability.cs" />
+    <Compile Include="Verb_UseAbility.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ThingDefs>
+
+	<ThingDef Class="CompSlotLoadable.SlotLoadableDef">
+		<defName>SlotTest</defName>
+		<thingClass>CompSlotLoadable.SlotLoadable</thingClass>
+		<Label>Test</Label>
+		<slottableThingDefs>
+			<li>MeleeWeapon_Gladius</li>
+		</slottableThingDefs>
+		<doesChangeColor>true</doesChangeColor>
+		<colorToChangeTo>(255, 255, 255, 255)</colorToChangeTo>
+	</ThingDef>
+
+</ThingDefs>

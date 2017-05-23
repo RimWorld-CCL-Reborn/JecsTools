@@ -1,0 +1,3 @@
+D:\SteamLibrary\steamapps\common\RimWorld\CompExtraSounds\Assemblies\CompExtraSounds.dll
+D:\SteamLibrary\steamapps\common\RimWorld\CompExtraSounds\Source\CompExtraSounds\obj\Debug\CompExtraSounds.csprojResolveAssemblyReference.cache
+D:\SteamLibrary\steamapps\common\RimWorld\CompExtraSounds\Source\CompExtraSounds\obj\Debug\CompExtraSounds.dll

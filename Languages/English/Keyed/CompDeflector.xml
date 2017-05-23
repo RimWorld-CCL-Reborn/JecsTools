@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>
+
+  <DeflectChance>Deflect chance</DeflectChance>
+  <DeflectChanceEx>Determines how often this weapon returns projectiles back at the attacker.</DeflectChanceEx>
+  
+  <MaxDeflectChance>Max deflect chance</MaxDeflectChance>
+  <MaxDeflectChanceEx>For each point in {0}, the user gains a {1} chance of deflecting the projectile back the target. {2} is the maximum possible deflection chance.
+  </MaxDeflectChanceEx>
+  
+  <DeflectChancePerLevel>Deflect % per {0} skill</DeflectChancePerLevel>
+  <DeflectChancePerLevelEx>For each level in {0}, the user gains this much % chance to deflect a projectile.</DeflectChancePerLevelEx>
+  
+  <BaseDeflectChance>Base deflect chance</BaseDeflectChance>
+  
+  <StatsReport_DeflectionExplanation>Stat is displayed in the following format:\nDeflection chance equals ( Base chance + ( Skill Level * % per Skill Level) / Manipulation Efficiency\n\n</StatsReport_DeflectionExplanation>
+  
+  <StatsReport_DeflectChance>Deflect chance</StatsReport_DeflectChance>
+  
+    <StatsReport_BaseDeflectChance>Base deflect chance</StatsReport_BaseDeflectChance>
+	
+    <StatsReport_SkillLevel>Skill level</StatsReport_SkillLevel>	
+	
+	
+    <StatsReport_DeflectPerSkillLevel>Deflect % per skill level</StatsReport_DeflectPerSkillLevel>	
+
+    <StatsReport_ManipulationModifier>Manipulation modifier</StatsReport_ManipulationModifier>		
+  
+</LanguageData>

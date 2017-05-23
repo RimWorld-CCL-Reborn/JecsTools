@@ -1,0 +1,22 @@
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\AbilityUser\AbilityUser\AbilityUser\bin\Debug\Defs\AbilityDefs\Abilities_Base.xml
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\AbilityUser\AbilityUser\AbilityUser\bin\Debug\Defs\DamageDefs\AbilityUser_Damages.xml
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\AbilityUser\AbilityUser\AbilityUser\bin\Debug\Defs\JobDefs\AbilityUser_Jobs.xml
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\AbilityUser\AbilityUser\AbilityUser\bin\Debug\Languages\English\Keyed\AbilityUser.xml
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\AbilityUser\AbilityUser\AbilityUser\bin\Debug\AbilityUser.dll
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\AbilityUser\AbilityUser\AbilityUser\bin\Debug\AbilityUser.pdb
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\AbilityUser\AbilityUser\AbilityUser\bin\Debug\0Harmony.dll
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\AbilityUser\AbilityUser\AbilityUser\obj\Debug\AbilityUser.csprojResolveAssemblyReference.cache
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\AbilityUser\AbilityUser\AbilityUser\obj\Debug\AbilityUser.dll
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\AbilityUser\AbilityUser\AbilityUser\obj\Debug\AbilityUser.pdb
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\CompAbilityUser\Source\AbilityUser\obj\Debug\AbilityUser.csprojResolveAssemblyReference.cache
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\CompAbilityUser\Source\AbilityUser\obj\Debug\AbilityUser.dll
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\CompAbilityUser\Assemblies\AbilityUser.dll
+D:\SteamLibrary\steamapps\common\RimWorld\CompAbilityUser\Assemblies\AbilityUser.dll
+D:\SteamLibrary\steamapps\common\RimWorld\CompAbilityUser\Source\AbilityUser\obj\Debug\AbilityUser.dll
+D:\SteamLibrary\steamapps\common\RimWorld\CompAbilityUser\Source\AbilityUser\obj\Debug\AbilityUser.csprojResolveAssemblyReference.cache
+F:\CompAbilityUser\Assemblies\AbilityUser.dll
+F:\CompAbilityUser\Source\AbilityUser\obj\Debug\AbilityUser.csprojResolveAssemblyReference.cache
+F:\CompAbilityUser\Source\AbilityUser\obj\Debug\AbilityUser.dll
+E:\AbilityUser\Assemblies\AbilityUser.dll
+E:\AbilityUser\Source\AbilityUser\obj\Debug\AbilityUser.dll
+E:\AbilityUser\Source\AbilityUser\obj\Debug\AbilityUser.csprojResolveAssemblyReference.cache

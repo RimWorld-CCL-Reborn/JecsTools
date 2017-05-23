@@ -1,0 +1,8 @@
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\AbilityUser\AbilityUser\AbilityUser\bin\Release\Defs\AbilityDefs\Abilities_Base.xml
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\AbilityUser\AbilityUser\AbilityUser\bin\Release\Defs\DamageDefs\AbilityUser_Damages.xml
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\AbilityUser\AbilityUser\AbilityUser\bin\Release\Defs\JobDefs\AbilityUser_Jobs.xml
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\AbilityUser\AbilityUser\AbilityUser\bin\Release\Languages\English\Keyed\AbilityUser.xml
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\AbilityUser\AbilityUser\AbilityUser\bin\Release\AbilityUser.dll
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\AbilityUser\AbilityUser\AbilityUser\bin\Release\0Harmony.dll
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\AbilityUser\AbilityUser\AbilityUser\obj\Release\AbilityUser.csprojResolveAssemblyReference.cache
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\AbilityUser\AbilityUser\AbilityUser\obj\Release\AbilityUser.dll
