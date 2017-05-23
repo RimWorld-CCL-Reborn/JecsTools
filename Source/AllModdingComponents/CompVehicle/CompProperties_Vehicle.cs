@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Verse;
 
-namespace CompPilotable
+namespace CompVehicle
 {
     internal class CompProperties_Vehicle : CompProperties
     {

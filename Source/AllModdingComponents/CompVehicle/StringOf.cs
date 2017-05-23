@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace CompPilotable
+namespace CompVehicle
 {
     public static class StringOf
     {

@@ -7,8 +7,8 @@
     <ProjectGuid>{6E907669-2299-47E1-B144-8BC7488DF5C4}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CompPilotable</RootNamespace>
-    <AssemblyName>CompPilotable</AssemblyName>
+    <RootNamespace>CompVehicle</RootNamespace>
+    <AssemblyName>CompVehicle</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />

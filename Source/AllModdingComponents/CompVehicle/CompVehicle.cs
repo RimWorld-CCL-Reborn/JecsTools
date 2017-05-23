@@ -7,7 +7,7 @@ using Verse;
 using Verse.Sound;
 using RimWorld;
 
-namespace CompPilotable
+namespace CompVehicle
 {
     public enum PilotableSlotType
     {

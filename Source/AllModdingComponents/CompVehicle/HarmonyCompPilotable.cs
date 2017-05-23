@@ -9,7 +9,7 @@ using Verse.AI;
 using System.Reflection;
 using UnityEngine;
 
-namespace CompPilotable
+namespace CompVehicle
 {
     [StaticConstructorOnStartup]
     static class HarmonyCompPilotable

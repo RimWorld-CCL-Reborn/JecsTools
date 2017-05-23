@@ -4,7 +4,7 @@ using System.Diagnostics;
 using Verse;
 using System.Linq;
 
-namespace CompPilotable
+namespace CompVehicle
 {
     internal class Recipe_RepairVehicle : RecipeWorker
     {

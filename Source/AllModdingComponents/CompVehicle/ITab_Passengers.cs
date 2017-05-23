@@ -5,7 +5,7 @@ using UnityEngine;
 using Verse;
 using Verse.Sound;
 
-namespace CompPilotable
+namespace CompVehicle
 {
     public class ITab_Passengers : ITab
     {
