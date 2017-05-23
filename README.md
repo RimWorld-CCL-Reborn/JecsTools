@@ -12,13 +12,10 @@
 </p>
 
 <p align="center">
-  A library for patching, replacing and decorating .NET and Mono methods during runtime.
+ Adds modding components to RimWorld: vehicles, spell casting, weapon slots, oversized weapons, and more!
 </p>
 
 <hr>
-
-# JecsTools
-Adds modding components to RimWorld: vehicles, spell casting, weapon slots, oversized weapons, and more!
 
 Note to players: This mod will not change your game, but rather it lets modders do more, so you can have an even more amazing RimWorld experience.
 	
