@@ -48,3 +48,15 @@ CompVehicle
  - Allows for a pawn to be treated as a vehicle that can be loaded with pilots, gunners, crew, and passengers.
 	
 Additions by roxxploxx.
+
+
+<hr>
+
+<p align="center">
+  <a href="mailto:matt.walls31@gmail.com">
+    <img src="https://img.shields.io/badge/email-matt.walls31@gmail.com-blue.svg?style=flat" alt="Email: matt.walls31@gmail.com" />
+  </a>
+  <a href="https://raw.githubusercontent.com/jecrell/JecsTools/master/LICENSE">
+    <img src="https://img.shields.io/badge/license-MIT-lightgray.svg?style=flat" alt="MIT License" />
+  </a>
+</p> 
