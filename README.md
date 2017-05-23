@@ -52,7 +52,7 @@ Total list of components:
 	
 Additions by roxxploxx.
 
-Special thanks to Pardeike's amazing non-destructive patching library, Harmony.
+Special thanks to Pardeike's amazing non-destructive patching library, Harmony. Without his work, none of this would be possible.
 <p align="center">
   <a href="https://github.com/pardeike/Harmony">
     <img src="https://s24.postimg.org/58bl1rz39/logo.png" alt="Harmony" />
