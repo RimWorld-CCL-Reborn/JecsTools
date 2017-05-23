@@ -14,19 +14,19 @@ CompActivatableEffect
  - Adds an activation graphic for weapons (e.g. lightsaber beam). 
  
 CompDeflector
- - Allows the ability to knock projectiles to melee weapons.
+ - Allows the ability to knock projectiles away with melee weapons.
  
 CompExtraSounds
- - Allows extra melee sounds to weapons.
+ - Adds extra melee sounds to weapons.
  
 CompLumbering
- - Makes a staggered walking animation. (e.g. ATST walking effect)
+ - Gives pawns a staggered walking animation that cycles between two images. (e.g. ATST walking effect)
  
 CompOversizedWeapon
- - Allows weapons with graphic sizes that can be bigger than RimWorld's limits.
+ - Allows weapons to have graphic sizes that can be bigger than RimWorld's vanilla limits.
  
 CompSlotLoadable
- - Adds slots to objects that can be filled to have effects. (e.g. different ammo types for guns, crystals for lightsabers)
+ - Adds slots to objects, weapons, apparel, etc that can be filled to have effects. (e.g. an ammo slot for guns with different kinds of ammunition, crystal slots for lightsabers, etc)
  
 CompVehicle
  - Allows for a pawn to be treated as a vehicle that can be loaded with pilots, gunners, crew, and passengers.
