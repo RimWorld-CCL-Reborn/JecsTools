@@ -51,6 +51,12 @@ Total list of components:
  - Allows for a pawn to be treated as a vehicle that can be loaded with pilots, gunners, crew, and passengers.
 	
 Additions by roxxploxx.
+Special thanks to Pardeike's amazing non-destructive patching library, Harmony.
+<p align="center">
+  <a href="https://github.com/pardeike/Harmony">
+    <img src="https://s24.postimg.org/58bl1rz39/logo.png" alt="Harmony" />
+    </a>
+</p>
 
 
 <hr>
