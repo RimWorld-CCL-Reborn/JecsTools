@@ -9,6 +9,9 @@
   <a href="https://github.com/roxxploxx/RimWorldModGuide/wiki">
     <img src="https://img.shields.io/badge/documentation-Wiki-4BC51D.svg?style=flat" alt="Documentation" />
   </a>
+  <a href="https://www.patreon.com/jecrell">
+    <img src="https://img.shields.io/badge/support%20me%20on-Patreon-red.svg?style=flat" alt="Support me on Patreon." />
+    </a>
 </p>
 
 <p align="center">
