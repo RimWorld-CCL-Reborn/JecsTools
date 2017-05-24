@@ -6,33 +6,36 @@ using Verse;
 
 namespace CompVehicle
 {
-    internal class CompProperties_Vehicle : CompProperties
+    public class CompProperties_Vehicle : CompProperties
     {
-        public SoundDef entrySound = null;
-        public SoundDef ejectSound = null;
-        public int pilotSeats = 1;                          // Number of possible pilots
-        public int gunnerSeats = 0;                         // Number of possible gunners
-        public int crewSeats = 0;                           // Number of possible crew
-        public int passengerSeats = 0;                      // Number of possible passengers
-        public int requiredPilots = 1;                      // How many pilots are required for movement
-        public int requiredGunners = 0;                     // How many gunners are required for weapons to function
-        public int requiredCrew = 0;                        // How many crew are required to be pilotable
+        public SoundDef soundEntry = null;
+        public SoundDef soundEject = null;
         public float ejectIfBelowHealthPercent = 0.0f;      // Unloads all passengers when health percentage drops below this point
         public float seatHitDamageFactor = 2.0f;            // Multiply & apply this damage to passengers in seats
         public float seatHitCriticalHitChance = 0.05f;      // Chance of doubling the damage.
         public bool canBeDowned = false;                    // Does this become downed?
-        public bool wigglesWhenDowned = false;                // Does this wiggle when downed?
-        public bool canMoveWithoutPilot = false;            // Is the movement automatic?
-        public bool canFireWithoutGunner = false;           // Are the weapons automatic?
-        public PawnKindDef preferredPilotKind = null;       
-        public PawnKindDef preferredGunnerKind = null;      // These types are preferred when spawning AI loaded pilotables
-        public PawnKindDef preferredCrewKind = null;
+        public bool canWiggleWhenDowned = false;                // Does this wiggle when downed?
+        public bool canMoveWithoutHandler = false;            // Is the movement automatic?
+        public bool canFireWithoutHandler = false;           // Are the weapons automatic?
+        public string labelUndamaged = "Undamaged";
+        public string labelDamaged = "Damaged";
+        public string labelInoperable = "Inoperable";
+        public string labelBroken = "Broken";
+        public List<VehicleRole> roles = new List<VehicleRole>(); // Defines roles of passengers.
 
         public int TotalCapacity
         {
             get
             {
-                return pilotSeats + gunnerSeats + crewSeats + passengerSeats;
+                int result = 0;
+                if (roles != null && roles.Count > 0)
+                {
+                    foreach (VehicleRole role in roles)
+                    {
+                        result += role.slots;
+                    }
+                }
+                return result;
             }
         }
 

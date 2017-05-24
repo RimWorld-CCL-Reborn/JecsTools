@@ -55,7 +55,7 @@ namespace CompVehicle
                 {
                     if (CompPilot != null)
                     {
-                        result = CompPilot.AllPassengers;
+                        result = CompPilot.AllOccupants;
                     }
                 }
                 return result;
@@ -180,64 +180,27 @@ namespace CompVehicle
             {
                 this.specificHealthTabForPawn = null;
             }
-            bool flag = false;
-            for (int i = 0; i < pawns.Count; i++)
+            if (CompPilot.handlers != null && CompPilot.handlers.Count > 0)
             {
-                Pawn pawn = pawns[i];
-                if (CompPilot.IsPilot(pawn))
+                foreach (VehicleHandlerGroup group in CompPilot.handlers)
                 {
-                    if (!flag)
+                    bool flag = false;
+                    for (int i = 0; i < pawns.Count; i++)
                     {
-                        Widgets.ListSeparator(ref curY, scrollViewRect.width, StringOf.Pilots);
-                        flag = true;
+                        Pawn pawn = pawns[i];
+                        if (group.handlers.Contains(pawn))
+                        {
+                            if (!flag)
+                            {
+                                Widgets.ListSeparator(ref curY, scrollViewRect.width, group.role.labelPlural);
+                                flag = true;
+                            }
+                            this.DoRow(ref curY, scrollViewRect, scrollOutRect, pawn);
+                        }
                     }
-                    this.DoRow(ref curY, scrollViewRect, scrollOutRect, pawn);
                 }
             }
-            bool flag2 = false;
-            for (int j = 0; j < pawns.Count; j++)
-            {
-                Pawn pawn2 = pawns[j];
-                if (CompPilot.IsGunner(pawn2))
-                {
-                    if (!flag2)
-                    {
-                        Widgets.ListSeparator(ref curY, scrollViewRect.width, StringOf.Gunners);
-                        flag2 = true;
-                    }
-                    this.DoRow(ref curY, scrollViewRect, scrollOutRect, pawn2);
-                }
-            }
-
-            bool flag3 = false;
-            for (int k = 0; k < pawns.Count; k++)
-            {
-                Pawn pawn3 = pawns[k];
-                if (CompPilot.IsCrew(pawn3))
-                {
-                    if (!flag3)
-                    {
-                        Widgets.ListSeparator(ref curY, scrollViewRect.width, StringOf.Crew);
-                        flag3 = true;
-                    }
-                    this.DoRow(ref curY, scrollViewRect, scrollOutRect, pawn3);
-                }
-            }
-
-            bool flag4 = false;
-            for (int l = 0; l < pawns.Count; l ++)
-            {
-                Pawn pawn4 = pawns[l];
-                if (CompPilot.IsPassenger(pawn4))
-                {
-                    if (!flag4)
-                    {
-                        Widgets.ListSeparator(ref curY, scrollViewRect.width, StringOf.Passengers);
-                        flag4 = true;
-                    }
-                    this.DoRow(ref curY, scrollViewRect, scrollOutRect, pawn4);
-                }
-            }
+            
         }
 
         private Vector2 GetRawSize(bool compactMode)

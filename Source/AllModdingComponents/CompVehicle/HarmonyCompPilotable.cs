@@ -35,7 +35,7 @@ namespace CompVehicle
                 CompVehicle compPilotable = pawn.GetComp<CompVehicle>();
                 if (compPilotable != null)
                 {
-                    if (!compPilotable.Props.wigglesWhenDowned) return false;
+                    if (!compPilotable.Props.canWiggleWhenDowned) return false;
                 }
             }
             return true;
@@ -121,15 +121,15 @@ namespace CompVehicle
                 {
                     if (pawn.Downed || !pawn.health.capacities.CanBeAwake)
                     {
-                        __result = StringOf.Disabled;
+                        __result = compPilotable.Props.labelInoperable;
                         return false;
                     }
                     if (pawn.Dead)
                     {
-                        __result = StringOf.Inoperable;
+                        __result = compPilotable.Props.labelBroken;
                         return false;
                     }
-                    __result = StringOf.Operational;
+                    __result = compPilotable.Props.labelUndamaged;
                     return false;
                 }
             }
@@ -178,51 +178,16 @@ namespace CompVehicle
             {
                 List<Pawn> affectedPawns = new List<Pawn>();
                 
-                //Pilot check.
-                List<BodyPartRecord> pilotParts = compPilotable.PilotParts;
-                if (pilotParts != null && pilotParts.Count > 0)
+                if (compPilotable.handlers != null && compPilotable.handlers.Count > 0)
                 {
-                    if (pilotParts.Contains(injury.Part))
+                    foreach (VehicleHandlerGroup group in compPilotable.handlers)
                     {
-                        if (compPilotable.pilots != null && compPilotable.pilots.Count > 0)
+                        if (group.OccupiedParts != null && (group.handlers != null && group.handlers.Count > 0))
                         {
-                            affectedPawns.AddRange(compPilotable.pilots);
-                        }
-                    }
-                }
-                //Gunner check.
-                List<BodyPartRecord> gunnerParts = compPilotable.GunnerParts;
-                if (gunnerParts != null && gunnerParts.Count > 0)
-                {
-                    if (gunnerParts.Contains(injury.Part))
-                    {
-                        if (compPilotable.gunners != null && compPilotable.gunners.Count > 0)
-                        {
-                            affectedPawns.AddRange(compPilotable.gunners);
-                        }
-                    }
-                }
-                //Crew check.
-                List<BodyPartRecord> crewParts = compPilotable.CrewParts;
-                if (crewParts != null && crewParts.Count > 0)
-                {
-                    if (crewParts.Contains(injury.Part))
-                    {
-                        if (compPilotable.crew != null && compPilotable.crew.Count > 0)
-                        {
-                            affectedPawns.AddRange(compPilotable.crew);
-                        }
-                    }
-                }
-                //Passenger check.
-                List<BodyPartRecord> passengerParts = compPilotable.PassengerParts;
-                if (passengerParts != null && passengerParts.Count > 0)
-                {
-                    if (passengerParts.Contains(injury.Part))
-                    {
-                        if (compPilotable.passengers != null && compPilotable.passengers.Count > 0)
-                        {
-                            affectedPawns.AddRange(compPilotable.passengers);
+                            if (group.OccupiedParts.Contains(injury.Part))
+                            {
+                                affectedPawns.AddRange(group.handlers);
+                            }
                         }
                     }
                 }
@@ -239,8 +204,5 @@ namespace CompVehicle
                 }
             }
         }
-
-
-
     }
 }

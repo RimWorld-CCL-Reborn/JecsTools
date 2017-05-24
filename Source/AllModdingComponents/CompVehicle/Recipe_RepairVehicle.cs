@@ -11,15 +11,21 @@ namespace CompVehicle
         [DebuggerHidden]
         public override IEnumerable<BodyPartRecord> GetPartsToApplyOn(Pawn pawn, RecipeDef recipe)
         {
+            List<BodyPartRecord> records = new List<BodyPartRecord>();
+
             List<Hediff> brokenParts = pawn.health.hediffSet.hediffs.FindAll((Hediff x) => x is Hediff_Injury);
             if (brokenParts != null && brokenParts.Count > 0)
             {
                 foreach (Hediff brokenPart in brokenParts)
                 {
                     if (brokenPart.Part != null)
-                        yield return brokenPart.Part;
+                    {
+                        if (!records.Contains(brokenPart.Part)) records.Add(brokenPart.Part);
+                    }
                 }
             }
+
+            return records.AsEnumerable<BodyPartRecord>();
         }
 
         public override void ApplyOnPawn(Pawn pawn, BodyPartRecord part, Pawn billDoer, List<Thing> ingredients)
