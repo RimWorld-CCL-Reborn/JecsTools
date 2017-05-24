@@ -1,5 +1,0 @@
-C:\Program Files (x86)\Steam\steamapps\common\RimWorld\CompActivatableEffect\CompActivatableEffect\bin\Release\CompActivatableEffect.dll
-C:\Program Files (x86)\Steam\steamapps\common\RimWorld\CompActivatableEffect\CompActivatableEffect\bin\Release\0Harmony.dll
-C:\Program Files (x86)\Steam\steamapps\common\RimWorld\CompActivatableEffect\CompActivatableEffect\obj\Release\CompActivatableEffect.csprojResolveAssemblyReference.cache
-C:\Program Files (x86)\Steam\steamapps\common\RimWorld\CompActivatableEffect\CompActivatableEffect\obj\Release\CompActivatableEffect.dll
-C:\Program Files (x86)\Steam\steamapps\common\RimWorld\CompActivatableEffect\CompActivatableEffect\bin\Release\Languages\English\Keyed\CompActivatableEffect.xml

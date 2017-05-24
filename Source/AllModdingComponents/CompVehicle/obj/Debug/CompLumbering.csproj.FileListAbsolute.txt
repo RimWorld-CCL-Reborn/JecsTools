@@ -1,2 +1,0 @@
-D:\SteamLibrary\steamapps\common\RimWorld\CompLumbering\Assemblies\CompLumbering.dll
-D:\SteamLibrary\steamapps\common\RimWorld\CompLumbering\Source\CompExtraSounds\obj\Debug\CompLumbering.dll
