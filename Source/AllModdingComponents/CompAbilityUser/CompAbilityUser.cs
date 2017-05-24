@@ -38,7 +38,7 @@ namespace AbilityUser
         public List<PawnAbility> temporaryApparelPowers = new List<PawnAbility>();
         public List<PawnAbility> allPowers = new List<PawnAbility>();
         public List<Verb_UseAbility> AbilityVerbs = new List<Verb_UseAbility>();
-        public Dictionary<PawnAbility, Verb_UseAbility> pawnAbilities = new Dictionary<PawnAbility, Verb_UseAbility>();
+//        public Dictionary<PawnAbility, Verb_UseAbility> pawnAbilities = new Dictionary<PawnAbility, Verb_UseAbility>();
 
         public void AddPawnAbility(AbilityDef abilityDef)
         {
@@ -208,6 +208,7 @@ namespace AbilityUser
             abList.AddRange(this.Powers);
 
             abList.AddRange(this.temporaryWeaponPowers);
+            abList.AddRange(this.temporaryApparelPowers);
 
             this.allPowers.Clear();
 
@@ -226,6 +227,7 @@ namespace AbilityUser
                 }
             }
 
+/*
             this.pawnAbilities.Clear();
 
             foreach (PawnAbility pow in abList)
@@ -241,6 +243,7 @@ namespace AbilityUser
                 }
             }
             //       //Log.Message(this.PawnAbilitys.Count.ToString());
+            */
         }
 
         public virtual bool CanOverpowerTarget(Pawn user, Thing target, AbilityDef ability)
