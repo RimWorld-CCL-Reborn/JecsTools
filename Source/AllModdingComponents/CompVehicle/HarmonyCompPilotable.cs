@@ -8,6 +8,8 @@ using Verse;
 using Verse.AI;
 using System.Reflection;
 using UnityEngine;
+using System.Reflection.Emit;
+using System.Runtime.CompilerServices;
 
 namespace CompVehicle
 {
@@ -24,8 +26,18 @@ namespace CompVehicle
             harmony.Patch(AccessTools.Method(typeof(HealthCardUtility), "DrawOverviewTab"), new HarmonyMethod(typeof(HarmonyCompPilotable), "DrawOverviewTab_PreFix"), null);
             harmony.Patch(AccessTools.Method(typeof(Pawn_HealthTracker), "ShouldBeDowned"), new HarmonyMethod(typeof(HarmonyCompPilotable), "ShouldBeDowned_PreFix"), null);
             harmony.Patch(AccessTools.Method(typeof(PawnDownedWiggler), "WigglerTick"), new HarmonyMethod(typeof(HarmonyCompPilotable), "WigglerTick_PreFix"), null);
+            //HarmonyInstance.DEBUG = true;
+            harmony.Patch(AccessTools.Method(typeof(Building_CrashedShipPart), "<TrySpawnMechanoids>m__4A4"), null, new HarmonyMethod(typeof(HarmonyCompPilotable), nameof(MechanoidsFixer)));
+            //HarmonyInstance.DEBUG = false;
         }
 
+        // RimWorld.Building_CrashedShipPart
+        public static void MechanoidsFixer(Building_CrashedShipPart __instance, ref bool __result, PawnKindDef def)
+        {
+            Log.Message("1");
+            if (def.defaultFactionType != FactionDefOf.Mechanoid) __result = false;
+        }
+        
         // Verse.PawnDownedWiggler
         public static bool WigglerTick_PreFix(PawnDownedWiggler __instance)
         {

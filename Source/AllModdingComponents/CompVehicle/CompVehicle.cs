@@ -16,13 +16,11 @@ namespace CompVehicle
         crew,
         dutiless
     }
-
     public enum MovingState
     {
         frozen = 0,
         able
     }
-
     public enum WeaponState
     {
         frozen = 0,
@@ -33,122 +31,6 @@ namespace CompVehicle
     {
         public List<VehicleHandlerGroup> handlers = new List<VehicleHandlerGroup>();
 
-        /*
-        public List<Pawn> pilots = new List<Pawn>();
-        public List<Pawn> gunners = new List<Pawn>();
-        public List<Pawn> crew = new List<Pawn>();
-        public List<Pawn> passengers = new List<Pawn>();
-        public List<Pawn> AllPassengers
-        {
-            get
-            {
-                List<Pawn> pawns = new List<Pawn>();
-                if (pilots != null && pilots.Count > 0) pawns.AddRange(pilots);
-                if (gunners != null && gunners.Count > 0) pawns.AddRange(gunners);
-                if (crew != null && crew.Count > 0) pawns.AddRange(crew);
-                if (passengers != null && passengers.Count > 0) pawns.AddRange(passengers);
-                return pawns;
-            }
-        }
-        public List<Pawn> GetPassengersOfType(PilotableSlotType slotType)
-        {
-            switch (slotType)
-            {
-                case PilotableSlotType.crew:     return crew;
-                case PilotableSlotType.gunner:   return gunners;
-                case PilotableSlotType.dutiless: return passengers;
-                case PilotableSlotType.pilot:    return pilots;
-            }
-            return null;
-        }
-
-        public int GetTotalSeats(PilotableSlotType slotType)
-        {
-            switch (slotType)
-            {
-                case PilotableSlotType.crew:     return Props.crewSeats;
-                case PilotableSlotType.dutiless: return Props.passengerSeats;
-                case PilotableSlotType.gunner:   return Props.gunnerSeats;
-                case PilotableSlotType.pilot:    return Props.pilotSeats;
-            }
-            return 0;
-        }
-
-        public bool IsInList(Pawn pawn, List<Pawn> listPawn)
-        {
-            bool result = false;
-            if (listPawn != null && listPawn.Count > 0)
-            {
-                if (listPawn.Contains(pawn)) result = true;
-            }
-            return result;
-        }
-        public bool IsPilot(Pawn pawn) { return IsInList(pawn, pilots); }
-        public bool IsGunner(Pawn pawn) { return IsInList(pawn, gunners); }
-        public bool IsCrew(Pawn pawn) { return IsInList(pawn, crew); }
-        public bool IsPassenger(Pawn pawn) { return IsInList(pawn, passengers); }
-
-        public bool PilotAvailable
-        {
-            get
-            {
-                bool result = false;
-                if (pilots != null && pilots.Count > 0)
-                {
-                    Pawn availablePilot = pilots.FirstOrDefault((Pawn x) => !x.Dead && !x.Downed);
-                    if (availablePilot != null) return true;
-                }
-                return result;
-            }
-        }
-        public bool GunnerAvailable
-        {
-            get
-            {
-                bool result = false;
-                if (gunners != null && gunners.Count > 0)
-                {
-                    Pawn availableGunner = gunners.FirstOrDefault((Pawn x) => !x.Dead && !x.Downed);
-                    if (availableGunner != null) return true;
-                }
-                return result;
-            }
-        }
-        public bool CrewAvailable
-        {
-            get
-            {
-                bool result = false;
-                if (crew != null && crew.Count > 0)
-                {
-                    Pawn availableCrew = crew.FirstOrDefault((Pawn x) => !x.Dead && !x.Downed);
-                    if (availableCrew != null) return true;
-                }
-                return result;
-            }
-        }
-        public bool PassengerAvailable
-        {
-            get
-            {
-                bool result = false;
-                if (passengers != null && passengers.Count > 0)
-                {
-                    Pawn availablePassenger = passengers.FirstOrDefault((Pawn x) => !x.Dead && !x.Downed);
-                    if (availablePassenger != null) return true;
-                }
-                return result;
-            }
-        }
-
-        public string GetVehicleRole(Pawn pawn)
-        {
-            if (IsPilot(pawn)) return StringOf.pilot;
-            if (IsGunner(pawn)) return StringOf.gunner;
-            if (IsCrew(pawn)) return StringOf.crew;
-            return StringOf.passenger;
-        }
-        */
 
         public bool MovementHandlerAvailable
         {
@@ -394,6 +276,15 @@ namespace CompVehicle
 
         public void ResolveStatus()
         {
+            //If refuelable, then check for fuel.
+            CompRefuelable compRefuelable = Pawn.GetComp<CompRefuelable>();
+            if (!compRefuelable.HasFuel)
+            {
+                weaponStatus = WeaponState.frozen;
+                movingStatus = MovingState.frozen;
+                return;
+            }
+
             if (MovementHandlerAvailable && movingStatus == MovingState.frozen)
             {
                 movingStatus = MovingState.able;
