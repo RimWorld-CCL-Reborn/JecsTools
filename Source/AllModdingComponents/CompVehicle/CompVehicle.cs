@@ -159,11 +159,14 @@ namespace CompVehicle
                 {
                     foreach (VehicleHandlerGroup group in handlers)
                     {
-                        if (group.role != null && group.handlers != null && group.handlers.Count > 0)
+                        if (group.handlers != null && group.handlers.Count > 0)
                         {
-                            if (group.role.handlesMovement)
+                            if (group.role != null)
                             {
-                                result = group.handlers.Any((Pawn x) => !x.Dead && !x.Downed);
+                                if (group.role.handlesMovement)
+                                {
+                                    result = group.handlers.Any((Pawn x) => !x.Dead && !x.Downed);
+                                }
                             }
                         }
                     }

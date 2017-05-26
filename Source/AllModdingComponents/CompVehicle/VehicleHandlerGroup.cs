@@ -54,8 +54,9 @@ namespace CompVehicle
         public void ExposeData()
         {
             Scribe_References.Look<Pawn>(ref this.vehicle, "vehicle");
-            Scribe_Values.Look<VehicleRole>(ref this.role, "role", null);
-            Scribe_Collections.Look<Pawn>(ref this.handlers, "handlers", LookMode.Reference);
+            Scribe_Deep.Look<VehicleRole>(ref this.role, "role", new object[0]);
+            //Scribe_Values.Look<VehicleRole>(ref this.role, "role", null);
+            Scribe_Collections.Look<Pawn>(ref this.handlers, "handlers", LookMode.Deep, new object[0]);
         }
     }
 }
