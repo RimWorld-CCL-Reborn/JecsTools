@@ -23,10 +23,6 @@ namespace AbilityUser
 
             // Initializes the AbilityUsers on Pawns
             harmony.Patch(AccessTools.Method(typeof(ThingWithComps), "InitializeComps"), null, new HarmonyMethod(typeof(HarmonyPatches).GetMethod("InitializeComps_PostFix")), null);
-            //harmony.Patch(AccessTools.Method(typeof(Pawn), "ExposeData"), null, new HarmonyMethod(typeof(HarmonyPatches).GetMethod("ExposeData_PostFix")), null);
-            //harmony.Patch(
-            //    AccessTools.Method(typeof(Verse.PawnGenerator),"GeneratePawn",new Type[] { typeof(Verse.PawnGenerationRequest) }),
-            //    null, new HarmonyMethod(typeof(HarmonyPatches).GetMethod("GeneratePawn_PostFix")), null);
 
             // when the Pawn_EquipmentTracker is notified of a new item, see if that has CompAbilityItem.
             harmony.Patch(AccessTools.Method(typeof(Verse.Pawn_EquipmentTracker),"Notify_EquipmentAdded"),null,
@@ -85,14 +81,9 @@ namespace AbilityUser
 
             foreach( CompAbilityItem cai in apparel.GetComps<CompAbilityItem>() ) //((Pawn)__instance.ParentHolder).GetComps<CompAbilityItem>() )
             {
-                //Log.Message("Notify_EquipmentAdded_PostFix 1 : "+eq.ToString());
-                //Log.Message("  Found CompAbilityItem, for CompAbilityUser of "+cai.Props.AbilityUserClass.ToString());
-
                 foreach( CompAbilityUser cau in ((Pawn)__instance.ParentHolder).GetComps<CompAbilityUser>() )
                 {
-                    //Log.Message("  Found CompAbilityUser, "+cau.ToString() +" : "+ cau.GetType()+":"+cai.Props.AbilityUserClass ); //Props.AbilityUserTarget.ToString());
                     if( cau.GetType() == cai.Props.AbilityUserClass ) {
-                        //Log.Message("  and they match types " );
                         cai.AbilityUserTarget= cau;
                         foreach ( AbilityDef abdef in cai.Props.Abilities ) { cau.AddApparelAbility(abdef); }
                     }
@@ -104,14 +95,9 @@ namespace AbilityUser
 
             foreach( CompAbilityItem cai in apparel.GetComps<CompAbilityItem>() ) //((Pawn)__instance.ParentHolder).GetComps<CompAbilityItem>() )
             {
-                Log.Message("Notify_ApparelRemoved 1 : "+apparel.ToString());
-                Log.Message("  Found CompAbilityItem, for CompAbilityUser of "+cai.Props.AbilityUserClass.ToString());
-
                 foreach( CompAbilityUser cau in ((Pawn)__instance.ParentHolder).GetComps<CompAbilityUser>() )
                 {
-                    Log.Message("  Found CompAbilityUser, "+cau.ToString() +" : "+ cau.GetType()+":"+cai.Props.AbilityUserClass ); //Props.AbilityUserTarget.ToString());
                     if( cau.GetType() == cai.Props.AbilityUserClass ) {
-                        Log.Message("  and they match types " );
                         foreach ( AbilityDef abdef in cai.Props.Abilities ) { cau.RemoveApparelAbility(abdef); }
                     }
                 }

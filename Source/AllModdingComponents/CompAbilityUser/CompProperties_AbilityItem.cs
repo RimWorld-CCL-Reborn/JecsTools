@@ -16,7 +16,7 @@ namespace AbilityUser
         public CompProperties_AbilityItem()
         {
             this.compClass = typeof(CompAbilityItem);
-            this.AbilityUserClass = typeof(AbilityUser.GenericCompAbilityUser);
+            this.AbilityUserClass = typeof(AbilityUser.GenericCompAbilityUser); // default
         }
 
     }
