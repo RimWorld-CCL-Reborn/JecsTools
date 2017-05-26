@@ -31,12 +31,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="0Harmony, Version=1.0.9.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Harmony109\0Harmony.dll</HintPath>
+    <Reference Include="0Harmony">
+      <HintPath>..\..\..\..\GlobalAssemblies\0Harmony.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp">
       <HintPath>..\..\..\..\GlobalAssemblies\Assembly-CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="HugsLib">
+      <HintPath>..\..\..\..\GlobalAssemblies\HugsLib.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -57,7 +59,9 @@
     <Compile Include="ApplyHediffs.cs" />
     <Compile Include="ApplyMentalStates.cs" />
     <Compile Include="Command_PawnAbility.cs" />
+    <Compile Include="CompAbilityItem.cs" />
     <Compile Include="CompAbilityUser.cs" />
+    <Compile Include="CompProperties_AbilityItem.cs" />
     <Compile Include="CompProperties_AbilityUser.cs" />
     <Compile Include="ExtraDamage.cs" />
     <Compile Include="FlyingObject.cs" />

@@ -31,6 +31,7 @@ namespace AbilityUser
 
         public PawnAbility(Pawn user, AbilityDef pdef)
         {
+            Log.Message("new PawnAbility on "+user+" of "+pdef);
             this.pawn = user;
             this.powerdef = pdef;
             //this.def = pdef;
@@ -41,6 +42,7 @@ namespace AbilityUser
 
         public void PawnAbilityTick()
         {
+        //    Log.Message("PawnAbilityTick -- "+this.powerdef);
             if (TicksUntilCasting > -1) TicksUntilCasting--;
         }
 
@@ -62,7 +64,7 @@ namespace AbilityUser
         public int MaxCastingTicks
         {
             get
-            { 
+            {
                 if (this.powerdef != null)
                 {
                     if (this.powerdef.MainVerb != null)
@@ -93,7 +95,7 @@ namespace AbilityUser
         //        parent.AllComps.Add(thingComp);
         //    }
         //}
-        
+
 
         public void ExposeData()
         {
@@ -110,6 +112,3 @@ namespace AbilityUser
 
     }
 }
-
-
-

@@ -27,6 +27,95 @@ namespace AbilityUser
             //harmony.Patch(
             //    AccessTools.Method(typeof(Verse.PawnGenerator),"GeneratePawn",new Type[] { typeof(Verse.PawnGenerationRequest) }),
             //    null, new HarmonyMethod(typeof(HarmonyPatches).GetMethod("GeneratePawn_PostFix")), null);
+
+            // when the Pawn_EquipmentTracker is notified of a new item, see if that has CompAbilityItem.
+            harmony.Patch(AccessTools.Method(typeof(Verse.Pawn_EquipmentTracker),"Notify_EquipmentAdded"),null,
+                new HarmonyMethod(typeof(HarmonyPatches).GetMethod("Notify_EquipmentAdded_PostFix")),null);
+            // when the Pawn_EquipmentTracker is notified of one less item, see if that has CompAbilityItem.
+            harmony.Patch(AccessTools.Method(typeof(Verse.Pawn_EquipmentTracker),"Notify_EquipmentRemoved"),null,
+                new HarmonyMethod(typeof(HarmonyPatches).GetMethod("Notify_EquipmentRemoved_PostFix")),null);
+
+            // when the Pawn_ApparelTracker is notified of a new item, see if that has CompAbilityItem.
+            harmony.Patch(AccessTools.Method(typeof(RimWorld.Pawn_ApparelTracker),"Notify_ApparelAdded"),null,
+                new HarmonyMethod(typeof(HarmonyPatches).GetMethod("Notify_ApparelAdded_PostFix")),null);
+            // when the Pawn_ApparelTracker is notified of one less item, see if that has CompAbilityItem.
+            harmony.Patch(AccessTools.Method(typeof(RimWorld.Pawn_ApparelTracker),"Notify_ApparelRemoved"),null,
+                new HarmonyMethod(typeof(HarmonyPatches).GetMethod("Notify_ApparelRemoved_PostFix")),null);
+        }
+
+        public static void Notify_EquipmentAdded_PostFix(Verse.Pawn_EquipmentTracker __instance, ThingWithComps eq) {
+
+            foreach( CompAbilityItem cai in eq.GetComps<CompAbilityItem>() ) //((Pawn)__instance.ParentHolder).GetComps<CompAbilityItem>() )
+            {
+                //Log.Message("Notify_EquipmentAdded_PostFix 1 : "+eq.ToString());
+                //Log.Message("  Found CompAbilityItem, for CompAbilityUser of "+cai.Props.AbilityUserClass.ToString());
+
+                foreach( CompAbilityUser cau in ((Pawn)__instance.ParentHolder).GetComps<CompAbilityUser>() )
+                {
+                    //Log.Message("  Found CompAbilityUser, "+cau.ToString() +" : "+ cau.GetType()+":"+cai.Props.AbilityUserClass ); //Props.AbilityUserTarget.ToString());
+                    if( cau.GetType() == cai.Props.AbilityUserClass ) {
+                        //Log.Message("  and they match types " );
+                        cai.AbilityUserTarget= cau;
+                        foreach ( AbilityDef abdef in cai.Props.Abilities ) { cau.AddWeaponAbility(abdef); }
+                    }
+                }
+
+            }
+        }
+
+        public static void Notify_EquipmentRemoved_PostFix(Verse.Pawn_EquipmentTracker __instance, ThingWithComps eq) {
+
+            foreach( CompAbilityItem cai in eq.GetComps<CompAbilityItem>() ) //((Pawn)__instance.ParentHolder).GetComps<CompAbilityItem>() )
+            {
+                //Log.Message("Notify_EquipmentAdded_PostFix 1 : "+eq.ToString());
+                //Log.Message("  Found CompAbilityItem, for CompAbilityUser of "+cai.Props.AbilityUserClass.ToString());
+
+                foreach( CompAbilityUser cau in ((Pawn)__instance.ParentHolder).GetComps<CompAbilityUser>() )
+                {
+                    //Log.Message("  Found CompAbilityUser, "+cau.ToString() +" : "+ cau.GetType()+":"+cai.Props.AbilityUserClass ); //Props.AbilityUserTarget.ToString());
+                    if( cau.GetType() == cai.Props.AbilityUserClass ) {
+                        //Log.Message("  and they match types " );
+                        foreach ( AbilityDef abdef in cai.Props.Abilities ) { cau.RemoveWeaponAbility(abdef); }
+                    }
+                }
+
+            }
+        }
+        public static void Notify_ApparelAdded_PostFix(RimWorld.Pawn_ApparelTracker __instance, Apparel apparel) {
+
+            foreach( CompAbilityItem cai in apparel.GetComps<CompAbilityItem>() ) //((Pawn)__instance.ParentHolder).GetComps<CompAbilityItem>() )
+            {
+                //Log.Message("Notify_EquipmentAdded_PostFix 1 : "+eq.ToString());
+                //Log.Message("  Found CompAbilityItem, for CompAbilityUser of "+cai.Props.AbilityUserClass.ToString());
+
+                foreach( CompAbilityUser cau in ((Pawn)__instance.ParentHolder).GetComps<CompAbilityUser>() )
+                {
+                    //Log.Message("  Found CompAbilityUser, "+cau.ToString() +" : "+ cau.GetType()+":"+cai.Props.AbilityUserClass ); //Props.AbilityUserTarget.ToString());
+                    if( cau.GetType() == cai.Props.AbilityUserClass ) {
+                        //Log.Message("  and they match types " );
+                        cai.AbilityUserTarget= cau;
+                        foreach ( AbilityDef abdef in cai.Props.Abilities ) { cau.AddApparelAbility(abdef); }
+                    }
+                }
+            }
+        }
+
+        public static void Notify_ApparelRemoved_PostFix(RimWorld.Pawn_ApparelTracker __instance, Apparel apparel) {
+
+            foreach( CompAbilityItem cai in apparel.GetComps<CompAbilityItem>() ) //((Pawn)__instance.ParentHolder).GetComps<CompAbilityItem>() )
+            {
+                Log.Message("Notify_ApparelRemoved 1 : "+apparel.ToString());
+                Log.Message("  Found CompAbilityItem, for CompAbilityUser of "+cai.Props.AbilityUserClass.ToString());
+
+                foreach( CompAbilityUser cau in ((Pawn)__instance.ParentHolder).GetComps<CompAbilityUser>() )
+                {
+                    Log.Message("  Found CompAbilityUser, "+cau.ToString() +" : "+ cau.GetType()+":"+cai.Props.AbilityUserClass ); //Props.AbilityUserTarget.ToString());
+                    if( cau.GetType() == cai.Props.AbilityUserClass ) {
+                        Log.Message("  and they match types " );
+                        foreach ( AbilityDef abdef in cai.Props.Abilities ) { cau.RemoveApparelAbility(abdef); }
+                    }
+                }
+            }
         }
 
         // RimWorld.Targeter
@@ -128,8 +217,8 @@ namespace AbilityUser
                         if (targetVerb.useAbilityProps.abilityDef.MainVerb.TargetAoEProperties.range > 0)
                         {
 
-                                ////Log.Message("6");
-                                GenDraw.DrawRadiusRing(UI.MouseCell(), targetVerb.useAbilityProps.abilityDef.MainVerb.TargetAoEProperties.range);
+                            ////Log.Message("6");
+                            GenDraw.DrawRadiusRing(UI.MouseCell(), targetVerb.useAbilityProps.abilityDef.MainVerb.TargetAoEProperties.range);
 
                         }
                     }
@@ -154,7 +243,7 @@ namespace AbilityUser
         // Add in any AbilityUser Components, if the Pawn is accepting
         public static void internalAddInAbilityUsers(Pawn pawn)
         {
-//            Log.Message("Trying to add AbilityUsers to Pawn");
+            //            Log.Message("Trying to add AbilityUsers to Pawn");
             if ( pawn != null && pawn.RaceProps != null && pawn.RaceProps.Humanlike)
             { AbilityUserUtility.TransformPawn(pawn); }
         }
