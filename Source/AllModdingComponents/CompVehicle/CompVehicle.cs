@@ -278,11 +278,14 @@ namespace CompVehicle
         {
             //If refuelable, then check for fuel.
             CompRefuelable compRefuelable = Pawn.GetComp<CompRefuelable>();
-            if (!compRefuelable.HasFuel)
+            if (compRefuelable != null)
             {
-                weaponStatus = WeaponState.frozen;
-                movingStatus = MovingState.frozen;
-                return;
+                if (!compRefuelable.HasFuel)
+                {
+                    weaponStatus = WeaponState.frozen;
+                    movingStatus = MovingState.frozen;
+                    return;
+                }
             }
 
             if (MovementHandlerAvailable && movingStatus == MovingState.frozen)

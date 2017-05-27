@@ -34,7 +34,7 @@ namespace CompVehicle
         // RimWorld.Building_CrashedShipPart
         public static void MechanoidsFixer(Building_CrashedShipPart __instance, ref bool __result, PawnKindDef def)
         {
-            Log.Message("1");
+            //Log.Message("1");
             if (def.defaultFactionType != FactionDefOf.Mechanoid) __result = false;
         }
         
