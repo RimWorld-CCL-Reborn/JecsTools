@@ -13,6 +13,22 @@ using System.Runtime.CompilerServices;
 
 namespace CompVehicle
 {
+    class DummyClass
+    {
+        void dummy()
+        {
+            Verb verb = null;
+
+            Log.Message(verb.Bursting.ToString());
+
+            if (verb.CasterPawn.story != null && verb.CasterPawn.story.WorkTagIsDisabled(WorkTags.Violent))
+            {
+                Log.Message("hey");
+            }
+            Log.Message("hey");
+        }
+    }
+
     [StaticConstructorOnStartup]
     static class HarmonyCompPilotable
     {
@@ -31,11 +47,37 @@ namespace CompVehicle
             //HarmonyInstance.DEBUG = true;
             harmony.Patch(AccessTools.Method(typeof(Building_CrashedShipPart), "<TrySpawnMechanoids>m__4A4"), null, new HarmonyMethod(typeof(HarmonyCompPilotable), nameof(MechanoidsFixer)));
             //HarmonyInstance.DEBUG = false;
-            //harmony.Patch(AccessTools.Method(typeof(Pawn), "DropAndForbidEverything"), new HarmonyMethod(typeof(HarmonyCompPilotable), "DropAndForbidEverything_PreFix"), null);
+            harmony.Patch(AccessTools.Method(typeof(Pawn), "DropAndForbidEverything"), new HarmonyMethod(typeof(HarmonyCompPilotable), "DropAndForbidEverything_PreFix"), null);
             harmony.Patch(AccessTools.Method(typeof(JobDriver_Wait), "CheckForAutoAttack"), null, null, new HarmonyMethod(typeof(HarmonyCompPilotable), nameof(CheckForAutoAttackTranspiler)));
+            harmony.Patch(AccessTools.Method(AccessTools.TypeByName("<GetVerbsCommands>c__Iterator258"), "MoveNext"), null, null, new HarmonyMethod(typeof(HarmonyCompPilotable), nameof(GetVerbsCommandsTranspiler)));
         }
 
-        public static IEnumerable<CodeInstruction> CheckForAutoAttackTranspiler(IEnumerable<CodeInstruction> instructions)
+        public static IEnumerable<CodeInstruction> GetVerbsCommandsTranspiler(IEnumerable<CodeInstruction> instructions)
+        {
+            FieldInfo storyInfo = AccessTools.Field(typeof(Pawn), nameof(Pawn.story));
+            bool done = false;
+            List<CodeInstruction> instructionList = instructions.ToList();
+            for (int i = 0; i < instructionList.Count; i++)
+            {
+                CodeInstruction instruction = instructionList[i];
+
+                if(!done && instruction.operand == storyInfo)
+                {
+                    yield return instruction;
+                    yield return new CodeInstruction(OpCodes.Brfalse_S, instructionList[i + 3].operand);
+                    yield return new CodeInstruction(instructionList[i - 3]);
+                    yield return new CodeInstruction(instructionList[i - 2]);
+                    yield return new CodeInstruction(instructionList[i - 1]);
+                    instruction = new CodeInstruction(instruction);
+                    done = true;
+                }
+
+                yield return instruction;
+            }
+        }
+
+
+            public static IEnumerable<CodeInstruction> CheckForAutoAttackTranspiler(IEnumerable<CodeInstruction> instructions)
         {
             MethodInfo playerFactionInfo = AccessTools.Property(typeof(Faction), nameof(Faction.OfPlayer)).GetGetMethod();
             bool done = false;
@@ -63,23 +105,7 @@ namespace CompVehicle
         // Verse.Pawn
         public static bool DropAndForbidEverything_PreFix(Pawn __instance)
         {
-            //Log.Message("1");
-            if (__instance != null)
-            {
-                //Log.Message("2");
-
-                if (__instance.def != null)
-                {
-                    //Log.Message("3");
-
-                    CompProperties_Vehicle compVehicle = __instance.def.GetCompProperties<CompProperties_Vehicle>();
-                    if (compVehicle != null)
-                    {
-                        return false;
-                    }
-                }
-            }
-            return true;
+            return __instance?.def?.GetCompProperties<CompProperties_Vehicle>() == null;
         }
 
         // Verse.Pawn
@@ -92,8 +118,8 @@ namespace CompVehicle
             }
         }
 
-        
-            public static void IsColonistPlayerControlled_PostFix(Pawn __instance, ref bool __result)
+
+        public static void IsColonistPlayerControlled_PostFix(Pawn __instance, ref bool __result)
         {
             var vehicle = __instance.GetComp<CompVehicle>();
             if (vehicle != null)
