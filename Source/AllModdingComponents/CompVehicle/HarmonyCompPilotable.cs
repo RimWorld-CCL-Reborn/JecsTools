@@ -32,6 +32,32 @@ namespace CompVehicle
             harmony.Patch(AccessTools.Method(typeof(Building_CrashedShipPart), "<TrySpawnMechanoids>m__4A4"), null, new HarmonyMethod(typeof(HarmonyCompPilotable), nameof(MechanoidsFixer)));
             //HarmonyInstance.DEBUG = false;
             //harmony.Patch(AccessTools.Method(typeof(Pawn), "DropAndForbidEverything"), new HarmonyMethod(typeof(HarmonyCompPilotable), "DropAndForbidEverything_PreFix"), null);
+            harmony.Patch(AccessTools.Method(typeof(JobDriver_Wait), "CheckForAutoAttack"), null, null, new HarmonyMethod(typeof(HarmonyCompPilotable), nameof(CheckForAutoAttackTranspiler)));
+        }
+
+        public static IEnumerable<CodeInstruction> CheckForAutoAttackTranspiler(IEnumerable<CodeInstruction> instructions)
+        {
+            MethodInfo playerFactionInfo = AccessTools.Property(typeof(Faction), nameof(Faction.OfPlayer)).GetGetMethod();
+            bool done = false;
+            List<CodeInstruction> instructionList = instructions.ToList();
+            for(int i = 0; i<instructionList.Count; i++)
+            {
+                CodeInstruction instruction = instructionList[i];
+
+                if(!done && instruction.operand == playerFactionInfo)
+                {
+                    done = true;
+                    yield return instruction;
+                    yield return instructionList[i + 1];
+                    yield return instructionList[i + 2];
+                    yield return instructionList[i + 3];
+                    yield return instructionList[i + 4];
+                    instruction = new CodeInstruction(OpCodes.Brfalse_S, instructionList[i + 1].operand);
+                    i++;
+                }
+
+                yield return instruction;
+            }
         }
 
         // Verse.Pawn
