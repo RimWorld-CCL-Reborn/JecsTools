@@ -6,6 +6,7 @@ using UnityEngine;
 using Verse;
 using Verse.Sound;
 using RimWorld;
+using Verse.AI;
 
 namespace CompVehicle
 {
@@ -30,7 +31,7 @@ namespace CompVehicle
     public class CompVehicle : ThingComp
     {
         public List<VehicleHandlerGroup> handlers = new List<VehicleHandlerGroup>();
-
+        public List<Bill_LoadVehicle> bills = new List<Bill_LoadVehicle>();
 
         public bool MovementHandlerAvailable
         {
@@ -91,7 +92,6 @@ namespace CompVehicle
 
         public bool ResolvedITTab = false;
         public bool ResolvedPawns = false;
-
         public void ResolveITab()
         {
             if (!ResolvedITTab)
@@ -138,24 +138,7 @@ namespace CompVehicle
                 return result;
             }
         }
-
-        //public List<Pawn> OnPostDamageInjuredPawns()
-        //{
-        //    List<BodyPartRecord> result = null; ;
-        //    if ( != null && pilotParts.Count > 0)
-        //    {
-        //        if (pilotParts.Contains(injury.Part))
-        //        {
-        //            if (compPilotable.pilots != null && compPilotable.pilots.Count > 0)
-        //            {
-        //                affectedPawns.AddRange(compPilotable.pilots);
-        //            }
-        //        }
-        //    }
-        //}
-
-        // RimWorld.IncidentWorker_CaravanMeeting
-
+        
         private Pawn GeneratePawn(List<PawnGenOption> optionalDefs = null)
         {
 
@@ -173,7 +156,7 @@ namespace CompVehicle
         public void InitializeVehicleHandlers()
         {
             if (this.handlers != null && this.handlers.Count > 0) return;
-            
+
             if (this.Props.roles != null && this.Props.roles.Count > 0)
             {
                 foreach (VehicleRole role in this.Props.roles)
@@ -182,7 +165,6 @@ namespace CompVehicle
                 }
             }
         }
-
         public void ResolveFactionPilots()
         {
             if (!ResolvedPawns)
@@ -212,7 +194,6 @@ namespace CompVehicle
                 }
             }
         }
-
         public void ResolveEjection()
         {
             //Every 250 ticks
@@ -230,7 +211,7 @@ namespace CompVehicle
                             }
                             weaponStatus = WeaponState.frozen;
                             movingStatus = MovingState.frozen;
-                            if (Pawn.Downed) Pawn.SetFaction(Faction.OfPlayerSilentFail);
+                            if (Pawn.Downed && Pawn.Faction != Faction.OfPlayerSilentFail) Pawn.SetFaction(Faction.OfPlayerSilentFail);
                             return;
                         }
                     }
@@ -259,21 +240,6 @@ namespace CompVehicle
                 }
             }
         }
-
-        public void EjectAll(List<Pawn> pawns)
-        {
-            List<Pawn> pawnsToEject = new List<Pawn>(pawns);
-            if (pawnsToEject != null && pawnsToEject.Count > 0)
-            {
-                foreach (Pawn p in pawnsToEject)
-                {
-                    GenSpawn.Spawn(p, Pawn.PositionHeld.RandomAdjacentCell8Way(), Pawn.MapHeld);
-                    pawns.Remove(p);
-                }
-            }
-        }
-        
-
         public void ResolveStatus()
         {
             //If refuelable, then check for fuel.
@@ -307,7 +273,57 @@ namespace CompVehicle
             }
 
         }
-       
+
+        public void Eject(Pawn pawn, List<Pawn> list)
+        {
+            GenSpawn.Spawn(pawn, Pawn.PositionHeld.RandomAdjacentCell8Way(), Pawn.MapHeld);
+            list.Remove(pawn);
+        }
+        public void EjectAll(List<Pawn> pawns)
+        {
+            List<Pawn> pawnsToEject = new List<Pawn>(pawns);
+            if (pawnsToEject != null && pawnsToEject.Count > 0)
+            {
+                foreach (Pawn p in pawnsToEject)
+                {
+                    Eject(p, pawns);
+                }
+            }
+        }
+        public void GiveLoadJob(Thing thingToLoad, VehicleHandlerGroup group)
+        {
+            Pawn pawn = thingToLoad as Pawn;
+            if (pawn != null)
+            {
+                Job newJob = new Job(DefDatabase<JobDef>.GetNamed("CompVehicle_LoadPassenger"), Pawn);
+                pawn.jobs.TryTakeOrderedJob(newJob);
+
+                if (bills != null && bills.Count > 0)
+                {
+                    var bill = bills.FirstOrDefault((Bill_LoadVehicle x) => x.pawnToLoad == pawn);
+                    if (bill != null)
+                    {
+                        bill.group = group;
+                        return;
+                    }
+                }
+                bills.Add(new Bill_LoadVehicle(pawn, Pawn, group));
+            }
+        }
+        public void Notify_Loaded(Pawn pawnToLoad)
+        {
+            if (bills != null & bills.Count > 0)
+            {
+                var bill = bills.FirstOrDefault((x) => x.pawnToLoad == pawnToLoad);
+                if (bill != null)
+                {
+                    pawnToLoad.DeSpawn();
+                    bill.group.handlers.Add(pawnToLoad);
+                    bills.Remove(bill);
+                }
+            }
+        }
+
         public override void CompTick()
         {
             base.CompTick();
@@ -317,6 +333,45 @@ namespace CompVehicle
             ResolveEjection();
             ResolveStatus();
         }
+        public void GetVehicleButtonFloatMenu(VehicleHandlerGroup group, bool canLoad)
+        {
+            List<FloatMenuOption> list = new List<FloatMenuOption>();
+            Map map = Pawn.Map;
+            List<Pawn> tempList = new List<Pawn>(group.handlers);
+            if (canLoad)
+            {
+                string text = "CompVehicle_Load".Translate(group.role.label);
+                //Func<Rect, bool> extraPartOnGUI = (Rect rect) => Widgets.InfoCardButton(rect.x + 5f, rect.y + (rect.height - 24f) / 2f, handler);
+                list.Add(new FloatMenuOption(text, delegate
+                {
+                    SoundDefOf.TickTiny.PlayOneShotOnCamera(null);
+                    Find.Targeter.BeginTargeting(TargetingParameters.ForAttackAny(), delegate (LocalTargetInfo target)
+                    {
+                        GiveLoadJob(target.Thing, group);
+                    }, null, null, null);
+                }, MenuOptionPriority.Default, null, null, 29f, null, null));
+            }
+            if (tempList.Count != 0)
+            {
+                foreach (Pawn handler in tempList)
+                {
+                    string text = "CompVehicle_Unload".Translate(handler.Name.ToStringFull);
+                    List<FloatMenuOption> arg_121_0 = list;
+                    Func<Rect, bool> extraPartOnGUI = (Rect rect) => Widgets.InfoCardButton(rect.x + 5f, rect.y + (rect.height - 24f) / 2f, handler);
+                    list.Add(new FloatMenuOption(text, delegate
+                    {
+                        Eject(handler, group.handlers);
+                    }, MenuOptionPriority.Default, null, null, 29f, extraPartOnGUI, null));
+                }
+            }
+            else
+            {
+                list.Add(new FloatMenuOption("NoPrisoners".Translate(), delegate
+                {
+                }, MenuOptionPriority.Default));
+            }
+            Find.WindowStack.Add(new FloatMenu(list));
+        }
 
         public CompProperties_Vehicle Props
         {
@@ -325,7 +380,70 @@ namespace CompVehicle
                 return (CompProperties_Vehicle)props;
             }
         }
+        public override IEnumerable<Gizmo> CompGetGizmosExtra()
+        {
+            IEnumerator<Gizmo> enumerator = base.CompGetGizmosExtra().GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                Gizmo current = enumerator.Current;
+                yield return current;
+            }
+            //Log.Message("0");
+            if (Pawn.Faction == Faction.OfPlayerSilentFail)
+            {
+                //Log.Message("1");
+                if (Props.roles != null && Props.roles.Count > 0)
+                {
+                    //Log.Message("2");
+                    foreach (VehicleHandlerGroup group in handlers)
+                    {
+                        //Log.Message("3");
+                        if (group.role != null && group.handlers != null)
+                        {
+                            //Log.Message("4");
+                            bool loadable = group.AreSlotsAvailable;
+                            bool unloadable = group.handlers.Count > 0;
+                            if (loadable || unloadable)
+                            {
+                                //Log.Message("5");
+                                var button = new Command_VehicleHandler();
+                                button.action = delegate
+                                {
+                                    SoundDefOf.TickTiny.PlayOneShotOnCamera(null);
+                                    GetVehicleButtonFloatMenu(group, loadable);
+                                };
+                                button.hotKey = KeyBindingDefOf.Misc1;
+                                var label = "CompVehicle_Load";
+                                var desc = "CompVehicle_LoadDesc";
+                                if (!loadable && unloadable)
+                                {
+                                    label = "CompVehicle_Unload";
+                                    desc = "CompVehicle_UnloadDesc";
+                                }
+                                if (loadable && unloadable)
+                                {
+                                    label = "CompVehicle_LoadUnload";
+                                    desc = "CompVehicle_LoadUnloadDesc";
+                                }
 
+                                button.defaultLabel = label.Translate(group.role.label.CapitalizeFirst());
+                                button.defaultDesc = desc.Translate(group.role.label.CapitalizeFirst());
+                                button.icon = TexCommand.Install;  //ContentFinder<Texture2D>.Get("UI/Commands/TryReconnect", true);
+
+                                button.disabled = Pawn.Downed || Pawn.Dead;
+                                button.disabledReason = "CompVehicle_DisabledDesc".Translate();
+                                
+                                //Log.Message(button.ToString());
+                                yield return button;
+                            }
+                        }
+                    }
+                }
+                if (Pawn.drafter == null) Pawn.drafter = new Pawn_DraftController(Pawn);
+                
+
+            }
+        }
         public override void PostExposeData()
         {
             base.PostExposeData();
@@ -333,6 +451,7 @@ namespace CompVehicle
             Scribe_Values.Look<WeaponState>(ref this.weaponStatus, "weaponStatus", WeaponState.able);
             Scribe_Values.Look<MovingState>(ref this.movingStatus, "movingStatus", MovingState.able);
             Scribe_Collections.Look<VehicleHandlerGroup>(ref this.handlers, "handlers", LookMode.Deep, new object[0]);
+            Scribe_Collections.Look<Bill_LoadVehicle>(ref this.bills, "bills", LookMode.Deep, new object[0]);
 
             //Scribe_Collections.Look<Pawn>(ref this.pilots, "pilots", LookMode.Deep, new object[0]);
             //Scribe_Collections.Look<Pawn>(ref this.gunners, "gunners", LookMode.Deep, new object[0]);

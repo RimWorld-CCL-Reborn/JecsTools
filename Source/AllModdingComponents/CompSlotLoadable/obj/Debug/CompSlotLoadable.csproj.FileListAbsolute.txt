@@ -15,6 +15,5 @@ D:\SteamLibrary\steamapps\common\RimWorld\CompSlotLoadable\Source\CompSlotLoadab
 F:\CompSlotLoadable\Source\CompSlotLoadable\obj\Debug\CompSlotLoadable.csprojResolveAssemblyReference.cache
 F:\CompSlotLoadable\Source\CompSlotLoadable\obj\Debug\CompSlotLoadable.dll
 F:\CompSlotLoadable\Assemblies\CompSlotLoadable.dll
-D:\SteamLibrary\steamapps\common\RimWorld\Mods\JecsTools\Source\AllModdingComponents\CompSlotLoadable\obj\Debug\CompSlotLoadable.csprojResolveAssemblyReference.cache
 D:\SteamLibrary\steamapps\common\RimWorld\Mods\JecsTools\Source\AllModdingComponents\CompSlotLoadable\obj\Debug\CompSlotLoadable.dll
 D:\SteamLibrary\steamapps\common\RimWorld\Mods\JecsTools\Assemblies\CompSlotLoadable.dll

@@ -192,7 +192,7 @@ namespace CompVehicle
                         {
                             if (!flag)
                             {
-                                Widgets.ListSeparator(ref curY, scrollViewRect.width, group.role.labelPlural);
+                                Widgets.ListSeparator(ref curY, scrollViewRect.width, group.role.labelPlural.CapitalizeFirst());
                                 flag = true;
                             }
                             this.DoRow(ref curY, scrollViewRect, scrollOutRect, pawn);

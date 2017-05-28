@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<JobDefs>
+  <JobDef>
+    <defName>CompVehicle_LoadPassenger</defName>
+    <driverClass>CompVehicle.JobDriver_LoadPassenger</driverClass>
+    <reportString>entering TargetA.</reportString>
+  </JobDef>
+</JobDefs>
+  

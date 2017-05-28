@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<JobDefs>
+  <JobDef>
+    <defName>CompInstalledPart_InstallPart</defName>
+    <driverClass>CompInstalledPart.JobDriver_InstallPart</driverClass>
+    <reportString>installing TargetA.</reportString>
+  </JobDef>
+
+  <JobDef>
+    <defName>CompInstalledPart_UninstallPart</defName>
+    <driverClass>CompInstalledPart.JobDriver_UninstallPart</driverClass>
+    <reportString>uninstalling TargetA.</reportString>
+  </JobDef>
+  
+</JobDefs>
+  

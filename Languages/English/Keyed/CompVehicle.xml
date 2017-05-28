@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>
+
+<CompVehicle_LoadUnload>Load/Unload {0}</CompVehicle_LoadUnload>
+<CompVehicle_Unload>Unload {0}</CompVehicle_Unload>
+<CompVehicle_Load>Load {0}</CompVehicle_Load>
+<CompVehicle_LoadUnloadDesc>Load or eject one {0}.</CompVehicle_LoadUnloadDesc>
+<CompVehicle_LoadDesc>Load one {0}</CompVehicle_LoadDesc>
+<CompVehicle_UnloadDesc>Unload one {0}</CompVehicle_UnloadDesc>
+<CompVehicle_DisabledDesc>The vehicle disabled, destroyed, or simply too damaged and cannot be loaded.</CompVehicle_DisabledDesc>
+
+</LanguageData>

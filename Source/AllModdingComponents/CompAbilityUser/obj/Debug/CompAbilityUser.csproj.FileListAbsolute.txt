@@ -1,3 +1,2 @@
-D:\SteamLibrary\steamapps\common\RimWorld\Mods\JecsTools\Source\AllModdingComponents\CompAbilityUser\obj\Debug\CompAbilityUser.csprojResolveAssemblyReference.cache
 D:\SteamLibrary\steamapps\common\RimWorld\Mods\JecsTools\Source\AllModdingComponents\CompAbilityUser\obj\Debug\AbilityUser.dll
 D:\SteamLibrary\steamapps\common\RimWorld\Mods\JecsTools\Assemblies\AbilityUser.dll

@@ -26,9 +26,54 @@ namespace CompVehicle
             harmony.Patch(AccessTools.Method(typeof(HealthCardUtility), "DrawOverviewTab"), new HarmonyMethod(typeof(HarmonyCompPilotable), "DrawOverviewTab_PreFix"), null);
             harmony.Patch(AccessTools.Method(typeof(Pawn_HealthTracker), "ShouldBeDowned"), new HarmonyMethod(typeof(HarmonyCompPilotable), "ShouldBeDowned_PreFix"), null);
             harmony.Patch(AccessTools.Method(typeof(PawnDownedWiggler), "WigglerTick"), new HarmonyMethod(typeof(HarmonyCompPilotable), "WigglerTick_PreFix"), null);
+            harmony.Patch(AccessTools.Method(typeof(Pawn), "get_IsColonistPlayerControlled"), null, new HarmonyMethod(typeof(HarmonyCompPilotable), "IsColonistPlayerControlled_PostFix"));
+            harmony.Patch(AccessTools.Method(typeof(Pawn), "CurrentlyUsable"), null, new HarmonyMethod(typeof(HarmonyCompPilotable), "CurrentlyUsable_PostFix"));
             //HarmonyInstance.DEBUG = true;
             harmony.Patch(AccessTools.Method(typeof(Building_CrashedShipPart), "<TrySpawnMechanoids>m__4A4"), null, new HarmonyMethod(typeof(HarmonyCompPilotable), nameof(MechanoidsFixer)));
             //HarmonyInstance.DEBUG = false;
+            //harmony.Patch(AccessTools.Method(typeof(Pawn), "DropAndForbidEverything"), new HarmonyMethod(typeof(HarmonyCompPilotable), "DropAndForbidEverything_PreFix"), null);
+        }
+
+        // Verse.Pawn
+        public static bool DropAndForbidEverything_PreFix(Pawn __instance)
+        {
+            //Log.Message("1");
+            if (__instance != null)
+            {
+                //Log.Message("2");
+
+                if (__instance.def != null)
+                {
+                    //Log.Message("3");
+
+                    CompProperties_Vehicle compVehicle = __instance.def.GetCompProperties<CompProperties_Vehicle>();
+                    if (compVehicle != null)
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        // Verse.Pawn
+        public static void CurrentlyUsable_PostFix(Pawn __instance, ref bool __result)
+        {
+            var vehicle = __instance.GetComp<CompVehicle>();
+            if (vehicle != null)
+            {
+                if (!__instance.pather.MovingNow) __result = true;
+            }
+        }
+
+        
+            public static void IsColonistPlayerControlled_PostFix(Pawn __instance, ref bool __result)
+        {
+            var vehicle = __instance.GetComp<CompVehicle>();
+            if (vehicle != null)
+            {
+                if (__instance.Faction == Faction.OfPlayer) __result = true;
+            }
         }
 
         // RimWorld.Building_CrashedShipPart

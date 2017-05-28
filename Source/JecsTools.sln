@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompSlotLoadable", "AllModd
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompVehicle", "AllModdingComponents\CompVehicle\CompVehicle.csproj", "{6E907669-2299-47E1-B144-8BC7488DF5C4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompInstalledPart", "AllModdingComponents\CompInstalledPart\CompInstalledPart.csproj", "{6ADE9377-5108-4C79-A3E8-034A7EBCC37F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,6 +59,10 @@ Global
 		{6E907669-2299-47E1-B144-8BC7488DF5C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6E907669-2299-47E1-B144-8BC7488DF5C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6E907669-2299-47E1-B144-8BC7488DF5C4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6ADE9377-5108-4C79-A3E8-034A7EBCC37F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6ADE9377-5108-4C79-A3E8-034A7EBCC37F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6ADE9377-5108-4C79-A3E8-034A7EBCC37F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6ADE9377-5108-4C79-A3E8-034A7EBCC37F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
