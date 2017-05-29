@@ -53,14 +53,11 @@ namespace AbilityUser
         public void AddWeaponAbility(AbilityDef abilityDef,bool activenow = true) { this.addAbilityInternal(abilityDef,ref this.temporaryWeaponPowers,activenow); }
         public void AddApparelAbility(AbilityDef abilityDef,bool activenow = true) { this.addAbilityInternal(abilityDef,ref this.temporaryApparelPowers,activenow); }
         private void addAbilityInternal(AbilityDef abilityDef, ref List<PawnAbility> thelist,bool activenow ) {
-//            if (!thelist.Any(x => x.powerdef.defName == abilityDef.defName)) { } /// allow duplicates now
             PawnAbility pa = new PawnAbility(this.abilityUser, abilityDef);
-            if ( activenow == false )
-                pa.TicksUntilCasting = abilityDef.RechargeTicks;// pa.useAbilityProps.SecondsToRecharge * GenTicks.TicksPerRealSecond;
-            thelist.Add(new PawnAbility(this.abilityUser, abilityDef));
-
-
+            if ( activenow == false ) pa.TicksUntilCasting =  (int) (pa.powerdef.MainVerb.SecondsToRecharge * ((float)GenTicks.TicksPerRealSecond));
+            thelist.Add(pa);
             this.UpdateAbilities();
+
         }
 
         public void RemovePawnAbility(AbilityDef abilityDef) { this.removeAbilityInternal(abilityDef, ref this.Powers); }
