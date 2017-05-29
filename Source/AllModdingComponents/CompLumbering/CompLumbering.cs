@@ -32,65 +32,43 @@ namespace CompLumbering
 
         public void ResolveCycledGraphic()
         {
-            if (Props.cycledGraphic != null)
+            if (Props.cycledGraphic != null &&
+                lumberer.Drawer?.renderer?.graphics is PawnGraphicSet pawnGraphicSet)
             {
-                Pawn_DrawTracker pawnDrawTracker = lumberer.Drawer;
-                if (pawnDrawTracker != null)
-                {
-                    PawnRenderer pawnRenderer = pawnDrawTracker.renderer;
-                    if (pawnRenderer != null)
-                    {
-                        PawnGraphicSet pawnGraphicSet = pawnRenderer.graphics;
-                        if (pawnGraphicSet != null)
-                        {
-                            pawnGraphicSet.ClearCache();
-                            pawnGraphicSet.nakedGraphic = Props.cycledGraphic.Graphic;
-                        }
-                    }
-                }
+                pawnGraphicSet.ClearCache();
+                pawnGraphicSet.nakedGraphic = Props.cycledGraphic.Graphic;
             }
         }
 
         public void ResolveBaseGraphic()
         {
-            if (Props.cycledGraphic != null)
+            if (Props.cycledGraphic != null &&
+                lumberer.Drawer?.renderer?.graphics is PawnGraphicSet pawnGraphicSet)
             {
-                Pawn_DrawTracker pawnDrawTracker = lumberer.Drawer;
-                if (pawnDrawTracker != null)
+                pawnGraphicSet.ClearCache();
+
+                //Duplicated code from -> Verse.PawnGrapic -> ResolveAllGraphics
+                PawnKindLifeStage curKindLifeStage = lumberer.ageTracker.CurKindLifeStage;
+                if (lumberer.gender != Gender.Female || curKindLifeStage.femaleGraphicData == null)
                 {
-                    PawnRenderer pawnRenderer = pawnDrawTracker.renderer;
-                    if (pawnRenderer != null)
-                    {
-                        PawnGraphicSet pawnGraphicSet = pawnRenderer.graphics;
-                        if (pawnGraphicSet != null)
-                        {
-                            pawnGraphicSet.ClearCache();
-                            //Duplicated code from -> Verse.PawnGrapic -> ResolveAllGraphics
-                            PawnKindLifeStage curKindLifeStage = lumberer.ageTracker.CurKindLifeStage;
-                            if (lumberer.gender != Gender.Female || curKindLifeStage.femaleGraphicData == null)
-                            {
-                                pawnGraphicSet.nakedGraphic = curKindLifeStage.bodyGraphicData.Graphic;
-                            }
-                            else
-                            {
-                                pawnGraphicSet.nakedGraphic = curKindLifeStage.femaleGraphicData.Graphic;
-                            }
-                            pawnGraphicSet.rottingGraphic = pawnGraphicSet.nakedGraphic.GetColoredVersion(ShaderDatabase.CutoutSkin, PawnGraphicSet.RottingColor, PawnGraphicSet.RottingColor);
-                            if (lumberer.RaceProps.packAnimal)
-                            {
-                                pawnGraphicSet.packGraphic = GraphicDatabase.Get<Graphic_Multi>(pawnGraphicSet.nakedGraphic.path + "Pack", ShaderDatabase.Cutout, pawnGraphicSet.nakedGraphic.drawSize, Color.white);
-                            }
-                            if (curKindLifeStage.dessicatedBodyGraphicData != null)
-                            {
-                                pawnGraphicSet.dessicatedGraphic = curKindLifeStage.dessicatedBodyGraphicData.GraphicColoredFor(lumberer);
-                            }
-                            //pawnRenderer.RenderPawnAt(lumberer.Position.ToVector3());
-                        }
-                    }
+                    pawnGraphicSet.nakedGraphic = curKindLifeStage.bodyGraphicData.Graphic;
+                }
+                else
+                {
+                    pawnGraphicSet.nakedGraphic = curKindLifeStage.femaleGraphicData.Graphic;
+                }
+                pawnGraphicSet.rottingGraphic = pawnGraphicSet.nakedGraphic.GetColoredVersion(ShaderDatabase.CutoutSkin, PawnGraphicSet.RottingColor, PawnGraphicSet.RottingColor);
+                if (lumberer.RaceProps.packAnimal)
+                {
+                    pawnGraphicSet.packGraphic = GraphicDatabase.Get<Graphic_Multi>(pawnGraphicSet.nakedGraphic.path + "Pack", ShaderDatabase.Cutout, pawnGraphicSet.nakedGraphic.drawSize, Color.white);
+                }
+                if (curKindLifeStage.dessicatedBodyGraphicData != null)
+                {
+                    pawnGraphicSet.dessicatedGraphic = curKindLifeStage.dessicatedBodyGraphicData.GraphicColoredFor(lumberer);
                 }
             }
         }
-        
+
         public override void CompTick()
         {
             if (Props.secondsBetweenSteps <= 0.0f) Log.ErrorOnce("CompLumbering :: CompProperties_Lumbering secondsBetweenSteps needs to be more than 0", 132);
@@ -98,17 +76,13 @@ namespace CompLumbering
 
             if (lumberer != null && Props.secondsPerStep > 0.0f && Find.TickManager.TicksGame > ticksToCycle)
             {
-                if (lumberer.pather != null)
+                if (lumberer?.pather?.MovingNow ?? false)
                 {
-                    if (lumberer.pather.MovingNow)
-                    {
-                        //Log.Message("1");
                         cycled = !cycled;
                         ticksToCycle = Find.TickManager.TicksGame + GenTicks.SecondsToTicks(Props.secondsPerStep);
                         if (Props.sound != null) Props.sound.PlayOneShot(SoundInfo.InMap(lumberer));
                         if (cycled)
                         {
-                            //Log.Message("1a");
                             ResolveCycledGraphic();
                         }
                         else
@@ -117,7 +91,6 @@ namespace CompLumbering
                             ResolveBaseGraphic();
                         }
                         lumberer.stances.StaggerFor(GenTicks.SecondsToTicks(Props.secondsBetweenSteps));
-                    }
                 }
             }
         }
