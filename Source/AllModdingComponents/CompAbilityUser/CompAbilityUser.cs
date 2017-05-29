@@ -49,14 +49,17 @@ namespace AbilityUser
 
             this.UpdateAbilities();
             */
-        public void AddPawnAbility(AbilityDef abilityDef) { this.addAbilityInternal(abilityDef,ref this.Powers); }
-        public void AddWeaponAbility(AbilityDef abilityDef) { this.addAbilityInternal(abilityDef,ref this.temporaryWeaponPowers); }
-        public void AddApparelAbility(AbilityDef abilityDef) { this.addAbilityInternal(abilityDef,ref this.temporaryApparelPowers); }
-        private void addAbilityInternal(AbilityDef abilityDef, ref List<PawnAbility> thelist) {
-            if (!thelist.Any(x => x.powerdef.defName == abilityDef.defName))
-            {
-                thelist.Add(new PawnAbility(this.abilityUser, abilityDef));
-            }
+        public void AddPawnAbility(AbilityDef abilityDef,bool activenow = true) { this.addAbilityInternal(abilityDef,ref this.Powers,activenow); }
+        public void AddWeaponAbility(AbilityDef abilityDef,bool activenow = true) { this.addAbilityInternal(abilityDef,ref this.temporaryWeaponPowers,activenow); }
+        public void AddApparelAbility(AbilityDef abilityDef,bool activenow = true) { this.addAbilityInternal(abilityDef,ref this.temporaryApparelPowers,activenow); }
+        private void addAbilityInternal(AbilityDef abilityDef, ref List<PawnAbility> thelist,bool activenow ) {
+//            if (!thelist.Any(x => x.powerdef.defName == abilityDef.defName)) { } /// allow duplicates now
+            PawnAbility pa = new PawnAbility(this.abilityUser, abilityDef);
+            if ( activenow == false )
+                pa.TicksUntilCasting = abilityDef.RechargeTicks;// pa.useAbilityProps.SecondsToRecharge * GenTicks.TicksPerRealSecond;
+            thelist.Add(new PawnAbility(this.abilityUser, abilityDef));
+
+
             this.UpdateAbilities();
         }
 
