@@ -5,7 +5,7 @@
   <url></url>
   <targetVersion>0.17.0</targetVersion>
   <description>
-[1.0.3.3] Adds modding components to RimWorld: vehicles, spell casting, weapon slots, oversized weapons, and more!
+[1.0.4] Adds modding components to RimWorld: vehicles, spell casting, weapon slots, oversized weapons, and more!
 
 Note to players: This mod will not change your game, but rather it lets modders do more, so you can have an even more amazing RimWorld experience.
 	
@@ -33,10 +33,17 @@ CompOversizedWeapon
  
 CompSlotLoadable
  - Adds slots to objects that can be filled to have effects. (e.g. different ammo types for guns, crystals for lightsabers)
+
+CompToggleDef (by Roxxploxx)
+- Allows for something to despawn, change its def, and respawn.
  
-CompVehicle
+CompVehicle (Experimental)
  - Allows for a pawn to be treated as a vehicle that can be loaded with pilots, gunners, crew, and passengers.
-	
+ 
+CompInstalledPart (WIP)
+- Allows installation and uninstallation of things onto other things. This is particularly useful for weapons on vehicles.
+
 Additions by roxxploxx.
+Transpilers by Erdelf.
   </description>
 </ModMetaData>

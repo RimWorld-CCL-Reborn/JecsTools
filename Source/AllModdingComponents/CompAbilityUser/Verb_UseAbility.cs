@@ -62,7 +62,7 @@ namespace AbilityUser
             return result;
         }
 
-        private void UpdateTargets()
+        protected virtual void UpdateTargets()
         {
             this.TargetsAoE.Clear();
             if (this.useAbilityProps.AbilityTargetCategory == AbilityTargetCategory.TargetAoE)
