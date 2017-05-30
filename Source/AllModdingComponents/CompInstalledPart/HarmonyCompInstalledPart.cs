@@ -29,10 +29,10 @@ namespace CompInstalledPart
             resultingEq = null;
             if (eq != null)
             {
-                CompInstalledPart partComp = resultingEq.GetComp<CompInstalledPart>();
+                CompInstalledPart partComp = eq.GetComp<CompInstalledPart>();
                 if (partComp != null)
                 {
-                    if (!partComp.uninstalled) { __result = false; return false; }
+                    if (!partComp.uninstalled) return __result = false;
                 }
             }
             return true;
