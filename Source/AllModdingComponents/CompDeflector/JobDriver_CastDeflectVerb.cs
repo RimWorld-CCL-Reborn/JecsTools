@@ -1,8 +1,6 @@
 ﻿using RimWorld;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Verse;
 using Verse.AI;
 
@@ -22,10 +20,7 @@ namespace CompDeflector
                 return null;
             }
         }
-        public override void ExposeData()
-        {
-            base.ExposeData();
-        }
+        public override void ExposeData() => base.ExposeData();
 
         protected override IEnumerable<Toil> MakeNewToils()
         {
@@ -33,7 +28,7 @@ namespace CompDeflector
             yield return Toils_Misc.ThrowColonistAttackingMote(TargetIndex.A);
             //Toil getInRangeToil = Toils_Combat.GotoCastPosition(TargetIndex.A, false);
             //yield return getInRangeToil;
-            Verb_Deflected verb = pawn.CurJob.verbToUse as Verb_Deflected;
+            Verb_Deflected verb = this.pawn.CurJob.verbToUse as Verb_Deflected;
 
             //Find.Targeter.targetingVerb = verb;
             yield return Toils_Combat.CastVerb(TargetIndex.A, false);

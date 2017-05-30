@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Verse;
 
 namespace CompSlotLoadable
@@ -10,9 +9,6 @@ namespace CompSlotLoadable
 
         public List<SlotLoadableDef> slots = new List<SlotLoadableDef>();
 
-        public CompProperties_SlotLoadable()
-        {
-            this.compClass = typeof(CompSlotLoadable);
-        }
+        public CompProperties_SlotLoadable() => this.compClass = typeof(CompSlotLoadable);
     }
 }

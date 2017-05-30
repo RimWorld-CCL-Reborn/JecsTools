@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using Verse;
 using Verse.Sound;
@@ -37,7 +34,7 @@ namespace AbilityUser
         public override void SpawnSetup(Map map, bool respawningAfterLoad)
         {
             base.SpawnSetup(map, respawningAfterLoad);
-            drawingTexture = this.def.DrawMatSingle;
+            this.drawingTexture = this.def.DrawMatSingle;
         }
 
         /// <summary>
@@ -45,17 +42,17 @@ namespace AbilityUser
         /// </summary>
         public void GetParametersFromXml()
         {
-            ProjectileDef_AbilityLaser additionalParameters = def as ProjectileDef_AbilityLaser;
+            ProjectileDef_AbilityLaser additionalParameters = this.def as ProjectileDef_AbilityLaser;
 
-            preFiringDuration = additionalParameters.preFiringDuration;
-            postFiringDuration = additionalParameters.postFiringDuration;
+            this.preFiringDuration = additionalParameters.preFiringDuration;
+            this.postFiringDuration = additionalParameters.postFiringDuration;
 
             // Draw.
-            preFiringInitialIntensity = additionalParameters.preFiringInitialIntensity;
-            preFiringFinalIntensity = additionalParameters.preFiringFinalIntensity;
-            postFiringInitialIntensity = additionalParameters.postFiringInitialIntensity;
-            postFiringFinalIntensity = additionalParameters.postFiringFinalIntensity;
-            startFireChance = additionalParameters.StartFireChance;
+            this.preFiringInitialIntensity = additionalParameters.preFiringInitialIntensity;
+            this.preFiringFinalIntensity = additionalParameters.preFiringFinalIntensity;
+            this.postFiringInitialIntensity = additionalParameters.postFiringInitialIntensity;
+            this.postFiringFinalIntensity = additionalParameters.postFiringFinalIntensity;
+            this.startFireChance = additionalParameters.StartFireChance;
             this.canStartFire = additionalParameters.CanStartFire;
         }
 
@@ -65,7 +62,7 @@ namespace AbilityUser
         public override void ExposeData()
         {
             base.ExposeData();
-            Scribe_Values.Look<int>(ref tickCounter, "tickCounter", 0);
+            Scribe_Values.Look<int>(ref this.tickCounter, "tickCounter", 0);
 
             if (Scribe.mode == LoadSaveMode.PostLoadInit)
             {
@@ -84,19 +81,19 @@ namespace AbilityUser
             try
             {
 
-                if (tickCounter == 0)
+                if (this.tickCounter == 0)
                 {
                     GetParametersFromXml();
                     PerformPreFiringTreatment();
                 }
 
                 // Pre firing.
-                if (tickCounter < preFiringDuration)
+                if (this.tickCounter < this.preFiringDuration)
                 {
                     GetPreFiringDrawingParameters();
                 }
                 // Firing.
-                else if (tickCounter == this.preFiringDuration)
+                else if (this.tickCounter == this.preFiringDuration)
                 {
                     Fire();
                     GetPostFiringDrawingParameters();
@@ -106,7 +103,7 @@ namespace AbilityUser
                 {
                     GetPostFiringDrawingParameters();
                 }
-                if (tickCounter == (this.preFiringDuration + this.postFiringDuration) && !this.Destroyed)
+                if (this.tickCounter == (this.preFiringDuration + this.postFiringDuration) && !this.Destroyed)
                 {
                     this.Destroy(DestroyMode.Vanish);
                 }
@@ -121,7 +118,7 @@ namespace AbilityUser
                         }
                     }
                 }
-                tickCounter++;
+                this.tickCounter++;
             }
             catch
             {
@@ -137,9 +134,9 @@ namespace AbilityUser
         {
             DetermineImpactExactPosition();
             Vector3 cannonMouthOffset = ((this.destination - this.origin).normalized * 0.9f);
-            drawingScale = new Vector3(1f, 1f, (this.destination - this.origin).magnitude - cannonMouthOffset.magnitude);
-            drawingPosition = this.origin + (cannonMouthOffset / 2) + ((this.destination - this.origin) / 2) + Vector3.up * this.def.Altitude;
-            drawingMatrix.SetTRS(drawingPosition, this.ExactRotation, drawingScale);
+            this.drawingScale = new Vector3(1f, 1f, (this.destination - this.origin).magnitude - cannonMouthOffset.magnitude);
+            this.drawingPosition = this.origin + (cannonMouthOffset / 2) + ((this.destination - this.origin) / 2) + Vector3.up * this.def.Altitude;
+            this.drawingMatrix.SetTRS(this.drawingPosition, this.ExactRotation, this.drawingScale);
         }
 
         /// <summary>
@@ -147,9 +144,9 @@ namespace AbilityUser
         /// </summary>
         public virtual void GetPreFiringDrawingParameters()
         {
-            if (preFiringDuration != 0)
+            if (this.preFiringDuration != 0)
             {
-                drawingIntensity = preFiringInitialIntensity + (preFiringFinalIntensity - preFiringInitialIntensity) * (float)tickCounter / (float)preFiringDuration;
+                this.drawingIntensity = this.preFiringInitialIntensity + (this.preFiringFinalIntensity - this.preFiringInitialIntensity) * this.tickCounter / this.preFiringDuration;
             }
         }
 
@@ -158,9 +155,9 @@ namespace AbilityUser
         /// </summary>
         public virtual void GetPostFiringDrawingParameters()
         {
-            if (postFiringDuration != 0)
+            if (this.postFiringDuration != 0)
             {
-                drawingIntensity = postFiringInitialIntensity + (postFiringFinalIntensity - postFiringInitialIntensity) * (((float)tickCounter - (float)preFiringDuration) / (float)postFiringDuration);
+                this.drawingIntensity = this.postFiringInitialIntensity + (this.postFiringFinalIntensity - this.postFiringInitialIntensity) * ((this.tickCounter - (float)this.preFiringDuration) / this.postFiringDuration);
             }
         }
 
@@ -191,7 +188,7 @@ namespace AbilityUser
 
                 if (!this.def.projectile.flyOverhead && segmentIndex >= 5)
                 {
-                    List<Thing> list = this.Map.thingGrid.ThingsListAt(base.Position);
+                    List<Thing> list = this.Map.thingGrid.ThingsListAt(this.Position);
                     for (int i = 0; i < list.Count; i++)
                     {
                         Thing current = list[i];
@@ -237,7 +234,7 @@ namespace AbilityUser
                             if (Rand.Value < chanceToHitCollateralTarget)
                             {
                                 this.destination = testedPosition.ToVector3Shifted() + new Vector3(Rand.Range(-0.3f, 0.3f), 0f, Rand.Range(-0.3f, 0.3f));
-                                this.hitThing = (Thing)pawn;
+                                this.hitThing = pawn;
                                 break;
                             }
                         }
@@ -251,12 +248,9 @@ namespace AbilityUser
         /// <summary>
         /// Manages the projectile damage application.
         /// </summary>
-        public virtual void Fire()
-        {
-            ApplyDamage(this.hitThing);
-        }
+        public virtual void Fire() => ApplyDamage(this.hitThing);
 
-        
+
         /// <summary>
         /// Impacts a pawn/object or the ground.
         /// </summary>
@@ -267,15 +261,14 @@ namespace AbilityUser
             if (hitThing != null)
             {
                 int damageAmountBase = this.def.projectile.damageAmountBase;
-                DamageInfo dinfo = new DamageInfo(this.def.projectile.damageDef, damageAmountBase, this.ExactRotation.eulerAngles.y, this.launcher, null, equipmentDef);
+                DamageInfo dinfo = new DamageInfo(this.def.projectile.damageDef, damageAmountBase, this.ExactRotation.eulerAngles.y, this.launcher, null, this.equipmentDef);
                 hitThing.TakeDamage(dinfo);
                 //hitThing.TakeDamage(dinfo);
-                if (this.canStartFire && Rand.Range(0f, 1f) > startFireChance)
+                if (this.canStartFire && Rand.Range(0f, 1f) > this.startFireChance)
                 {
                     hitThing.TryAttachFire(0.05f);
                 }
-                Pawn pawn = hitThing as Pawn;
-                if (pawn != null)
+                if (hitThing is Pawn pawn)
                 {
                     PostImpactEffects(this.launcher as Pawn, pawn);
                     MoteMaker.ThrowMicroSparks(this.destination, this.Map);
@@ -284,7 +277,7 @@ namespace AbilityUser
             }
             else
             {
-                SoundInfo info = SoundInfo.InMap(new TargetInfo(base.Position, this.Map, false), MaintenanceType.None);
+                SoundInfo info = SoundInfo.InMap(new TargetInfo(this.Position, this.Map, false), MaintenanceType.None);
                 SoundDefOf.BulletImpactGround.PlayOneShot(info);
                 MoteMaker.MakeStaticMote(this.ExactPosition, this.Map, ThingDefOf.Mote_ShotHit_Dirt, 1f);
                 MoteMaker.ThrowMicroSparks(this.ExactPosition, this.Map);
@@ -307,7 +300,7 @@ namespace AbilityUser
         public override void Draw()
         {
             this.Comps_PostDraw();
-            UnityEngine.Graphics.DrawMesh(MeshPool.plane10, drawingMatrix, FadedMaterialPool.FadedVersionOf(drawingTexture, drawingIntensity), 0);
+            UnityEngine.Graphics.DrawMesh(MeshPool.plane10, this.drawingMatrix, FadedMaterialPool.FadedVersionOf(this.drawingTexture, this.drawingIntensity), 0);
         }
     }
 }

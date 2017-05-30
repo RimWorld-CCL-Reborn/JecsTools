@@ -1,13 +1,6 @@
 ﻿using Harmony;
 using RimWorld;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Verse;
-using Verse.AI;
-using System.Reflection;
-using UnityEngine;
 
 namespace CompExtraSounds
 {
@@ -28,8 +21,7 @@ namespace CompExtraSounds
         //=================================== COMPEXTRASOUNDS
         public static void SoundHitPawnPrefix(ref SoundDef __result, Verb_MeleeAttack __instance)
         {
-            Pawn pawn = __instance.caster as Pawn;
-            if (pawn != null)
+            if (__instance.caster is Pawn pawn)
             {
                 Pawn_EquipmentTracker pawn_EquipmentTracker = pawn.equipment;
                 if (pawn_EquipmentTracker != null)
@@ -57,8 +49,7 @@ namespace CompExtraSounds
 
         public static void SoundMissPrefix(ref SoundDef __result, Verb_MeleeAttack __instance)
         {
-            Pawn pawn = __instance.caster as Pawn;
-            if (pawn != null)
+            if (__instance.caster is Pawn pawn)
             {
                 Pawn_EquipmentTracker pawn_EquipmentTracker = pawn.equipment;
                 if (pawn_EquipmentTracker != null)
@@ -86,8 +77,7 @@ namespace CompExtraSounds
 
         public static void SoundHitBuildingPrefix(ref SoundDef __result, Verb_MeleeAttack __instance)
         {
-            Pawn pawn = __instance.caster as Pawn;
-            if (pawn != null)
+            if (__instance.caster is Pawn pawn)
             {
                 Pawn_EquipmentTracker pawn_EquipmentTracker = pawn.equipment;
                 if (pawn_EquipmentTracker != null)

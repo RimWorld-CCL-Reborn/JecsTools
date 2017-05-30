@@ -1,12 +1,7 @@
 ﻿using Harmony;
 using RimWorld;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Verse;
-using Verse.AI;
-using System.Reflection;
 using UnityEngine;
 using Verse.Sound;
 
@@ -45,18 +40,17 @@ namespace CompInstalledPart
             foreach (Thing current in c.GetThingList(pawn.Map))
             {
                 //Handler for things on the ground
-                if (current is ThingWithComps)
+                if (current is ThingWithComps groundThing)
                 {
-                    ThingWithComps groundThing = (ThingWithComps)current;
                     if (groundThing != null && pawn != null && pawn != groundThing)
                     {
                         CompInstalledPart groundPart = groundThing.GetComp<CompInstalledPart>();
                         if (groundPart != null)
                         {
-                            var text = "CompInstalledPart_Install".Translate();
+                            string text = "CompInstalledPart_Install".Translate();
                             opts.Add(new FloatMenuOption(text, delegate
                             {
-                                var props = groundPart.Props;
+                                CompProperties_InstalledPart props = groundPart.Props;
                                 if (props != null)
                                 {
                                     if (props.allowedToInstallOn != null && props.allowedToInstallOn.Count > 0)
@@ -77,7 +71,7 @@ namespace CompInstalledPart
                                             }
                                         }, delegate (LocalTargetInfo target)
                                         {
-                                                groundPart.GiveInstallJob(pawn, target.Thing);
+                                            groundPart.GiveInstallJob(pawn, target.Thing);
                                         }, null, null, null);
                                     }
                                     else
@@ -91,9 +85,8 @@ namespace CompInstalledPart
                 }
 
                 //Handler character with installed parts
-                if (current is Pawn)
+                if (current is Pawn targetPawn)
                 {
-                    Pawn targetPawn = (Pawn)current;
                     if (targetPawn != null && pawn != null && pawn != targetPawn)
                     {
                         //Handle installed weapons
@@ -104,7 +97,7 @@ namespace CompInstalledPart
                                 CompInstalledPart installedEq = targetPawn.equipment.Primary.GetComp<CompInstalledPart>();
                                 if (installedEq != null)
                                 {
-                                    var text = "CompInstalledPart_Uninstall".Translate(targetPawn.equipment.Primary.LabelShort);
+                                    string text = "CompInstalledPart_Uninstall".Translate(targetPawn.equipment.Primary.LabelShort);
                                     opts.Add(new FloatMenuOption(text, delegate
                                     {
                                         SoundDefOf.TickTiny.PlayOneShotOnCamera(null);
@@ -119,12 +112,12 @@ namespace CompInstalledPart
                         {
                             if (targetPawn.apparel.WornApparel != null && targetPawn.apparel.WornApparelCount > 0)
                             {
-                                var installedApparel = targetPawn.apparel.WornApparel.FindAll((x) => x.GetComp<CompInstalledPart>() != null);
+                                List<Apparel> installedApparel = targetPawn.apparel.WornApparel.FindAll((x) => x.GetComp<CompInstalledPart>() != null);
                                 if (installedApparel != null && installedApparel.Count > 0)
                                 {
                                     foreach (Apparel ap in installedApparel)
                                     {
-                                        var text = "CompInstalledPart_Uninstall".Translate(ap.LabelShort);
+                                        string text = "CompInstalledPart_Uninstall".Translate(ap.LabelShort);
                                         opts.Add(new FloatMenuOption(text, delegate
                                         {
                                             SoundDefOf.TickTiny.PlayOneShotOnCamera(null);

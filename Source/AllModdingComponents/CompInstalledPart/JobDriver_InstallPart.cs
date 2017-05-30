@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using UnityEngine;
 using Verse;
@@ -23,35 +22,17 @@ namespace CompInstalledPart
 
         protected float ticksToNextRepair;
 
-        protected CompInstalledPart InstallComp
-        {
-            get
-            {
-                return PartToInstall.GetComp<CompInstalledPart>();
-            }
-        }
+        protected CompInstalledPart InstallComp => this.PartToInstall.GetComp<CompInstalledPart>();
 
-        protected ThingWithComps PartToInstall
-        {
-            get
-            {
-                return (ThingWithComps)base.CurJob.targetA.Thing;
-            }
-        }
+        protected ThingWithComps PartToInstall => (ThingWithComps)this.CurJob.targetA.Thing;
 
-        protected Thing InstallTarget
-        {
-            get
-            {
-                return base.CurJob.targetB.Thing;
-            }
-        }
+        protected Thing InstallTarget => this.CurJob.targetB.Thing;
 
         protected int TotalNeededWork
         {
             get
             {
-                int value = InstallComp.Props.workToInstall;
+                int value = this.InstallComp.Props.workToInstall;
                 return Mathf.Clamp(value, 20, 3000);
             }
         }
@@ -66,32 +47,34 @@ namespace CompInstalledPart
             yield return Toils_Haul.StartCarryThing(TargetIndex.A, false, false);
             yield return Toils_Goto.GotoThing(TargetIndex.B, PathEndMode.ClosestTouch);
             yield return Toils_Haul.PlaceHauledThingInCell(TargetIndex.C, null, false);
-            Toil repair = new Toil();
-            repair.initAction = delegate
+            Toil repair = new Toil()
             {
-                this.ticksToNextRepair = 80f;
-                this.workLeft = TotalNeededWork;
-            };
-            repair.tickAction = delegate
-            {
-                Pawn actor = this.pawn;
-                actor.skills.Learn(SkillDefOf.Construction, 0.275f, false);
-                float statValue = actor.GetStatValue(StatDefOf.ConstructionSpeed, true);
-                this.ticksToNextRepair -= statValue;
-                if (this.ticksToNextRepair <= 0f)
+                initAction = delegate
                 {
-                    this.ticksToNextRepair += 20f;
-                    this.workLeft -= 20 + actor.GetStatValue(StatDefOf.ConstructionSpeed, true);
-                    if (this.workLeft <= 0)
+                    this.ticksToNextRepair = 80f;
+                    this.workLeft = this.TotalNeededWork;
+                },
+                tickAction = delegate
+                {
+                    Pawn actor = this.pawn;
+                    actor.skills.Learn(SkillDefOf.Construction, 0.275f, false);
+                    float statValue = actor.GetStatValue(StatDefOf.ConstructionSpeed, true);
+                    this.ticksToNextRepair -= statValue;
+                    if (this.ticksToNextRepair <= 0f)
                     {
-                        actor.records.Increment(RecordDefOf.ThingsInstalled);
-                        InstallComp.Notify_Installed(actor, InstallTarget);
-                        actor.jobs.EndCurrentJob(JobCondition.Succeeded, true);
+                        this.ticksToNextRepair += 20f;
+                        this.workLeft -= 20 + actor.GetStatValue(StatDefOf.ConstructionSpeed, true);
+                        if (this.workLeft <= 0)
+                        {
+                            actor.records.Increment(RecordDefOf.ThingsInstalled);
+                            this.InstallComp.Notify_Installed(actor, this.InstallTarget);
+                            actor.jobs.EndCurrentJob(JobCondition.Succeeded, true);
+                        }
                     }
                 }
             };
             repair.FailOnCannotTouch(TargetIndex.B, PathEndMode.Touch);
-            repair.WithEffect(InstallComp.Props.workEffect, TargetIndex.B);
+            repair.WithEffect(this.InstallComp.Props.workEffect, TargetIndex.B);
             repair.defaultCompleteMode = ToilCompleteMode.Never;
             yield return repair;
         }

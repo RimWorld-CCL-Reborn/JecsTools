@@ -1,12 +1,8 @@
 ﻿using Harmony;
 using RimWorld;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Verse;
-using Verse.AI;
-using System.Reflection;
 using UnityEngine;
 
 namespace CompActivatableEffect
@@ -81,7 +77,7 @@ namespace CompActivatableEffect
             }
         }
 
-        public static void set_Drafted_PostFix(Pawn_DraftController __instance, bool value)
+        public static void Set_Drafted_PostFix(Pawn_DraftController __instance, bool value)
         {
             if (!value)
             {
@@ -114,8 +110,7 @@ namespace CompActivatableEffect
 
         public static bool TryStartCastOnPrefix(ref bool __result, Verb __instance)
         {
-            Pawn pawn = __instance.caster as Pawn;
-            if (pawn != null)
+            if (__instance.caster is Pawn pawn)
             {
                 Pawn_EquipmentTracker pawn_EquipmentTracker = pawn.equipment;
                 if (pawn_EquipmentTracker != null)
@@ -231,8 +226,7 @@ namespace CompActivatableEffect
                                     num += eq.def.equippedAngleOffset;
                                 }
 
-                                ThingWithComps eqComps = eq as ThingWithComps;
-                                if (eqComps != null)
+                                if (eq is ThingWithComps eqComps)
                                 {
                                     ThingComp deflector = eqComps.AllComps.FirstOrDefault<ThingComp>((ThingComp y) => y.GetType().ToString().Contains("Deflect"));
                                     if (deflector != null)
@@ -240,13 +234,13 @@ namespace CompActivatableEffect
                                         bool isActive = (bool)AccessTools.Property(deflector.GetType(), "IsAnimatingNow").GetValue(deflector, null);
                                         if (isActive)
                                         {
-                                            float numMod = (float)((int)AccessTools.Property(deflector.GetType(), "AnimationDeflectionTicks").GetValue(deflector, null));
+                                            float numMod = (int)AccessTools.Property(deflector.GetType(), "AnimationDeflectionTicks").GetValue(deflector, null);
                                             //float numMod2 = new float();
                                             //numMod2 = numMod;
                                             if (numMod > 0)
                                             {
                                                 if (!flip) num += ((numMod + 1) / 2);
-                                                else num -= ((numMod + 1) /2);
+                                                else num -= ((numMod + 1) / 2);
                                             }
                                         }
                                     }
@@ -284,7 +278,7 @@ namespace CompActivatableEffect
             }
         }
 
-        public static IEnumerable<Gizmo> gizmoGetter(CompActivatableEffect compActivatableEffect)
+        public static IEnumerable<Gizmo> GizmoGetter(CompActivatableEffect compActivatableEffect)
         {
             //Log.Message("5");
             if (compActivatableEffect.GizmosOnEquip)
@@ -322,7 +316,7 @@ namespace CompActivatableEffect
                         {
                             if (__instance.Faction == Faction.OfPlayer)
                             {
-                                __result = __result.Concat<Gizmo>(gizmoGetter(compActivatableEffect));
+                                __result = __result.Concat<Gizmo>(GizmoGetter(compActivatableEffect));
                             }
                             else
                             {

@@ -1,9 +1,5 @@
-﻿using Harmony;
-using RimWorld;
+﻿using RimWorld;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 using Verse;
 using Verse.Sound;
@@ -127,8 +123,8 @@ namespace AbilityUser
             }
             //float x = compAbilityUser.TicksToCast;
             //float y = compAbilityUser.TicksToCastMax;
-            float x = pawnAbility.TicksUntilCasting;
-            float y = pawnAbility.MaxCastingTicks;
+            float x = this.pawnAbility.TicksUntilCasting;
+            float y = this.pawnAbility.MaxCastingTicks;
             float fill = x / y;
             Widgets.FillableBar(rect, fill, AbilityButtons.FullTex, AbilityButtons.EmptyTex, false);
             if (flag2)

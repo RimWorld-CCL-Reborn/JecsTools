@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using Verse;
 using RimWorld;
 
@@ -14,9 +11,6 @@ namespace CompInstalledPart
         public int workToUninstall = 500;
         public EffecterDef workEffect = EffecterDefOf.ConstructMetal;
 
-        public CompProperties_InstalledPart()
-        {
-            this.compClass = typeof(CompInstalledPart);
-        }
+        public CompProperties_InstalledPart() => this.compClass = typeof(CompInstalledPart);
     }
 }

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using RimWorld;
+﻿using System.Collections.Generic;
 using Verse;
 using UnityEngine;
 
@@ -35,9 +31,9 @@ namespace CompSlotLoadable
             Log.Message("Slot started");
             SlotLoadableDef def = this.def as SlotLoadableDef;
             this.slottableThingDefs = def.slottableThingDefs;
-            owner = newOwner;
+            this.owner = newOwner;
             ThingIDMaker.GiveIDTo(this);
-            slot = new ThingOwner<Thing>(this, false, LookMode.Deep);
+            this.slot = new ThingOwner<Thing>(this, false, LookMode.Deep);
         }
 
         public SlotLoadable(SlotLoadableDef xmlDef, Thing newOwner)
@@ -45,18 +41,18 @@ namespace CompSlotLoadable
             Log.Message("Slot Loaded");
             this.def = xmlDef;
             this.slottableThingDefs = xmlDef.slottableThingDefs;
-            owner = newOwner;
+            this.owner = newOwner;
             ThingIDMaker.GiveIDTo(this);
-            slot = new ThingOwner<Thing>(this, false, LookMode.Deep);
+            this.slot = new ThingOwner<Thing>(this, false, LookMode.Deep);
         }
 
         public Texture2D SlotIcon()
         {
-            if (SlotOccupant != null)
+            if (this.SlotOccupant != null)
             {
-                if (SlotOccupant.def != null)
+                if (this.SlotOccupant.def != null)
                 {
-                    return SlotOccupant.def.uiIcon;
+                    return this.SlotOccupant.def.uiIcon;
                 }
             }
             return null;
@@ -64,11 +60,11 @@ namespace CompSlotLoadable
 
         public Color SlotColor()
         {
-            if (SlotOccupant != null)
+            if (this.SlotOccupant != null)
             {
-                if (SlotOccupant.def != null)
+                if (this.SlotOccupant.def != null)
                 {
-                    return SlotOccupant.def.graphic.Color;
+                    return this.SlotOccupant.def.graphic.Color;
                 }
             }
             return Color.white;
@@ -76,7 +72,7 @@ namespace CompSlotLoadable
 
         public bool IsEmpty()
         {
-            if (SlotOccupant != null) return false;
+            if (this.SlotOccupant != null) return false;
             return true;
         }
 
@@ -98,30 +94,15 @@ namespace CompSlotLoadable
 
         #region IThingOwnerOwner
 
-        public Map GetMap()
-        {
-            return ParentMap;
-        }
+        public Map GetMap() => this.ParentMap;
 
-        public ThingOwner GetInnerContainer()
-        {
-            return slot;
-        }
+        public ThingOwner GetInnerContainer() => this.slot;
 
-        public IntVec3 GetPosition()
-        {
-            return ParentLoc;
-        }
+        public IntVec3 GetPosition() => this.ParentLoc;
 
-        public void GetChildHolders(List<IThingHolder> outChildren)
-        {
-            ThingOwnerUtility.AppendThingHoldersFromThings(outChildren, this.GetDirectlyHeldThings());
-        }
+        public void GetChildHolders(List<IThingHolder> outChildren) => ThingOwnerUtility.AppendThingHoldersFromThings(outChildren, this.GetDirectlyHeldThings());
 
-        public ThingOwner GetDirectlyHeldThings()
-        {
-            return this.slot;
-        }
+        public ThingOwner GetDirectlyHeldThings() => this.slot;
 
         #endregion IThingOwnerOwner
 
@@ -169,14 +150,8 @@ namespace CompSlotLoadable
         }
         public ThingOwner Slot
         {
-            get
-            {
-                return slot;
-            }
-            set
-            {
-                slot = value;
-            }
+            get => this.slot;
+            set => this.slot = value;
         }
 
         public Pawn Holder
@@ -184,9 +159,9 @@ namespace CompSlotLoadable
             get
             {
                 Pawn result = null;
-                if (owner != null)
+                if (this.owner != null)
                 {
-                    CompEquippable eq = owner.TryGetComp<CompEquippable>();
+                    CompEquippable eq = this.owner.TryGetComp<CompEquippable>();
                     if (eq != null)
                     {
                         if (eq.PrimaryVerb != null)
@@ -213,13 +188,13 @@ namespace CompSlotLoadable
                 Map result = null;
                 //Does our parent have an equippable class?
                 //Use that to find a pawn location if it's equipped.
-                if (owner != null)
+                if (this.owner != null)
                 {
-                    if (Holder != null)
+                    if (this.Holder != null)
                     {
-                        return Holder.Map;
+                        return this.Holder.Map;
                     }
-                    return owner.Map;
+                    return this.owner.Map;
                 }
                 return result;
             }
@@ -232,25 +207,19 @@ namespace CompSlotLoadable
                 IntVec3 result = IntVec3.Invalid;
                 //Does our parent have an equippable class?
                 //Use that to find a pawn location if it's equipped.
-                if (owner != null)
+                if (this.owner != null)
                 {
-                    if (Holder != null)
+                    if (this.Holder != null)
                     {
-                        return Holder.Position;
+                        return this.Holder.Position;
                     }
-                    return owner.Position;
+                    return this.owner.Position;
                 }
                 return result;
             }
         }
 
-        public List<ThingDef> SlottableTypes
-        {
-            get
-            {
-                return this.slottableThingDefs;
-            }
-        }
+        public List<ThingDef> SlottableTypes => this.slottableThingDefs;
 
         #endregion Properties
 
@@ -259,20 +228,20 @@ namespace CompSlotLoadable
         public virtual bool TryLoadSlot(Thing thingToLoad, bool emptyIfFilled = false)
         {
             //Log.Message("TryLoadSlot Called");
-            if ((SlotOccupant != null && emptyIfFilled) || SlotOccupant == null)
+            if ((this.SlotOccupant != null && emptyIfFilled) || this.SlotOccupant == null)
             {
                 TryEmptySlot();
                 if (thingToLoad != null)
                 {
-                    if (slottableThingDefs != null)
+                    if (this.slottableThingDefs != null)
                     {
-                        if (slottableThingDefs.Contains(thingToLoad.def))
+                        if (this.slottableThingDefs.Contains(thingToLoad.def))
                         {
-                            SlotOccupant = thingToLoad;
+                            this.SlotOccupant = thingToLoad;
                             //slot.TryAdd(thingToLoad, false);
-                            if (((SlotLoadableDef)def).doesChangeColor)
+                            if (((SlotLoadableDef)this.def).doesChangeColor)
                             {
-                                owner.Notify_ColorChanged();
+                                this.owner.Notify_ColorChanged();
                             }
                             return true;
                         }
@@ -282,7 +251,7 @@ namespace CompSlotLoadable
             else
             {
                 Messages.Message(string.Format(StringOf.ExceptionSlotAlreadyFilled, new object[]{
-                    owner.Label
+                    this.owner.Label
                 }), MessageSound.RejectInput);
             }
             return false;
@@ -291,13 +260,10 @@ namespace CompSlotLoadable
         public virtual bool TryEmptySlot()
         {
             if (!CanEmptySlot()) return false;
-            return slot.TryDropAll(ParentLoc, ParentMap, ThingPlaceMode.Near);
+            return this.slot.TryDropAll(this.ParentLoc, this.ParentMap, ThingPlaceMode.Near);
         }
 
-        public virtual bool CanEmptySlot()
-        {
-            return true;
-        }
+        public virtual bool CanEmptySlot() => true;
 
         #endregion Methods
 

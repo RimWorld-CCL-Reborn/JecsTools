@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Verse;
+﻿using Verse;
 
 namespace CompExtraSounds
 {
@@ -14,9 +10,6 @@ namespace CompExtraSounds
         public SoundDef soundExtra;
         public SoundDef soundExtraTwo;
 
-        public CompProperties_ExtraSounds()
-        {
-            this.compClass = typeof(CompExtraSounds);
-        }
+        public CompProperties_ExtraSounds() => this.compClass = typeof(CompExtraSounds);
     }
 }

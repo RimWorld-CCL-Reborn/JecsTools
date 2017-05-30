@@ -1,11 +1,5 @@
-﻿using RimWorld;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UnityEngine;
+﻿using UnityEngine;
 using Verse;
-using Verse.Sound;
 
 
 namespace AbilityUser
@@ -13,25 +7,19 @@ namespace AbilityUser
     public class Projectile_Ability : Projectile_AbilityBase
     {
 
-        public int TicksToImpact
-        {
-            get
-            {
-                return this.ticksToImpact;
-            }
-        }
+        public int TicksToImpact => this.ticksToImpact;
 
         public Vector3 ProjectileDrawPos
         {
             get
             {
-                if (selectedTarget != null)
+                if (this.selectedTarget != null)
                 {
-                    return selectedTarget.DrawPos;
+                    return this.selectedTarget.DrawPos;
                 }
-                else if (targetVec != null)
+                else if (this.targetVec != null)
                 {
-                    return targetVec;
+                    return this.targetVec;
                 }
                 return this.ExactPosition;
             }
@@ -39,7 +27,7 @@ namespace AbilityUser
 
         public override void Draw()
         {
-            if (selectedTarget != null || targetVec != null)
+            if (this.selectedTarget != null || this.targetVec != null)
             {
                 Vector3 vector = this.ProjectileDrawPos;
                 Vector3 distance = this.destination - this.origin;
@@ -83,12 +71,12 @@ namespace AbilityUser
             {
                 if (hediff.def != null)
                 {
-                    CompAbilityUser compAbility = Caster.TryGetComp<CompAbilityUser>();
+                    CompAbilityUser compAbility = this.Caster.TryGetComp<CompAbilityUser>();
                     if (compAbility != null)
                     {
-                        if (compAbility.ignoredHediffs() != null)
+                        if (compAbility.IgnoredHediffs() != null)
                         {
-                            if (compAbility.ignoredHediffs().Contains(hediff.def))
+                            if (compAbility.IgnoredHediffs().Contains(hediff.def))
                             {
                                 //Log.Message("IgnoreHediff Passed"); 
                                 return true;

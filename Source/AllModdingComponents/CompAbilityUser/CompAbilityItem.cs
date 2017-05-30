@@ -1,9 +1,4 @@
-using RimWorld;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
 using UnityEngine;
 using Verse;
 
@@ -13,16 +8,10 @@ namespace AbilityUser
     {
 
         public CompAbilityUser AbilityUserTarget = null;
-
+        
         private Graphic Overlay;
 
-        public CompProperties_AbilityItem Props
-        {
-            get
-            {
-                return (CompProperties_AbilityItem)this.props;
-            }
-        }
+        public CompProperties_AbilityItem Props => (CompProperties_AbilityItem)this.props;
 
 
         public List<PawnAbility> Abilities = new List<PawnAbility>(); // should these exist or only in CompAbilityUser.temporaryWeaponPowers?
@@ -49,8 +38,8 @@ namespace AbilityUser
 
         public override void PostDrawExtraSelectionOverlays()
         {
-            if (Overlay == null) Log.Message("NoOverlay");
-            if (Overlay != null)
+            if (this.Overlay == null) Log.Message("NoOverlay");
+            if (this.Overlay != null)
             {
                 Vector3 drawPos = this.parent.DrawPos;
                 drawPos.y = Altitudes.AltitudeFor(AltitudeLayer.MoteOverhead);
@@ -61,14 +50,10 @@ namespace AbilityUser
             }
         }
 
-//        public override void CompTick() { }
-//        public override void CompTickRare() { }
+        //        public override void CompTick() { }
+        //        public override void CompTickRare() { }
 
-        public override void PostExposeData()
-        {
-            base.PostExposeData();
-//            Scribe_Values.LookValue<bool>(ref this.PsykerPowerAdded, "PsykerPowerAdded", false, false);
-        }
+        public override void PostExposeData() => base.PostExposeData();
 
         public override string GetDescriptionPart()
         {

@@ -1,5 +1,4 @@
 ﻿//CompVehicle_LoadPassenger
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Verse;
@@ -15,7 +14,7 @@ namespace CompVehicle
         {
             get
             {
-                Thing thing = base.CurJob.GetTarget(this.TransporterInd).Thing;
+                Thing thing = this.CurJob.GetTarget(this.TransporterInd).Thing;
                 if (thing == null)
                 {
                     return null;

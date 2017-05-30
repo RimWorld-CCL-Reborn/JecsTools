@@ -3,12 +3,9 @@ using RimWorld;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Verse;
 using Verse.AI;
-using System.Reflection;
 using UnityEngine;
-using Verse.Sound;
 
 namespace CompSlotLoadable
 {
@@ -48,9 +45,7 @@ namespace CompSlotLoadable
         } */
 
         //try to extend this
-        public static void StatOffsetFromGear_PostFix(ref float __result, Thing gear, StatDef stat ) {
-            __result += CompSlotLoadable.CheckThingSlotsForStatAugment(gear, stat);
-        }
+        public static void StatOffsetFromGear_PostFix(ref float __result, Thing gear, StatDef stat) => __result += CompSlotLoadable.CheckThingSlotsForStatAugment(gear, stat);
 
 
 
@@ -105,8 +100,7 @@ namespace CompSlotLoadable
 
         public static void ApplyHealing(Thing thing, int woundLimit = 0, Thing vampiricTarget = null)
         {
-            Pawn pawn = thing as Pawn;
-            if (pawn != null)
+            if (thing is Pawn pawn)
             {
                 int maxInjuries = woundLimit;
 
@@ -157,8 +151,7 @@ namespace CompSlotLoadable
         public static void DrawThingRow_PostFix(ITab_Pawn_Gear __instance, ref float y, float width, Thing thing, bool showDropButtonIfPrisoner = false)
         {
             //Log.Message("1");
-            ThingWithComps thingWithComps = thing as ThingWithComps;
-            if (thingWithComps != null)
+            if (thing is ThingWithComps thingWithComps)
             {
                 ThingComp comp = thingWithComps.AllComps.FirstOrDefault((ThingComp x) => x is CompSlotLoadable);
                 if (comp != null)
@@ -235,7 +228,7 @@ namespace CompSlotLoadable
                                     {
 
                                         //Log.Message("7");
-                                        float num = (float)__instance.verbProps.AdjustedMeleeDamageAmount(__instance, __instance.CasterPawn, __instance.ownerEquipment);
+                                        float num = __instance.verbProps.AdjustedMeleeDamageAmount(__instance, __instance.CasterPawn, __instance.ownerEquipment);
                                         DamageDef def = __instance.verbProps.meleeDamageDef;
                                         BodyPartGroupDef weaponBodyPartGroup = null;
                                         HediffDef weaponHediff = null;
@@ -378,153 +371,99 @@ namespace CompSlotLoadable
                                     }
                                 }
 
-                                public static void GetStatValue_PostFix(ref float __result, Thing thing, StatDef stat, bool applyPostProcess)
-                                {
-                                    __result += CompSlotLoadable.CheckThingSlotsForStatAugment(thing, stat);
-                                    /*
-                                    //Log.Message("1");
-                                    ThingWithComps ownerEquipment = thing as ThingWithComps;
-                                    if (ownerEquipment != null)
-                                    {
-                                    ThingComp comp = ownerEquipment.AllComps.FirstOrDefault((ThingComp x) => x is CompSlotLoadable);
-                                    if (comp != null)
-                                    {
-                                    CompSlotLoadable compSlotLoadable = comp as CompSlotLoadable;
-                                    if (compSlotLoadable.Slots != null && compSlotLoadable.Slots.Count > 0)
-                                    {
-                                    List<SlotLoadable> statSlots = compSlotLoadable.Slots.FindAll((SlotLoadable z) => !z.IsEmpty() && ((SlotLoadableDef)z.def).doesChangeStats == true);
-                                    if (statSlots != null && statSlots.Count > 0)
-                                    {
-                                    foreach (SlotLoadable slot in statSlots)
-                                    {
-                                    CompSlottedBonus slotBonus = slot.SlotOccupant.TryGetComp<CompSlottedBonus>();
-                                    if (slotBonus != null)
-                                    {
-                                    if (slotBonus.Props != null)
-                                    {
-                                    if (slotBonus.Props.statModifiers != null && slotBonus.Props.statModifiers.Count > 0)
-                                    {
-                                    //StatModifier thisStat = slotBonus.Props.statModifiers.FirstOrDefault(
-                                    //(StatModifier y) => y.stat == stat &&
-                                    //(y.stat.category == StatCategoryDefOf.Weapon ||
-                                    //y.stat.category == StatCategoryDefOf.EquippedStatOffsets
-                                    //));
-                                    //if (thisStat != null)
-                                    //{
-                                    //        __result += thisStat.value;
-                                    //    }
-                                    //    foreach ( StatModifier thisStat in slotBonus.Props.statModifiers ) {
-                                    //        if ( thisStat.stat == stat ) {
-                                    //            //Log.Message("GetValue_PostFix adding in "+thisStat.stat+":"+thisStat.value);
-                                    //            __result += thisStat.value;
-                                    //        }
-                                    //    }
-                                    //}
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        */
+        public static void GetStatValue_PostFix(ref float __result, Thing thing, StatDef stat, bool applyPostProcess) => __result += CompSlotLoadable.CheckThingSlotsForStatAugment(thing, stat);
 
-    }
-
-    public static void get_Graphic_PostFix(Thing __instance, ref Graphic __result)
+        public static void Get_Graphic_PostFix(Thing __instance, ref Graphic __result)
     {
-        ThingWithComps thingWithComps = __instance as ThingWithComps;
-        if (thingWithComps != null)
-        {
-            //Log.Message("3");
-            CompSlotLoadable CompSlotLoadable = thingWithComps.GetComp<CompSlotLoadable>();
-            if (CompSlotLoadable != null)
+            if (__instance is ThingWithComps thingWithComps)
             {
-                //ThingComp activatableEffect = thingWithComps.AllComps.FirstOrDefault<ThingComp>((ThingComp y) => y.GetType().ToString() == "CompActivatableEffect.CompActivatableEffect");
-
-                SlotLoadable slot = CompSlotLoadable.ColorChangingSlot;
-                if (slot != null)
+                //Log.Message("3");
+                CompSlotLoadable CompSlotLoadable = thingWithComps.GetComp<CompSlotLoadable>();
+                if (CompSlotLoadable != null)
                 {
-                    if (!slot.IsEmpty())
-                    {
-                        CompSlottedBonus slotBonus = slot.SlotOccupant.TryGetComp<CompSlottedBonus>();
-                        if (slotBonus != null)
-                        {
-                            //if (activatableEffect != null)
-                            //{
-                            //    AccessTools.Field(activatableEffect.GetType(), "overrideColor").SetValue(activatableEffect, slot.SlotOccupant.DrawColor);
-                            //    Log.ErrorOnce("GraphicPostFix_Called_Activatable", 1866);
-                            //}
-                            //else
-                            //{
-                            Graphic tempGraphic = (Graphic)AccessTools.Field(typeof(Thing), "graphicInt").GetValue(__instance);
-                            if (tempGraphic != null)
-                            {
-                                if (tempGraphic.Shader != null)
-                                {
-                                    tempGraphic = tempGraphic.GetColoredVersion(tempGraphic.Shader, slotBonus.Props.color, slotBonus.Props.color); //slot.SlotOccupant.DrawColor;
-                                    __result = tempGraphic;
-                                    //Log.Message("SlotLoadableDraw");
+                    //ThingComp activatableEffect = thingWithComps.AllComps.FirstOrDefault<ThingComp>((ThingComp y) => y.GetType().ToString() == "CompActivatableEffect.CompActivatableEffect");
 
+                    SlotLoadable slot = CompSlotLoadable.ColorChangingSlot;
+                    if (slot != null)
+                    {
+                        if (!slot.IsEmpty())
+                        {
+                            CompSlottedBonus slotBonus = slot.SlotOccupant.TryGetComp<CompSlottedBonus>();
+                            if (slotBonus != null)
+                            {
+                                //if (activatableEffect != null)
+                                //{
+                                //    AccessTools.Field(activatableEffect.GetType(), "overrideColor").SetValue(activatableEffect, slot.SlotOccupant.DrawColor);
+                                //    Log.ErrorOnce("GraphicPostFix_Called_Activatable", 1866);
+                                //}
+                                //else
+                                //{
+                                Graphic tempGraphic = (Graphic)AccessTools.Field(typeof(Thing), "graphicInt").GetValue(__instance);
+                                if (tempGraphic != null)
+                                {
+                                    if (tempGraphic.Shader != null)
+                                    {
+                                        tempGraphic = tempGraphic.GetColoredVersion(tempGraphic.Shader, slotBonus.Props.color, slotBonus.Props.color); //slot.SlotOccupant.DrawColor;
+                                        __result = tempGraphic;
+                                        //Log.Message("SlotLoadableDraw");
+
+                                    }
                                 }
                             }
+                            //Log.ErrorOnce("GraphicPostFix_Called_5", 1866);
+                            //}
                         }
-                        //Log.ErrorOnce("GraphicPostFix_Called_5", 1866);
-                        //}
                     }
                 }
             }
-        }
 
-    }
+        }
 
     public static void DrawColorPostFix(ThingWithComps __instance, ref Color __result)
     {
-        ThingWithComps thingWithComps = __instance as ThingWithComps;
-        if (thingWithComps != null)
-        {
-            //Log.Message("3");
-            CompSlotLoadable CompSlotLoadable = thingWithComps.GetComp<CompSlotLoadable>();
-            if (CompSlotLoadable != null)
+            if (__instance is ThingWithComps thingWithComps)
             {
-                SlotLoadable slot = CompSlotLoadable.ColorChangingSlot;
-                if (slot != null)
+                //Log.Message("3");
+                CompSlotLoadable CompSlotLoadable = thingWithComps.GetComp<CompSlotLoadable>();
+                if (CompSlotLoadable != null)
                 {
-                    if (!slot.IsEmpty())
+                    SlotLoadable slot = CompSlotLoadable.ColorChangingSlot;
+                    if (slot != null)
                     {
-                        __result = slot.SlotOccupant.DrawColor;
-                        __instance.Graphic.color = slot.SlotOccupant.DrawColor;
+                        if (!slot.IsEmpty())
+                        {
+                            __result = slot.SlotOccupant.DrawColor;
+                            __instance.Graphic.color = slot.SlotOccupant.DrawColor;
+                        }
                     }
                 }
             }
-        }
 
-    }
+        }
 
     public static void DrawColorTwoPostFix(Thing __instance, ref Color __result)
     {
-        ThingWithComps thingWithComps = __instance as ThingWithComps;
-        if (thingWithComps != null)
-        {
-            //Log.Message("3");
-            CompSlotLoadable CompSlotLoadable = thingWithComps.GetComp<CompSlotLoadable>();
-            if (CompSlotLoadable != null)
+            if (__instance is ThingWithComps thingWithComps)
             {
-                SlotLoadable slot = CompSlotLoadable.SecondColorChangingSlot;
-                if (slot != null)
+                //Log.Message("3");
+                CompSlotLoadable CompSlotLoadable = thingWithComps.GetComp<CompSlotLoadable>();
+                if (CompSlotLoadable != null)
                 {
-                    if (!slot.IsEmpty())
+                    SlotLoadable slot = CompSlotLoadable.SecondColorChangingSlot;
+                    if (slot != null)
                     {
-                        __result = slot.SlotOccupant.DrawColor;
-                        __instance.Graphic.colorTwo = slot.SlotOccupant.DrawColor;
+                        if (!slot.IsEmpty())
+                        {
+                            __result = slot.SlotOccupant.DrawColor;
+                            __instance.Graphic.colorTwo = slot.SlotOccupant.DrawColor;
+                        }
                     }
                 }
             }
+
         }
 
-    }
-
-    public static IEnumerable<Gizmo> gizmoGetter(CompSlotLoadable CompSlotLoadable)
+    public static IEnumerable<Gizmo> GizmoGetter(CompSlotLoadable CompSlotLoadable)
     {
         //Log.Message("5");
         if (CompSlotLoadable.GizmosOnEquip)
@@ -556,14 +495,14 @@ namespace CompSlotLoadable
                 CompSlotLoadable CompSlotLoadable = thingWithComps.GetComp<CompSlotLoadable>();
                 if (CompSlotLoadable != null)
                 {
-                    if (gizmoGetter(CompSlotLoadable).Count<Gizmo>() > 0)
+                    if (GizmoGetter(CompSlotLoadable).Count<Gizmo>() > 0)
                     {
                         //Log.Message("4");
                         if (__instance != null)
                         {
                             if (__instance.Faction == Faction.OfPlayer)
                             {
-                                __result = __result.Concat<Gizmo>(gizmoGetter(CompSlotLoadable));
+                                __result = __result.Concat<Gizmo>(GizmoGetter(CompSlotLoadable));
                             }
                         }
                     }

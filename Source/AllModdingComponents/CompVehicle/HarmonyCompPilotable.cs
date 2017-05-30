@@ -1,21 +1,18 @@
 ﻿using Harmony;
 using RimWorld;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Verse;
 using Verse.AI;
 using System.Reflection;
 using UnityEngine;
 using System.Reflection.Emit;
-using System.Runtime.CompilerServices;
 
 namespace CompVehicle
 {
     class DummyClass
     {
-        void dummy()
+        void Dummy()
         {
             Verb verb = null;
 
@@ -103,15 +100,12 @@ namespace CompVehicle
         }
 
         // Verse.Pawn
-        public static bool DropAndForbidEverything_PreFix(Pawn __instance)
-        {
-            return __instance?.def?.GetCompProperties<CompProperties_Vehicle>() == null;
-        }
+        public static bool DropAndForbidEverything_PreFix(Pawn __instance) => __instance?.def?.GetCompProperties<CompProperties_Vehicle>() == null;
 
         // Verse.Pawn
         public static void CurrentlyUsable_PostFix(Pawn __instance, ref bool __result)
         {
-            var vehicle = __instance.GetComp<CompVehicle>();
+            CompVehicle vehicle = __instance.GetComp<CompVehicle>();
             if (vehicle != null)
             {
                 if (!__instance.pather.MovingNow) __result = true;
@@ -121,7 +115,7 @@ namespace CompVehicle
 
         public static void IsColonistPlayerControlled_PostFix(Pawn __instance, ref bool __result)
         {
-            var vehicle = __instance.GetComp<CompVehicle>();
+            CompVehicle vehicle = __instance.GetComp<CompVehicle>();
             if (vehicle != null)
             {
                 if (__instance.Faction == Faction.OfPlayer) __result = true;

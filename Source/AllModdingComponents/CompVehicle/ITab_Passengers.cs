@@ -1,5 +1,4 @@
 ﻿using RimWorld;
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Verse;
@@ -34,9 +33,9 @@ namespace CompVehicle
             get
             {
                 CompVehicle result = null;
-                if (base.SelPawn != null)
+                if (this.SelPawn != null)
                 {
-                    CompVehicle compPilotable = base.SelPawn.GetComp<CompVehicle>();
+                    CompVehicle compPilotable = this.SelPawn.GetComp<CompVehicle>();
                     if (compPilotable != null)
                     {
                         result = compPilotable;
@@ -51,11 +50,11 @@ namespace CompVehicle
             get
             {
                 List<Pawn> result = null;
-                if (base.SelPawn != null)
+                if (this.SelPawn != null)
                 {
-                    if (CompPilot != null)
+                    if (this.CompPilot != null)
                     {
-                        result = CompPilot.AllOccupants;
+                        result = this.CompPilot.AllOccupants;
                     }
                 }
                 return result;
@@ -92,10 +91,7 @@ namespace CompVehicle
             }
         }
 
-        public ITab_Passengers()
-        {
-            this.labelKey = "Contents";
-        }
+        public ITab_Passengers() => this.labelKey = "Contents";
 
         protected override void FillTab()
         {
@@ -117,7 +113,7 @@ namespace CompVehicle
         {
             base.UpdateSize();
             this.size = this.GetRawSize(false);
-            if (this.size.x + this.SpecificHealthTabWidth > (float)UI.screenWidth)
+            if (this.size.x + this.SpecificHealthTabWidth > UI.screenWidth)
             {
                 this.compactMode = true;
                 this.size = this.GetRawSize(true);
@@ -134,7 +130,7 @@ namespace CompVehicle
             Pawn localSpecificHealthTabForPawn = this.specificHealthTabForPawn;
             if (localSpecificHealthTabForPawn != null)
             {
-                Rect tabRect = base.TabRect;
+                Rect tabRect = this.TabRect;
                 float specificHealthTabWidth = this.SpecificHealthTabWidth;
                 Rect rect = new Rect(tabRect.xMax - 1f, tabRect.yMin, specificHealthTabWidth, tabRect.height);
                 Find.WindowStack.ImmediateWindow(1439870015, rect, WindowLayer.GameUI, delegate
@@ -180,9 +176,9 @@ namespace CompVehicle
             {
                 this.specificHealthTabForPawn = null;
             }
-            if (CompPilot.handlers != null && CompPilot.handlers.Count > 0)
+            if (this.CompPilot.handlers != null && this.CompPilot.handlers.Count > 0)
             {
-                foreach (VehicleHandlerGroup group in CompPilot.handlers)
+                foreach (VehicleHandlerGroup group in this.CompPilot.handlers)
                 {
                     bool flag = false;
                     for (int i = 0; i < pawns.Count; i++)
@@ -209,7 +205,7 @@ namespace CompVehicle
             if (!compactMode)
             {
                 num += 100f;
-                num += (float)this.CapacitiesToDisplay.Count * 100f;
+                num += this.CapacitiesToDisplay.Count * 100f;
             }
             Vector2 result;
             result.x = 127f + num + 16f;

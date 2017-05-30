@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UnityEngine;
+﻿using UnityEngine;
 using Verse;
 using Verse.Sound;
-using RimWorld;
 //
 namespace CompLumbering
 {
@@ -14,42 +9,30 @@ namespace CompLumbering
         public int ticksToCycle = -1;
         public bool cycled = false;
 
-        public Pawn lumberer
-        {
-            get
-            {
-                return this.parent as Pawn;
-            }
-        }
+        public Pawn Lumberer => this.parent as Pawn;
 
-        public CompProperties_Lumbering Props
-        {
-            get
-            {
-                return (CompProperties_Lumbering)this.props;
-            }
-        }
+        public CompProperties_Lumbering Props => (CompProperties_Lumbering)this.props;
 
         public void ResolveCycledGraphic()
         {
-            if (Props.cycledGraphic != null &&
-                lumberer.Drawer?.renderer?.graphics is PawnGraphicSet pawnGraphicSet)
+            if (this.Props.cycledGraphic != null &&
+                Lumberer.Drawer?.renderer?.graphics is PawnGraphicSet pawnGraphicSet)
             {
                 pawnGraphicSet.ClearCache();
-                pawnGraphicSet.nakedGraphic = Props.cycledGraphic.Graphic;
+                pawnGraphicSet.nakedGraphic = this.Props.cycledGraphic.Graphic;
             }
         }
 
         public void ResolveBaseGraphic()
         {
-            if (Props.cycledGraphic != null &&
-                lumberer.Drawer?.renderer?.graphics is PawnGraphicSet pawnGraphicSet)
+            if (this.Props.cycledGraphic != null &&
+                Lumberer.Drawer?.renderer?.graphics is PawnGraphicSet pawnGraphicSet)
             {
                 pawnGraphicSet.ClearCache();
 
                 //Duplicated code from -> Verse.PawnGrapic -> ResolveAllGraphics
-                PawnKindLifeStage curKindLifeStage = lumberer.ageTracker.CurKindLifeStage;
-                if (lumberer.gender != Gender.Female || curKindLifeStage.femaleGraphicData == null)
+                PawnKindLifeStage curKindLifeStage = this.Lumberer.ageTracker.CurKindLifeStage;
+                if (this.Lumberer.gender != Gender.Female || curKindLifeStage.femaleGraphicData == null)
                 {
                     pawnGraphicSet.nakedGraphic = curKindLifeStage.bodyGraphicData.Graphic;
                 }
@@ -58,30 +41,30 @@ namespace CompLumbering
                     pawnGraphicSet.nakedGraphic = curKindLifeStage.femaleGraphicData.Graphic;
                 }
                 pawnGraphicSet.rottingGraphic = pawnGraphicSet.nakedGraphic.GetColoredVersion(ShaderDatabase.CutoutSkin, PawnGraphicSet.RottingColor, PawnGraphicSet.RottingColor);
-                if (lumberer.RaceProps.packAnimal)
+                if (this.Lumberer.RaceProps.packAnimal)
                 {
                     pawnGraphicSet.packGraphic = GraphicDatabase.Get<Graphic_Multi>(pawnGraphicSet.nakedGraphic.path + "Pack", ShaderDatabase.Cutout, pawnGraphicSet.nakedGraphic.drawSize, Color.white);
                 }
                 if (curKindLifeStage.dessicatedBodyGraphicData != null)
                 {
-                    pawnGraphicSet.dessicatedGraphic = curKindLifeStage.dessicatedBodyGraphicData.GraphicColoredFor(lumberer);
+                    pawnGraphicSet.dessicatedGraphic = curKindLifeStage.dessicatedBodyGraphicData.GraphicColoredFor(this.Lumberer);
                 }
             }
         }
 
         public override void CompTick()
         {
-            if (Props.secondsBetweenSteps <= 0.0f) Log.ErrorOnce("CompLumbering :: CompProperties_Lumbering secondsBetweenSteps needs to be more than 0", 132);
-            if (Props.secondsPerStep <= 0.0f) Log.ErrorOnce("CompLumbering :: CompProperties_Lumbering secondsPerStep needs to be more than 0", 133);
+            if (this.Props.secondsBetweenSteps <= 0.0f) Log.ErrorOnce("CompLumbering :: CompProperties_Lumbering secondsBetweenSteps needs to be more than 0", 132);
+            if (this.Props.secondsPerStep <= 0.0f) Log.ErrorOnce("CompLumbering :: CompProperties_Lumbering secondsPerStep needs to be more than 0", 133);
 
-            if (lumberer != null && Props.secondsPerStep > 0.0f && Find.TickManager.TicksGame > ticksToCycle)
+            if (this.Lumberer != null && this.Props.secondsPerStep > 0.0f && Find.TickManager.TicksGame > this.ticksToCycle)
             {
-                if (lumberer?.pather?.MovingNow ?? false)
+                if (this.Lumberer?.pather?.MovingNow ?? false)
                 {
-                        cycled = !cycled;
-                        ticksToCycle = Find.TickManager.TicksGame + GenTicks.SecondsToTicks(Props.secondsPerStep);
-                        if (Props.sound != null) Props.sound.PlayOneShot(SoundInfo.InMap(lumberer));
-                        if (cycled)
+                    this.cycled = !this.cycled;
+                    this.ticksToCycle = Find.TickManager.TicksGame + GenTicks.SecondsToTicks(this.Props.secondsPerStep);
+                        if (this.Props.sound != null) this.Props.sound.PlayOneShot(SoundInfo.InMap(this.Lumberer));
+                        if (this.cycled)
                         {
                             ResolveCycledGraphic();
                         }
@@ -90,7 +73,7 @@ namespace CompLumbering
                             //Log.Message("1b");
                             ResolveBaseGraphic();
                         }
-                        lumberer.stances.StaggerFor(GenTicks.SecondsToTicks(Props.secondsBetweenSteps));
+                    this.Lumberer.stances.StaggerFor(GenTicks.SecondsToTicks(this.Props.secondsBetweenSteps));
                 }
             }
         }

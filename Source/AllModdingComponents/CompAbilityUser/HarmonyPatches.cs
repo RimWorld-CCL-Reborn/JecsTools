@@ -3,10 +3,7 @@ using RimWorld;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Verse;
-using Verse.AI;
-using System.Reflection;
 using UnityEngine;
 using Verse.Sound;
 
@@ -142,12 +139,7 @@ namespace AbilityUser
                                         {
                                             //Pawn caster = (Pawn)AccessTools.Field(typeof(Targeter), "caster").GetValue(__instance);
                                             Pawn caster = (Pawn)__instance.targetingVerb.caster;
-                                            Action attackAction = CompAbilityUser.TryCastAbility(caster, source.First<LocalTargetInfo>(), caster.GetComp<CompAbilityUser>(), (Verb_UseAbility)__instance.targetingVerb, ((Verb_UseAbility)(__instance.targetingVerb)).ability.powerdef as AbilityDef);
-                                            if (attackAction != null)
-                                            {
-                                                attackAction();
-                                                //PostCastAbilityEffects(newVerb); //Another hook for modders
-                                            }
+                                            CompAbilityUser.TryCastAbility(caster, source.First<LocalTargetInfo>(), caster.GetComp<CompAbilityUser>(), (Verb_UseAbility)__instance.targetingVerb, ((Verb_UseAbility)(__instance.targetingVerb)).ability.powerdef as AbilityDef)?.Invoke();
 
                                             ////Log.Message("8");
                                             //AccessTools.Method(typeof(Targeter), "action").Invoke(__instance, new object[] {  });
@@ -163,12 +155,7 @@ namespace AbilityUser
                             {
                                 //Pawn caster = (Pawn)AccessTools.Field(typeof(Targeter), "caster").GetValue(__instance);
                                 Pawn caster = (Pawn)__instance.targetingVerb.caster;
-                                Action attackAction = CompAbilityUser.TryCastAbility(caster, null, caster.GetComp<CompAbilityUser>(), (Verb_UseAbility)__instance.targetingVerb, ((Verb_UseAbility)(__instance.targetingVerb)).ability.powerdef as AbilityDef);
-                                if (attackAction != null)
-                                {
-                                    attackAction();
-                                    //PostCastAbilityEffects(newVerb); //Another hook for modders
-                                }
+                                CompAbilityUser.TryCastAbility(caster, null, caster.GetComp<CompAbilityUser>(), (Verb_UseAbility)__instance.targetingVerb, ((Verb_UseAbility)(__instance.targetingVerb)).ability.powerdef as AbilityDef)?.Invoke();
 
                                 ////Log.Message("8");
                                 //AccessTools.Method(typeof(Targeter), "action").Invoke(__instance, new object[] {  });
@@ -196,15 +183,15 @@ namespace AbilityUser
 
                     ////Log.Message("3");
                     Verb_UseAbility targetVerb = Find.Targeter.targetingVerb as Verb_UseAbility;
-                    if (targetVerb.useAbilityProps.abilityDef.MainVerb.TargetAoEProperties != null)
+                    if (targetVerb.UseAbilityProps.abilityDef.MainVerb.TargetAoEProperties != null)
                     {
 
                         ////Log.Message("4");
-                        if (targetVerb.useAbilityProps.abilityDef.MainVerb.TargetAoEProperties.range > 0)
+                        if (targetVerb.UseAbilityProps.abilityDef.MainVerb.TargetAoEProperties.range > 0)
                         {
 
                             ////Log.Message("6");
-                            GenDraw.DrawRadiusRing(UI.MouseCell(), targetVerb.useAbilityProps.abilityDef.MainVerb.TargetAoEProperties.range);
+                            GenDraw.DrawRadiusRing(UI.MouseCell(), targetVerb.UseAbilityProps.abilityDef.MainVerb.TargetAoEProperties.range);
 
                         }
                     }
@@ -214,8 +201,7 @@ namespace AbilityUser
 
         public static void InitializeComps_PostFix(ThingWithComps __instance)
         {
-            Pawn p = __instance as Pawn;
-            if (p != null) HarmonyPatches.internalAddInAbilityUsers(p);
+            if (__instance is Pawn p) HarmonyPatches.InternalAddInAbilityUsers(p);
         }
 
         //// Catches loading of Pawns
@@ -227,7 +213,7 @@ namespace AbilityUser
         //{ HarmonyPatches.internalAddInAbilityUsers(__result); }
 
         // Add in any AbilityUser Components, if the Pawn is accepting
-        public static void internalAddInAbilityUsers(Pawn pawn)
+        public static void InternalAddInAbilityUsers(Pawn pawn)
         {
             //            Log.Message("Trying to add AbilityUsers to Pawn");
             if ( pawn != null && pawn.RaceProps != null && pawn.RaceProps.Humanlike)

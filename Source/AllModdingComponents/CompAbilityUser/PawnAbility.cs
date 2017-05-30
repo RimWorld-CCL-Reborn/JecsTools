@@ -1,9 +1,4 @@
-﻿using RimWorld;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using Verse;
 
@@ -24,10 +19,7 @@ namespace AbilityUser
 
         }
 
-        public PawnAbility(CompAbilityUser comp)
-        {
-            this.pawn = comp.abilityUser;
-        }
+        public PawnAbility(CompAbilityUser comp) => this.pawn = comp.AbilityUser;
 
         public PawnAbility(Pawn user, AbilityDef pdef)
         {
@@ -39,20 +31,17 @@ namespace AbilityUser
 
         public void PawnAbilityTick()
         {
-            if (TicksUntilCasting > -1) TicksUntilCasting--;
+            if (this.TicksUntilCasting > -1) this.TicksUntilCasting--;
         }
 
-        public virtual string PostAbilityVerbDesc()
-        {
-            return "";
-        }
+        public virtual string PostAbilityVerbDesc() => "";
 
 
         public bool CanFire
         {
             get
             {
-                if (TicksUntilCasting == -1 || TicksUntilCasting < 0) return true;
+                if (this.TicksUntilCasting == -1 || this.TicksUntilCasting < 0) return true;
                 return false;
             }
         }
@@ -84,7 +73,7 @@ namespace AbilityUser
             //Scribe_Collections.LookList<ThingComp>(ref this.comps, "comps", LookMode.Undefined);
             if (Scribe.mode == LoadSaveMode.PostLoadInit)
             {
-                this.PowerButton = powerdef.uiIcon;
+                this.PowerButton = this.powerdef.uiIcon;
             }
         }
 

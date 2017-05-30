@@ -1,8 +1,4 @@
 ﻿using RimWorld;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 using Verse;
 
@@ -37,38 +33,20 @@ namespace AbilityUser
         }
 
 
-        protected IntVec3 DestinationCell
-        {
-            get
-            {
-                return new IntVec3(this.destination);
-            }
-        }
+        protected IntVec3 DestinationCell => new IntVec3(this.destination);
 
         public virtual Vector3 ExactPosition
         {
             get
             {
-                Vector3 b = (this.destination - this.origin) * (1f - (float)this.ticksToImpact / (float)this.StartingTicksToImpact);
+                Vector3 b = (this.destination - this.origin) * (1f - this.ticksToImpact / (float)this.StartingTicksToImpact);
                 return this.origin + b + Vector3.up * this.def.Altitude;
             }
         }
 
-        public virtual Quaternion ExactRotation
-        {
-            get
-            {
-                return Quaternion.LookRotation(this.destination - this.origin);
-            }
-        }
+        public virtual Quaternion ExactRotation => Quaternion.LookRotation(this.destination - this.origin);
 
-        public override Vector3 DrawPos
-        {
-            get
-            {
-                return this.ExactPosition;
-            }
-        }
+        public override Vector3 DrawPos => this.ExactPosition;
 
         public override void ExposeData()
         {
@@ -81,15 +59,9 @@ namespace AbilityUser
             Scribe_References.Look<Thing>(ref this.flyingThing, "flyingThing");
         }
 
-        public void Launch(Thing launcher, LocalTargetInfo targ, Thing flyingThing, DamageInfo? impactDamage)
-        {
-            this.Launch(launcher, base.Position.ToVector3Shifted(), targ, flyingThing, impactDamage);
-        }
+        public void Launch(Thing launcher, LocalTargetInfo targ, Thing flyingThing, DamageInfo? impactDamage) => this.Launch(launcher, this.Position.ToVector3Shifted(), targ, flyingThing, impactDamage);
 
-        public void Launch(Thing launcher, LocalTargetInfo targ, Thing flyingThing)
-        {
-            this.Launch(launcher, base.Position.ToVector3Shifted(), targ, flyingThing);
-        }
+        public void Launch(Thing launcher, LocalTargetInfo targ, Thing flyingThing) => this.Launch(launcher, this.Position.ToVector3Shifted(), targ, flyingThing);
 
         public void Launch(Thing launcher, Vector3 origin, LocalTargetInfo targ, Thing flyingThing, DamageInfo? newDamageInfo = null)
         {
@@ -113,20 +85,20 @@ namespace AbilityUser
             base.Tick();
             Vector3 exactPosition = this.ExactPosition;
             this.ticksToImpact--;
-            if (!this.ExactPosition.InBounds(base.Map))
+            if (!this.ExactPosition.InBounds(this.Map))
             {
                 this.ticksToImpact++;
-                base.Position = this.ExactPosition.ToIntVec3();
+                this.Position = this.ExactPosition.ToIntVec3();
                 this.Destroy(DestroyMode.Vanish);
                 return;
             }
 
-            base.Position = this.ExactPosition.ToIntVec3();
+            this.Position = this.ExactPosition.ToIntVec3();
             if (this.ticksToImpact <= 0)
             {
-                if (this.DestinationCell.InBounds(base.Map))
+                if (this.DestinationCell.InBounds(this.Map))
                 {
-                    base.Position = this.DestinationCell;
+                    this.Position = this.DestinationCell;
                 }
                 this.ImpactSomething();
                 return;
@@ -136,13 +108,13 @@ namespace AbilityUser
 
         public override void Draw()
         {
-            if (flyingThing != null)
+            if (this.flyingThing != null)
             {
-                if (flyingThing is Pawn)
+                if (this.flyingThing is Pawn)
                 {
                     if (this.DrawPos == null) return;
                     if (!this.DrawPos.ToIntVec3().IsValid) return;
-                    Pawn pawn = flyingThing as Pawn;
+                    Pawn pawn = this.flyingThing as Pawn;
                     pawn.Drawer.DrawAt(this.DrawPos);
                     //Graphics.DrawMesh(MeshPool.plane10, this.DrawPos, this.ExactRotation, this.flyingThing.def.graphic.MatFront, 0);
                 }
@@ -158,8 +130,7 @@ namespace AbilityUser
         {
             if (this.assignedTarget != null)
             {
-                Pawn pawn = this.assignedTarget as Pawn;
-                if (pawn != null && pawn.GetPosture() != PawnPosture.Standing && (this.origin - this.destination).MagnitudeHorizontalSquared() >= 20.25f && Rand.Value > 0.2f)
+                if (this.assignedTarget is Pawn pawn && pawn.GetPosture() != PawnPosture.Standing && (this.origin - this.destination).MagnitudeHorizontalSquared() >= 20.25f && Rand.Value > 0.2f)
                 {
                     this.Impact(null);
                     return;
@@ -176,10 +147,10 @@ namespace AbilityUser
 
         protected virtual void Impact(Thing hitThing)
         {
-            GenSpawn.Spawn(flyingThing, this.Position, this.Map);
-            if (impactDamage != null)
+            GenSpawn.Spawn(this.flyingThing, this.Position, this.Map);
+            if (this.impactDamage != null)
             {
-                for (int i = 0; i < 3; i++) flyingThing.TakeDamage(impactDamage.Value);
+                for (int i = 0; i < 3; i++) this.flyingThing.TakeDamage(this.impactDamage.Value);
             }
             this.Destroy(DestroyMode.Vanish);
         }

@@ -1,6 +1,4 @@
-﻿using Harmony;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using Verse.Sound;
 using Verse.AI;
@@ -20,33 +18,35 @@ namespace CompSlotLoadable
         protected override IEnumerable<Toil> MakeNewToils()
         {
             yield return Toils_Reserve.Reserve(TargetIndex.A, 1);
-            Toil toil = new Toil();
-            toil.initAction = delegate
+            Toil toil = new Toil()
             {
-                this.pawn.pather.StartPath(this.TargetThingA, PathEndMode.ClosestTouch);
+                initAction = delegate
+                {
+                    this.pawn.pather.StartPath(this.TargetThingA, PathEndMode.ClosestTouch);
+                },
+                defaultCompleteMode = ToilCompleteMode.PatherArrival
             };
-            toil.defaultCompleteMode = ToilCompleteMode.PatherArrival;
             toil.FailOnDespawnedNullOrForbidden(TargetIndex.A);
             yield return toil;
             yield return new Toil
             {
                 initAction = delegate
                 {
-                    Thing itemToGather = (Thing)this.CurJob.targetA.Thing;
-                    bool flag = false;
+                    Thing itemToGather = this.CurJob.targetA.Thing;
+                    //bool flag = false;
                     Thing itemToGatherSplit;
                     if (itemToGather.def.stackLimit > 1 && itemToGather.stackCount > 1)
                     {
-                        itemToGatherSplit = (Thing)itemToGather.SplitOff(1);
+                        itemToGatherSplit = itemToGather.SplitOff(1);
                     }
                     else
                     {
                         itemToGatherSplit = itemToGather;
-                        flag = true;
+                        //flag = true;
                     }
 
                     //Find the compslotloadable
-                    Pawn_EquipmentTracker pawn_EquipmentTracker = pawn.equipment;
+                    Pawn_EquipmentTracker pawn_EquipmentTracker = this.pawn.equipment;
                     if (pawn_EquipmentTracker != null)
                     {
                         //Log.Message("2");

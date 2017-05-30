@@ -1,19 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Verse;
+﻿using Verse;
 
 namespace CompExtraSounds
 {
     internal class CompExtraSounds : ThingComp
     {
-        public CompProperties_ExtraSounds Props
-        {
-            get
-            {
-                return (CompProperties_ExtraSounds)this.props;
-            }
-        }
+        public CompProperties_ExtraSounds Props => (CompProperties_ExtraSounds)this.props;
     }
 }

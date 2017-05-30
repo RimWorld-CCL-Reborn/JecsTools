@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Text;
 using Verse;
 
 namespace AbilityUser
@@ -34,7 +31,7 @@ namespace AbilityUser
         public virtual string GetAoEDesc()
         {
             string result = "";
-            VerbProperties_Ability def = MainVerb;
+            VerbProperties_Ability def = this.MainVerb;
             if (def != null)
             {
                 if (def.TargetAoEProperties != null)
@@ -61,7 +58,7 @@ namespace AbilityUser
         public string GetBasics()
         {
             string result = "";
-            VerbProperties_Ability def = MainVerb;
+            VerbProperties_Ability def = this.MainVerb;
             if (def != null)
             {
                 StringBuilder s = new StringBuilder();

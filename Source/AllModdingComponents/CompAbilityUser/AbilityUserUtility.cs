@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Reflection;
 using Verse;
 using Harmony;
@@ -18,7 +17,8 @@ namespace AbilityUser
         //public static List<AbilityUserTypeTracker> typeTrackers = null ; // = new List<AbilityUserTypeTracker>();
         public static List<Type> abilityUserChildren = null;
 
-        public static List<Type> GetAllChildrenOf(Type pType) {
+        public static List<Type> GetAllChildrenOf(Type pType)
+        {
             List<Type> retval = new List<Type>();
             /*
             List<Assembly> asslist = new List<Assembly>();
@@ -28,22 +28,24 @@ namespace AbilityUser
             asslist.Add(System.Reflection.Assembly.GetExecutingAssembly());
             */
 
-            List<Assembly> asslist = new List<Assembly>( AppDomain.CurrentDomain.GetAssemblies() );
+            List<Assembly> asslist = new List<Assembly>(AppDomain.CurrentDomain.GetAssemblies());
 
             //            Log.Message("GetAllChildrenOf 1");
-            foreach( System.Reflection.Assembly ass in asslist ) {
+            foreach (System.Reflection.Assembly ass in asslist)
+            {
                 //                Log.Message(" ... assembly "+an.ToString());
                 //System.Reflection.Assembly ass = System.Reflection.Assembly.Load(an.ToString());
-                if ( ass != null ) {
-//                    Log.Message(" ... ass : "+ass.ToString()+" "+ass.GetName().Name);
-//                    if ( ass.GetName().Name == "UnificaMagica" ) {
-//                        foreach ( Type tt in ass.GetTypes() ) {
-//                            Log.Message("   UnificaMagica : "+tt.ToString() );
-//                        }
-//                    }
-                    List<Type> asschildren = ass.GetTypes().Where(t => t.IsClass && t != pType && pType.IsAssignableFrom(t) ).ToList();
+                if (ass != null)
+                {
+                    //                    Log.Message(" ... ass : "+ass.ToString()+" "+ass.GetName().Name);
+                    //                    if ( ass.GetName().Name == "UnificaMagica" ) {
+                    //                        foreach ( Type tt in ass.GetTypes() ) {
+                    //                            Log.Message("   UnificaMagica : "+tt.ToString() );
+                    //                        }
+                    //                    }
+                    List<Type> asschildren = ass.GetTypes().Where(t => t.IsClass && t != pType && pType.IsAssignableFrom(t)).ToList();
                     //                    Log.Message("GetAllChildrenOf 1.2");
-//                    if ( asschildren.Count > 0 ) { Log.Message("found "+asschildren.Count+" children in assembly "+ass.FullName); }
+                    //                    if ( asschildren.Count > 0 ) { Log.Message("found "+asschildren.Count+" children in assembly "+ass.FullName); }
                     //                    Log.Message("GetAllChildrenOf 1.3");
                     retval.AddRange(asschildren);
                     //                    Log.Message("GetAllChildrenOf 1.4");
@@ -56,18 +58,21 @@ namespace AbilityUser
         }
 
 
-        public static bool TransformPawn(Pawn p) {
+        public static bool TransformPawn(Pawn p)
+        {
             bool retval = false;
-//            Log.Message("AbilityUserUtility.TransformPawn(p)");
+            //            Log.Message("AbilityUserUtility.TransformPawn(p)");
 
             // init... grab all child classes
-            if ( AbilityUserUtility.abilityUserChildren == null ) {
-//                Log.Message("initializing all abilityUserChlildren");
+            if (AbilityUserUtility.abilityUserChildren == null)
+            {
+                //                Log.Message("initializing all abilityUserChlildren");
                 AbilityUserUtility.abilityUserChildren = AbilityUserUtility.GetAllChildrenOf(typeof(CompAbilityUser));
-//                Log.Message("initializing CompAbilityUser children: found "+AbilityUserUtility.abilityUserChildren.Count+" classes");
+                //                Log.Message("initializing CompAbilityUser children: found "+AbilityUserUtility.abilityUserChildren.Count+" classes");
             }
 
-            foreach ( Type t in AbilityUserUtility.abilityUserChildren) {
+            foreach (Type t in AbilityUserUtility.abilityUserChildren)
+            {
                 bool st = true;
                 /*
                 // this code does a check, but since there is no good way to create triggers when specific events occur to
@@ -76,18 +81,19 @@ namespace AbilityUser
                 object shouldtransform = t.GetMethod("TryTransformPawn").Invoke(null,new object[]{p}); // call static method of child class
                 if ( shouldtransform is bool ) st = (bool) shouldtransform;
                 */
-                if ( st ) {
-//                    Log.Message(" YES: actually adding in AbilityUser");
+                if (st)
+                {
+                    //                    Log.Message(" YES: actually adding in AbilityUser");
                     retval = true;
                     ThingComp thingComp = (ThingComp)Activator.CreateInstance((t));
                     thingComp.parent = p;
-                    var comps = AccessTools.Field(typeof(ThingWithComps), "comps").GetValue(p);
+                    object comps = AccessTools.Field(typeof(ThingWithComps), "comps").GetValue(p);
                     if (comps != null)
                     {
                         ((List<ThingComp>)comps).Add(thingComp);
                     }
                     thingComp.Initialize(null);
-                    
+
                 }
             }
             return retval;

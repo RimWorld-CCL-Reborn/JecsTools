@@ -3,7 +3,6 @@ using RimWorld;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using UnityEngine;
 using Verse;
 using Verse.AI;
@@ -15,56 +14,31 @@ namespace CompDeflector
         private int animationDeflectionTicks = 0;
         public int AnimationDeflectionTicks
         {
-            set
-            {
-                animationDeflectionTicks = value;
-            }
-            get
-            {
-                return animationDeflectionTicks;
-            }
+            set => this.animationDeflectionTicks = value;
+            get => this.animationDeflectionTicks;
         }
         public bool IsAnimatingNow
         {
             get
             {
-                if (animationDeflectionTicks >= 0) return true;
+                if (this.animationDeflectionTicks >= 0) return true;
                 return false;
             }
         }
 
-        public CompEquippable GetEquippable
-        {
-            get
-            {
-                return this.parent.GetComp<CompEquippable>();
-            }
-        }
+        public CompEquippable GetEquippable => this.parent.GetComp<CompEquippable>();
 
-        public Pawn GetPawn
-        {
-            get
-            {
-                return GetEquippable.verbTracker.PrimaryVerb.CasterPawn;
-            }
-        }
+        public Pawn GetPawn => this.GetEquippable.verbTracker.PrimaryVerb.CasterPawn;
 
-        public ThingComp GetActivatableEffect
-        {
-            get
-            {
-                return this.parent.AllComps.FirstOrDefault<ThingComp>((ThingComp y) => y.GetType().ToString().Contains("ActivatableEffect"));
-            }
-        }
+        public ThingComp GetActivatableEffect => this.parent.AllComps.FirstOrDefault<ThingComp>((ThingComp y) => y.GetType().ToString().Contains("ActivatableEffect"));
 
         public bool HasCompActivatableEffect
         {
             get
             {
-                ThingWithComps x = this.parent as ThingWithComps;
-                if (x != null)
+                if (this.parent is ThingWithComps x)
                 {
-                    if (GetActivatableEffect != null)
+                    if (this.GetActivatableEffect != null)
                     {
                         return true;
                     }
@@ -109,7 +83,7 @@ namespace CompDeflector
             int d100 = Rand.Range(1, 100);
             int modifier = 0;
             int difficulty = 80;
-            Pawn thisPawn = GetPawn;
+            Pawn thisPawn = this.GetPawn;
             if (thisPawn != null)
             {
                 if (thisPawn.skills != null)
@@ -155,26 +129,23 @@ namespace CompDeflector
             //Placeholder
         }
 
-        public virtual bool TrySpecialMeleeBlock()
-        {
-            return false;
-        }
+        public virtual bool TrySpecialMeleeBlock() => false;
 
         public float DeflectionChance
         {
             get
             {
-                float calc = Props.baseDeflectChance;
+                float calc = this.Props.baseDeflectChance;
                 
-                if (GetEquippable != null)
+                if (this.GetEquippable != null)
                 {
-                    if (GetPawn != null)
+                    if (this.GetPawn != null)
                     {
-                        Pawn pawn = GetPawn;
+                        Pawn pawn = this.GetPawn;
 
                         //This handles if a deflection skill is defined.
                         //Example, melee skill of 20.
-                        if (Props.useSkillInCalc)
+                        if (this.Props.useSkillInCalc)
                         {
                             SkillDef skillToCheck = this.Props.deflectSkill;
                             if (skillToCheck != null)
@@ -187,7 +158,7 @@ namespace CompDeflector
                                         float param = this.Props.deflectRatePerSkillPoint;
                                         if (param != 0)
                                         {
-                                            calc += ((float)skillRecord.Level) * param; //Makes the skill into float percent
+                                            calc += skillRecord.Level * param; //Makes the skill into float percent
                                                                                         //Ex: Melee skill of 20. Multiplied by 0.015f. Equals 0.3f, or 30%
                                         }
                                         else
@@ -204,7 +175,7 @@ namespace CompDeflector
                         calc = DeflectionChance_InFix(calc);
 
                         //This handles if manipulation needs to be checked.
-                        if (Props.useManipulationInCalc)
+                        if (this.Props.useManipulationInCalc)
                         {
                             if (pawn.health.capacities.CapableOf(PawnCapacityDefOf.Manipulation))
                             {
@@ -221,23 +192,14 @@ namespace CompDeflector
             }
         }
 
-        public virtual float DeflectionChance_InFix(float calc)
-        {
-            return calc;
-        }
+        public virtual float DeflectionChance_InFix(float calc) => calc;
 
-        public string ChanceToString
-        {
-            get
-            {
-                return DeflectionChance.ToStringPercent();
-            }
-        }
+        public string ChanceToString => this.DeflectionChance.ToStringPercent();
 
         public IEnumerable<StatDrawEntry> SpecialDisplayStats()
         {
             //yield return new StatDrawEntry(StatCategoryDefOf.Basics, "DeflectChance".Translate(), ChanceToString, 0);
-            yield return new StatDrawEntry(StatCategoryDefOf.Basics, "Deflect chance", ChanceToString, 0);
+            yield return new StatDrawEntry(StatCategoryDefOf.Basics, "Deflect chance", this.ChanceToString, 0);
             
             yield break;
         }
@@ -254,58 +216,59 @@ namespace CompDeflector
 
         public virtual Verb ReflectionHandler(Verb newVerb)
         {
-            if (Props.canReflect)
+            if (this.Props.canReflect)
             {
-                lastAccuracyRoll = ReflectionAccuracy();
+                this.lastAccuracyRoll = ReflectionAccuracy();
                 Verb deflectVerb = newVerb;
 
                 //Initialize VerbProperties
-                VerbProperties newVerbProps = new VerbProperties();
+                VerbProperties newVerbProps = new VerbProperties()
+                {
 
-                //Copy values over to a new verb props
-                newVerbProps.hasStandardCommand = newVerb.verbProps.hasStandardCommand;
-                newVerbProps.projectileDef = newVerb.verbProps.projectileDef;
-                newVerbProps.range = newVerb.verbProps.range;
-                newVerbProps.muzzleFlashScale = newVerb.verbProps.muzzleFlashScale;
-                newVerbProps.warmupTime = 0;
-                newVerbProps.defaultCooldownTime = 0;
-                newVerbProps.soundCast = this.Props.deflectSound;
-
-                switch (lastAccuracyRoll)
+                    //Copy values over to a new verb props
+                    hasStandardCommand = newVerb.verbProps.hasStandardCommand,
+                    projectileDef = newVerb.verbProps.projectileDef,
+                    range = newVerb.verbProps.range,
+                    muzzleFlashScale = newVerb.verbProps.muzzleFlashScale,
+                    warmupTime = 0,
+                    defaultCooldownTime = 0,
+                    soundCast = this.Props.deflectSound
+                };
+                switch (this.lastAccuracyRoll)
                 {
                     case AccuracyRoll.CriticalSuccess:
-                        if (GetPawn != null)
+                        if (this.GetPawn != null)
                         {
-                            MoteMaker.ThrowText(GetPawn.DrawPos, GetPawn.Map, "SWSaber_TextMote_CriticalSuccess".Translate(), 6f);
+                            MoteMaker.ThrowText(this.GetPawn.DrawPos, this.GetPawn.Map, "SWSaber_TextMote_CriticalSuccess".Translate(), 6f);
                         }
                         newVerbProps.accuracyLong = 999.0f;
                         newVerbProps.accuracyMedium = 999.0f;
                         newVerbProps.accuracyShort = 999.0f;
-                        lastShotReflected = true;
+                        this.lastShotReflected = true;
                         break;
                     case AccuracyRoll.Failure:
                         newVerbProps.forcedMissRadius = 50.0f;
                         newVerbProps.accuracyLong = 0.0f;
                         newVerbProps.accuracyMedium = 0.0f;
                         newVerbProps.accuracyShort = 0.0f;
-                        lastShotReflected = false;
+                        this.lastShotReflected = false;
                         break;
 
                     case AccuracyRoll.CritialFailure:
-                        if (GetPawn != null)
+                        if (this.GetPawn != null)
                         {
-                            MoteMaker.ThrowText(GetPawn.DrawPos, GetPawn.Map, "SWSaber_TextMote_CriticalFailure".Translate(), 6f);
+                            MoteMaker.ThrowText(this.GetPawn.DrawPos, this.GetPawn.Map, "SWSaber_TextMote_CriticalFailure".Translate(), 6f);
                         }
                         newVerbProps.accuracyLong = 999.0f;
                         newVerbProps.accuracyMedium = 999.0f;
                         newVerbProps.accuracyShort = 999.0f;
-                        lastShotReflected = true;
+                        this.lastShotReflected = true;
                         break;
                     case AccuracyRoll.Success:
                         newVerbProps.accuracyLong = 999.0f;
                         newVerbProps.accuracyMedium = 999.0f;
                         newVerbProps.accuracyShort = 999.0f;
-                        lastShotReflected = true;
+                        this.lastShotReflected = true;
                         break;
                 }
                 //Apply values
@@ -316,54 +279,50 @@ namespace CompDeflector
 
         }
 
-        public virtual Verb CopyAndReturnNewVerb_PostFix(Verb newVerb)
-        {
-            return newVerb;
-        }
+        public virtual Verb CopyAndReturnNewVerb_PostFix(Verb newVerb) => newVerb;
 
         public Verb CopyAndReturnNewVerb(Verb newVerb = null)
         {
             if (newVerb != null)
             {
-                deflectVerb = null;
-                deflectVerb = (Verb_Deflected)Activator.CreateInstance(typeof(Verb_Deflected));
-                deflectVerb.caster = GetPawn;
+                this.deflectVerb = null;
+                this.deflectVerb = (Verb_Deflected)Activator.CreateInstance(typeof(Verb_Deflected));
+                this.deflectVerb.caster = this.GetPawn;
 
                 //Initialize VerbProperties
-                VerbProperties newVerbProps = new VerbProperties();
+                VerbProperties newVerbProps = new VerbProperties()
+                {
 
-                //Copy values over to a new verb props
-                newVerbProps.hasStandardCommand = newVerb.verbProps.hasStandardCommand;
-                newVerbProps.projectileDef = newVerb.verbProps.projectileDef;
-                newVerbProps.range = newVerb.verbProps.range;
-                newVerbProps.muzzleFlashScale = newVerb.verbProps.muzzleFlashScale;
-                newVerbProps.warmupTime = 0;
-                newVerbProps.defaultCooldownTime = 0;
-                newVerbProps.soundCast = this.Props.deflectSound;
+                    //Copy values over to a new verb props
+                    hasStandardCommand = newVerb.verbProps.hasStandardCommand,
+                    projectileDef = newVerb.verbProps.projectileDef,
+                    range = newVerb.verbProps.range,
+                    muzzleFlashScale = newVerb.verbProps.muzzleFlashScale,
+                    warmupTime = 0,
+                    defaultCooldownTime = 0,
+                    soundCast = this.Props.deflectSound
+                };
 
                 //Apply values
-                deflectVerb.verbProps = newVerbProps;
+                this.deflectVerb.verbProps = newVerbProps;
             }
             else
             {
-                if (deflectVerb == null)
+                if (this.deflectVerb == null)
                 {
-                    deflectVerb = (Verb_Deflected)Activator.CreateInstance(typeof(Verb_Deflected));
-                    deflectVerb.caster = GetPawn;
-                    deflectVerb.verbProps = this.Props.DeflectVerb;
+                    this.deflectVerb = (Verb_Deflected)Activator.CreateInstance(typeof(Verb_Deflected));
+                    this.deflectVerb.caster = this.GetPawn;
+                    this.deflectVerb.verbProps = this.Props.DeflectVerb;
                 }
             }
-            return deflectVerb;
+            return this.deflectVerb;
         }
 
-        public void ResolveDeflectVerb()
-        {
-            CopyAndReturnNewVerb(null);
-        }
+        public void ResolveDeflectVerb() => CopyAndReturnNewVerb(null);
 
         public virtual Pawn ResolveDeflectionTarget(Pawn defaultTarget = null)
         {
-            if (lastAccuracyRoll == AccuracyRoll.CritialFailure)
+            if (this.lastAccuracyRoll == AccuracyRoll.CritialFailure)
             {
                 Pawn thisPawn = this.GetPawn;
                 if (thisPawn != null && !thisPawn.Dead)
@@ -387,7 +346,7 @@ namespace CompDeflector
         public virtual void CriticalFailureHandler(DamageInfo dinfo, Pawn newTarget, out bool shouldContinue)
         {
             shouldContinue = true;
-            if (lastAccuracyRoll == AccuracyRoll.CritialFailure)
+            if (this.lastAccuracyRoll == AccuracyRoll.CritialFailure)
             {
                 Pawn thisPawn = this.GetPawn;
                 if (thisPawn != null && !thisPawn.Dead)
@@ -398,7 +357,7 @@ namespace CompDeflector
                         return;
                     }
                     shouldContinue = false;
-                    GetPawn.TakeDamage(new DamageInfo(dinfo.Def, dinfo.Amount));
+                    this.GetPawn.TakeDamage(new DamageInfo(dinfo.Def, dinfo.Amount));
                 }
             }
         }
@@ -408,13 +367,14 @@ namespace CompDeflector
             try
             {
 
-                Pawn pawn2 = dinfo.Instigator as Pawn;
 
-                if (pawn2 != null)
+                if (dinfo.Instigator is Pawn pawn2)
                 {
-                    Job job = new Job(CompDeflectorDefOf.CastDeflectVerb);
-                    job.playerForced = true;
-                    job.locomotionUrgency = LocomotionUrgency.Sprint;
+                    Job job = new Job(CompDeflectorDefOf.CastDeflectVerb)
+                    {
+                        playerForced = true,
+                        locomotionUrgency = LocomotionUrgency.Sprint
+                    };
                     if (pawn2.equipment != null)
                     {
                         CompEquippable compEquip = pawn2.equipment.PrimaryEq;
@@ -423,17 +383,16 @@ namespace CompDeflector
                             if (compEquip.PrimaryVerb != null)
                             {
                                 Verb_Deflected verbToUse = (Verb_Deflected)CopyAndReturnNewVerb(compEquip.PrimaryVerb);
-                                verbToUse = (Verb_Deflected)ReflectionHandler(deflectVerb);
+                                verbToUse = (Verb_Deflected)ReflectionHandler(this.deflectVerb);
                                 verbToUse.lastShotReflected = this.lastShotReflected;
                                 pawn2 = ResolveDeflectionTarget(pawn2);
-                                bool shouldContinue = false;
-                                CriticalFailureHandler(dinfo, pawn2, out shouldContinue);
+                                CriticalFailureHandler(dinfo, pawn2, out bool shouldContinue);
                                 if (shouldContinue)
                                 {
                                     job.targetA = pawn2;
                                     job.verbToUse = verbToUse;
                                     job.killIncappedTarget = pawn2.Downed;
-                                    GetPawn.jobs.TryTakeOrderedJob(job);
+                                    this.GetPawn.jobs.TryTakeOrderedJob(job);
                                 }
                             }
                         }
@@ -456,9 +415,9 @@ namespace CompDeflector
                 if (!dinfo.WeaponGear.IsMeleeWeapon && dinfo.WeaponBodyPartGroup == null)
                 {
 
-                    if (HasCompActivatableEffect)
+                    if (this.HasCompActivatableEffect)
                     {
-                        bool? isActive = (bool)AccessTools.Method(GetActivatableEffect.GetType(), "IsActive").Invoke(GetActivatableEffect, null);
+                        bool? isActive = (bool)AccessTools.Method(this.GetActivatableEffect.GetType(), "IsActive").Invoke(this.GetActivatableEffect, null);
                         if (isActive == false)
                         {
                             ////Log.Message("Inactivate Weapon");
@@ -466,12 +425,12 @@ namespace CompDeflector
                             return;
                         }
                     }
-                    float calc = DeflectionChance;
+                    float calc = this.DeflectionChance;
                     int deflectThreshold = (int)(calc * 100); // 0.3f => 30
                     if (Rand.Range(1, 100) > deflectThreshold)
                     {
                         absorbed = false;
-                        lastShotReflected = false;
+                        this.lastShotReflected = false;
                         return;
                     }
 
@@ -492,12 +451,6 @@ namespace CompDeflector
         }
 
 
-        public CompProperties_Deflector Props
-        {
-            get
-            {
-                return (CompProperties_Deflector)this.props;
-            }
-        }
+        public CompProperties_Deflector Props => (CompProperties_Deflector)this.props;
     }
 }

@@ -1,8 +1,4 @@
 ﻿using RimWorld;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 using Verse;
 
@@ -14,15 +10,12 @@ namespace CompDeflector
 
         public override bool CanHitTargetFrom(IntVec3 root, LocalTargetInfo targ)
         {
-            if (lastShotReflected) return true;
+            if (this.lastShotReflected) return true;
             return base.CanHitTargetFrom(root, targ);
         }
 
         //A16 TryCastShot Code
-        protected override bool TryCastShot()
-        {
-            return TryCastShot_A16Vanilla_Modified();
-        }
+        protected override bool TryCastShot() => TryCastShot_A16Vanilla_Modified();
 
         public bool TryCastShot_A16Vanilla_Modified()
         {
@@ -30,8 +23,7 @@ namespace CompDeflector
             {
                 return false;
             }
-            ShootLine shootLine;
-            bool flag = base.TryFindShootLineFromTo(this.caster.Position, this.currentTarget, out shootLine);
+            bool flag = base.TryFindShootLineFromTo(this.caster.Position, this.currentTarget, out ShootLine shootLine);
             if (this.verbProps.stopBurstWithoutLos && !flag)
             {
                 return false;
@@ -42,7 +34,7 @@ namespace CompDeflector
             ///MODIFIED SECTION
             ////////////////////////////////////////////
 
-            if (lastShotReflected)
+            if (this.lastShotReflected)
             {
                 ////Log.Message("lastShotReflected Called");
                 projectile.Launch(this.caster, drawPos, this.currentTarget, this.ownerEquipment);

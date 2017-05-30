@@ -1,16 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Verse;
+﻿using Verse;
 
 namespace AbilityUser
 {
     public class CompProperties_AbilityUser : CompProperties
     {
-        public CompProperties_AbilityUser()
-        {
-            compClass = typeof(CompAbilityUser);
-        }
+        public CompProperties_AbilityUser() => this.compClass = typeof(CompAbilityUser);
     }
 }

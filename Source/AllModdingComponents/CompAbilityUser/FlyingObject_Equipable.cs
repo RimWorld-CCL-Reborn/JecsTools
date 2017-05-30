@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Verse;
+﻿using Verse;
 using Verse.Sound;
 
 namespace AbilityUser
@@ -11,18 +7,16 @@ namespace AbilityUser
     {
         protected override void Impact(Thing hitThing)
         {
-            if (flyingThing != null)
+            if (this.flyingThing != null)
             {
-                GenSpawn.Spawn(flyingThing, this.Position, this.Map);
-                if (launcher != null)
+                GenSpawn.Spawn(this.flyingThing, this.Position, this.Map);
+                if (this.launcher != null)
                 {
-                    Pawn equipper = launcher as Pawn;
-                    if (equipper != null)
+                    if (this.launcher is Pawn equipper)
                     {
                         if (equipper.equipment != null)
                         {
-                            ThingWithComps flyingThingWithComps = flyingThing as ThingWithComps;
-                            if (flyingThingWithComps != null)
+                            if (this.flyingThing is ThingWithComps flyingThingWithComps)
                             {
                                 Equip(equipper, flyingThingWithComps);
                             }

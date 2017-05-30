@@ -1,5 +1,4 @@
 ﻿using RimWorld;
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Verse;
@@ -28,9 +27,6 @@ namespace CompSlotLoadable
 
         public SlotBonusProps_VampiricEffect vampiricHealChance = null;
 
-        public CompProperties_SlottedBonus()
-        {
-            this.compClass = typeof(CompSlottedBonus);
-        }
+        public CompProperties_SlottedBonus() => this.compClass = typeof(CompSlottedBonus);
     }
 }

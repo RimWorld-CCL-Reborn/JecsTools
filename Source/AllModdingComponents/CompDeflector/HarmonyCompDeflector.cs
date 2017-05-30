@@ -1,12 +1,7 @@
 ﻿using Harmony;
 using RimWorld;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Verse;
-using Verse.AI;
-using System.Reflection;
 using UnityEngine;
 
 namespace CompDeflector
@@ -143,8 +138,7 @@ namespace CompDeflector
             //if (dinfo.Instigator == null) return true;
             try
             {
-                Pawn pawn = __instance as Pawn;
-                if (pawn != null)
+                if (__instance is Pawn pawn)
                 {
                     Pawn_EquipmentTracker pawn_EquipmentTracker = pawn.equipment;
                     if (pawn_EquipmentTracker != null)
@@ -167,8 +161,7 @@ namespace CompDeflector
                                                 {
                                                     if (!dinfo.WeaponGear.IsMeleeWeapon)
                                                     {
-                                                        bool newAbsorbed = false;
-                                                        compDeflector.PostPreApplyDamage(dinfo, out newAbsorbed);
+                                                        compDeflector.PostPreApplyDamage(dinfo, out bool newAbsorbed);
                                                         if (newAbsorbed)
                                                         {
                                                             compDeflector.AnimationDeflectionTicks = 1200;

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Verse;
+﻿using Verse;
 
 namespace CompVehicle
 {
@@ -18,8 +14,8 @@ namespace CompVehicle
 
         public Bill_LoadVehicle(Pawn newLoad, Pawn newVehicle, VehicleHandlerGroup newGroup)
         {
-            pawnToLoad = newLoad;
-            group = newGroup;
+            this.pawnToLoad = newLoad;
+            this.group = newGroup;
         }
 
         public void ExposeData()

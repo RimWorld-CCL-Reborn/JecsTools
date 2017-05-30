@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using UnityEngine;
 using Verse;
 using Verse.AI.Group;
@@ -32,9 +31,9 @@ namespace AbilityUser
             this.ticksToImpact--;
             if (this.ticksToImpact <= 0)
             {
-                if (this.DestinationCell.InBounds(base.Map))
+                if (this.DestinationCell.InBounds(this.Map))
                 {
-                    base.Position = this.DestinationCell;
+                    this.Position = this.DestinationCell;
                 }
                 this.ImpactSomething();
                 return;
@@ -87,8 +86,7 @@ namespace AbilityUser
             // Impact the initial targeted pawn.
             if (this.assignedTarget != null)
             {
-                Pawn pawn = this.assignedTarget as Pawn;
-                if (pawn != null && pawn.Downed && (this.origin - this.destination).magnitude > 5f && Rand.Value < 0.2f)
+                if (this.assignedTarget is Pawn pawn && pawn.Downed && (this.origin - this.destination).magnitude > 5f && Rand.Value < 0.2f)
                 {
                     this.Impact(null);
                     return;
@@ -119,35 +117,32 @@ namespace AbilityUser
             }
         }
 
-        public ProjectileDef_Ability mpdef
+        public ProjectileDef_Ability Mpdef
         {
             get
             {
                 ProjectileDef_Ability mpdef = null;
-                if (def is ProjectileDef_Ability)
+                if (this.def is ProjectileDef_Ability)
                 {
-                    mpdef = def as ProjectileDef_Ability;
+                    mpdef = this.def as ProjectileDef_Ability;
                 }
                 return mpdef;
             }
         }
 
 
-        public virtual bool CanOverpower(Pawn caster, Thing hitThing)
-        {
-            return true;
-        }
+        public virtual bool CanOverpower(Pawn caster, Thing hitThing) => true;
 
         public void ApplyHediffsAndMentalStates(Pawn victim)
         {
             try
             {
                 //Log.Message("ApplyHediffsAndMentalStates");
-                if (localApplyMentalStates != null)
+                if (this.localApplyMentalStates != null)
                 {
-                    if (localApplyMentalStates.Count > 0)
+                    if (this.localApplyMentalStates.Count > 0)
                     {
-                        foreach (ApplyMentalStates mentalStateGiver in localApplyMentalStates)
+                        foreach (ApplyMentalStates mentalStateGiver in this.localApplyMentalStates)
                         {
                             bool success = false;
                             float checkValue = Rand.Value;
@@ -159,7 +154,7 @@ namespace AbilityUser
                                  });
                                 if (mentalStateGiver.mentalStateDef == MentalStateDefOf.Berserk && victim.RaceProps.intelligence < Intelligence.Humanlike)
                                 {
-                                    if (Caster == victim || CanOverpower(Caster, victim))
+                                    if (this.Caster == victim || CanOverpower(this.Caster, victim))
                                     {
                                         success = true;
                                         victim.mindState.mentalStateHandler.TryStartMentalState(MentalStateDefOf.Manhunter, str, true);
@@ -167,7 +162,7 @@ namespace AbilityUser
                                 }
                                 else
                                 {
-                                    if (Caster == victim || CanOverpower(Caster, victim))
+                                    if (this.Caster == victim || CanOverpower(this.Caster, victim))
                                     {
                                         success = true;
                                         victim.mindState.mentalStateHandler.TryStartMentalState(mentalStateGiver.mentalStateDef, str, true);
@@ -175,22 +170,22 @@ namespace AbilityUser
                                 }
                             }
                             if (success)
-                                MoteMaker.ThrowText(Caster.PositionHeld.ToVector3(), Caster.MapHeld, StringsToTranslate.AU_CastSuccess, 12f);
+                                MoteMaker.ThrowText(this.Caster.PositionHeld.ToVector3(), this.Caster.MapHeld, StringsToTranslate.AU_CastSuccess, 12f);
                             else
-                                MoteMaker.ThrowText(Caster.PositionHeld.ToVector3(), Caster.MapHeld, StringsToTranslate.AU_CastFailure, 12f);
+                                MoteMaker.ThrowText(this.Caster.PositionHeld.ToVector3(), this.Caster.MapHeld, StringsToTranslate.AU_CastFailure, 12f);
                         }
                     }
                 }
-                if (localApplyHediffs != null)
+                if (this.localApplyHediffs != null)
                 {
-                    if (localApplyHediffs.Count > 0)
+                    if (this.localApplyHediffs.Count > 0)
                     {
-                        foreach (ApplyHediffs hediffs in localApplyHediffs)
+                        foreach (ApplyHediffs hediffs in this.localApplyHediffs)
                         {
                             bool success = false;
                             if (Rand.Value <= hediffs.applyChance)
                             {
-                                if (victim == Caster || CanOverpower(Caster, victim))
+                                if (victim == this.Caster || CanOverpower(this.Caster, victim))
                                 {
                                     Hediff newHediff = HediffMaker.MakeHediff(hediffs.hediffDef, victim, null);
                                     victim.health.AddHediff(newHediff, null, null);
@@ -199,14 +194,14 @@ namespace AbilityUser
                                 }
                             }
                             if (success)
-                                MoteMaker.ThrowText(Caster.PositionHeld.ToVector3(), Caster.MapHeld, StringsToTranslate.AU_CastSuccess);
+                                MoteMaker.ThrowText(this.Caster.PositionHeld.ToVector3(), this.Caster.MapHeld, StringsToTranslate.AU_CastSuccess);
                             else
-                                MoteMaker.ThrowText(Caster.PositionHeld.ToVector3(), Caster.MapHeld, StringsToTranslate.AU_CastFailure);
+                                MoteMaker.ThrowText(this.Caster.PositionHeld.ToVector3(), this.Caster.MapHeld, StringsToTranslate.AU_CastFailure);
                         }
                     }
                 }
             }
-            catch (NullReferenceException e)
+            catch (NullReferenceException)
             {
                 
             }
@@ -279,11 +274,11 @@ namespace AbilityUser
         public void SpawnSpawnables()
         {
             //Log.Message("SpawnSpawnables");
-            if (localSpawnThings != null && localSpawnThings.Count > 0)
+            if (this.localSpawnThings != null && this.localSpawnThings.Count > 0)
             {
 
                 //Log.Message("1S");
-                foreach (SpawnThings spawnables in localSpawnThings)
+                foreach (SpawnThings spawnables in this.localSpawnThings)
                 {
 
                     //Log.Message("2S");
@@ -306,10 +301,9 @@ namespace AbilityUser
             //Log.Message("ImpactOverride");
             if (hitThing != null)
             {
-                Pawn victim = hitThing as Pawn;
-                if (victim != null)
+                if (hitThing is Pawn victim)
                 {
-                    if (mpdef != null)
+                    if (this.Mpdef != null)
                     {
                         SpawnSpawnables();
                         ApplyHediffsAndMentalStates(victim);
@@ -319,15 +313,15 @@ namespace AbilityUser
 
             }
             SpawnSpawnables();
-            ApplyHediffsAndMentalStates(Caster);
+            ApplyHediffsAndMentalStates(this.Caster);
         }
         
         public void Launch(Thing launcher, Vector3 origin, LocalTargetInfo targ, Thing equipment = null, List<ApplyHediffs> applyHediffs = null, List<ApplyMentalStates> applyMentalStates = null, List<SpawnThings> spawnThings = null)
         {
             //Log.Message("Projectile_AbilityBase");
-            localApplyHediffs = applyHediffs;
-            localApplyMentalStates = applyMentalStates;
-            localSpawnThings = spawnThings;
+            this.localApplyHediffs = applyHediffs;
+            this.localApplyMentalStates = applyMentalStates;
+            this.localSpawnThings = spawnThings;
             base.Launch(launcher, origin, targ, equipment);
         }
 
@@ -337,11 +331,11 @@ namespace AbilityUser
             Impact_Override(hitThing);
             if (hitThing != null)
             {
-                if (extraDamages != null && extraDamages.Count > 0)
+                if (this.extraDamages != null && this.extraDamages.Count > 0)
                 {
-                    foreach (ExtraDamage damage in extraDamages)
+                    foreach (ExtraDamage damage in this.extraDamages)
                     {
-                        DamageInfo extraDinfo = new DamageInfo(damage.damageDef, damage.damage, this.ExactRotation.eulerAngles.y, this.launcher, null, equipmentDef);
+                        DamageInfo extraDinfo = new DamageInfo(damage.damageDef, damage.damage, this.ExactRotation.eulerAngles.y, this.launcher, null, this.equipmentDef);
                         hitThing.TakeDamage(extraDinfo);
                     }
                 }

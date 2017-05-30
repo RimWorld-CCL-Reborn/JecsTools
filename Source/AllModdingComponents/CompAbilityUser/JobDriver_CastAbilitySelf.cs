@@ -1,8 +1,5 @@
 ﻿using RimWorld;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 using Verse;
 using Verse.AI;
@@ -11,13 +8,7 @@ namespace AbilityUser
 {
     public class JobDriver_CastAbilitySelf : JobDriver
     {
-        private CompAbilityUser compAbilityUser
-        {
-            get
-            {
-                return this.pawn.TryGetComp<CompAbilityUser>();
-            }
-        }
+        private CompAbilityUser CompAbilityUser => this.pawn.TryGetComp<CompAbilityUser>();
 
         public void EvaluateCell(IntVec3 c, CastPositionRequest req,
             float maxRangeFromTargetSquared,
@@ -28,7 +19,7 @@ namespace AbilityUser
             )
         {
             /////////////// EVALUATE CELL METHOD
-            if (maxRangeFromTargetSquared > 0.01f && maxRangeFromTargetSquared < 250000f && (c - TargetA.Cell).LengthHorizontalSquared > maxRangeFromTargetSquared)
+            if (maxRangeFromTargetSquared > 0.01f && maxRangeFromTargetSquared < 250000f && (c - this.TargetA.Cell).LengthHorizontalSquared > maxRangeFromTargetSquared)
             {
                 if (DebugViewSettings.drawCastPositionSearch)
                 {
@@ -37,7 +28,7 @@ namespace AbilityUser
                 }
                 return;
             }
-            if ((double)maxRangeFromLocusSquared > 0.01 && (c - req.locus).LengthHorizontalSquared > maxRangeFromLocusSquared)
+            if (maxRangeFromLocusSquared > 0.01 && (c - req.locus).LengthHorizontalSquared > maxRangeFromLocusSquared)
             {
                 if (DebugViewSettings.drawCastPositionSearch)
                 {
@@ -86,15 +77,15 @@ namespace AbilityUser
         {
             ByteGrid avoidGrid = null;
             int inRadiusMark = 0;
-            if (pawn.CurJob.verbToUse == null)
+            if (this.pawn.CurJob.verbToUse == null)
             {
-                Log.Error(pawn + " tried to find casting position without a verb.");
+                Log.Error(this.pawn + " tried to find casting position without a verb.");
                 dest = IntVec3.Invalid;
                 return false;
             }
             if (req.maxRegionsRadius > 0)
             {
-                Region region = req.caster.PositionHeld.GetRegion(pawn.Map);
+                Region region = req.caster.PositionHeld.GetRegion(this.pawn.Map);
                 if (region == null)
                 {
                     Log.Error("TryFindCastPosition requiring region traversal but root region is null.");
@@ -105,7 +96,7 @@ namespace AbilityUser
                 RegionTraverser.MarkRegionsBFS(region, null, req.maxRegionsRadius, inRadiusMark);
                 if (req.maxRangeFromLocus > 0.01f)
                 {
-                    Region region2 = req.locus.GetRegion(pawn.Map);
+                    Region region2 = req.locus.GetRegion(this.pawn.Map);
                     if (region2 == null)
                     {
                         Log.Error("locus " + req.locus + " has no region");
@@ -131,16 +122,16 @@ namespace AbilityUser
             if (req.maxRangeFromCaster > 0.01f)
             {
                 int numSolo = Mathf.CeilToInt(req.maxRangeFromCaster);
-                CellRect otherRect = new CellRect(pawn.PositionHeld.x - numSolo, pawn.PositionHeld.z - numSolo, numSolo * 2 + 1, numSolo * 2 + 1);
+                CellRect otherRect = new CellRect(this.pawn.PositionHeld.x - numSolo, this.pawn.PositionHeld.z - numSolo, numSolo * 2 + 1, numSolo * 2 + 1);
                 cellRect.ClipInsideRect(otherRect);
             }
             int num2 = Mathf.CeilToInt(req.maxRangeFromTarget);
-            CellRect otherRect2 = new CellRect(TargetA.Cell.x - num2, TargetA.Cell.z - num2, num2 * 2 + 1, num2 * 2 + 1);
+            CellRect otherRect2 = new CellRect(this.TargetA.Cell.x - num2, this.TargetA.Cell.z - num2, num2 * 2 + 1, num2 * 2 + 1);
             cellRect.ClipInsideRect(otherRect2);
             if (req.maxRangeFromLocus > 0.01f)
             {
                 int numThree = Mathf.CeilToInt(req.maxRangeFromLocus);
-                CellRect otherRect3 = new CellRect(TargetA.Cell.x - numThree, TargetA.Cell.z - numThree, numThree * 2 + 1, numThree * 2 + 1);
+                CellRect otherRect3 = new CellRect(this.TargetA.Cell.x - numThree, this.TargetA.Cell.z - numThree, numThree * 2 + 1, numThree * 2 + 1);
                 cellRect.ClipInsideRect(otherRect3);
             }
             IntVec3 bestSpot = IntVec3.Invalid;
@@ -148,10 +139,10 @@ namespace AbilityUser
             float maxRangeFromCasterSquared = req.maxRangeFromCaster * req.maxRangeFromCaster;
             float maxRangeFromTargetSquared = req.maxRangeFromTarget * req.maxRangeFromTarget;
             float maxRangeFromLocusSquared = req.maxRangeFromLocus * req.maxRangeFromLocus;
-            float rangeFromTarget = (req.caster.Position - TargetA.Cell).LengthHorizontal;
-            float rangeFromTargetSquared = (req.caster.Position - TargetA.Cell).LengthHorizontalSquared;
+            float rangeFromTarget = (req.caster.Position - this.TargetA.Cell).LengthHorizontal;
+            float rangeFromTargetSquared = (req.caster.Position - this.TargetA.Cell).LengthHorizontalSquared;
             float rangeFromCasterToCellSquared = 0f;
-            float optimalRangeSquared = pawn.CurJob.verbToUse.verbProps.range * 0.8f * (pawn.CurJob.verbToUse.verbProps.range * 0.8f);
+            float optimalRangeSquared = this.pawn.CurJob.verbToUse.verbProps.range * 0.8f * (this.pawn.CurJob.verbToUse.verbProps.range * 0.8f);
             /////////////////// Evaluate Cell method
 
             IntVec3 c = req.caster.PositionHeld;
@@ -163,8 +154,7 @@ namespace AbilityUser
             for (int i = 0; i < list.Count; i++)
             {
                 Thing thing = list[i];
-                Fire fire = thing as Fire;
-                if (fire != null && fire.parent == null)
+                if (thing is Fire fire && fire.parent == null)
                 {
                     num = -1f;
                     goto MainSequenceTwo;
@@ -181,7 +171,7 @@ namespace AbilityUser
             }
             if (req.wantCoverFromTarget)
             {
-                num += CoverUtility.CalculateOverallBlockChance(c, TargetLocA, req.caster.Map);
+                num += CoverUtility.CalculateOverallBlockChance(c, this.TargetLocA, req.caster.Map);
             }
             float numTwo = (req.caster.Position - c).LengthHorizontal;
             if (rangeFromTarget > 100f)
@@ -194,7 +184,7 @@ namespace AbilityUser
             }
             num *= Mathf.Pow(0.967f, num2);
             float num3 = 1f;
-            float rangeFromTargetToCellSquared = (c - TargetLocA).LengthHorizontalSquared;
+            float rangeFromTargetToCellSquared = (c - this.TargetLocA).LengthHorizontalSquared;
             //rangeFromCasterToCellSquared = (req.target.Position - c).LengthHorizontalSquared;
             float num4 = Mathf.Abs(rangeFromTargetToCellSquared - optimalRangeSquared) / optimalRangeSquared;
             num4 = 1f - num4;
@@ -218,7 +208,7 @@ namespace AbilityUser
             if (avoidGrid != null)
             {
                 byte b = avoidGrid[c];
-                num *= Mathf.Max(0.1f, (37f - (float)b) / 37f);
+                num *= Mathf.Max(0.1f, (37f - b) / 37f);
             }
             if (DebugViewSettings.drawCastPositionSearch)
             {
@@ -228,7 +218,7 @@ namespace AbilityUser
             {
                 goto MainSequence;
             }
-            if (!pawn.CurJob.verbToUse.CanHitTargetFrom(c, TargetLocA))
+            if (!this.pawn.CurJob.verbToUse.CanHitTargetFrom(c, this.TargetLocA))
             {
                 if (DebugViewSettings.drawCastPositionSearch)
                 {
@@ -248,14 +238,14 @@ namespace AbilityUser
             bestSpotPref = num;
             /////////////////////////////////////////////////////
             MainSequence:
-            if ((double)bestSpotPref >= 1.0)
+            if (bestSpotPref >= 1.0)
             {
                 dest = req.caster.Position;
                 return true;
             }
 
-            float slope = -1f / CellLine.Between(TargetLocA, req.caster.Position).Slope;
-            CellLine cellLine = new CellLine(TargetLocA, slope);
+            float slope = -1f / CellLine.Between(this.TargetLocA, req.caster.Position).Slope;
+            CellLine cellLine = new CellLine(this.TargetLocA, slope);
             bool flagTwo = cellLine.CellIsAbove(req.caster.Position);
             CellRect.CellRectIterator iterator = cellRect.GetIterator();
             while (!iterator.Done())
@@ -314,7 +304,7 @@ namespace AbilityUser
                         caster = toil.actor,
                         target = thing,
                         verb = curJob.verbToUse,
-                        maxRangeFromTarget = ((closeIfDowned && pawn != null && pawn.Downed) ? Mathf.Min(curJob.verbToUse.verbProps.range, (float)pawn.RaceProps.executionRange) : curJob.verbToUse.verbProps.range),
+                        maxRangeFromTarget = ((closeIfDowned && pawn != null && pawn.Downed) ? Mathf.Min(curJob.verbToUse.verbProps.range, pawn.RaceProps.executionRange) : curJob.verbToUse.verbProps.range),
                         wantCoverFromTarget = false
                     }, out intVec))
                     {
@@ -329,7 +319,7 @@ namespace AbilityUser
                         caster = toil.actor,
                         target = null,
                         verb = curJob.verbToUse,
-                        maxRangeFromTarget = ((closeIfDowned && pawn != null && pawn.Downed) ? Mathf.Min(curJob.verbToUse.verbProps.range, (float)pawn.RaceProps.executionRange) : curJob.verbToUse.verbProps.range),
+                        maxRangeFromTarget = ((closeIfDowned && pawn != null && pawn.Downed) ? Mathf.Min(curJob.verbToUse.verbProps.range, pawn.RaceProps.executionRange) : curJob.verbToUse.verbProps.range),
                         wantCoverFromTarget = false
                     }, out intVec))
                     {
@@ -351,7 +341,7 @@ namespace AbilityUser
 
             yield return Toils_Misc.ThrowColonistAttackingMote(TargetIndex.A);
 
-            Verb_UseAbility verb = pawn.CurJob.verbToUse as Verb_UseAbility;
+            Verb_UseAbility verb = this.pawn.CurJob.verbToUse as Verb_UseAbility;
             //Toil getInRangeToil = GotoCastPosition(TargetIndex.A, false);
             //yield return getInRangeToil;
 
@@ -365,7 +355,7 @@ namespace AbilityUser
 
                 //}
                 //compAbilityUser.IsActive = false;
-                compAbilityUser.PostAbilityAttempt(pawn, verb.ability.powerdef);
+                this.CompAbilityUser.PostAbilityAttempt(this.pawn, verb.ability.powerdef);
             });
         }
     }

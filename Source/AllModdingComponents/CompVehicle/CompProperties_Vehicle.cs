@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using Verse;
 
 namespace CompVehicle
@@ -28,9 +25,9 @@ namespace CompVehicle
             get
             {
                 int result = 0;
-                if (roles != null && roles.Count > 0)
+                if (this.roles != null && this.roles.Count > 0)
                 {
-                    foreach (VehicleRole role in roles)
+                    foreach (VehicleRole role in this.roles)
                     {
                         result += role.slots;
                     }
@@ -39,9 +36,6 @@ namespace CompVehicle
             }
         }
 
-        public CompProperties_Vehicle()
-        {
-            this.compClass = typeof(CompVehicle);
-        }
+        public CompProperties_Vehicle() => this.compClass = typeof(CompVehicle);
     }
 }

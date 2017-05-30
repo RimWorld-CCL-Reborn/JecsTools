@@ -1,12 +1,6 @@
 ﻿using Harmony;
-using RimWorld;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Verse;
-using Verse.AI;
-using System.Reflection;
 using UnityEngine;
 
 namespace CompOversizedWeapon
@@ -35,25 +29,24 @@ namespace CompOversizedWeapon
         /// <param name="aimAngle"></param>
         public static bool DrawEquipmentAimingPreFix(PawnRenderer __instance, Thing eq, Vector3 drawLoc, float aimAngle)
         {
-                ThingWithComps thingWithComps = eq as ThingWithComps;
-                if (thingWithComps != null)
-                {
+            if (eq is ThingWithComps thingWithComps)
+            {
 
                 //If the deflector is active, it's already using this code.
-                var deflector = thingWithComps.AllComps.FirstOrDefault<ThingComp>((ThingComp y) => y.GetType().ToString() == "CompDeflector.CompDeflector" || y.GetType().BaseType.ToString() == "CompDeflector.CompDeflector");
-                    if (deflector != null)
+                ThingComp deflector = thingWithComps.AllComps.FirstOrDefault<ThingComp>((ThingComp y) => y.GetType().ToString() == "CompDeflector.CompDeflector" || y.GetType().BaseType.ToString() == "CompDeflector.CompDeflector");
+                if (deflector != null)
+                {
+                    bool isAnimatingNow = Traverse.Create(deflector).Property("IsAnimatingNow").GetValue<bool>();
+                    if (isAnimatingNow)
                     {
-                        bool isAnimatingNow = Traverse.Create(deflector).Property("IsAnimatingNow").GetValue<bool>();
-                        if (isAnimatingNow)
-                        {
-                            return false;
-                        }
-
+                        return false;
                     }
 
-                    CompOversizedWeapon compOversizedWeapon = thingWithComps.TryGetComp<CompOversizedWeapon>();
-                    if (compOversizedWeapon != null)
-                    {
+                }
+
+                CompOversizedWeapon compOversizedWeapon = thingWithComps.TryGetComp<CompOversizedWeapon>();
+                if (compOversizedWeapon != null)
+                {
                     bool flip = false;
                     float num = aimAngle - 90f;
                     Mesh mesh;
@@ -99,13 +92,12 @@ namespace CompOversizedWeapon
         }
 
 
-        public static void get_Graphic_PostFix(Thing __instance, ref Graphic __result)
+        public static void Get_Graphic_PostFix(Thing __instance, ref Graphic __result)
         {
             Graphic tempGraphic = Traverse.Create(__instance).Field("graphicInt").GetValue<Graphic>();
             if (tempGraphic != null)
             {
-                ThingWithComps thingWithComps = __instance as ThingWithComps;
-                if (thingWithComps != null)
+                if (__instance is ThingWithComps thingWithComps)
                 {
                     if (thingWithComps.ParentHolder is Pawn)
                     {
@@ -114,7 +106,7 @@ namespace CompOversizedWeapon
                     ThingComp activatableEffect = thingWithComps.AllComps.FirstOrDefault<ThingComp>((ThingComp y) => y.GetType().ToString().Contains("ActivatableEffect"));
                     if (activatableEffect != null)
                     {
-                        var getPawn = Traverse.Create(activatableEffect).Property("GetPawn").GetValue<Pawn>();
+                        Pawn getPawn = Traverse.Create(activatableEffect).Property("GetPawn").GetValue<Pawn>();
                         if (getPawn != null)
                         {
                             //Log.Message("1");

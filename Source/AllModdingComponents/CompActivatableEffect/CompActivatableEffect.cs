@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using RimWorld;
 using Verse;
 using Verse.Sound;
 using UnityEngine;
-using Harmony;
 
 namespace CompActivatableEffect
 {
@@ -20,14 +16,8 @@ namespace CompActivatableEffect
         private bool showNow = false;
         public bool ShowNow
         {
-            set
-            {
-                showNow = value;
-            }
-            get
-            {
-                return showNow;
-            }
+            set => this.showNow = value;
+            get => this.showNow;
         }
 
         public Texture2D IconActivate
@@ -55,20 +45,11 @@ namespace CompActivatableEffect
             }
         }
 
-        public CompProperties_ActivatableEffect Props
-        {
-            get
-            {
-                return (CompProperties_ActivatableEffect)this.props;
-            }
-        }
+        public CompProperties_ActivatableEffect Props => (CompProperties_ActivatableEffect)this.props;
 
         public virtual Graphic Graphic
         {
-            set
-            {
-                this.graphicInt = value;
-            }
+            set => this.graphicInt = value;
             get
             {
                 Graphic badGraphic;
@@ -80,25 +61,22 @@ namespace CompActivatableEffect
                         badGraphic = BaseContent.BadGraphic;
                         return badGraphic;
                     }
-                    Color newColor1 = overrideColor == Color.white ? this.parent.DrawColor : overrideColor;
-                    Color newColor2 = overrideColor == Color.white ? this.parent.DrawColorTwo : overrideColor;
+                    Color newColor1 = this.overrideColor == Color.white ? this.parent.DrawColor : this.overrideColor;
+                    Color newColor2 = this.overrideColor == Color.white ? this.parent.DrawColorTwo : this.overrideColor;
                     this.graphicInt = this.Props.graphicData.Graphic.GetColoredVersion(this.parent.Graphic.Shader, newColor1, newColor2);
-                    this.graphicInt = PostGraphicEffects(graphicInt);
+                    this.graphicInt = PostGraphicEffects(this.graphicInt);
                 }
                 badGraphic = this.graphicInt;
                 return badGraphic;
             }
         }
 
-        public virtual Graphic PostGraphicEffects(Graphic graphic)
-        {
-            return graphic;
-        }
+        public virtual Graphic PostGraphicEffects(Graphic graphic) => graphic;
 
         public override void PostDraw()
         {
             base.PostDraw();
-            if (ShowNow)
+            if (this.ShowNow)
             {
                 //float parentRotation = 0.0f;
 
@@ -123,57 +101,21 @@ namespace CompActivatableEffect
 
         private Sustainer sustainer = null;
 
-        public CompEquippable GetEquippable
-        {
-            get
-            {
-                return this.parent.GetComp<CompEquippable>();
-            }
-        }
+        public CompEquippable GetEquippable => this.parent.GetComp<CompEquippable>();
 
-        public Pawn GetPawn
-        {
-            get
-            {
-                return GetEquippable.verbTracker.PrimaryVerb.CasterPawn;
-            }
-        }
+        public Pawn GetPawn => this.GetEquippable.verbTracker.PrimaryVerb.CasterPawn;
 
-        public List<Verb> GetVerbs
-        {
-            get
-            {
-                return GetEquippable.verbTracker.AllVerbs;
-            }
-        }
+        public List<Verb> GetVerbs => this.GetEquippable.verbTracker.AllVerbs;
 
-        public bool GizmosOnEquip
-        {
-            get
-            {
-                return this.Props.gizmosOnEquip;
-            }
-        }
+        public bool GizmosOnEquip => this.Props.gizmosOnEquip;
 
         public enum State { Deactivated, Activated }
         private State currentState = State.Deactivated;
-        public State CurrentState
-        {
-            get
-            {
-                return currentState;
-            }
-        }
+        public State CurrentState => this.currentState;
 
-        public virtual bool CanActivate()
-        {
-            return true;
-        }
+        public virtual bool CanActivate() => true;
 
-        public virtual bool CanDeactivate()
-        {
-            return true;
-        }
+        public virtual bool CanDeactivate() => true;
 
         public virtual bool TryActivate()
         {
@@ -198,9 +140,9 @@ namespace CompActivatableEffect
         public virtual void PlaySound(SoundDef soundToPlay)
         {
             SoundInfo info;
-            if (Props.gizmosOnEquip)
+            if (this.Props.gizmosOnEquip)
             {
-                info = SoundInfo.InMap(new TargetInfo(GetPawn.PositionHeld, GetPawn.MapHeld, false), MaintenanceType.None);
+                info = SoundInfo.InMap(new TargetInfo(this.GetPawn.PositionHeld, this.GetPawn.MapHeld, false), MaintenanceType.None);
             }
             else
             {
@@ -211,10 +153,10 @@ namespace CompActivatableEffect
 
         private void StartSustainer()
         {
-            if (!Props.sustainerSound.NullOrUndefined() && this.sustainer == null)
+            if (!this.Props.sustainerSound.NullOrUndefined() && this.sustainer == null)
             {
-                SoundInfo info = SoundInfo.InMap(GetPawn, MaintenanceType.None);
-                this.sustainer = Props.sustainerSound.TrySpawnSustainer(info);
+                SoundInfo info = SoundInfo.InMap(this.GetPawn, MaintenanceType.None);
+                this.sustainer = this.Props.sustainerSound.TrySpawnSustainer(info);
             }
         }
 
@@ -230,37 +172,37 @@ namespace CompActivatableEffect
         public virtual void Activate()
         {
             this.graphicInt = null;
-            currentState = State.Activated;
-            if (Props.activateSound != null) PlaySound(Props.activateSound);
+            this.currentState = State.Activated;
+            if (this.Props.activateSound != null) PlaySound(this.Props.activateSound);
             StartSustainer();
-            showNow = true;
+            this.showNow = true;
         }
 
         public virtual void Deactivate()
         {
-            currentState = State.Deactivated;
-            if (Props.deactivateSound != null) PlaySound(Props.deactivateSound);
+            this.currentState = State.Deactivated;
+            if (this.Props.deactivateSound != null) PlaySound(this.Props.deactivateSound);
             EndSustainer();
-            showNow = false;
+            this.showNow = false;
             this.graphicInt = null;
         }
 
         public bool IsActive()
         {
-            if (currentState == State.Activated) return true;
+            if (this.currentState == State.Activated) return true;
             return false;
         }
 
         public bool IsInitialized = false;
         public virtual void Initialize()
         {
-            IsInitialized = true;
-            currentState = State.Deactivated;
+            this.IsInitialized = true;
+            this.currentState = State.Deactivated;
         }
         
         public override void CompTick()
         {
-            if (!IsInitialized) Initialize();
+            if (!this.IsInitialized) Initialize();
             if (IsActive()) ActiveTick();
             base.CompTick();
         }
@@ -272,13 +214,13 @@ namespace CompActivatableEffect
         public IEnumerable<Gizmo> EquippedGizmos()
         {
             //Add
-            if ((this.Props.draftToUseGizmos && GetPawn.Drafted) || !this.Props.draftToUseGizmos)
-            if (currentState == State.Activated)
+            if ((this.Props.draftToUseGizmos && this.GetPawn.Drafted) || !this.Props.draftToUseGizmos)
+            if (this.currentState == State.Activated)
             {
                 yield return new Command_Action
                 {
-                    defaultLabel = Props.DeactivateLabel,
-                    icon = IconDeactivate,
+                    defaultLabel = this.Props.DeactivateLabel,
+                    icon = this.IconDeactivate,
                     action = delegate
                     {
                         this.TryDeactivate();
@@ -289,8 +231,8 @@ namespace CompActivatableEffect
             {
                 yield return new Command_Action
                 {
-                    defaultLabel = Props.ActivateLabel,
-                    icon = IconActivate,
+                    defaultLabel = this.Props.ActivateLabel,
+                    icon = this.IconActivate,
                     action = delegate
                     {
                         this.TryActivate();
@@ -301,7 +243,7 @@ namespace CompActivatableEffect
 
         public override IEnumerable<Gizmo> CompGetGizmosExtra()
         {
-            if (!GizmosOnEquip)
+            if (!this.GizmosOnEquip)
             {
                 //Iterate Base Functions
                 IEnumerator<Gizmo> enumerator = base.CompGetGizmosExtra().GetEnumerator();

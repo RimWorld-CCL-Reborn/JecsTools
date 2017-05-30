@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using UnityEngine;
 using Verse;
 using Verse.Sound;
@@ -38,9 +37,9 @@ namespace CompVehicle
             get
             {
                 bool result = false;
-                if (handlers != null && handlers.Count > 0)
+                if (this.handlers != null && this.handlers.Count > 0)
                 {
-                    foreach (VehicleHandlerGroup group in handlers)
+                    foreach (VehicleHandlerGroup group in this.handlers)
                     {
                         if (group.handlers != null && group.handlers.Count > 0)
                         {
@@ -62,9 +61,9 @@ namespace CompVehicle
             get
             {
                 bool result = false;
-                if (handlers != null && handlers.Count > 0)
+                if (this.handlers != null && this.handlers.Count > 0)
                 {
-                    foreach (VehicleHandlerGroup group in handlers)
+                    foreach (VehicleHandlerGroup group in this.handlers)
                     {
                         if (group.role != null && group.handlers != null && group.handlers.Count > 0)
                         {
@@ -79,13 +78,7 @@ namespace CompVehicle
             }
         }
 
-        public Pawn Pawn
-        {
-            get
-            {
-                return this.parent as Pawn;
-            }
-        }
+        public Pawn Pawn => this.parent as Pawn;
 
         public MovingState movingStatus = MovingState.able;
         public WeaponState weaponStatus = WeaponState.able;
@@ -94,19 +87,19 @@ namespace CompVehicle
         public bool ResolvedPawns = false;
         public void ResolveITab()
         {
-            if (!ResolvedITTab)
+            if (!this.ResolvedITTab)
             {
-                ResolvedITTab = true;
+                this.ResolvedITTab = true;
                 //PostExposeData();
                 //Make the ITab
-                IEnumerable<InspectTabBase> tabs = Pawn.GetInspectTabs();
+                IEnumerable<InspectTabBase> tabs = this.Pawn.GetInspectTabs();
                 if (tabs != null && tabs.Count<InspectTabBase>() > 0)
                 {
                     if (tabs.FirstOrDefault((InspectTabBase x) => x is ITab_Passengers) == null)
                     {
                         try
                         {
-                            Pawn.def.inspectorTabsResolved.Add(InspectTabManager.GetSharedInstance(typeof(ITab_Passengers)));
+                            this.Pawn.def.inspectorTabsResolved.Add(InspectTabManager.GetSharedInstance(typeof(ITab_Passengers)));
                         }
                         catch (Exception ex)
                         {
@@ -128,9 +121,9 @@ namespace CompVehicle
             get
             {
                 List<Pawn> result = new List<Pawn>();
-                if (handlers != null && handlers.Count > 0)
+                if (this.handlers != null && this.handlers.Count > 0)
                 {
-                    foreach (VehicleHandlerGroup group in handlers)
+                    foreach (VehicleHandlerGroup group in this.handlers)
                     {
                         if (group.handlers != null && group.handlers.Count > 0) result.AddRange(group.handlers);
                     }
@@ -142,13 +135,13 @@ namespace CompVehicle
         private Pawn GeneratePawn(List<PawnGenOption> optionalDefs = null)
         {
 
-            PawnKindDef newPawnKind = Pawn.Faction.RandomPawnKind();
+            PawnKindDef newPawnKind = this.Pawn.Faction.RandomPawnKind();
             if (optionalDefs != null && optionalDefs.Count > 0)
             {
                 newPawnKind = optionalDefs.RandomElementByWeight((PawnGenOption x) => x.selectionWeight).kind;
             }
 
-            PawnGenerationRequest request = new PawnGenerationRequest(newPawnKind, Pawn.Faction, PawnGenerationContext.NonPlayer, Pawn.Map.Tile, false, false, false, false, true, true, 1f, false, true, true, false, false, null, null, null, null, null, null);
+            PawnGenerationRequest request = new PawnGenerationRequest(newPawnKind, this.Pawn.Faction, PawnGenerationContext.NonPlayer, this.Pawn.Map.Tile, false, false, false, false, true, true, 1f, false, true, true, false, false, null, null, null, null, null, null);
             Pawn item = PawnGenerator.GeneratePawn(request);
             return item;
         }
@@ -161,19 +154,19 @@ namespace CompVehicle
             {
                 foreach (VehicleRole role in this.Props.roles)
                 {
-                    this.handlers.Add(new VehicleHandlerGroup(Pawn, role, new List<Pawn>()));
+                    this.handlers.Add(new VehicleHandlerGroup(this.Pawn, role, new List<Pawn>()));
                 }
             }
         }
         public void ResolveFactionPilots()
         {
-            if (!ResolvedPawns)
+            if (!this.ResolvedPawns)
             {
-                ResolvedPawns = true;
+                this.ResolvedPawns = true;
 
-                if (handlers != null && handlers.Count > 0)
+                if (this.handlers != null && this.handlers.Count > 0)
                 {
-                    foreach (VehicleHandlerGroup group in handlers)
+                    foreach (VehicleHandlerGroup group in this.handlers)
                     {
                         VehicleRole role = group.role;
                         if (role.slotsToOperate > 0)
@@ -197,41 +190,41 @@ namespace CompVehicle
         public void ResolveEjection()
         {
             //Every 250 ticks
-            if (Props.ejectIfBelowHealthPercent > 0.0f)
+            if (this.Props.ejectIfBelowHealthPercent > 0.0f)
             {
                 if (Find.TickManager.TicksGame % 250 == 0)
                 {
-                    if (Pawn.Dead || Pawn.Downed)
+                    if (this.Pawn.Dead || this.Pawn.Downed)
                     {
-                        if (handlers != null && handlers.Count > 0)
+                        if (this.handlers != null && this.handlers.Count > 0)
                         {
-                            foreach (VehicleHandlerGroup group in handlers)
+                            foreach (VehicleHandlerGroup group in this.handlers)
                             {
                                 EjectAll(group.handlers);
                             }
-                            weaponStatus = WeaponState.frozen;
-                            movingStatus = MovingState.frozen;
-                            if (Pawn.Downed && Pawn.Faction != Faction.OfPlayerSilentFail) Pawn.SetFaction(Faction.OfPlayerSilentFail);
+                            this.weaponStatus = WeaponState.frozen;
+                            this.movingStatus = MovingState.frozen;
+                            if (this.Pawn.Downed && this.Pawn.Faction != Faction.OfPlayerSilentFail) this.Pawn.SetFaction(Faction.OfPlayerSilentFail);
                             return;
                         }
                     }
 
-                    if (Pawn.health != null)
+                    if (this.Pawn.health != null)
                     {
-                        if (Pawn.health.summaryHealth != null)
+                        if (this.Pawn.health.summaryHealth != null)
                         {
-                            float currentHealthPercentage = Pawn.health.summaryHealth.SummaryHealthPercent;
-                            if (currentHealthPercentage < Props.ejectIfBelowHealthPercent)
+                            float currentHealthPercentage = this.Pawn.health.summaryHealth.SummaryHealthPercent;
+                            if (currentHealthPercentage < this.Props.ejectIfBelowHealthPercent)
                             {
-                                if (handlers != null && handlers.Count > 0)
+                                if (this.handlers != null && this.handlers.Count > 0)
                                 {
-                                    foreach (VehicleHandlerGroup group in handlers)
+                                    foreach (VehicleHandlerGroup group in this.handlers)
                                     {
                                         EjectAll(group.handlers);
                                     }
-                                    weaponStatus = WeaponState.frozen;
-                                    movingStatus = MovingState.frozen;
-                                    if (Pawn.Downed) Pawn.SetFaction(Faction.OfPlayerSilentFail);
+                                    this.weaponStatus = WeaponState.frozen;
+                                    this.movingStatus = MovingState.frozen;
+                                    if (this.Pawn.Downed) this.Pawn.SetFaction(Faction.OfPlayerSilentFail);
                                     return;
                                 }
                             }
@@ -243,40 +236,40 @@ namespace CompVehicle
         public void ResolveStatus()
         {
             //If refuelable, then check for fuel.
-            CompRefuelable compRefuelable = Pawn.GetComp<CompRefuelable>();
+            CompRefuelable compRefuelable = this.Pawn.GetComp<CompRefuelable>();
             if (compRefuelable != null)
             {
                 if (!compRefuelable.HasFuel)
                 {
-                    weaponStatus = WeaponState.frozen;
-                    movingStatus = MovingState.frozen;
+                    this.weaponStatus = WeaponState.frozen;
+                    this.movingStatus = MovingState.frozen;
                     return;
                 }
             }
 
-            if (MovementHandlerAvailable && movingStatus == MovingState.frozen)
+            if (this.MovementHandlerAvailable && this.movingStatus == MovingState.frozen)
             {
-                movingStatus = MovingState.able;
+                this.movingStatus = MovingState.able;
             }
-            if (WeaponHandlerAvailable && weaponStatus == WeaponState.frozen)
+            if (this.WeaponHandlerAvailable && this.weaponStatus == WeaponState.frozen)
             {
-                weaponStatus = WeaponState.able;
+                this.weaponStatus = WeaponState.able;
             }
 
-            if (!MovementHandlerAvailable && movingStatus == MovingState.able)
+            if (!this.MovementHandlerAvailable && this.movingStatus == MovingState.able)
             {
-                if (!Props.canMoveWithoutHandler) movingStatus = MovingState.frozen;
+                if (!this.Props.canMoveWithoutHandler) this.movingStatus = MovingState.frozen;
             }
-            if (!WeaponHandlerAvailable && weaponStatus == WeaponState.able)
+            if (!this.WeaponHandlerAvailable && this.weaponStatus == WeaponState.able)
             {
-                if (!Props.canFireWithoutHandler) weaponStatus = WeaponState.frozen;
+                if (!this.Props.canFireWithoutHandler) this.weaponStatus = WeaponState.frozen;
             }
 
         }
 
         public void Eject(Pawn pawn, List<Pawn> list)
         {
-            GenSpawn.Spawn(pawn, Pawn.PositionHeld.RandomAdjacentCell8Way(), Pawn.MapHeld);
+            GenSpawn.Spawn(pawn, this.Pawn.PositionHeld.RandomAdjacentCell8Way(), this.Pawn.MapHeld);
             list.Remove(pawn);
         }
         public void EjectAll(List<Pawn> pawns)
@@ -292,34 +285,33 @@ namespace CompVehicle
         }
         public void GiveLoadJob(Thing thingToLoad, VehicleHandlerGroup group)
         {
-            Pawn pawn = thingToLoad as Pawn;
-            if (pawn != null)
+            if (thingToLoad is Pawn pawn)
             {
-                Job newJob = new Job(DefDatabase<JobDef>.GetNamed("CompVehicle_LoadPassenger"), Pawn);
+                Job newJob = new Job(DefDatabase<JobDef>.GetNamed("CompVehicle_LoadPassenger"), this.Pawn);
                 pawn.jobs.TryTakeOrderedJob(newJob);
 
-                if (bills != null && bills.Count > 0)
+                if (this.bills != null && this.bills.Count > 0)
                 {
-                    var bill = bills.FirstOrDefault((Bill_LoadVehicle x) => x.pawnToLoad == pawn);
+                    Bill_LoadVehicle bill = this.bills.FirstOrDefault((Bill_LoadVehicle x) => x.pawnToLoad == pawn);
                     if (bill != null)
                     {
                         bill.group = group;
                         return;
                     }
                 }
-                bills.Add(new Bill_LoadVehicle(pawn, Pawn, group));
+                this.bills.Add(new Bill_LoadVehicle(pawn, this.Pawn, group));
             }
         }
         public void Notify_Loaded(Pawn pawnToLoad)
         {
-            if (bills != null & bills.Count > 0)
+            if (this.bills != null & this.bills.Count > 0)
             {
-                var bill = bills.FirstOrDefault((x) => x.pawnToLoad == pawnToLoad);
+                Bill_LoadVehicle bill = this.bills.FirstOrDefault((x) => x.pawnToLoad == pawnToLoad);
                 if (bill != null)
                 {
                     pawnToLoad.DeSpawn();
                     bill.group.handlers.Add(pawnToLoad);
-                    bills.Remove(bill);
+                    this.bills.Remove(bill);
                 }
             }
         }
@@ -336,7 +328,7 @@ namespace CompVehicle
         public void GetVehicleButtonFloatMenu(VehicleHandlerGroup group, bool canLoad)
         {
             List<FloatMenuOption> list = new List<FloatMenuOption>();
-            Map map = Pawn.Map;
+            Map map = this.Pawn.Map;
             List<Pawn> tempList = new List<Pawn>(group.handlers);
             if (canLoad)
             {
@@ -373,13 +365,7 @@ namespace CompVehicle
             Find.WindowStack.Add(new FloatMenu(list));
         }
 
-        public CompProperties_Vehicle Props
-        {
-            get
-            {
-                return (CompProperties_Vehicle)props;
-            }
-        }
+        public CompProperties_Vehicle Props => (CompProperties_Vehicle)this.props;
         public override IEnumerable<Gizmo> CompGetGizmosExtra()
         {
             IEnumerator<Gizmo> enumerator = base.CompGetGizmosExtra().GetEnumerator();
@@ -389,13 +375,13 @@ namespace CompVehicle
                 yield return current;
             }
             //Log.Message("0");
-            if (Pawn.Faction == Faction.OfPlayerSilentFail)
+            if (this.Pawn.Faction == Faction.OfPlayerSilentFail)
             {
                 //Log.Message("1");
-                if (Props.roles != null && Props.roles.Count > 0)
+                if (this.Props.roles != null && this.Props.roles.Count > 0)
                 {
                     //Log.Message("2");
-                    foreach (VehicleHandlerGroup group in handlers)
+                    foreach (VehicleHandlerGroup group in this.handlers)
                     {
                         //Log.Message("3");
                         if (group.role != null && group.handlers != null)
@@ -406,15 +392,17 @@ namespace CompVehicle
                             if (loadable || unloadable)
                             {
                                 //Log.Message("5");
-                                var button = new Command_VehicleHandler();
-                                button.action = delegate
+                                Command_VehicleHandler button = new Command_VehicleHandler()
                                 {
-                                    SoundDefOf.TickTiny.PlayOneShotOnCamera(null);
-                                    GetVehicleButtonFloatMenu(group, loadable);
+                                    action = delegate
+                                    {
+                                        SoundDefOf.TickTiny.PlayOneShotOnCamera(null);
+                                        GetVehicleButtonFloatMenu(group, loadable);
+                                    },
+                                    hotKey = KeyBindingDefOf.Misc1
                                 };
-                                button.hotKey = KeyBindingDefOf.Misc1;
-                                var label = "CompVehicle_Load";
-                                var desc = "CompVehicle_LoadDesc";
+                                string label = "CompVehicle_Load";
+                                string desc = "CompVehicle_LoadDesc";
                                 if (!loadable && unloadable)
                                 {
                                     label = "CompVehicle_Unload";
@@ -430,7 +418,7 @@ namespace CompVehicle
                                 button.defaultDesc = desc.Translate(group.role.label.CapitalizeFirst());
                                 button.icon = TexCommand.Install;  //ContentFinder<Texture2D>.Get("UI/Commands/TryReconnect", true);
 
-                                button.disabled = Pawn.Downed || Pawn.Dead;
+                                button.disabled = this.Pawn.Downed || this.Pawn.Dead;
                                 button.disabledReason = "CompVehicle_DisabledDesc".Translate();
                                 
                                 //Log.Message(button.ToString());
@@ -439,7 +427,7 @@ namespace CompVehicle
                         }
                     }
                 }
-                if (Pawn.drafter == null) Pawn.drafter = new Pawn_DraftController(Pawn);
+                if (this.Pawn.drafter == null) this.Pawn.drafter = new Pawn_DraftController(this.Pawn);
                 
 
             }

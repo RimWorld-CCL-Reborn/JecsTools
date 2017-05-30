@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Verse;
 
 namespace CompVehicle
@@ -17,14 +15,14 @@ namespace CompVehicle
         {
             get
             {
-                if (occupiedParts == null)
+                if (this.occupiedParts == null)
                 {
-                    occupiedParts = new List<BodyPartRecord>(vehicle.health.hediffSet.GetNotMissingParts(
+                    this.occupiedParts = new List<BodyPartRecord>(this.vehicle.health.hediffSet.GetNotMissingParts(
                         BodyPartHeight.Undefined,
                         BodyPartDepth.Undefined
-                        ).ToList<BodyPartRecord>().FindAll(((BodyPartRecord x) => x.def.tags.Contains(role.slotTag))));
+                        ).ToList<BodyPartRecord>().FindAll(((BodyPartRecord x) => x.def.tags.Contains(this.role.slotTag))));
                 }
-                return occupiedParts;
+                return this.occupiedParts;
             }
         }
 
@@ -33,9 +31,9 @@ namespace CompVehicle
             get
             {
                 bool result = true;
-                if (handlers != null && role != null)
+                if (this.handlers != null && this.role != null)
                 {
-                    if (handlers.Count >= role.slots)
+                    if (this.handlers.Count >= this.role.slots)
                     {
                         result = false;
                     }
@@ -51,23 +49,23 @@ namespace CompVehicle
 
         public VehicleHandlerGroup(Pawn newVehicle)
         {
-            uniqueID = Find.UniqueIDsManager.GetNextThingID();
-            vehicle = newVehicle;
+            this.uniqueID = Find.UniqueIDsManager.GetNextThingID();
+            this.vehicle = newVehicle;
         }
 
         public VehicleHandlerGroup(Pawn newVehicle, VehicleRole newRole)
         {
-            uniqueID = Find.UniqueIDsManager.GetNextThingID();
-            vehicle = newVehicle;
-            role = newRole;
+            this.uniqueID = Find.UniqueIDsManager.GetNextThingID();
+            this.vehicle = newVehicle;
+            this.role = newRole;
         }
 
         public VehicleHandlerGroup(Pawn newVehicle, VehicleRole newRole, List<Pawn> newHandlers)
         {
-            uniqueID = Find.UniqueIDsManager.GetNextThingID();
-            vehicle = newVehicle;
-            role = newRole;
-            handlers = newHandlers;
+            this.uniqueID = Find.UniqueIDsManager.GetNextThingID();
+            this.vehicle = newVehicle;
+            this.role = newRole;
+            this.handlers = newHandlers;
         }
         
 
@@ -80,9 +78,6 @@ namespace CompVehicle
             Scribe_Collections.Look<Pawn>(ref this.handlers, "handlers", LookMode.Deep, new object[0]);
         }
 
-        public string GetUniqueLoadID()
-        {
-            return "VehicleHandlerGroup_" + this.uniqueID;
-        }
+        public string GetUniqueLoadID() => "VehicleHandlerGroup_" + this.uniqueID;
     }
 }

@@ -1,8 +1,5 @@
 ﻿using RimWorld;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Verse;
 
 namespace CompVehicle
@@ -25,14 +22,14 @@ namespace CompVehicle
 
         public VehicleRole(VehicleHandlerGroup group)
         {
-            label = group.role.label;
-            labelPlural = group.role.labelPlural;
-            handlesMovement = group.role.handlesMovement;
-            handlesWeapons = group.role.handlesWeapons;
-            slots = group.role.slots;
-            slotsToOperate = group.role.slotsToOperate;
-            slotTag = group.role.slotTag;
-            preferredHandlers = group.role.preferredHandlers;
+            this.label = group.role.label;
+            this.labelPlural = group.role.labelPlural;
+            this.handlesMovement = group.role.handlesMovement;
+            this.handlesWeapons = group.role.handlesWeapons;
+            this.slots = group.role.slots;
+            this.slotsToOperate = group.role.slotsToOperate;
+            this.slotTag = group.role.slotTag;
+            this.preferredHandlers = group.role.preferredHandlers;
         }
 
         public void ExposeData()

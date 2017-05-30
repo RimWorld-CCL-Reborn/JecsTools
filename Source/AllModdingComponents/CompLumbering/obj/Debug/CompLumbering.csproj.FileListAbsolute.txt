@@ -6,3 +6,8 @@ D:\SteamLibrary\steamapps\common\RimWorld\Mods\Jecrells Modding Components\Sourc
 D:\SteamLibrary\steamapps\common\RimWorld\Mods\JecsTools\Assemblies\CompLumbering.dll
 D:\SteamLibrary\steamapps\common\RimWorld\Mods\JecsTools\Source\AllModdingComponents\CompLumbering\obj\Debug\CompLumbering.dll
 D:\SteamLibrary\steamapps\common\RimWorld\Mods\JecsTools\Source\AllModdingComponents\CompLumbering\obj\Debug\CompLumbering.csprojResolveAssemblyReference.cache
+D:\Games\Steam\steamapps\common\RimWorld\Mods\JecsTools\Assemblies\CompLumbering.dll
+D:\Games\Steam\steamapps\common\RimWorld\Mods\JecsTools\Assemblies\CompLumbering.dll.CodeAnalysisLog.xml
+D:\Games\Steam\steamapps\common\RimWorld\Mods\JecsTools\Assemblies\CompLumbering.dll.lastcodeanalysissucceeded
+D:\Games\Steam\steamapps\common\RimWorld\Mods\JecsTools\Source\AllModdingComponents\CompLumbering\obj\Debug\CompLumbering.csprojResolveAssemblyReference.cache
+D:\Games\Steam\steamapps\common\RimWorld\Mods\JecsTools\Source\AllModdingComponents\CompLumbering\obj\Debug\CompLumbering.dll

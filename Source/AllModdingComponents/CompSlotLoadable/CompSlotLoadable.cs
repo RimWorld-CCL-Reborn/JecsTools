@@ -1,5 +1,4 @@
 ﻿using RimWorld;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,27 +13,21 @@ namespace CompSlotLoadable
         public bool GizmosOnEquip = true;
 
         private List<SlotLoadable> slots = new List<SlotLoadable>();
-        public List<SlotLoadable> Slots
-        {
-            get
-            {
-                return slots;
-            }
-        }
+        public List<SlotLoadable> Slots => this.slots;
         private SlotLoadable colorChangingSlot = null;
         public SlotLoadable ColorChangingSlot
         {
             get
             {
-                if (colorChangingSlot != null) return colorChangingSlot;
+                if (this.colorChangingSlot != null) return this.colorChangingSlot;
                 if (this.Slots != null)
                 {
                     if (this.Slots.Count > 0)
                     {
-                        colorChangingSlot = this.Slots.FirstOrDefault((SlotLoadable x) => ((SlotLoadableDef)(x.def)).doesChangeColor);
+                        this.colorChangingSlot = this.Slots.FirstOrDefault((SlotLoadable x) => ((SlotLoadableDef)(x.def)).doesChangeColor);
                     }
                 }
-                return colorChangingSlot;
+                return this.colorChangingSlot;
 
             }
         }
@@ -45,15 +38,15 @@ namespace CompSlotLoadable
         {
             get
             {
-                if (secondColorChangingSlot != null) return secondColorChangingSlot;
+                if (this.secondColorChangingSlot != null) return this.secondColorChangingSlot;
                 if (this.Slots != null)
                 {
                     if (this.Slots.Count > 0)
                     {
-                        secondColorChangingSlot = this.Slots.FirstOrDefault((SlotLoadable x) => ((SlotLoadableDef)(x.def)).doesChangeSecondColor);
+                        this.secondColorChangingSlot = this.Slots.FirstOrDefault((SlotLoadable x) => ((SlotLoadableDef)(x.def)).doesChangeSecondColor);
                     }
                 }
-                return colorChangingSlot;
+                return this.colorChangingSlot;
 
             }
         }
@@ -63,11 +56,11 @@ namespace CompSlotLoadable
             get
             {
                 List<SlotLoadableDef> result = new List<SlotLoadableDef>();
-                if (slots != null)
+                if (this.slots != null)
                 {
-                    if (slots.Count > 0)
+                    if (this.slots.Count > 0)
                     {
-                        foreach (SlotLoadable slot in slots)
+                        foreach (SlotLoadable slot in this.slots)
                         {
                             result.Add(slot.def as SlotLoadableDef);
                         }
@@ -88,36 +81,24 @@ namespace CompSlotLoadable
                 Map map = this.parent.Map;
                 if (map == null)
                 {
-                    if (GetPawn != null) map = GetPawn.Map;
+                    if (this.GetPawn != null) map = this.GetPawn.Map;
                 }
                 return map;
             }
         }
 
-        public CompEquippable GetEquippable
-        {
-            get
-            {
-                return this.parent.GetComp<CompEquippable>();
-            }
-        }
+        public CompEquippable GetEquippable => this.parent.GetComp<CompEquippable>();
 
-        public Pawn GetPawn
-        {
-            get
-            {
-                return GetEquippable.verbTracker.PrimaryVerb.CasterPawn;
-            }
-        }
+        public Pawn GetPawn => this.GetEquippable.verbTracker.PrimaryVerb.CasterPawn;
 
         public void Initialize()
         {
             //Log.Message("1");
-            if (!isInitialized)
+            if (!this.isInitialized)
             {
 
                 //Log.Message("2");
-                isInitialized = true;
+                this.isInitialized = true;
                 if (this.Props != null)
                 {
 
@@ -134,7 +115,7 @@ namespace CompSlotLoadable
                             {
                                 SlotLoadable newSlot = new SlotLoadable(slot, this.parent);
                                 //Log.Message("Added Slot");
-                                slots.Add(newSlot);
+                                this.slots.Add(newSlot);
                             }
                         }
                     }
@@ -145,40 +126,42 @@ namespace CompSlotLoadable
         public override void CompTick()
         {
             base.CompTick();
-            if (!isInitialized) Initialize();
+            if (!this.isInitialized) Initialize();
         }
 
         private void TryCancel(string reason = "")
         {
-            Pawn pawn = GetPawn;
+            Pawn pawn = this.GetPawn;
             if (pawn != null)
             {
                 if (pawn.CurJob.def == CompSlotLoadableDefOf.GatherSlotItem)
                 {
                     pawn.jobs.StopAll();
                 }
-                isGathering = false;
+                this.isGathering = false;
                 //Messages.Message("Cancelling sacrifice. " + reason, MessageSound.Negative);
             }
         }
 
         private void TryGiveLoadSlotJob(Thing itemToLoad)
         {
-            if (GetPawn != null)
+            if (this.GetPawn != null)
             {
-                if (!GetPawn.Drafted)
+                if (!this.GetPawn.Drafted)
                 {
-                    isGathering = true;
+                    this.isGathering = true;
 
-                    Job job = new Job(CompSlotLoadableDefOf.GatherSlotItem, itemToLoad);
-                    job.count = 1;
-                    GetPawn.jobs.TryTakeOrderedJob(job);
+                    Job job = new Job(CompSlotLoadableDefOf.GatherSlotItem, itemToLoad)
+                    {
+                        count = 1
+                    };
+                    this.GetPawn.jobs.TryTakeOrderedJob(job);
                     //GetPawn.jobs.jobQueue.EnqueueFirst(job);
                     //GetPawn.jobs.EndCurrentJob(JobCondition.InterruptForced);
                 }
                 else Messages.Message(string.Format(StringOf.IsDrafted, new object[]
                     {
-                        GetPawn.Label
+                        this.GetPawn.Label
                     }), MessageSound.RejectInput);
             }
         }
@@ -186,13 +169,13 @@ namespace CompSlotLoadable
         public bool TryLoadSlot(Thing thing)
         {
             //Log.Message("TryLoadSlot Called");
-            isGathering = false;
-            if (slots != null)
+            this.isGathering = false;
+            if (this.slots != null)
             {
-                if (slots.Count > 0)
+                if (this.slots.Count > 0)
                 {
-                    SlotLoadable loadSlot = slots.FirstOrDefault((SlotLoadable x) => x.IsEmpty() && x.CanLoad(thing.def));
-                    if (loadSlot == null) loadSlot = slots.FirstOrDefault((SlotLoadable y) => y.CanLoad(thing.def));
+                    SlotLoadable loadSlot = this.slots.FirstOrDefault((SlotLoadable x) => x.IsEmpty() && x.CanLoad(thing.def));
+                    if (loadSlot == null) loadSlot = this.slots.FirstOrDefault((SlotLoadable y) => y.CanLoad(thing.def));
                     if (loadSlot != null)
                     {
                         if (loadSlot.TryLoadSlot(thing, true))
@@ -209,9 +192,9 @@ namespace CompSlotLoadable
         {
             List<ThingDef> loadTypes = new List<ThingDef>();
             List<FloatMenuOption> floatList = new List<FloatMenuOption>();
-            if (!isGathering)
+            if (!this.isGathering)
             {
-                Map map = GetMap;
+                Map map = this.GetMap;
                 loadTypes = slot.SlottableTypes;
                 if (slot.SlotOccupant == null)
                 {
@@ -226,7 +209,7 @@ namespace CompSlotLoadable
                                 {
                                     if (thingsWithDef.Count > 0)
                                     {
-                                        Thing thingToLoad = thingsWithDef.FirstOrDefault((Thing x) => map.reservationManager.CanReserve(GetPawn, x));
+                                        Thing thingToLoad = thingsWithDef.FirstOrDefault((Thing x) => map.reservationManager.CanReserve(this.GetPawn, x));
                                         if (thingToLoad != null)
                                         {
                                             string text = "Load".Translate() + " " + thingToLoad.def.label;
@@ -283,18 +266,15 @@ namespace CompSlotLoadable
             Find.WindowStack.Add(new FloatMenu(floatList));
         }
 
-        public virtual void TryEmptySlot(SlotLoadable slot)
-        {
-            slot.TryEmptySlot();
-        }
+        public virtual void TryEmptySlot(SlotLoadable slot) => slot.TryEmptySlot();
 
         public virtual IEnumerable<Gizmo> EquippedGizmos()
         {
-            if (slots != null)
+            if (this.slots != null)
             {
-                if (slots.Count > 0)
+                if (this.slots.Count > 0)
                 {
-                    if (isGathering)
+                    if (this.isGathering)
                     {
                         yield return new Command_Action
                         {
@@ -307,7 +287,7 @@ namespace CompSlotLoadable
                             }
                         };
                     }
-                    foreach (SlotLoadable slot in slots)
+                    foreach (SlotLoadable slot in this.slots)
                     {
                         if (slot.IsEmpty())
                         {
@@ -435,9 +415,9 @@ namespace CompSlotLoadable
             Scribe_Values.Look<bool>(ref this.isGathering, "isGathering", false);
             Scribe_Collections.Look<SlotLoadable>(ref this.slots, "slots", LookMode.Deep, new object[0]);
             base.PostExposeData();
-            if (slots == null)
+            if (this.slots == null)
             {
-                slots = new List<SlotLoadable>();
+                this.slots = new List<SlotLoadable>();
             }
             if (Scribe.mode == LoadSaveMode.LoadingVars)
             {
@@ -450,21 +430,15 @@ namespace CompSlotLoadable
         }
 
 
-        public CompProperties_SlotLoadable Props
-        {
-            get
-            {
-                return (CompProperties_SlotLoadable)this.props;
-            }
-        }
+        public CompProperties_SlotLoadable Props => (CompProperties_SlotLoadable)this.props;
 
 
         // Grab slots of the thing if they exists. Returns null if none
         public static List<SlotLoadable> GetSlots(Thing someThing) {
             List<SlotLoadable> retval = null;
 
-            ThingWithComps thingWithComps = someThing as ThingWithComps;
-            if ( thingWithComps != null ) {
+            if (someThing is ThingWithComps thingWithComps)
+            {
                 ThingComp comp = thingWithComps.AllComps.FirstOrDefault((ThingComp x) => x is CompSlotLoadable);
                 if (comp != null)
                 {

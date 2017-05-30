@@ -1,5 +1,4 @@
-﻿using System;
-using Verse;
+﻿using Verse;
 
 namespace CompActivatableEffect
 {
@@ -23,17 +22,8 @@ namespace CompActivatableEffect
 
         public bool draftToUseGizmos = true;
 
-        public float Altitude
-        {
-            get
-            {
-                return Altitudes.AltitudeFor(this.altitudeLayer);
-            }
-        }
+        public float Altitude => Altitudes.AltitudeFor(this.altitudeLayer);
 
-        public CompProperties_ActivatableEffect()
-        {
-            this.compClass = typeof(CompActivatableEffect);
-        }
+        public CompProperties_ActivatableEffect() => this.compClass = typeof(CompActivatableEffect);
     }
 }

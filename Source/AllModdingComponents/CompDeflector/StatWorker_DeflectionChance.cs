@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Text;
 using Verse;
 using RimWorld;
 
@@ -8,20 +6,13 @@ namespace CompDeflector
 {
     public class StatWorker_DeflectionChance : StatWorker
     {
-        public override float GetValueUnfinalized(StatRequest req, bool applyPostProcess = true)
-        {
-            return (this.GetBaseDeflectionChance(req, applyPostProcess) + (this.GetSkillLevel(req, applyPostProcess) * this.GetDeflectPerSkillLevel(req, applyPostProcess)) * this.GetManipulationModifier(req, applyPostProcess));
-        }
+        public override float GetValueUnfinalized(StatRequest req, bool applyPostProcess = true) => (this.GetBaseDeflectionChance(req, applyPostProcess) + (this.GetSkillLevel(req, applyPostProcess) * this.GetDeflectPerSkillLevel(req, applyPostProcess)) * this.GetManipulationModifier(req, applyPostProcess));
 
-        private Pawn GetPawn(StatRequest req)
-        {
-            return req.Thing as Pawn;
-        }
+        private Pawn GetPawn(StatRequest req) => req.Thing as Pawn;
 
         private CompDeflector GetDeflector(StatRequest req)
         {
-            Pawn pawn = req.Thing as Pawn;
-            if (pawn != null)
+            if (req.Thing is Pawn pawn)
             {
                 Pawn_EquipmentTracker pawn_EquipmentTracker = pawn.equipment;
                 if (pawn_EquipmentTracker != null)
@@ -66,7 +57,7 @@ namespace CompDeflector
                     {
                         if (GetPawn(req).skills.GetSkill(skillDef) != null)
                         {
-                            return (float)GetPawn(req).skills.GetSkill(skillDef).Level;
+                            return GetPawn(req).skills.GetSkill(skillDef).Level;
                         }
                     }
 
@@ -129,9 +120,7 @@ namespace CompDeflector
             return stringBuilder.ToString();
         }
 
-        public override string GetStatDrawEntryLabel(StatDef stat, float value, ToStringNumberSense numberSense, StatRequest optionalReq)
-        {
-            return string.Format("{0} (({1} + ( {2} * {3} )) / {4} )", new object[]
+        public override string GetStatDrawEntryLabel(StatDef stat, float value, ToStringNumberSense numberSense, StatRequest optionalReq) => string.Format("{0} (({1} + ( {2} * {3} )) / {4} )", new object[]
             {
                 value.ToStringByStyle(stat.toStringStyle, numberSense),
                 this.GetBaseDeflectionChance(optionalReq, true).ToStringPercent(),
@@ -139,7 +128,6 @@ namespace CompDeflector
                 this.GetDeflectPerSkillLevel(optionalReq, true).ToStringPercent("0.##"),
                 this.GetManipulationModifier(optionalReq, true).ToStringPercent()
             });
-        }
-        
+
     }
 }

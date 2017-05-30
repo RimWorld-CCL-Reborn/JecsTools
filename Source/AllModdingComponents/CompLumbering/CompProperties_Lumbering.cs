@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Verse;
+﻿using Verse;
 
 namespace CompLumbering
 {
@@ -13,9 +9,6 @@ namespace CompLumbering
         public float secondsBetweenSteps = 0.0f;
         public GraphicData cycledGraphic = null;
 
-        public CompProperties_Lumbering()
-        {
-            this.compClass = typeof(CompLumbering);
-        }
+        public CompProperties_Lumbering() => this.compClass = typeof(CompLumbering);
     }
 }

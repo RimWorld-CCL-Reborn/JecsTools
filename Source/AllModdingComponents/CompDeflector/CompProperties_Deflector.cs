@@ -1,9 +1,6 @@
 ﻿using RimWorld;
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 using Verse;
 
@@ -28,11 +25,8 @@ namespace CompDeflector
 
         public VerbProperties DeflectVerb;
 
-        public CompProperties_Deflector()
-        {
-            this.compClass = typeof(CompDeflector);
-        }
-        
+        public CompProperties_Deflector() => this.compClass = typeof(CompDeflector);
+
         public virtual IEnumerable<StatDrawEntry> PostSpecialDisplayStats()
         {
             yield break;
@@ -42,9 +36,9 @@ namespace CompDeflector
         [DebuggerHidden]
         public override IEnumerable<StatDrawEntry> SpecialDisplayStats()
         {
-            if (!useSkillInCalc)
+            if (!this.useSkillInCalc)
             {
-                yield return new StatDrawEntry(StatCategoryDefOf.Weapon, "Deflect chance", baseDeflectChance.ToStringPercent(), 0)
+                yield return new StatDrawEntry(StatCategoryDefOf.Weapon, "Deflect chance", this.baseDeflectChance.ToStringPercent(), 0)
                 {
                     overrideReportText = "Determines how often this weapon returns projectiles back at the attacker.",
                     //overrideReportText = "DeflectChanceEx".Translate(),
@@ -52,7 +46,7 @@ namespace CompDeflector
             }
             else
             {
-                float calc = Mathf.Clamp(baseDeflectChance + (deflectRatePerSkillPoint * 20), 0f, 1.0f);
+                float calc = Mathf.Clamp(this.baseDeflectChance + (this.deflectRatePerSkillPoint * 20), 0f, 1.0f);
                 //yield return new StatDrawEntry(StatCategoryDefOf.Weapon, "MaxDeflectChance".Translate(), calc.ToStringPercent(), 0)
                 //{
                 //    overrideReportText = "MaxDeflectChanceEx".Translate(new object[]
@@ -64,7 +58,7 @@ namespace CompDeflector
                 //};
                 yield return new StatDrawEntry(StatCategoryDefOf.Weapon, "Max deflect chance", calc.ToStringPercent(), 0)
                 {
-                    overrideReportText = "For each point in " + deflectSkill.label  + ", the user gains a " + deflectRatePerSkillPoint.ToStringPercent() +" chance of deflecting the projectile back the target. " + calc.ToStringPercent() + " is the maximum possible deflection chance."
+                    overrideReportText = "For each point in " + this.deflectSkill.label  + ", the user gains a " + this.deflectRatePerSkillPoint.ToStringPercent() +" chance of deflecting the projectile back the target. " + calc.ToStringPercent() + " is the maximum possible deflection chance."
                 };
                 //yield return new StatDrawEntry(StatCategoryDefOf.Weapon, "DeflectChancePerLevel".Translate(new object[] { deflectSkill.label }), deflectRatePerSkillPoint.ToStringPercent(), 0)
                 //{
@@ -74,9 +68,9 @@ namespace CompDeflector
                 //{
                 //    overrideReportText = "DeflectChancePerLevelEx".Translate(new object[] { deflectSkill.label })
                 //};
-                yield return new StatDrawEntry(StatCategoryDefOf.Weapon, "Deflect % per " + deflectSkill.label + " skill", deflectRatePerSkillPoint.ToStringPercent(), 0)
+                yield return new StatDrawEntry(StatCategoryDefOf.Weapon, "Deflect % per " + this.deflectSkill.label + " skill", this.deflectRatePerSkillPoint.ToStringPercent(), 0)
                 {
-                    overrideReportText = "For each level in " + deflectSkill.label + ", the user gains this much % chance to deflect a projectile."
+                    overrideReportText = "For each level in " + this.deflectSkill.label + ", the user gains this much % chance to deflect a projectile."
                 };
             }
 
