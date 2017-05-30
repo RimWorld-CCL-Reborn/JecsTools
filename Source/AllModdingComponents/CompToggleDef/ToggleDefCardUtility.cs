@@ -7,7 +7,7 @@ using System.Text;
 using UnityEngine;
 using Verse;
 
-namespace UnificaMagica
+namespace CompToggleDef
 {
     public class ToggleDefCardUtility
     {
@@ -55,17 +55,14 @@ namespace UnificaMagica
 
             if (compToggleDef != null)
             {
-                float ts = Text.CalcSize("Placeholder").x;
+                float ts = Text.CalcSize(selectedThing.LabelCap).x;
                 float y = rect.y;
                 Rect rect2 = new Rect(((rect.width / 2) - ts) + SpacingOffset, y, rect.width, HeaderSize);
                 y += (float) rect2.height;
                 Text.Font = GameFont.Medium;
-                Widgets.Label(rect2, "Placeholder".CapitalizeFirst());
+                Widgets.Label(rect2, selectedThing.LabelCap);
                 Text.Font = GameFont.Small;
-                Widgets.ListSeparator(ref y, rect2.width,"Wearable Locations");
-
-//                List<BodyPartRecord> bodyPartRecord = BodyDefOf.Human.AllParts;
-
+                Widgets.ListSeparator(ref y, rect2.width,"Select one of the following:");
 
                 // add all the buttons for the toggle defs
                 foreach (ThingDef td in compToggleDef.toggleDefs)  {
@@ -84,11 +81,6 @@ namespace UnificaMagica
                         selectedThing.thingIDNumber = -1;
                         ThingIDMaker.GiveIDTo(selectedThing); // necessary
                         GenSpawn.Spawn(selectedThing,loc,map,rot);
-                        //Log.Message("id is now "+selectedThing.thingIDNumber+" so hopefully not -1");
-                        //works but:
-                        //JobDriver threw exception in initAction. Pawn=Jon, Job=Wear A=Thing_Apparel_RingOfWarmth_TOGGLEDEF_L23077, Exception: System.Collections.Generic.KeyNotFoundException: The given key was not present in the dictionary.
-                        //so need to change key
-
                         break;
                     }
                     y+= 25f;

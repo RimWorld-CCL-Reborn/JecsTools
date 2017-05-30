@@ -1,9 +1,0 @@
-D:\SteamLibrary\steamapps\common\RimWorld\Mods\JecsTools\Assemblies\CompInstalledPart.dll
-D:\SteamLibrary\steamapps\common\RimWorld\Mods\JecsTools\Source\AllModdingComponents\CompMountedWeapon\obj\Debug\CompInstalledPart.csprojResolveAssemblyReference.cache
-D:\SteamLibrary\steamapps\common\RimWorld\Mods\JecsTools\Source\AllModdingComponents\CompMountedWeapon\obj\Debug\CompInstalledPart.dll
-D:\SteamLibrary\steamapps\common\RimWorld\Mods\JecsTools\Source\AllModdingComponents\CompInstalledPart\obj\Debug\CompInstalledPart.dll
-D:\SteamLibrary\steamapps\common\RimWorld\Mods\JecsTools\Source\AllModdingComponents\CompInstalledPart\obj\Debug\CompInstalledPart.csprojResolveAssemblyReference.cache
-D:\Games\Steam\steamapps\common\RimWorld\Mods\JecsTools\Assemblies\CompInstalledPart.dll
-D:\Games\Steam\steamapps\common\RimWorld\Mods\JecsTools\Source\AllModdingComponents\CompInstalledPart\obj\Debug\CompInstalledPart.dll
-D:\Games\Steam\steamapps\common\RimWorld\Mods\JecsTools\Assemblies\CompInstalledPart.dll.CodeAnalysisLog.xml
-D:\Games\Steam\steamapps\common\RimWorld\Mods\JecsTools\Assemblies\CompInstalledPart.dll.lastcodeanalysissucceeded

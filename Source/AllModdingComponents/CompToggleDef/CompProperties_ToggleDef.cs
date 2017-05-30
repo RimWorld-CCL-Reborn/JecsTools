@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Verse;
 
 
-namespace UnificaMagica
+namespace CompToggleDef
 {
     public class CompProperties_ToggleDef: CompProperties
     {
