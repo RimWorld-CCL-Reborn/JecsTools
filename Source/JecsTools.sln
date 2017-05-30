@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26228.12
+VisualStudioVersion = 15.0.26403.7
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompAbilityUser", "AllModdingComponents\CompAbilityUser\CompAbilityUser.csproj", "{417B8649-7A66-4580-8C75-473E46DA9C7A}"
 EndProject
@@ -20,6 +20,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompVehicle", "AllModdingComponents\CompVehicle\CompVehicle.csproj", "{6E907669-2299-47E1-B144-8BC7488DF5C4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompInstalledPart", "AllModdingComponents\CompInstalledPart\CompInstalledPart.csproj", "{6ADE9377-5108-4C79-A3E8-034A7EBCC37F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompToggleDef", "AllModdingComponents\CompToggleDef\CompToggleDef.csproj", "{9BECA870-0C2F-4F40-BEA1-6E99D68F9EDF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -63,6 +65,10 @@ Global
 		{6ADE9377-5108-4C79-A3E8-034A7EBCC37F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6ADE9377-5108-4C79-A3E8-034A7EBCC37F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6ADE9377-5108-4C79-A3E8-034A7EBCC37F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9BECA870-0C2F-4F40-BEA1-6E99D68F9EDF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9BECA870-0C2F-4F40-BEA1-6E99D68F9EDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9BECA870-0C2F-4F40-BEA1-6E99D68F9EDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9BECA870-0C2F-4F40-BEA1-6E99D68F9EDF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

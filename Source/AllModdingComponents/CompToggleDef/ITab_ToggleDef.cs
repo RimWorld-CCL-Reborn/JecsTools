@@ -3,7 +3,7 @@ using System;
 using UnityEngine;
 using Verse;
 
-namespace UnificaMagica
+namespace CompToggleDef
 {
     public class ITab_ToggleDef: ITab
     {
@@ -26,21 +26,7 @@ namespace UnificaMagica
 
         public ITab_ToggleDef()
         {
-            //Log.Message("ITab_ToggleDef 1");
             this.size = ToggleDefCardUtility.CardSize + new Vector2(17f, 17f) * 2f;
-            //Log.Message("ITab_ToggleDef 2");
-            /*
-            ThingWithComps selected = Find.Selector.SingleSelectedThing as ThingWithComps;
-            Log.Message("ITab_ToggleDef 3");
-            CompToggleDef td = selected.GetComp<CompToggleDef>();
-            Log.Message("ITab_ToggleDef 4");
-            if ( td == null ) { Log.Warning("selected thing has no CompToggleDef for ITab_ToggleDef"); }
-            Log.Message("ITab_ToggleDef 5");
-            this.labelKey = ((CompProperties_ToggleDef)td.props).labelKey;//"UM_TabToggleDef";//.Translate();
-            Log.Message("ITab_ToggleDef 6");
-            if ( this.labelKey == null ) this.labelKey = "TOGGLEDEF";
-            Log.Message("ITab_ToggleDef 7");
-            */
         }
 
         protected override void FillTab()

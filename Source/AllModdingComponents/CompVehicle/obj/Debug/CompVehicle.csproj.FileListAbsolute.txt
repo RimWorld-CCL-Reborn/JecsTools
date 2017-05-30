@@ -4,3 +4,6 @@ D:\SteamLibrary\steamapps\common\RimWorld\Mods\JecsTools\Source\AllModdingCompon
 D:\Games\Steam\steamapps\common\RimWorld\Mods\JecsTools\Assemblies\CompVehicle.dll
 D:\Games\Steam\steamapps\common\RimWorld\Mods\JecsTools\Source\AllModdingComponents\CompVehicle\obj\Debug\CompVehicle.csprojResolveAssemblyReference.cache
 D:\Games\Steam\steamapps\common\RimWorld\Mods\JecsTools\Source\AllModdingComponents\CompVehicle\obj\Debug\CompVehicle.dll
+E:\JecsTools\Assemblies\CompVehicle.dll
+E:\JecsTools\Source\AllModdingComponents\CompVehicle\obj\Debug\CompVehicle.csprojResolveAssemblyReference.cache
+E:\JecsTools\Source\AllModdingComponents\CompVehicle\obj\Debug\CompVehicle.dll
