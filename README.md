@@ -54,7 +54,7 @@ Total list of components:
  - Allows for a part to be installable and uninstallable onto another thing. This is particularly useful for vehicle weapons.
 
 *CompToggleDef (by Roxxploxx)*
- - Allows for a thing to despawn, change its def, and respawn.
+ - A situational Component that allows you to toggle the ThingDef of a selected Thing via a radio button menu. ex. Change a ring to be for a pinky finger versus a ring or index finger.
 
 	
 Additions by roxxploxx.
