@@ -9,7 +9,7 @@ using Verse;
 using Verse.Sound;
 
 namespace AbilityUser
-{ 
+{
     /*
         "This class is primarily formed from code made by Cpt. Ohu for his Warhammer 40k mod.
          Credit goes where credit is due.

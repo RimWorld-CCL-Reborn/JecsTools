@@ -1,3 +1,0 @@
-D:\SteamLibrary\steamapps\common\RimWorld\CompPilotable\Assemblies\CompPilotable.dll
-D:\SteamLibrary\steamapps\common\RimWorld\CompPilotable\Source\CompExtraSounds\obj\Debug\CompPilotable.csprojResolveAssemblyReference.cache
-D:\SteamLibrary\steamapps\common\RimWorld\CompPilotable\Source\CompExtraSounds\obj\Debug\CompPilotable.dll
