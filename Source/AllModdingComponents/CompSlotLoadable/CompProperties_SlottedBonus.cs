@@ -12,6 +12,16 @@ namespace CompSlotLoadable
 
         public DamageDef damageDef = null;
 
+        public SoundDef soundCastReplacer = null;
+
+        public float weaponRangeMod = 0.0f;
+
+        public float muzzleFlashMod = 0.0f;
+
+        public ThingDef projectileReplacer = null;
+
+        public List<ThingDef> additionalProjectiles = new List<ThingDef>();
+
         public Color color = Color.white;
 
         public SlotBonusProps_DefensiveHealChance defensiveHealChance = null;
