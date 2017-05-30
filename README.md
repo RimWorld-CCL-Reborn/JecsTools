@@ -47,11 +47,19 @@ Total list of components:
 *CompSlotLoadable*
  - Adds slots to objects, weapons, apparel, etc that can be filled to have effects. (e.g. an ammo slot for guns with different kinds of ammunition, crystal slots for lightsabers, etc)
  
-*CompVehicle*
+*CompVehicle (Experimental)*
  - Allows for a pawn to be treated as a vehicle that can be loaded with pilots, gunners, crew, and passengers.
+
+*CompInstalledPart*
+ - Allows for a part to be installable and uninstallable onto another thing. This is particularly useful for vehicle weapons.
+
+*CompToggleDef (by Roxxploxx)*
+ - Allows for a thing to despawn, change its def, and respawn.
+
 	
 Additions by roxxploxx.
-
+Transpilers by Erdelf.
+	
 Special thanks to Pardeike's amazing non-destructive patching library, Harmony. Without his work, none of this would be possible.
 <p align="center">
   <a href="https://github.com/pardeike/Harmony">
