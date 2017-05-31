@@ -120,13 +120,10 @@ namespace AbilityUser
                 yield return current;
             }
 
-            List<Command_PawnAbility> abilities = GetPawnAbilityVerbs();
-            if (abilities != null && abilities.Count > 0)
+
+            foreach (Command_Target comm in GetPawnAbilityVerbs().ToList())
             {
-                foreach (Command_Target comm in abilities)
-                {
-                    yield return comm;
-                }
+                yield return comm;
             }
 
         }
@@ -214,19 +211,16 @@ namespace AbilityUser
 
 //                Log.Message("UpdateAbilities : with "+this.allPowers.Count+" powers");
 
-                if (this.allPowers != null && this.allPowers.Count > 0)
+                for (int i = 0; i < this.allPowers.Count; i++)
                 {
-                    for (int i = 0; i < this.allPowers.Count; i++)
+                    Verb_UseAbility newVerb = (Verb_UseAbility)Activator.CreateInstance(abList[i].powerdef.MainVerb.verbClass);
+                    if (!this.AbilityVerbs.Any(item => item.verbProps == newVerb.verbProps))
                     {
-                        Verb_UseAbility newVerb = (Verb_UseAbility)Activator.CreateInstance(abList[i].powerdef.MainVerb.verbClass);
-                        if (!this.AbilityVerbs.Any(item => item.verbProps == newVerb.verbProps))
-                        {
-                            ////Log.Message("UpdateAbilities: Added to AbilityVerbs");
-                            newVerb.caster = this.AbilityUser;
-                            newVerb.ability = abList[i];
-                            newVerb.verbProps = abList[i].powerdef.MainVerb;
-                            this.AbilityVerbs.Add(newVerb);
-                        }
+                        ////Log.Message("UpdateAbilities: Added to AbilityVerbs");
+                        newVerb.caster = this.AbilityUser;
+                        newVerb.ability = abList[i];
+                        newVerb.verbProps = abList[i].powerdef.MainVerb;
+                        this.AbilityVerbs.Add(newVerb);
                     }
                 }
 
@@ -252,107 +246,100 @@ namespace AbilityUser
 
         public virtual bool CanOverpowerTarget(Pawn user, Thing target, AbilityDef ability) => true;
 
-        public List<Command_PawnAbility> GetPawnAbilityVerbs()
+        public IEnumerable<Command_PawnAbility> GetPawnAbilityVerbs()
         {
             //Log.ErrorOnce("GetPawnAbilityVerbs Called", 912912);
-            List<Command_PawnAbility> result = new List<Command_PawnAbility>();
             List<Verb_UseAbility> temp = new List<Verb_UseAbility>();
             temp.AddRange(this.AbilityVerbs);
-            if (temp != null && temp.Count > 0)
+            for (int i = 0; i < this.allPowers.Count; i++)
             {
-                if (this.allPowers != null && this.allPowers.Count > 0)
+                int j = i;
+                Verb_UseAbility newVerb = temp[j];
+                VerbProperties_Ability newVerbProps = newVerb.UseAbilityProps;
+                newVerb.caster = this.AbilityUser;
+                newVerb.verbProps = temp[j].verbProps;
+
+                Command_PawnAbility command_CastPower = new Command_PawnAbility(this, this.allPowers[i])
                 {
-                    for (int i = 0; i < this.allPowers.Count; i++)
+                    verb = newVerb,
+                    defaultLabel = this.allPowers[j].powerdef.LabelCap
+                };
+
+
+                //GetDesc
+                StringBuilder s = new StringBuilder();
+                s.AppendLine(this.allPowers[j].powerdef.GetDescription());
+                s.AppendLine(PostAbilityVerbCompDesc(newVerb.UseAbilityProps));
+                command_CastPower.defaultDesc = s.ToString();
+                s = null;
+
+
+                command_CastPower.targetingParams = this.allPowers[j].powerdef.MainVerb.targetParams;
+                //command_CastPower.targetingParams = TargetingParameters.ForAttackAny();
+
+                //if (newVerb.useAbilityProps.AbilityTargetCategory == AbilityTargetCategory.TargetSelf)
+                //{
+                //    command_CastPower.targetingParams = TargetingParameters.ForSelf(this.abilityUser);
+                //}
+                //else
+                //{
+                //    command_CastPower.targetingParams = TargetingParameters.
+                //}
+                command_CastPower.icon = this.allPowers[j].powerdef.uiIcon;
+                //string str;
+                //if (FloatMenuUtility.GetAttackAction(this.abilityUser, LocalTargetInfo.Invalid, out str) == null)
+                //{
+                //    command_CastPower.Disable(str.CapitalizeFirst() + ".");
+                //}
+                command_CastPower.action = delegate (Thing target)
+                {
+                    Action attackAction = CompAbilityUser.TryCastAbility(this.AbilityUser, target, this, newVerb, this.allPowers[j].powerdef as AbilityDef);
+                    if (attackAction != null)
                     {
-                        int j = i;
-                        Verb_UseAbility newVerb = temp[j];
-                        VerbProperties_Ability newVerbProps = newVerb.UseAbilityProps;
-                        newVerb.caster = this.AbilityUser;
-                        newVerb.verbProps = temp[j].verbProps;
-
-                        Command_PawnAbility command_CastPower = new Command_PawnAbility(this, this.allPowers[i])
-                        {
-                            verb = newVerb,
-                            defaultLabel = this.allPowers[j].powerdef.LabelCap
-                        };
-
-
-                        //GetDesc
-                        StringBuilder s = new StringBuilder();
-                        s.AppendLine(this.allPowers[j].powerdef.GetDescription());
-                        s.AppendLine(PostAbilityVerbCompDesc(newVerb.UseAbilityProps));
-                        command_CastPower.defaultDesc = s.ToString();
-                        s = null;
-
-
-                        command_CastPower.targetingParams = this.allPowers[j].powerdef.MainVerb.targetParams;
-                        //command_CastPower.targetingParams = TargetingParameters.ForAttackAny();
-
-                        //if (newVerb.useAbilityProps.AbilityTargetCategory == AbilityTargetCategory.TargetSelf)
-                        //{
-                        //    command_CastPower.targetingParams = TargetingParameters.ForSelf(this.abilityUser);
-                        //}
-                        //else
-                        //{
-                        //    command_CastPower.targetingParams = TargetingParameters.
-                        //}
-                        command_CastPower.icon = this.allPowers[j].powerdef.uiIcon;
-                        //string str;
-                        //if (FloatMenuUtility.GetAttackAction(this.abilityUser, LocalTargetInfo.Invalid, out str) == null)
-                        //{
-                        //    command_CastPower.Disable(str.CapitalizeFirst() + ".");
-                        //}
-                        command_CastPower.action = delegate (Thing target)
-                        {
-                            Action attackAction = CompAbilityUser.TryCastAbility(this.AbilityUser, target, this, newVerb, this.allPowers[j].powerdef as AbilityDef);
-                            if (attackAction != null)
-                            {
-                                if (CanOverpowerTarget(this.AbilityUser, target, this.allPowers[j].powerdef as AbilityDef)) attackAction();
-                            }
-                        };
-                        if (newVerb.caster.Faction != Faction.OfPlayer)
-                        {
-                            command_CastPower.Disable("CannotOrderNonControlled".Translate());
-                        }
-                        string reason = "";
-                        if (newVerb.CasterIsPawn)
-                        {
-                            if (newVerb.CasterPawn.story.WorkTagIsDisabled(WorkTags.Violent) && this.allPowers[j].powerdef.MainVerb.isViolent)
-                            {
-                                command_CastPower.Disable("IsIncapableOfViolence".Translate(new object[]
-                                {
-                            newVerb.CasterPawn.NameStringShort
-                                }));
-                            }
-                            else if (!newVerb.CasterPawn.drafter.Drafted)
-                            {
-                                command_CastPower.Disable("IsNotDrafted".Translate(new object[]
-                                {
-                            newVerb.CasterPawn.NameStringShort
-                                }));
-                            }
-                            else if (!newVerb.ability.CanFire)
-                            {
-                                command_CastPower.Disable("AU_PawnAbilityRecharging".Translate(new object[]
-                                    {
-                                newVerb.CasterPawn.NameStringShort
-                                    }));
-                            }
-                            //This is a hook for modders.
-                            else if (!CanCastPowerCheck(newVerb, out reason))
-                            {
-                                command_CastPower.Disable(reason.Translate(new object[]
-                                {
-                        newVerb.CasterPawn.NameStringShort
-                                }));
-                            }
-                        }
-                        result.Add(command_CastPower);
+                        if (CanOverpowerTarget(this.AbilityUser, target, this.allPowers[j].powerdef as AbilityDef)) attackAction();
                     }
+                };
+                if (newVerb.caster.Faction != Faction.OfPlayer)
+                {
+                    command_CastPower.Disable("CannotOrderNonControlled".Translate());
                 }
+                string reason = "";
+                if (newVerb.CasterIsPawn)
+                {
+                    if (newVerb.CasterPawn.story.WorkTagIsDisabled(WorkTags.Violent) && this.allPowers[j].powerdef.MainVerb.isViolent)
+                    {
+                        command_CastPower.Disable("IsIncapableOfViolence".Translate(new object[]
+                        {
+                            newVerb.CasterPawn.NameStringShort
+                        }));
+                    }
+                    else if (!newVerb.CasterPawn.drafter.Drafted)
+                    {
+                        command_CastPower.Disable("IsNotDrafted".Translate(new object[]
+                        {
+                            newVerb.CasterPawn.NameStringShort
+                        }));
+                    }
+                    else if (!newVerb.ability.CanFire)
+                    {
+                        command_CastPower.Disable("AU_PawnAbilityRecharging".Translate(new object[]
+                            {
+                                newVerb.CasterPawn.NameStringShort
+                            }));
+                    }
+                    //This is a hook for modders.
+                    else if (!CanCastPowerCheck(newVerb, out reason))
+                        {
+                            command_CastPower.Disable(reason.Translate(new object[]
+                            {
+                        newVerb.CasterPawn.NameStringShort
+                            }));
+                        }
+                }
+                yield return command_CastPower;
             }
             temp = null;
-            return result;
+            yield break;
         }
 
 
