@@ -15,22 +15,14 @@ namespace CompInstalledPart
             HarmonyInstance harmony = HarmonyInstance.Create("rimworld.jecrell.comps.installedpart");
             harmony.Patch(AccessTools.Method(typeof(FloatMenuMakerMap), "AddHumanlikeOrders"), null, new HarmonyMethod(typeof(HarmonyCompInstalledPart), "AddHumanlikeOrders_PostFix"));
             harmony.Patch(AccessTools.Method(typeof(ITab_Pawn_Gear), "InterfaceDrop"), new HarmonyMethod(typeof(HarmonyCompInstalledPart).GetMethod("InterfaceDrop_PreFix")), null);
-            //harmony.Patch(AccessTools.Method(typeof(Pawn_EquipmentTracker), "TryDropEquipment"), new HarmonyMethod(typeof(HarmonyCompInstalledPart), "TryDropEquipment_PreFix"), null);
+            harmony.Patch(AccessTools.Method(typeof(Pawn_EquipmentTracker), "TryDropEquipment"), new HarmonyMethod(typeof(HarmonyCompInstalledPart), "TryDropEquipment_PreFix"), null);
         }
 
         // Verse.Pawn_EquipmentTracker
-        public static bool TryDropEquipment_PreFix(ThingWithComps eq, out ThingWithComps resultingEq, IntVec3 pos, bool forbid, ref bool __result)
+        public static bool TryDropEquipment_PreFix(ThingWithComps eq, out ThingWithComps resultingEq, ref bool __result)
         {
             resultingEq = null;
-            if (eq != null)
-            {
-                CompInstalledPart partComp = eq.GetComp<CompInstalledPart>();
-                if (partComp != null)
-                {
-                    if (!partComp.uninstalled) return __result = false;
-                }
-            }
-            return true;
+            return __result = (!(!eq?.TryGetComp<CompInstalledPart>()?.uninstalled) ?? true);
         }
 
         // RimWorld.FloatMenuMakerMap
