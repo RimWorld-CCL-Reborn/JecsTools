@@ -10,21 +10,6 @@ using System.Reflection.Emit;
 
 namespace CompVehicle
 {
-    class DummyClass
-    {
-        void Dummy()
-        {
-            Verb verb = null;
-
-            Log.Message(verb.Bursting.ToString());
-
-            if (verb.CasterPawn.story != null && verb.CasterPawn.story.WorkTagIsDisabled(WorkTags.Violent))
-            {
-                Log.Message("hey");
-            }
-            Log.Message("hey");
-        }
-    }
 
     [StaticConstructorOnStartup]
     static class HarmonyCompPilotable
@@ -44,9 +29,34 @@ namespace CompVehicle
             //HarmonyInstance.DEBUG = true;
             harmony.Patch(AccessTools.Method(typeof(Building_CrashedShipPart), "<TrySpawnMechanoids>m__4A4"), null, new HarmonyMethod(typeof(HarmonyCompPilotable), nameof(MechanoidsFixer)));
             //HarmonyInstance.DEBUG = false;
-            harmony.Patch(AccessTools.Method(typeof(Pawn), "DropAndForbidEverything"), new HarmonyMethod(typeof(HarmonyCompPilotable), "DropAndForbidEverything_PreFix"), null);
+            //harmony.Patch(AccessTools.Method(typeof(Pawn), "DropAndForbidEverything"), new HarmonyMethod(typeof(HarmonyCompPilotable), "DropAndForbidEverything_PreFix"), null);
             harmony.Patch(AccessTools.Method(typeof(JobDriver_Wait), "CheckForAutoAttack"), null, null, new HarmonyMethod(typeof(HarmonyCompPilotable), nameof(CheckForAutoAttackTranspiler)));
-            harmony.Patch(AccessTools.Method(AccessTools.TypeByName("<GetVerbsCommands>c__Iterator258"), "MoveNext"), null, null, new HarmonyMethod(typeof(HarmonyCompPilotable), nameof(GetVerbsCommandsTranspiler)));
+            harmony.Patch(AccessTools.Method(AccessTools.TypeByName("<GetVerbsCommands>c__Iterator258"), "MoveNext"), null, null, new HarmonyMethod(typeof(HarmonyCompPilotable), nameof(GetVerbsCommandsTranspiler))); 
+            harmony.Patch(AccessTools.Method(typeof(FloatMenuUtility), nameof(FloatMenuUtility.GetRangedAttackAction)), null, null, new HarmonyMethod(typeof(HarmonyCompPilotable), nameof(FightActionTranspiler)));
+            harmony.Patch(AccessTools.Method(typeof(FloatMenuUtility), nameof(FloatMenuUtility.GetMeleeAttackAction)), null, null, new HarmonyMethod(typeof(HarmonyCompPilotable), nameof(FightActionTranspiler)));
+        }
+
+        public static IEnumerable<CodeInstruction> FightActionTranspiler(IEnumerable<CodeInstruction> instructions, ILGenerator il)
+        {
+            FieldInfo storyInfo = AccessTools.Field(typeof(Pawn), nameof(Pawn.story));
+            bool done = false;
+            List<CodeInstruction> instructionList = instructions.ToList();
+            for (int i = 0; i < instructionList.Count; i++)
+            {
+                CodeInstruction instruction = instructionList[i];
+
+                if (!done && instruction.operand == storyInfo)
+                {
+                    yield return instruction;
+                    yield return new CodeInstruction(instructionList[i + 3]);
+                    yield return new CodeInstruction(instructionList[i - 2]) { labels = new List<Label>() };
+                    yield return new CodeInstruction(instructionList[i - 1]);
+                    instruction = new CodeInstruction(instruction);
+                    done = true;
+                }
+
+                yield return instruction;
+            }
         }
 
         public static IEnumerable<CodeInstruction> GetVerbsCommandsTranspiler(IEnumerable<CodeInstruction> instructions)
@@ -74,7 +84,7 @@ namespace CompVehicle
         }
 
 
-            public static IEnumerable<CodeInstruction> CheckForAutoAttackTranspiler(IEnumerable<CodeInstruction> instructions)
+        public static IEnumerable<CodeInstruction> CheckForAutoAttackTranspiler(IEnumerable<CodeInstruction> instructions)
         {
             MethodInfo playerFactionInfo = AccessTools.Property(typeof(Faction), nameof(Faction.OfPlayer)).GetGetMethod();
             bool done = false;
