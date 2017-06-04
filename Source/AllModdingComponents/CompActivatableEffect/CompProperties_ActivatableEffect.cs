@@ -20,6 +20,8 @@ namespace CompActivatableEffect
 
         public bool gizmosOnEquip = false;
 
+        public bool autoActivateOnDraft = true;
+
         public bool draftToUseGizmos = true;
 
         public float Altitude => Altitudes.AltitudeFor(this.altitudeLayer);

@@ -34,10 +34,22 @@ namespace AbilityUser
         public int TicksToCastMax = 100;
         public int TicksToCast = -1;
 
-        public List<PawnAbility> Powers = new List<PawnAbility>();
+        protected List<PawnAbility> Powers = new List<PawnAbility>();
         protected List<PawnAbility> temporaryWeaponPowers = new List<PawnAbility>();
         protected List<PawnAbility> temporaryApparelPowers = new List<PawnAbility>();
-        public List<PawnAbility> allPowers = new List<PawnAbility>();
+        protected List<PawnAbility> allPowers;
+        public List<PawnAbility> AllPowers
+        {
+            get
+            {
+                if (this.allPowers != null) return allPowers;
+                return allPowers = new List<PawnAbility>(this.Powers.Concat(this.temporaryApparelPowers).Concat(this.temporaryWeaponPowers));
+            }
+            set
+            {
+                allPowers = value;
+            }
+        }
         public List<Verb_UseAbility> AbilityVerbs = new List<Verb_UseAbility>();
         //        public Dictionary<PawnAbility, Verb_UseAbility> pawnAbilities = new Dictionary<PawnAbility, Verb_UseAbility>();
 
@@ -49,9 +61,10 @@ namespace AbilityUser
 
         this.UpdateAbilities();
         */
-        public void AddPawnAbility(AbilityDef abilityDef, bool activenow = true) => this.AddAbilityInternal(abilityDef, ref this.Powers, activenow); public void AddWeaponAbility(AbilityDef abilityDef, bool activenow = true) => this.AddAbilityInternal(abilityDef, ref this.temporaryWeaponPowers, activenow); public void AddApparelAbility(AbilityDef abilityDef, bool activenow = true) => this.AddAbilityInternal(abilityDef, ref this.temporaryApparelPowers, activenow); private void AddAbilityInternal(AbilityDef abilityDef, ref List<PawnAbility> thelist,bool activenow ) {
+        public void AddPawnAbility(AbilityDef abilityDef, bool activenow = true) => this.AddAbilityInternal(abilityDef, ref this.Powers, activenow); public void AddWeaponAbility(AbilityDef abilityDef, bool activenow = true) => this.AddAbilityInternal(abilityDef, ref this.temporaryWeaponPowers, activenow); public void AddApparelAbility(AbilityDef abilityDef, bool activenow = true) => this.AddAbilityInternal(abilityDef, ref this.temporaryApparelPowers, activenow); private void AddAbilityInternal(AbilityDef abilityDef, ref List<PawnAbility> thelist, bool activenow)
+        {
             PawnAbility pa = new PawnAbility(this.AbilityUser, abilityDef);
-            if ( activenow == false ) pa.TicksUntilCasting =  (int) (pa.powerdef.MainVerb.SecondsToRecharge * GenTicks.TicksPerRealSecond);
+            if (activenow == false) pa.TicksUntilCasting = (int)(pa.powerdef.MainVerb.SecondsToRecharge * GenTicks.TicksPerRealSecond);
             thelist.Add(pa);
             this.UpdateAbilities();
 
@@ -87,13 +100,15 @@ namespace AbilityUser
         public override void CompTick()
         {
             base.CompTick();
-//            Log.Message("CompAbiltyUser Tick");
-            if ( !this.IsInitialized && TryTransformPawn() ) {
-//                Log.Warning(" YES: a CompAbilityUser is being Initialized");
+            //            Log.Message("CompAbiltyUser Tick");
+            if (!this.IsInitialized && TryTransformPawn())
+            {
+                //                Log.Warning(" YES: a CompAbilityUser is being Initialized");
                 Initialize();
             }
-            if (this.IsInitialized ) {
-//                Log.Message("CompAbiltyUser CompTick 2");
+            if (this.IsInitialized)
+            {
+                //                Log.Message("CompAbiltyUser CompTick 2");
                 this.TicksToCast--;
                 if (this.TicksToCast < -1)
                 {
@@ -101,13 +116,24 @@ namespace AbilityUser
                     this.ShotFired = true;
                     this.TicksToCast = -1;
                 }
-//                if (Powers != null && Powers.Count > 0) { foreach (PawnAbility power in Powers) { power.PawnAbilityTick(); } }
-//                Log.Message("   there are "+this.allPowers.Count+" powers");
-                if (this.allPowers != null && this.allPowers.Count > 0) {
-                    foreach (PawnAbility power in this.allPowers) {
-                        power.PawnAbilityTick(); }
+                //                if (Powers != null && Powers.Count > 0) { foreach (PawnAbility power in Powers) { power.PawnAbilityTick(); } }
+                //                Log.Message("   there are "+this.allPowers.Count+" powers");
+                if (this.AllPowers != null && this.AllPowers.Count > 0)
+                {
+                    foreach (PawnAbility power in this.AllPowers)
+                    {
+                        power.PawnAbilityTick();
+                    }
                 }
                 this.TicksToCastPercentage = (1 - (this.TicksToCast / this.TicksToCastMax));
+
+                // need to give verb ticks
+                //Log.Message("db send tick to each verb of CompAbilityUser");
+                foreach (Verb v in this.AbilityVerbs)
+                {
+                    if (v.state != VerbState.Idle) Log.Message("  - send non-idle tick to " + v.GetType());
+                    v.VerbTick();
+                }
             }
         }
 
@@ -131,10 +157,10 @@ namespace AbilityUser
         public override void PostExposeData()
         {
             //base.PostExposeData();
-            Scribe_Collections.Look<PawnAbility>(ref this.allPowers, "allPowers", LookMode.Deep, new object[]
-                {
-                    this,
-                });
+            //Scribe_Collections.Look<PawnAbility>(ref this.allPowers, "allPowers", LookMode.Deep, new object[]
+            //    {
+            //        this,
+            //    });
             Scribe_Collections.Look<PawnAbility>(ref this.temporaryApparelPowers, "temporaryApparelPowers", LookMode.Deep, new object[]
                 {
                     this,
@@ -196,7 +222,8 @@ namespace AbilityUser
 
         public void UpdateAbilities()
         {
-            if (this.IsInitialized ) {
+            if (this.IsInitialized)
+            {
 
                 this.AbilityVerbs.Clear();
                 List<PawnAbility> abList = new List<PawnAbility>();
@@ -205,25 +232,22 @@ namespace AbilityUser
                 abList.AddRange(this.temporaryWeaponPowers);
                 abList.AddRange(this.temporaryApparelPowers);
 
-                this.allPowers.Clear();
+                this.AllPowers.Clear();
 
-                this.allPowers = abList;
+                this.AllPowers = abList;
 
-//                Log.Message("UpdateAbilities : with "+this.allPowers.Count+" powers");
+                //                Log.Message("UpdateAbilities : with "+this.allPowers.Count+" powers");
 
-                if (this.allPowers != null && this.allPowers.Count > 0)
+                for (int i = 0; i < this.AllPowers.Count; i++)
                 {
-                    for (int i = 0; i < this.allPowers.Count; i++)
+                    Verb_UseAbility newVerb = (Verb_UseAbility)Activator.CreateInstance(abList[i].powerdef.MainVerb.verbClass);
+                    if (!this.AbilityVerbs.Any(item => item.verbProps == newVerb.verbProps))
                     {
-                        Verb_UseAbility newVerb = (Verb_UseAbility)Activator.CreateInstance(abList[i].powerdef.MainVerb.verbClass);
-                        if (!this.AbilityVerbs.Any(item => item.verbProps == newVerb.verbProps))
-                        {
-                            ////Log.Message("UpdateAbilities: Added to AbilityVerbs");
-                            newVerb.caster = this.AbilityUser;
-                            newVerb.ability = abList[i];
-                            newVerb.verbProps = abList[i].powerdef.MainVerb;
-                            this.AbilityVerbs.Add(newVerb);
-                        }
+                        ////Log.Message("UpdateAbilities: Added to AbilityVerbs");
+                        newVerb.caster = this.AbilityUser;
+                        newVerb.ability = abList[i];
+                        newVerb.verbProps = abList[i].powerdef.MainVerb;
+                        this.AbilityVerbs.Add(newVerb);
                     }
                 }
 
@@ -244,7 +268,7 @@ namespace AbilityUser
         }
         //       //Log.Message(this.PawnAbilitys.Count.ToString());
         */
-    }
+            }
         }
 
         public virtual bool CanOverpowerTarget(Pawn user, Thing target, AbilityDef ability) => true;
@@ -252,102 +276,96 @@ namespace AbilityUser
         public IEnumerable<Command_PawnAbility> GetPawnAbilityVerbs()
         {
             //Log.ErrorOnce("GetPawnAbilityVerbs Called", 912912);
-            if (this.AbilityVerbs != null && this.AbilityVerbs.Count > 0)
+            List<Verb_UseAbility> temp = new List<Verb_UseAbility>();
+            temp.AddRange(this.AbilityVerbs);
+            for (int i = 0; i < this.AllPowers.Count; i++)
             {
-                List<Verb_UseAbility> temp = new List<Verb_UseAbility>();
-                temp.AddRange(this.AbilityVerbs);
-                if (this.allPowers != null && this.allPowers.Count > 0)
+                int j = i;
+                Verb_UseAbility newVerb = temp[j];
+                VerbProperties_Ability newVerbProps = newVerb.UseAbilityProps;
+                newVerb.caster = this.AbilityUser;
+                newVerb.verbProps = temp[j].verbProps;
+
+                Command_PawnAbility command_CastPower = new Command_PawnAbility(this, this.AllPowers[i])
                 {
-                    for (int i = 0; i < this.allPowers.Count; i++)
+                    verb = newVerb,
+                    defaultLabel = this.AllPowers[j].powerdef.LabelCap
+                };
+
+
+                //GetDesc
+                StringBuilder s = new StringBuilder();
+                s.AppendLine(this.AllPowers[j].powerdef.GetDescription());
+                s.AppendLine(PostAbilityVerbCompDesc(newVerb.UseAbilityProps));
+                command_CastPower.defaultDesc = s.ToString();
+                s = null;
+
+
+                command_CastPower.targetingParams = this.AllPowers[j].powerdef.MainVerb.targetParams;
+                //command_CastPower.targetingParams = TargetingParameters.ForAttackAny();
+
+                //if (newVerb.useAbilityProps.AbilityTargetCategory == AbilityTargetCategory.TargetSelf)
+                //{
+                //    command_CastPower.targetingParams = TargetingParameters.ForSelf(this.abilityUser);
+                //}
+                //else
+                //{
+                //    command_CastPower.targetingParams = TargetingParameters.
+                //}
+                command_CastPower.icon = this.AllPowers[j].powerdef.uiIcon;
+                //string str;
+                //if (FloatMenuUtility.GetAttackAction(this.abilityUser, LocalTargetInfo.Invalid, out str) == null)
+                //{
+                //    command_CastPower.Disable(str.CapitalizeFirst() + ".");
+                //}
+                command_CastPower.action = delegate (Thing target)
+                {
+                    Action attackAction = CompAbilityUser.TryCastAbility(this.AbilityUser, target, this, newVerb, this.AllPowers[j].powerdef as AbilityDef);
+                    if (attackAction != null)
                     {
-                        int j = i;
-                        Verb_UseAbility newVerb = temp[j];
-                        VerbProperties_Ability newVerbProps = newVerb.UseAbilityProps;
-                        newVerb.caster = this.AbilityUser;
-                        newVerb.verbProps = temp[j].verbProps;
-
-                        Command_PawnAbility command_CastPower = new Command_PawnAbility(this, this.allPowers[i])
+                        if (CanOverpowerTarget(this.AbilityUser, target, this.AllPowers[j].powerdef as AbilityDef)) attackAction();
+                    }
+                };
+                if (newVerb.caster.Faction != Faction.OfPlayer)
+                {
+                    command_CastPower.Disable("CannotOrderNonControlled".Translate());
+                }
+                string reason = "";
+                if (newVerb.CasterIsPawn)
+                {
+                    if (newVerb.CasterPawn.story.WorkTagIsDisabled(WorkTags.Violent) && this.AllPowers[j].powerdef.MainVerb.isViolent)
+                    {
+                        command_CastPower.Disable("IsIncapableOfViolence".Translate(new object[]
                         {
-                            verb = newVerb,
-                            defaultLabel = this.allPowers[j].powerdef.LabelCap
-                        };
-
-
-                        //GetDesc
-                        StringBuilder s = new StringBuilder();
-                        s.AppendLine(this.allPowers[j].powerdef.GetDescription());
-                        s.AppendLine(PostAbilityVerbCompDesc(newVerb.UseAbilityProps));
-                        command_CastPower.defaultDesc = s.ToString();
-                        s = null;
-
-
-                        command_CastPower.targetingParams = this.allPowers[j].powerdef.MainVerb.targetParams;
-                        //command_CastPower.targetingParams = TargetingParameters.ForAttackAny();
-
-                        //if (newVerb.useAbilityProps.AbilityTargetCategory == AbilityTargetCategory.TargetSelf)
-                        //{
-                        //    command_CastPower.targetingParams = TargetingParameters.ForSelf(this.abilityUser);
-                        //}
-                        //else
-                        //{
-                        //    command_CastPower.targetingParams = TargetingParameters.
-                        //}
-                        command_CastPower.icon = this.allPowers[j].powerdef.uiIcon;
-                        //string str;
-                        //if (FloatMenuUtility.GetAttackAction(this.abilityUser, LocalTargetInfo.Invalid, out str) == null)
-                        //{
-                        //    command_CastPower.Disable(str.CapitalizeFirst() + ".");
-                        //}
-                        command_CastPower.action = delegate (Thing target)
-                        {
-                            Action attackAction = CompAbilityUser.TryCastAbility(this.AbilityUser, target, this, newVerb, this.allPowers[j].powerdef as AbilityDef);
-                            if (attackAction != null)
-                            {
-                                if (CanOverpowerTarget(this.AbilityUser, target, this.allPowers[j].powerdef as AbilityDef)) attackAction();
-                            }
-                        };
-                        if (newVerb.caster.Faction != Faction.OfPlayer)
-                        {
-                            command_CastPower.Disable("CannotOrderNonControlled".Translate());
-                        }
-                        string reason = "";
-                        if (newVerb.CasterIsPawn)
-                        {
-                            if (newVerb.CasterPawn.story.WorkTagIsDisabled(WorkTags.Violent) && this.allPowers[j].powerdef.MainVerb.isViolent)
-                            {
-                                command_CastPower.Disable("IsIncapableOfViolence".Translate(new object[]
-                                {
                             newVerb.CasterPawn.NameStringShort
-                                }));
-                            }
-                            else if (!newVerb.CasterPawn.drafter.Drafted)
-                            {
-                                command_CastPower.Disable("IsNotDrafted".Translate(new object[]
-                                {
+                        }));
+                    }
+                    else if (!newVerb.CasterPawn.drafter.Drafted)
+                    {
+                        command_CastPower.Disable("IsNotDrafted".Translate(new object[]
+                        {
                             newVerb.CasterPawn.NameStringShort
-                                }));
-                            }
-                            else if (!newVerb.ability.CanFire)
+                        }));
+                    }
+                    else if (!newVerb.ability.CanFire)
+                    {
+                        command_CastPower.Disable("AU_PawnAbilityRecharging".Translate(new object[]
                             {
-                                command_CastPower.Disable("AU_PawnAbilityRecharging".Translate(new object[]
-                                    {
                                 newVerb.CasterPawn.NameStringShort
-                                    }));
-                            }
-                            //This is a hook for modders.
-                            else if (!CanCastPowerCheck(newVerb, out reason))
-                            {
-                                command_CastPower.Disable(reason.Translate(new object[]
-                                {
+                            }));
+                    }
+                    //This is a hook for modders.
+                    else if (!CanCastPowerCheck(newVerb, out reason))
+                    {
+                        command_CastPower.Disable(reason.Translate(new object[]
+                        {
                         newVerb.CasterPawn.NameStringShort
-                                }));
-                            }
-                        }
-                        yield return command_CastPower;
+                        }));
                     }
                 }
-                temp = null;
+                yield return command_CastPower;
             }
+            temp = null;
             yield break;
         }
 
@@ -421,7 +439,8 @@ namespace AbilityUser
 
     // Exists for items to add powers to as it will always be on every Pawn
     // and initiated.
-    public class GenericCompAbilityUser : CompAbilityUser {
+    public class GenericCompAbilityUser : CompAbilityUser
+    {
         public override bool TryTransformPawn() => true;
     }
 

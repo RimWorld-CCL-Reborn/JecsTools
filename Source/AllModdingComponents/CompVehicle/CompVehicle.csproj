@@ -55,7 +55,7 @@
     <Compile Include="Command_VehicleHandler.cs" />
     <Compile Include="CompVehicle.cs" />
     <Compile Include="CompProperties_Vehicle.cs" />
-    <Compile Include="HarmonyCompPilotable.cs" />
+    <Compile Include="HarmonyCompVehicle.cs" />
     <Compile Include="ITab_Passengers.cs" />
     <Compile Include="JobDriver_LoadPassenger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -20,6 +20,7 @@ namespace CompActivatableEffect
             harmony.Patch(typeof(Pawn_DraftController).GetMethod("set_Drafted"), null, new HarmonyMethod(typeof(HarmonyCompActivatableEffect).GetMethod("set_Drafted_PostFix")));
             harmony.Patch(typeof(Pawn).GetMethod("ExitMap"), new HarmonyMethod(typeof(HarmonyCompActivatableEffect).GetMethod("ExitMap_PreFix")), null);
             harmony.Patch(typeof(Pawn_EquipmentTracker).GetMethod("TryDropEquipment"), new HarmonyMethod(typeof(HarmonyCompActivatableEffect).GetMethod("TryDropEquipment_PreFix")), null);
+            harmony.Patch(typeof(Pawn_DraftController).GetMethod("set_Drafted"), null, new HarmonyMethod(typeof(HarmonyCompActivatableEffect).GetMethod("set_DraftedPostFix")));
         }
 
         //=================================== COMPACTIVATABLE
