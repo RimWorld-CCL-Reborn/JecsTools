@@ -356,12 +356,6 @@ namespace CompVehicle
                     }, MenuOptionPriority.Default, null, null, 29f, extraPartOnGUI, null));
                 }
             }
-            else
-            {
-                list.Add(new FloatMenuOption("NoPrisoners".Translate(), delegate
-                {
-                }, MenuOptionPriority.Default));
-            }
             Find.WindowStack.Add(new FloatMenu(list));
         }
 

@@ -27,6 +27,14 @@ namespace CompInstalledPart
 
         protected Thing UninstallTarget => this.CurJob.targetB.Thing;
 
+        protected int WorkDone
+        {
+            get
+            {
+                return TotalNeededWork - (int)workLeft;
+            }
+        }
+
         protected int TotalNeededWork
         {
             get
@@ -51,6 +59,8 @@ namespace CompInstalledPart
                 },
                 tickAction = delegate
                 {
+                    if (UninstallTarget is Pawn pawnTarget) pawnTarget.pather.StopDead();
+                    this.pawn.Drawer.rotator.FaceCell(this.TargetB.Cell);
                     Pawn actor = this.pawn;
                     actor.skills.Learn(SkillDefOf.Construction, 0.275f, false);
                     float statValue = actor.GetStatValue(StatDefOf.ConstructionSpeed, true);
@@ -70,6 +80,7 @@ namespace CompInstalledPart
             };
             repair.FailOnCannotTouch(TargetIndex.B, PathEndMode.Touch);
             repair.WithEffect(this.UninstallComp.Props.workEffect, TargetIndex.B);
+            repair.WithProgressBar(TargetIndex.B, () => this.WorkDone / this.TotalNeededWork, false, -0.5f);
             repair.defaultCompleteMode = ToilCompleteMode.Never;
             yield return repair;
         }

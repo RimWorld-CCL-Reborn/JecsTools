@@ -4,13 +4,14 @@
     <defName>CompInstalledPart_InstallPart</defName>
     <driverClass>CompInstalledPart.JobDriver_InstallPart</driverClass>
     <reportString>installing TargetA.</reportString>
+    <suspendable>false</suspendable>
   </JobDef>
 
   <JobDef>
     <defName>CompInstalledPart_UninstallPart</defName>
     <driverClass>CompInstalledPart.JobDriver_UninstallPart</driverClass>
     <reportString>uninstalling TargetA.</reportString>
+		<suspendable>false</suspendable>
   </JobDef>
-  
+
 </JobDefs>
-  

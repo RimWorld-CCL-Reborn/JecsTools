@@ -28,6 +28,14 @@ namespace CompInstalledPart
 
         protected Thing InstallTarget => this.CurJob.targetB.Thing;
 
+        protected int WorkDone
+        {
+            get
+            {
+                return TotalNeededWork - (int)workLeft;
+            }
+        }
+
         protected int TotalNeededWork
         {
             get
@@ -40,13 +48,12 @@ namespace CompInstalledPart
         [DebuggerHidden]
         protected override IEnumerable<Toil> MakeNewToils()
         {
-            this.FailOnDespawnedNullOrForbidden(TargetIndex.A);
-            yield return Toils_Reserve.Reserve(TargetIndex.A, 1, -1, null);
-            yield return Toils_Reserve.Reserve(TargetIndex.B, 1, -1, null);
+            this.FailOnDestroyedOrNull(TargetIndex.A);
+            yield return Toils_Reserve.Reserve(TargetIndex.A);
             yield return Toils_Goto.GotoThing(TargetIndex.A, PathEndMode.OnCell).FailOnDestroyedNullOrForbidden(TargetIndex.A);
             yield return Toils_Haul.StartCarryThing(TargetIndex.A, false, false);
             yield return Toils_Goto.GotoThing(TargetIndex.B, PathEndMode.ClosestTouch);
-            yield return Toils_Haul.PlaceHauledThingInCell(TargetIndex.C, null, false);
+            yield return Toils_Haul.PlaceHauledThingInCell(TargetIndex.B, null, false);
             Toil repair = new Toil()
             {
                 initAction = delegate
@@ -56,6 +63,8 @@ namespace CompInstalledPart
                 },
                 tickAction = delegate
                 {
+                    if (InstallTarget is Pawn pawnTarget) pawnTarget.pather.StopDead();
+                    this.pawn.Drawer.rotator.FaceCell(this.TargetB.Cell);
                     Pawn actor = this.pawn;
                     actor.skills.Learn(SkillDefOf.Construction, 0.275f, false);
                     float statValue = actor.GetStatValue(StatDefOf.ConstructionSpeed, true);
@@ -75,6 +84,7 @@ namespace CompInstalledPart
             };
             repair.FailOnCannotTouch(TargetIndex.B, PathEndMode.Touch);
             repair.WithEffect(this.InstallComp.Props.workEffect, TargetIndex.B);
+            repair.WithProgressBar(TargetIndex.B, () => this.WorkDone / this.TotalNeededWork, false, -0.5f);
             repair.defaultCompleteMode = ToilCompleteMode.Never;
             yield return repair;
         }

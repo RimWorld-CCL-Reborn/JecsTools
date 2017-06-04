@@ -80,6 +80,7 @@
     <Compile Include="StringsToTranslate.cs" />
     <Compile Include="VerbProperties_Ability.cs" />
     <Compile Include="Verb_UseAbility.cs" />
+    <Compile Include="Verb_UseAbility_TrueBurst.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -1,5 +1,6 @@
 ﻿using RimWorld;
 using Verse;
+using Verse.AI;
 
 namespace CompInstalledPart
 {
@@ -11,12 +12,35 @@ namespace CompInstalledPart
 
         public void GiveInstallJob(Pawn actor, Thing target)
         {
-
+            var actorFac = actor?.Faction;
+            var targetFac = target?.Faction;
+            if (actorFac != null && targetFac != null)
+            { 
+                if (actorFac == targetFac)
+                {
+                    Job newJob = new Job(DefDatabase<JobDef>.GetNamed("CompInstalledPart_InstallPart"), this.parent, target, target.Position);
+                    newJob.count = 2;
+                    actor?.jobs?.TryTakeOrderedJob(newJob);
+                }
+                else if (actorFac != targetFac) Messages.Message("CompInstalledPart_WrongFaction".Translate(), MessageSound.RejectInput);
+            }
         }
 
         public void GiveUninstallJob(Pawn actor, Thing target)
         {
 
+            var actorFac = actor?.Faction;
+            var targetFac = target?.Faction;
+            if (actorFac != null && targetFac != null)
+            {
+                if (actorFac == targetFac)
+                {
+                    Job newJob = new Job(DefDatabase<JobDef>.GetNamed("CompInstalledPart_UninstallPart"), this.parent, target, target.Position);
+                    newJob.count = 1;
+                    actor?.jobs?.TryTakeOrderedJob(newJob);
+                }
+                else if (actorFac != targetFac) Messages.Message("CompInstalledPart_WrongFaction".Translate(), MessageSound.RejectInput);
+            }
         }
 
         public void Notify_Installed(Pawn installer, Thing target)
@@ -24,37 +48,26 @@ namespace CompInstalledPart
             this.uninstalled = false;
 
             //Installed on a character
-            if (target is Pawn targetPawn)
+            if (target is Pawn targetPawn && this.parent.def != null)
             {
-                if (this.parent.def != null)
+             
+                //Add apparel
+                if (this.parent.def.IsApparel && targetPawn.apparel != null)
                 {
-                    //Add apparel
-                    if (this.parent.def.IsApparel)
+                  this.parent.DeSpawn();
+                  targetPawn.apparel.Wear((Apparel)this.parent);
+                }
+
+                //Add equipment
+                if (this.parent.def.IsWeapon)
+                {
+                    if (targetPawn?.equipment?.Primary?.GetComp<CompInstalledPart>() is CompInstalledPart otherPart)
                     {
-                        if (targetPawn.apparel != null)
-                        {
-                            this.parent.DeSpawn();
-                            targetPawn.apparel.Wear((Apparel)this.parent);
-                        }
+                        otherPart.Notify_Uninstalled(installer, targetPawn);
                     }
-                    //Add equipment
-                    if (this.parent.def.IsWeapon)
-                    {
-                        if (targetPawn.equipment != null)
-                        {
-                            if (targetPawn.equipment.Primary != null)
-                            {
-                                CompInstalledPart otherPart = targetPawn.equipment.Primary.GetComp<CompInstalledPart>();
-                                if (otherPart != null)
-                                {
-                                    Notify_Uninstalled(installer, targetPawn);
-                                }
-                            }
-                            this.parent.DeSpawn();
-                            targetPawn.equipment.MakeRoomFor(this.parent);
-                            targetPawn.equipment.AddEquipment(this.parent);
-                        }
-                    }
+                    this.parent.DeSpawn();
+                    targetPawn.equipment.MakeRoomFor(this.parent);
+                    targetPawn.equipment.AddEquipment(this.parent);
                 }
             }
             else
@@ -84,28 +97,16 @@ namespace CompInstalledPart
                 if (this.parent.def != null)
                 {
                     //Remove apparel
-                    if (this.parent.def.IsApparel)
+                    if (this.parent.def.IsApparel && targetPawn.apparel is Pawn_ApparelTracker tracker &&
+                        tracker.WornApparel.Contains((Apparel)this.parent) && tracker.TryDrop((Apparel)this.parent, out Apparel apparel))
                     {
-                        if (targetPawn.apparel != null)
-                        {
-                            if (targetPawn.apparel.WornApparel.Contains((Apparel)this.parent))
-                            {
-                                if (targetPawn.apparel.TryDrop((Apparel)this.parent, out Apparel apparel))
-                                {
-                                }
-                            }
-                        }
+
                     }
                     //Remove equipment
-                    if (this.parent.def.IsWeapon)
+                    if (this.parent.def.IsWeapon && targetPawn.equipment is Pawn_EquipmentTracker eqTracker &&
+                        eqTracker.TryDropEquipment(this.parent, out ThingWithComps dropped, targetPawn.Position))
                     {
-                        if (targetPawn.equipment != null)
-                        {
-                            if (targetPawn.equipment.TryDropEquipment(this.parent, out ThingWithComps dropped, targetPawn.Position))
-                            {
 
-                            }
-                        }
                     }
                 }
             }
