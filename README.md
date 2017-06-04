@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/jecrell/JecsTools/releases/tag/1.0.4">
+  <a href="https://github.com/jecrell/JecsTools/releases/">
     <img src="https://img.shields.io/badge/release-1.0.4-4BC51D.svg?style=flat" alt="v1.0.9.1" />
   </a>
   <a href="https://github.com/roxxploxx/RimWorldModGuide/wiki">
