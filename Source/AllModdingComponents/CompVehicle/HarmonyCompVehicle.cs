@@ -7,6 +7,8 @@ using Verse.AI;
 using System.Reflection;
 using UnityEngine;
 using System.Reflection.Emit;
+using RimWorld.Planet;
+using System.Runtime.CompilerServices;
 
 namespace CompVehicle
 {
@@ -31,7 +33,49 @@ namespace CompVehicle
             harmony.Patch(AccessTools.Method(AccessTools.TypeByName("<GetVerbsCommands>c__Iterator258"), "MoveNext"), null, null, new HarmonyMethod(typeof(HarmonyCompVehicle), nameof(GetVerbsCommandsTranspiler))); 
             harmony.Patch(AccessTools.Method(typeof(FloatMenuUtility), nameof(FloatMenuUtility.GetRangedAttackAction)), null, null, new HarmonyMethod(typeof(HarmonyCompVehicle), nameof(FightActionTranspiler)));
             harmony.Patch(AccessTools.Method(typeof(FloatMenuUtility), nameof(FloatMenuUtility.GetMeleeAttackAction)), null, null, new HarmonyMethod(typeof(HarmonyCompVehicle), nameof(FightActionTranspiler)));
+            harmony.Patch(AccessTools.Method(typeof(CaravanUIUtility), "AddPawnsSections"), null, new HarmonyMethod(typeof(HarmonyCompVehicle), "AddPawnsSections_PostFix"));
+            harmony.Patch(AccessTools.Method(typeof(CaravanUtility), "IsOwner"), null, new HarmonyMethod(typeof(HarmonyCompVehicle), "IsOwner_PostFix"));
+            harmony.Patch(AccessTools.Method(typeof(Dialog_FormCaravan), "CheckForErrors"), new HarmonyMethod(typeof(HarmonyCompVehicle), "CheckForErrors_PreFix"), null);
+            
+            //harmony.Patch(AccessTools.Method(typeof(Dialog_FormCaravan), "Dialog_FormCaravan.<CheckForErrors>c__AnonStorey3F6.<>m__569"), null, new HarmonyMethod(typeof(HarmonyCompVehicle), "CanLoad_PostFix"));
         }
+
+        // RimWorld.Dialog_FormCaravan
+        public static bool CheckForErrors_PreFix(List<Pawn> pawns, ref bool __result)
+        {
+            if (pawns.FindAll((x) => x.GetComp<CompVehicle>() != null) is List<Pawn> vehicles)
+            {
+                if (vehicles.Any((y) => y.GetComp<CompVehicle>() is CompVehicle vehicle && vehicle.MovementHandlerAvailable))
+                {
+                    __result = true;
+                    return false;
+                }
+            }
+            return true;
+        }
+        
+        // RimWorld.Planet.CaravanUtility
+        public static void IsOwner_PostFix(Pawn pawn, Faction caravanFaction, ref bool __result)
+        {
+            if (pawn.GetComp<CompVehicle>() is CompVehicle compVehicle)
+            {
+                __result = compVehicle.MovementHandlerAvailable && pawn.Faction == caravanFaction && pawn.HostFaction == null;
+            }
+        }
+        
+
+        // RimWorld.CaravanUIUtility
+        public static void AddPawnsSections_PostFix(TransferableOneWayWidget widget, List<TransferableOneWay> transferables)
+        {
+            IEnumerable<TransferableOneWay> source = from x in transferables
+                                                     where x.ThingDef.category == ThingCategory.Pawn
+                                                     select x;
+            widget.AddSection("CompVehicle_VehicleSection".Translate(), from x in source
+                                                            where ((Pawn)x.AnyThing).GetComp<CompVehicle>() != null &&
+                                                            ((Pawn)x.AnyThing).GetComp<CompVehicle>().MovementHandlerAvailable
+                                                            select x);
+        }
+
 
         public static IEnumerable<CodeInstruction> FightActionTranspiler(IEnumerable<CodeInstruction> instructions, ILGenerator il)
         {

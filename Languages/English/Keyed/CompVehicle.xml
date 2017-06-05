@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <LanguageData>
 
+<CompVehicle_VehicleSection>Vehicles</CompVehicle_VehicleSection>
 <CompVehicle_LoadUnload>Load/Unload {0}</CompVehicle_LoadUnload>
 <CompVehicle_Unload>Unload {0}</CompVehicle_Unload>
 <CompVehicle_Load>Load {0}</CompVehicle_Load>
