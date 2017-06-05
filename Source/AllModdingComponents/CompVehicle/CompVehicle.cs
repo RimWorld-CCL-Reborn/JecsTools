@@ -337,7 +337,7 @@ namespace CompVehicle
                 list.Add(new FloatMenuOption(text, delegate
                 {
                     SoundDefOf.TickTiny.PlayOneShotOnCamera(null);
-                    Find.Targeter.BeginTargeting(TargetingParameters.ForAttackAny(), delegate (LocalTargetInfo target)
+                    Find.Targeter.BeginTargeting(new TargetingParameters() { validator = ti => ti.Thing is Pawn p && (p.RaceProps.Humanlike && p.IsColonistPlayerControlled ) }, delegate (LocalTargetInfo target)
                     {
                         GiveLoadJob(target.Thing, group);
                     }, null, null, null);
