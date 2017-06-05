@@ -9,6 +9,7 @@ using UnityEngine;
 using System.Reflection.Emit;
 using RimWorld.Planet;
 using System.Runtime.CompilerServices;
+using RimWorld.BaseGen;
 
 namespace CompVehicle
 {
@@ -36,7 +37,7 @@ namespace CompVehicle
             harmony.Patch(AccessTools.Method(typeof(CaravanUIUtility), "AddPawnsSections"), null, new HarmonyMethod(typeof(HarmonyCompVehicle), "AddPawnsSections_PostFix"));
             harmony.Patch(AccessTools.Method(typeof(CaravanUtility), "IsOwner"), null, new HarmonyMethod(typeof(HarmonyCompVehicle), "IsOwner_PostFix"));
             harmony.Patch(AccessTools.Method(typeof(Dialog_FormCaravan), "CheckForErrors"), new HarmonyMethod(typeof(HarmonyCompVehicle), "CheckForErrors_PreFix"), null);
-            
+            harmony.Patch(AccessTools.Method(typeof(SymbolResolver_RandomMechanoidGroup), "<Resolve>m__271"), null, new HarmonyMethod(typeof(HarmonyCompVehicle), nameof(MechanoidsFixerAncient)));
             //harmony.Patch(AccessTools.Method(typeof(Dialog_FormCaravan), "Dialog_FormCaravan.<CheckForErrors>c__AnonStorey3F6.<>m__569"), null, new HarmonyMethod(typeof(HarmonyCompVehicle), "CanLoad_PostFix"));
         }
 
@@ -174,10 +175,17 @@ namespace CompVehicle
         }
 
         // RimWorld.Building_CrashedShipPart
-        public static void MechanoidsFixer(Building_CrashedShipPart __instance, ref bool __result, PawnKindDef def)
+        public static void MechanoidsFixerAncient(ref bool __result, PawnKindDef kind)
         {
             //Log.Message("1");
-            if (def.defaultFactionType != FactionDefOf.Mechanoid) __result = false;
+            if (kind.race.HasComp(typeof(CompVehicle))) __result = false;
+        }
+
+        // RimWorld.Building_CrashedShipPart
+        public static void MechanoidsFixer(ref bool __result, PawnKindDef def)
+        {
+            //Log.Message("1");
+            if (def.race.HasComp(typeof(CompVehicle))) __result = false;
         }
         
         // Verse.PawnDownedWiggler
