@@ -32,7 +32,7 @@ namespace AbilityUser
                 //PsykerUtility.PsykerShockEvents(CompAbilityUser, CompAbilityUser.curPower.PowerLevel);
                 //}
                 this.CompAbilityUser.PostAbilityAttempt(this.pawn, verb.ability.powerdef);
-                this.CompAbilityUser.ShotFired = true;
+                //this.CompAbilityUser.ShotFired = true;
             });
         }
     }

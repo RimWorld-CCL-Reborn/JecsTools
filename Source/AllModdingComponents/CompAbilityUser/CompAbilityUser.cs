@@ -44,10 +44,11 @@ namespace AbilityUser
         }
         public List<Verb_UseAbility> AbilityVerbs = new List<Verb_UseAbility>();
 
-        public void AddPawnAbility(AbilityDef abilityDef, bool activenow = true) => this.AddAbilityInternal(abilityDef, ref this.Powers, activenow); public void AddWeaponAbility(AbilityDef abilityDef, bool activenow = true) => this.AddAbilityInternal(abilityDef, ref this.temporaryWeaponPowers, activenow); public void AddApparelAbility(AbilityDef abilityDef, bool activenow = true) => this.AddAbilityInternal(abilityDef, ref this.temporaryApparelPowers, activenow); private void AddAbilityInternal(AbilityDef abilityDef, ref List<PawnAbility> thelist, bool activenow)
+        public void AddPawnAbility(AbilityDef abilityDef, bool activenow = true, float savedTicks = -1) => this.AddAbilityInternal(abilityDef, ref this.Powers, activenow, savedTicks); public void AddWeaponAbility(AbilityDef abilityDef, bool activenow = true, float savedTicks = -1) => this.AddAbilityInternal(abilityDef, ref this.temporaryWeaponPowers, activenow, savedTicks); public void AddApparelAbility(AbilityDef abilityDef, bool activenow = true, float savedTicks = -1) => this.AddAbilityInternal(abilityDef, ref this.temporaryApparelPowers, activenow, savedTicks); private void AddAbilityInternal(AbilityDef abilityDef, ref List<PawnAbility> thelist, bool activenow, float savedTicks)
         {
             PawnAbility pa = new PawnAbility(this.AbilityUser, abilityDef);
             if (activenow == false) pa.TicksUntilCasting = (int)(pa.powerdef.MainVerb.SecondsToRecharge * GenTicks.TicksPerRealSecond);
+            if (savedTicks != -1) pa.TicksUntilCasting = (int)savedTicks;
             thelist.Add(pa);
             this.UpdateAbilities();
 
