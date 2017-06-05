@@ -18,21 +18,13 @@ namespace AbilityUser
 
     public class CompAbilityUser : CompUseEffect
     {
-
         protected static bool classRegisteredWithUtility = false;
 
-        //public AbilityPowerManager abilityPowerManager;
         public LocalTargetInfo CurTarget;
         public AbilityDef curPower;
         public Verb_UseAbility curVerb;
         public Rot4 curRotation;
-        //public bool IsActive;
-        public bool ShotFired = true;
         public bool IsInitialized = false;
-        public float TicksToCastPercentage = 1;
-        public int ticksToImpact = 500;
-        public int TicksToCastMax = 100;
-        public int TicksToCast = -1;
 
         protected List<PawnAbility> Powers = new List<PawnAbility>();
         protected List<PawnAbility> temporaryWeaponPowers = new List<PawnAbility>();
@@ -51,16 +43,7 @@ namespace AbilityUser
             }
         }
         public List<Verb_UseAbility> AbilityVerbs = new List<Verb_UseAbility>();
-        //        public Dictionary<PawnAbility, Verb_UseAbility> pawnAbilities = new Dictionary<PawnAbility, Verb_UseAbility>();
 
-        /*
-        if (!this.Powers.Any(x => x.powerdef.defName == abilityDef.defName))
-        {
-            this.Powers.Add(new PawnAbility(this.abilityUser, abilityDef));
-        }
-
-        this.UpdateAbilities();
-        */
         public void AddPawnAbility(AbilityDef abilityDef, bool activenow = true) => this.AddAbilityInternal(abilityDef, ref this.Powers, activenow); public void AddWeaponAbility(AbilityDef abilityDef, bool activenow = true) => this.AddAbilityInternal(abilityDef, ref this.temporaryWeaponPowers, activenow); public void AddApparelAbility(AbilityDef abilityDef, bool activenow = true) => this.AddAbilityInternal(abilityDef, ref this.temporaryApparelPowers, activenow); private void AddAbilityInternal(AbilityDef abilityDef, ref List<PawnAbility> thelist, bool activenow)
         {
             PawnAbility pa = new PawnAbility(this.AbilityUser, abilityDef);
@@ -72,12 +55,16 @@ namespace AbilityUser
 
         public void RemovePawnAbility(AbilityDef abilityDef) => this.RemoveAbilityInternal(abilityDef, ref this.Powers); public void RemoveWeaponAbility(AbilityDef abilityDef) => this.RemoveAbilityInternal(abilityDef, ref this.temporaryWeaponPowers); public void RemoveApparelAbility(AbilityDef abilityDef) => this.RemoveAbilityInternal(abilityDef, ref this.temporaryApparelPowers); private void RemoveAbilityInternal(AbilityDef abilityDef, ref List<PawnAbility> thelist)
         {
-            PawnAbility abilityToRemove = thelist.FirstOrDefault(x => x.powerdef.defName == abilityDef.defName);
+            var abilityToRemove = thelist.FirstOrDefault(x => x.powerdef == abilityDef);
             if (abilityToRemove != null)
             {
                 thelist.Remove(abilityToRemove);
             }
-
+            abilityToRemove = Powers.FirstOrDefault(x => x.powerdef == abilityDef);
+            if (abilityToRemove != null)
+            {
+                Powers.Remove(abilityToRemove);
+            }
             this.UpdateAbilities();
         }
 
@@ -100,24 +87,13 @@ namespace AbilityUser
         public override void CompTick()
         {
             base.CompTick();
-            //            Log.Message("CompAbiltyUser Tick");
             if (!this.IsInitialized && TryTransformPawn())
             {
-                //                Log.Warning(" YES: a CompAbilityUser is being Initialized");
                 Initialize();
             }
             if (this.IsInitialized)
             {
-                //                Log.Message("CompAbiltyUser CompTick 2");
-                this.TicksToCast--;
-                if (this.TicksToCast < -1)
-                {
-                    //this.IsActive = true;
-                    this.ShotFired = true;
-                    this.TicksToCast = -1;
-                }
-                //                if (Powers != null && Powers.Count > 0) { foreach (PawnAbility power in Powers) { power.PawnAbilityTick(); } }
-                //                Log.Message("   there are "+this.allPowers.Count+" powers");
+                ///Ticks for each ability
                 if (this.AllPowers != null && this.AllPowers.Count > 0)
                 {
                     foreach (PawnAbility power in this.AllPowers)
@@ -125,10 +101,8 @@ namespace AbilityUser
                         power.PawnAbilityTick();
                     }
                 }
-                this.TicksToCastPercentage = (1 - (this.TicksToCast / this.TicksToCastMax));
 
-                // need to give verb ticks
-                //Log.Message("db send tick to each verb of CompAbilityUser");
+                ///Tick for each verb
                 foreach (Verb v in this.AbilityVerbs)
                 {
                     if (v.state != VerbState.Idle) Log.Message("  - send non-idle tick to " + v.GetType());
@@ -156,31 +130,19 @@ namespace AbilityUser
 
         public override void PostExposeData()
         {
-            //base.PostExposeData();
-            //Scribe_Collections.Look<PawnAbility>(ref this.allPowers, "allPowers", LookMode.Deep, new object[]
+            //Scribe_Collections.Look<PawnAbility>(ref this.temporaryApparelPowers, "temporaryApparelPowers", LookMode.Deep, new object[]
             //    {
             //        this,
             //    });
-            Scribe_Collections.Look<PawnAbility>(ref this.temporaryApparelPowers, "temporaryApparelPowers", LookMode.Deep, new object[]
-                {
-                    this,
-                });
-            Scribe_Collections.Look<PawnAbility>(ref this.temporaryWeaponPowers, "temporaryWeaponPowers", LookMode.Deep, new object[]
-                {
-                    this,
-                });
+            //Scribe_Collections.Look<PawnAbility>(ref this.temporaryWeaponPowers, "temporaryWeaponPowers", LookMode.Deep, new object[]
+            //    {
+            //        this,
+            //    });
             Scribe_Collections.Look<PawnAbility>(ref this.Powers, "Powers", LookMode.Deep, new object[]
                 {
                     this,
                 });
-
-            Scribe_Values.Look<int>(ref this.TicksToCast, "TicksToCast", 0, false);
-            Scribe_Values.Look<int>(ref this.TicksToCastMax, "TicksToCastMax", 1, false);
-            Scribe_Values.Look<float>(ref this.TicksToCastPercentage, "TicksToCastPercentage", 1, false);
-            //Scribe_Values.Look<bool>(ref this.IsActive, "IsActive", false, false);
-            Scribe_Values.Look<bool>(ref this.ShotFired, "ShotFired", true, false);
             Scribe_Values.Look<bool>(ref this.IsInitialized, "IsInitialized", false);
-            //Log.Message("PostExposeData Called: AbilityUser");
         }
 
         #region virtual
@@ -273,18 +235,14 @@ namespace AbilityUser
 
         public virtual bool CanOverpowerTarget(Pawn user, Thing target, AbilityDef ability) => true;
 
-        public IEnumerable<Command_PawnAbility> GetPawnAbilityVerbs()
+        public virtual IEnumerable<Command_PawnAbility> GetPawnAbilityVerbs()
         {
-            //Log.ErrorOnce("GetPawnAbilityVerbs Called", 912912);
-            //Log.ErrorOnce("GetPawnAbilityVerbs Called", 912912);
             if (this.AbilityVerbs != null && this.AbilityVerbs.Count > 0)
             {
-
-                List<Verb_UseAbility> temp = new List<Verb_UseAbility>();
-                temp.AddRange(this.AbilityVerbs);
-                if (this.allPowers != null && this.allPowers.Count > 0)
+                List<Verb_UseAbility> temp = new List<Verb_UseAbility>(this.AbilityVerbs);
+                if (this.AllPowers != null && this.AllPowers.Count > 0)
                 {
-                    for (int i = 0; i < this.allPowers.Count; i++)
+                    for (int i = 0; i < this.AllPowers.Count; i++)
                     {
                         int j = i;
                         Verb_UseAbility newVerb = temp[j];
@@ -308,22 +266,7 @@ namespace AbilityUser
 
 
                         command_CastPower.targetingParams = this.AllPowers[j].powerdef.MainVerb.targetParams;
-                        //command_CastPower.targetingParams = TargetingParameters.ForAttackAny();
-
-                        //if (newVerb.useAbilityProps.AbilityTargetCategory == AbilityTargetCategory.TargetSelf)
-                        //{
-                        //    command_CastPower.targetingParams = TargetingParameters.ForSelf(this.abilityUser);
-                        //}
-                        //else
-                        //{
-                        //    command_CastPower.targetingParams = TargetingParameters.
-                        //}
                         command_CastPower.icon = this.AllPowers[j].powerdef.uiIcon;
-                        //string str;
-                        //if (FloatMenuUtility.GetAttackAction(this.abilityUser, LocalTargetInfo.Invalid, out str) == null)
-                        //{
-                        //    command_CastPower.Disable(str.CapitalizeFirst() + ".");
-                        //}
                         command_CastPower.action = delegate(Thing target)
                         {
                             Action attackAction = CompAbilityUser.TryCastAbility(this.AbilityUser, target, this,

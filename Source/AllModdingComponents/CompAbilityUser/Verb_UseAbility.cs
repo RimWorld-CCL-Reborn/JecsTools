@@ -115,6 +115,7 @@ namespace AbilityUser
 
         protected override bool TryCastShot()
         {
+            this.ability.TicksUntilCasting = (int)this.UseAbilityProps.SecondsToRecharge * GenTicks.TicksPerRealSecond;
             bool result = false;
             this.TargetsAoE.Clear();
             UpdateTargets();
@@ -128,7 +129,6 @@ namespace AbilityUser
                 for (int j = 0; j < burstshots; j++)
                 {
                     bool? attempt = TryLaunchProjectile(this.verbProps.projectileDef, this.TargetsAoE[i]);
-                    ////Log.Message(TargetsAoE[i].ToString());
                     if (attempt != null)
                     {
                         if (attempt == true)
@@ -137,7 +137,6 @@ namespace AbilityUser
                             result = false;
                     }
                 }
-                this.ability.TicksUntilCasting = (int)this.UseAbilityProps.SecondsToRecharge * GenTicks.TicksPerRealSecond;
             }
             this.burstShotsLeft = 0;
             PostCastShot(result, out result);
