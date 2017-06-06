@@ -121,8 +121,6 @@ namespace AbilityUser
             {
                 UIHighlighter.HighlightOpportunity(rect, this.HighlightTag);
             }
-            //float x = compAbilityUser.TicksToCast;
-            //float y = compAbilityUser.TicksToCastMax;
             float x = this.pawnAbility.TicksUntilCasting;
             float y = this.pawnAbility.MaxCastingTicks;
             float fill = x / y;
@@ -169,6 +167,5 @@ namespace AbilityUser
             rect.height *= fillPercent;
             GUI.DrawTexture(rect, bgTex);
         }
-
     }
 }

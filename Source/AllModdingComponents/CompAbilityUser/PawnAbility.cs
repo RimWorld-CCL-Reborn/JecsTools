@@ -70,10 +70,10 @@ namespace AbilityUser
             Scribe_Values.Look<int>(ref this.TicksUntilCasting, "TicksUntilcasting", -1);
             Scribe_References.Look<Pawn>(ref this.pawn, "pawn");
             Scribe_Defs.Look<AbilityDef>(ref this.powerdef, "powerdef");
-            //Scribe_Collections.LookList<ThingComp>(ref this.comps, "comps", LookMode.Undefined);
             if (Scribe.mode == LoadSaveMode.PostLoadInit)
             {
                 this.PowerButton = this.powerdef.uiIcon;
+
             }
         }
 
