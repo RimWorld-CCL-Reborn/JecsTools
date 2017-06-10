@@ -38,8 +38,104 @@ namespace CompVehicle
             harmony.Patch(AccessTools.Method(typeof(CaravanUtility), "IsOwner"), null, new HarmonyMethod(typeof(HarmonyCompVehicle), "IsOwner_PostFix"));
             harmony.Patch(AccessTools.Method(typeof(Dialog_FormCaravan), "CheckForErrors"), new HarmonyMethod(typeof(HarmonyCompVehicle), "CheckForErrors_PreFix"), null);
             harmony.Patch(AccessTools.Method(typeof(SymbolResolver_RandomMechanoidGroup), "<Resolve>m__271"), null, new HarmonyMethod(typeof(HarmonyCompVehicle), nameof(MechanoidsFixerAncient)));
+            harmony.Patch(AccessTools.Method(typeof(LordToil_PrepareCaravan_GatherItems), "UpdateAllDuties"), new HarmonyMethod(typeof(HarmonyCompVehicle), "UpdateAllDuties_PreFix"), null);
+            harmony.Patch(AccessTools.Method(typeof(LordToil_PrepareCaravan_GatherAnimals), "UpdateAllDuties"), new HarmonyMethod(typeof(HarmonyCompVehicle), "UpdateAllDutiesTwo_Prefix"), null);
+            harmony.Patch(AccessTools.Method(typeof(LordToil_PrepareCaravan_GatherSlaves), "LordToilTick"), new HarmonyMethod(typeof(HarmonyCompVehicle), "LordToilTick_PreFix"), null);
+            harmony.Patch(AccessTools.Method(typeof(CaravanExitMapUtility), "CanExitMapAndJoinOrCreateCaravanNow"), null, new HarmonyMethod(typeof(HarmonyCompVehicle), "CanExit_PostFix"), null);
+            harmony.Patch(AccessTools.Method(typeof(ThinkNode_ConditionalColonist), "Satisfied"), null, new HarmonyMethod(typeof(HarmonyCompVehicle), "Satisfied_PostFix"), null);
+
+            //harmony.Patch(AccessTools.Method(typeof(LordToil_PrepareCaravan_GatherItems), "LordToilTick"), new HarmonyMethod(typeof(HarmonyCompVehicle), "LordToilTick_PreFix"), null);
+
             //harmony.Patch(AccessTools.Method(typeof(Dialog_FormCaravan), "Dialog_FormCaravan.<CheckForErrors>c__AnonStorey3F6.<>m__569"), null, new HarmonyMethod(typeof(HarmonyCompVehicle), "CanLoad_PostFix"));
         }
+
+        // RimWorld.LordToil_PrepareCaravan_GatherSlaves
+        public static void LordToilTick_PreFix(LordToil_PrepareCaravan_GatherSlaves __instance)
+        {
+            Log.Message("1Three");
+            if (Find.TickManager.TicksGame % 100 == 0)
+            {
+                Log.Message("2Three");
+
+                var meetingPoint = Traverse.Create(__instance).Field("meetingPoint").GetValue<IntVec3>();
+                GatherAnimalsAndSlavesForCaravanUtility.CheckArrived(__instance.lord, meetingPoint, "AllSlavesGathered", (Pawn x) => (!x.IsColonist && !(x.GetComp<CompVehicle>() is CompVehicle compVehicle && compVehicle.MovementHandlerAvailable)) && !x.RaceProps.Animal, (Pawn x) => GatherAnimalsAndSlavesForCaravanUtility.IsFollowingAnyone(x));
+            }
+        }
+
+
+        //public class ThinkNode_ConditionalColonist : ThinkNode_Conditional
+        public static void Satisfied_PostFix(Pawn pawn, ref bool __result)
+        {
+            __result = pawn.IsColonist || (pawn.GetComp<CompVehicle>() is CompVehicle compVehicle && compVehicle.MovementHandlerAvailable);
+        }
+
+
+        // RimWorld.Planet.CaravanExitMapUtility
+        public static void CanExit_PostFix(Pawn pawn, ref bool __result)
+        {
+            __result = pawn.Spawned && pawn.Map.exitMapGrid.MapUsesExitGrid && ((pawn.IsColonist || (pawn.GetComp<CompVehicle>() is CompVehicle compVehicle && compVehicle.MovementHandlerAvailable)) || CaravanExitMapUtility.FindCaravanToJoinFor(pawn) != null);
+        }
+
+        // RimWorld.LordToil_PrepareCaravan_GatherAnimals
+        public static void UpdateAllDutiesTwo_Prefix(LordToil_PrepareCaravan_GatherAnimals __instance)
+        {
+            Log.Message("Two1");
+            if (__instance.lord.ownedPawns is List<Pawn> pawns && !pawns.NullOrEmpty() && pawns.FirstOrDefault(x => x.GetComp<CompVehicle>() != null) != null)
+            {
+                Log.Message("Two2");
+
+                for (int i = 0; i < __instance.lord.ownedPawns.Count; i++)
+                {
+                    Pawn pawn = __instance.lord.ownedPawns[i];
+                    if (pawn.IsColonist || pawn.RaceProps.Animal || (pawn.GetComp<CompVehicle>() is CompVehicle compVehicle && compVehicle.MovementHandlerAvailable))
+                    {
+                        var meetingPoint = Traverse.Create(__instance).Field("meetingPoint").GetValue<IntVec3>();
+
+                        pawn.mindState.duty = new PawnDuty(DutyDefOf.PrepareCaravan_GatherPawns, meetingPoint, -1f);
+                        pawn.mindState.duty.pawnsToGather = PawnsToGather.Animals;
+                    }
+                    else
+                    {
+                        pawn.mindState.duty = new PawnDuty(DutyDefOf.PrepareCaravan_Wait);
+                    }
+                }
+            }
+        }
+
+
+
+        // RimWorld.LordToil_PrepareCaravan_GatherItems
+        public static bool UpdateAllDuties_PreFix(LordToil_PrepareCaravan_GatherItems __instance)
+        {
+            Log.Message("1");
+            if (__instance.lord.ownedPawns is List<Pawn> pawns && !pawns.NullOrEmpty() && pawns.FirstOrDefault(x => x.GetComp<CompVehicle>() != null) != null)
+            {
+                Log.Message("2");
+
+                for (int i = 0; i < pawns.Count; i++)
+                {
+                    Pawn pawn = pawns[i];
+                    if (pawn.IsColonist || pawn.GetComp<CompVehicle>() is CompVehicle comp && comp.MovementHandlerAvailable)
+                    {
+                        Log.Message("3");
+
+                        pawn.mindState.duty = new PawnDuty(DutyDefOf.PrepareCaravan_GatherItems);
+                    }
+                    else if (pawn.RaceProps.Animal)
+                    {
+                        var meetingPoint = Traverse.Create(__instance).Field("meetingPoint").GetValue<IntVec3>();
+                        pawn.mindState.duty = new PawnDuty(DutyDefOf.PrepareCaravan_Wait, meetingPoint, -1f);
+                    }
+                    else
+                    {
+                        pawn.mindState.duty = new PawnDuty(DutyDefOf.PrepareCaravan_Wait);
+                    }
+                }
+                return false;
+            }
+            return true;
+        }
+
 
         // RimWorld.Dialog_FormCaravan
         public static bool CheckForErrors_PreFix(List<Pawn> pawns, ref bool __result)

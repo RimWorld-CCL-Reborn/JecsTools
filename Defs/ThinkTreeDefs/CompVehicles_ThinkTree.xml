@@ -10,7 +10,7 @@
         <li Class="ThinkNode_Subtree">
           <treeDef>Downed</treeDef>
         </li>
-		
+
 		<!-- Take direct orders when drafted -->
         <li Class="ThinkNode_ConditionalColonyFaction">
 					<subNodes>
@@ -23,7 +23,14 @@
           </subNodes>
         </li>
 
-        
+
+
+        <!-- Join auto joinable caravan -->
+        <li Class="ThinkNode_Subtree">
+          <treeDef>JoinAutoJoinableCaravan</treeDef>
+        </li>
+
+
         <li Class="ThinkNode_Subtree">
           <treeDef>LordDuty</treeDef>
         </li>
@@ -36,10 +43,31 @@
             </li>
           </subNodes>
         </li>
-          
+
         <li Class="JobGiver_IdleError"/>
       </subNodes>
     </thinkRoot>
   </ThinkTreeDef>
-  
+
+
+	<ThinkTreeDef>
+		<defName>CompVehicle_SimpleConstant</defName>
+		<thinkRoot Class="ThinkNode_Priority">
+			<subNodes>
+				<li Class="ThinkNode_ConditionalCanDoConstantThinkTreeJobNow">
+					<subNodes>
+
+            <!-- Hostility response -->
+            <li Class="JobGiver_ConfigurableHostilityResponse" />
+
+            <!-- Lord directives -->
+            <li Class="ThinkNode_Subtree">
+              <treeDef>LordDutyConstant</treeDef>
+            </li>
+					</subNodes>
+				</li>
+			</subNodes>
+		</thinkRoot>
+	</ThinkTreeDef>
+
 </ThinkTrees>

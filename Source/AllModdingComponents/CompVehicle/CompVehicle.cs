@@ -412,7 +412,8 @@ namespace CompVehicle
                                 button.defaultDesc = desc.Translate(group.role.label.CapitalizeFirst());
                                 button.icon = TexCommand.Install;  //ContentFinder<Texture2D>.Get("UI/Commands/TryReconnect", true);
 
-                                button.disabled = this.Pawn.Downed || this.Pawn.Dead;
+                                var pctFilled = Pawn.health.summaryHealth.SummaryHealthPercent;
+                                button.disabled = this.Pawn.Downed || this.Pawn.Dead || (pctFilled < this.Props.ejectIfBelowHealthPercent);
                                 button.disabledReason = "CompVehicle_DisabledDesc".Translate();
                                 
                                 //Log.Message(button.ToString());

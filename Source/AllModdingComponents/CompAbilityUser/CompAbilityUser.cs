@@ -35,7 +35,11 @@ namespace AbilityUser
             get
             {
                 if (this.allPowers != null) return allPowers;
-                return allPowers = new List<PawnAbility>(this.Powers.Concat(this.temporaryApparelPowers).Concat(this.temporaryWeaponPowers));
+                allPowers = new List<PawnAbility>();
+                if (this.Powers != null && this.Powers.Count > 0) allPowers.AddRange(this.Powers);
+                if (this.temporaryApparelPowers != null && this.temporaryApparelPowers.Count > 0) allPowers.AddRange(this.temporaryApparelPowers);
+                if (this.temporaryWeaponPowers != null && this.temporaryWeaponPowers.Count > 0) allPowers.AddRange(this.temporaryWeaponPowers);
+                return allPowers;
             }
             set
             {
