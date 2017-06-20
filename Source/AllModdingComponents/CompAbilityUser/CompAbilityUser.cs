@@ -34,11 +34,13 @@ namespace AbilityUser
         {
             get
             {
-                if (this.allPowers != null) return allPowers;
-                allPowers = new List<PawnAbility>();
-                if (this.Powers != null && this.Powers.Count > 0) allPowers.AddRange(this.Powers);
-                if (this.temporaryApparelPowers != null && this.temporaryApparelPowers.Count > 0) allPowers.AddRange(this.temporaryApparelPowers);
-                if (this.temporaryWeaponPowers != null && this.temporaryWeaponPowers.Count > 0) allPowers.AddRange(this.temporaryWeaponPowers);
+                if (this.allPowers == null)
+                {
+                    allPowers = new List<PawnAbility>();
+                    if (!this.Powers.NullOrEmpty()) allPowers.AddRange(this.Powers);
+                    if (!this.temporaryApparelPowers.NullOrEmpty()) allPowers.AddRange(this.temporaryApparelPowers);
+                    if (!this.temporaryWeaponPowers.NullOrEmpty()) allPowers.AddRange(this.temporaryWeaponPowers);
+                }
                 return allPowers;
             }
             set
@@ -135,14 +137,6 @@ namespace AbilityUser
 
         public override void PostExposeData()
         {
-            //Scribe_Collections.Look<PawnAbility>(ref this.temporaryApparelPowers, "temporaryApparelPowers", LookMode.Deep, new object[]
-            //    {
-            //        this,
-            //    });
-            //Scribe_Collections.Look<PawnAbility>(ref this.temporaryWeaponPowers, "temporaryWeaponPowers", LookMode.Deep, new object[]
-            //    {
-            //        this,
-            //    });
             Scribe_Collections.Look<PawnAbility>(ref this.Powers, "Powers", LookMode.Deep, new object[]
                 {
                     this,
@@ -191,50 +185,26 @@ namespace AbilityUser
         {
             if (this.IsInitialized)
             {
-
                 this.AbilityVerbs.Clear();
+
                 List<PawnAbility> abList = new List<PawnAbility>();
-
-                abList.AddRange(this.Powers);
-                abList.AddRange(this.temporaryWeaponPowers);
-                abList.AddRange(this.temporaryApparelPowers);
-
-                this.AllPowers.Clear();
+                if (!this.Powers.NullOrEmpty()) abList.AddRange(this.Powers);
+                if (!this.temporaryWeaponPowers.NullOrEmpty()) abList.AddRange(this.temporaryWeaponPowers);
+                if (!this.temporaryApparelPowers.NullOrEmpty()) abList.AddRange(this.temporaryApparelPowers);
 
                 this.AllPowers = abList;
-
-                //                Log.Message("UpdateAbilities : with "+this.allPowers.Count+" powers");
-
+                
                 for (int i = 0; i < this.AllPowers.Count; i++)
                 {
                     Verb_UseAbility newVerb = (Verb_UseAbility)Activator.CreateInstance(abList[i].powerdef.MainVerb.verbClass);
                     if (!this.AbilityVerbs.Any(item => item.verbProps == newVerb.verbProps))
                     {
-                        ////Log.Message("UpdateAbilities: Added to AbilityVerbs");
                         newVerb.caster = this.AbilityUser;
                         newVerb.ability = abList[i];
                         newVerb.verbProps = abList[i].powerdef.MainVerb;
                         this.AbilityVerbs.Add(newVerb);
                     }
                 }
-
-                /*
-                this.pawnAbilities.Clear();
-
-                foreach (PawnAbility pow in abList)
-                {
-                Verb_UseAbility newVerb = (Verb_UseAbility)Activator.CreateInstance(pow.powerdef.MainVerb.verbClass);
-                if (!AbilityVerbs.Any(item => item.verbProps == newVerb.verbProps))
-                {
-                ////Log.Message("UpdateAbilities: Added to pawnAbilities");
-                newVerb.caster = this.abilityUser;
-                newVerb.ability = pow;
-                newVerb.verbProps = pow.powerdef.MainVerb;
-                pawnAbilities.Add(pow, newVerb);
-            }
-        }
-        //       //Log.Message(this.PawnAbilitys.Count.ToString());
-        */
             }
         }
 

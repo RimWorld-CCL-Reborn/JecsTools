@@ -21,7 +21,7 @@ namespace AbilityUser
             bool result = false;
             this.TargetsAoE.Clear();
             UpdateTargets();
-            //int burstShots = this.ShotsPerBurst;
+            int burstShots = this.ShotsPerBurst;
             if (this.UseAbilityProps.AbilityTargetCategory != AbilityTargetCategory.TargetAoE && this.TargetsAoE.Count > 1)
             {
                 this.TargetsAoE.RemoveRange(0, this.TargetsAoE.Count - 1);
@@ -41,7 +41,7 @@ namespace AbilityUser
             }
 
             // here, might want to have this set each time so people don't force stop on last burst and not hit the cooldown?
-            this.burstShotsLeft = 0;
+            //this.burstShotsLeft = 0;
             if (this.burstShotsLeft == 0)
             {
                 this.ability.TicksUntilCasting = (int)this.UseAbilityProps.SecondsToRecharge * GenTicks.TicksPerRealSecond;
