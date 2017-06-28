@@ -63,6 +63,12 @@
     <Compile Include="StringOf.cs" />
     <Compile Include="VehicleHandlerGroup.cs" />
     <Compile Include="VehicleRole.cs" />
+    <Compile Include="DeathActionWorker_NoCorpse.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="SitePartWorker_AbandonedVehicles.cs" />
+    <None Include="SiteDefOfVehicle.cs" />
+    <None Include="AbandonedVehicleContentsComp.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
