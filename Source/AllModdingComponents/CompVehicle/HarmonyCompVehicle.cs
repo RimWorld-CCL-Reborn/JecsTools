@@ -51,36 +51,36 @@ namespace CompVehicle
 
             //Modifies caravan movement speed if vehicles are present
             //The math on this is sound, I just don't know what the game is doing to turn the result into tiny values
-            //harmony.Patch(AccessTools.Method(typeof(RimWorld.Planet.CaravanTicksPerMoveUtility), "GetTicksPerMove", new Type[] { typeof(List<Pawn>) }), null, new HarmonyMethod(typeof(HarmonyCompVehicle).GetMethod("GetTicksPerMove_PostFix")));
+            //harmony.Patch(AccessTools.Method(typeof(RimWorld.Planet.CaravanTicksPerMoveUtility), "GetTicksPerMove", new Type[] { typeof(List<Pawn>) }), null, new HarmonyMethod(typeof(HarmonyCompVehicle),nameof(GetTicksPerMove_PostFix)));
 			
             //Tries to find satisfy the vehicle's fuel "need"
-            harmony.Patch(AccessTools.Method(typeof(RimWorld.Planet.CaravanPawnsNeedsUtility), "TrySatisfyPawnNeeds"), new HarmonyMethod(typeof(HarmonyCompVehicle).GetMethod("TrySatisfyPawnNeeds_PreFix")), null);
+            harmony.Patch(AccessTools.Method(typeof(RimWorld.Planet.CaravanPawnsNeedsUtility), "TrySatisfyPawnNeeds"), new HarmonyMethod(typeof(HarmonyCompVehicle),nameof(TrySatisfyPawnNeeds_PreFix)), null);
 
             //Remove pawns from the vehicle when making a caravan
-            harmony.Patch(AccessTools.Method(typeof(RimWorld.Planet.CaravanMaker), "MakeCaravan"), null, new HarmonyMethod(typeof(HarmonyCompVehicle).GetMethod("MakeCaravan_PostFix")));
+            harmony.Patch(AccessTools.Method(typeof(RimWorld.Planet.CaravanMaker), "MakeCaravan"), null, new HarmonyMethod(typeof(HarmonyCompVehicle),nameof(MakeCaravan_PostFix)));
 
             //Remove pawns from the vehicle when exiting the map in an already formed caravan
-            harmony.Patch(AccessTools.Method(typeof(RimWorld.Planet.CaravanExitMapUtility), "ExitMapAndJoinOrCreateCaravan"), null, new HarmonyMethod(typeof(HarmonyCompVehicle).GetMethod("ExitMapAndJoinOrCreateCaravan_PostFix")));
+            harmony.Patch(AccessTools.Method(typeof(RimWorld.Planet.CaravanExitMapUtility), "ExitMapAndJoinOrCreateCaravan"), null, new HarmonyMethod(typeof(HarmonyCompVehicle),nameof(ExitMapAndJoinOrCreateCaravan_PostFix)));
 
             //Add pawns back to the vehicle and remove them from the caravan when entering the map
-            harmony.Patch(AccessTools.Method(typeof(RimWorld.Planet.CaravanEnterMapUtility), "Enter", new Type[] { typeof(Caravan), typeof(Map), typeof(Func<Pawn, IntVec3>), typeof(CaravanDropInventoryMode), typeof(bool) }), new HarmonyMethod(typeof(HarmonyCompVehicle).GetMethod("Enter_PreFix")), null);
+            harmony.Patch(AccessTools.Method(typeof(RimWorld.Planet.CaravanEnterMapUtility), "Enter", new Type[] { typeof(Caravan), typeof(Map), typeof(Func<Pawn, IntVec3>), typeof(CaravanDropInventoryMode), typeof(bool) }), new HarmonyMethod(typeof(HarmonyCompVehicle),nameof(Enter_PreFix)), null);
 
             //Modifies the caravan inspect string so fuel is shown
-            harmony.Patch(AccessTools.Method(typeof(RimWorld.Planet.Caravan), "GetInspectString"), null, new HarmonyMethod(typeof(HarmonyCompVehicle).GetMethod("GetInspectString_PostFix")));
+            harmony.Patch(AccessTools.Method(typeof(RimWorld.Planet.Caravan), "GetInspectString"), null, new HarmonyMethod(typeof(HarmonyCompVehicle),nameof(GetInspectString_PostFix)));
 
             //Bug fixes social tab issue with vehicles
-            harmony.Patch(AccessTools.Method(typeof(RimWorld.SocialCardUtility), "Recache"), new HarmonyMethod(typeof(HarmonyCompVehicle).GetMethod("Recache_PreFix")), null);
+            harmony.Patch(AccessTools.Method(typeof(RimWorld.SocialCardUtility), "Recache"), new HarmonyMethod(typeof(HarmonyCompVehicle), nameof(Recache_PreFix)), null);
             //Modifies the Caravan Needs WITab to show vehicle fuel
-			harmony.Patch(AccessTools.Method(typeof(RimWorld.Planet.CaravanPeopleAndItemsTabUtility), "DoRow", new Type[] { typeof(Rect), typeof(Thing), typeof(Caravan), typeof(Pawn).MakeByRefType(), typeof(bool), typeof(bool) }), new HarmonyMethod(typeof(HarmonyCompVehicle).GetMethod("DoRow_PreFix")), null);
+            harmony.Patch(AccessTools.Method(typeof(RimWorld.Planet.CaravanPeopleAndItemsTabUtility), "DoRow", new Type[] { typeof(Rect), typeof(Thing), typeof(Caravan), typeof(Pawn).MakeByRefType(), typeof(bool), typeof(bool) }), new HarmonyMethod(typeof(HarmonyCompVehicle),nameof(DoRow_PreFix)), null);
 
             //Modifies the Caravan Contents Window when forming a caravan to show the fuel carried by the caravan
-            harmony.Patch(AccessTools.Method(typeof(RimWorld.Dialog_FormCaravan), "DoWindowContents"), new HarmonyMethod(typeof(HarmonyCompVehicle).GetMethod("DoWindowContents_PreFix")), null);
+            harmony.Patch(AccessTools.Method(typeof(RimWorld.Dialog_FormCaravan), "DoWindowContents"), new HarmonyMethod(typeof(HarmonyCompVehicle),nameof(DoWindowContents_PreFix)), null);
 
 
 
 			//Not Working
 			//Get the vehicle to spawn at a site in the world map when abandoned
-			//harmony.Patch(AccessTools.Method(typeof(RimWorld.Planet.CaravanPawnsAndItemsAbandonUtility), "TryAbandonViaInterface"),new HarmonyMethod(typeof(RevampedEconomy.HarmonyPatches).GetMethod("TryAbandonViaInterface_PreFix")),null);
+			//harmony.Patch(AccessTools.Method(typeof(RimWorld.Planet.CaravanPawnsAndItemsAbandonUtility), "TryAbandonViaInterface"),new HarmonyMethod(typeof(RevampedEconomy.HarmonyPatches),nameof(TryAbandonViaInterface_PreFix)),null);
 
 			// ------ Additions Made By Swenzi ------
 
