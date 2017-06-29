@@ -31,7 +31,13 @@ namespace CompVehicle
 
     public class CompVehicle : ThingComp
     {
-        public List<VehicleHandlerGroup> handlers = new List<VehicleHandlerGroup>();
+		public float fuelConsumptionRate = 80f; //Stores what the fuel usage rate is, i.e. how much fuel is lost
+		public bool draftStatusChanged = false; //Boolean connected to comp to prevent excessive changing of the draftstatus when forming a caravan
+		public int tickCount = 0; //Counter for how long the vehicle has traveled without a driver
+		public bool warnedNoFuel = false; //Boolean connected to comp to prevent spamming of the Caravan No Fuel warning message
+		public List<VehicleHandlerGroup> vehicleContents; //Stores the handlergroups of the vehicle and its pawns while the vehicle is in a caravan
+
+		public List<VehicleHandlerGroup> handlers = new List<VehicleHandlerGroup>();
         public List<Bill_LoadVehicle> bills = new List<Bill_LoadVehicle>();
 
         //------ Additions By Swenzi -------
@@ -40,11 +46,11 @@ namespace CompVehicle
 
         public bool warnedOnNoFuel{
             get{
-                return this.Props.warnedOnNoFuel;
+                return this.warnedNoFuel;
             }
 
             set{
-                this.Props.warnedOnNoFuel = value;
+                this.warnedNoFuel = value;
             }
         }
 
@@ -55,12 +61,12 @@ namespace CompVehicle
 		{
 			get
 			{
-                return this.Props.pawnsInVehicle;
+                return this.vehicleContents;
 			}
 
 			set
 			{
-				this.Props.pawnsInVehicle = value;
+				this.vehicleContents = value;
 			}
 		}
 		//------ Additions By Swenzi -------
@@ -343,7 +349,7 @@ namespace CompVehicle
                     compRefuelable.Props.fuelConsumptionRate = 0f;
                 else
                     //If it's moving than it should use fuel
-                    compRefuelable.Props.fuelConsumptionRate = this.Props.fuelConsumptionRate;
+                    compRefuelable.Props.fuelConsumptionRate = this.fuelConsumptionRate;
                 //------ ADB Swenzi ------
 
                 if (!compRefuelable.HasFuel)
@@ -380,15 +386,15 @@ namespace CompVehicle
             {
                 if (this.Pawn.CurJob != null && this.Pawn.IsCaravanMember() && this.Pawn.CurJob.def.defName == "GotoWander")
                 {
-                    if (!this.Props.draftStatusChanged){
+                    if (!this.draftStatusChanged){
 						this.Pawn.drafter.Drafted = !this.Pawn.Drafted;
-						this.Props.draftStatusChanged = true;
+						this.draftStatusChanged = true;
                     }
                 }
                 else
                 {
                     //Safety to allow this for future caravans
-                    this.Props.draftStatusChanged = false;
+                    this.draftStatusChanged = false;
                 }
             }
             else{
@@ -398,17 +404,17 @@ namespace CompVehicle
 				if (this.Pawn.pather != null && this.Pawn.pather.Moving)
 				{
 
-                    if (this.Props.tickCount > this.Props.momentumTimeSeconds * 60)
+                    if (this.tickCount > this.Props.momentumTimeSeconds * 60)
                     {
                         //No more fake momentum, vehicle should stop
                         this.Pawn.jobs.StopAll();
                         this.Pawn.pather.StopDead();
-                        this.Props.tickCount = 0;
+                        this.tickCount = 0;
                     }
                     else
 				    {
                         //Be cool, keep the momentum going
-                        this.Props.tickCount++;
+                        this.tickCount++;
 				    }
 				}
             }

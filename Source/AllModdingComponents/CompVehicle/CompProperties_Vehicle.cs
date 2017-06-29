@@ -21,18 +21,14 @@ namespace CompVehicle
         public List<VehicleRole> roles = new List<VehicleRole>(); // Defines roles of passengers.
 
         //---------- Additions made by Swenzi ------------
-        public float fuelConsumptionRate = 80f; //Stores what the fuel usage rate is, i.e. how much fuel is lost
+
         public float ejectIfBelowNeedPercent = 0.2f; //Unloads passenger when one of their major needs drops below this percent
         public float worldSpeedFactor = 2.0f; // How much faster does this move on the world map than a standard pawn? Caravan speed is calculated from an average of the combined speeds (Vanilla formula)
 		public float worldSpeedFactorNoFuel = 0.5f; //Modifies the change in world speed if this vehicle is present but does not have fuel
         public float restNeedRate = 2.0E-05f; //The rate at which the rest need changes while in the vehicle
         public float foodNeedRate = 2.0E-05f; //The rate at which the food need changes while in the vehicle
         public float joyNeedRate = 1.5E-05f; //The rate at which the joy need changes while in the vehicle
-        public bool draftStatusChanged = false; //Boolean connected to comp to prevent excessive changing of the draftstatus when forming a caravan
-        public int tickCount = 0; //Counter for how long the vehicle has traveled without a driver
         public int momentumTimeSeconds = 2; //Counter for how long the vehicle can travel without a driver in seconds
-        public bool warnedOnNoFuel = false; //Boolean connected to comp to prevent spamming of the Caravan No Fuel warning message
-        public List<VehicleHandlerGroup> pawnsInVehicle; //Stores the handlergroups of the vehicle and its pawns while the vehicle is in a caravan
        
         //Vehicle type (Can only be one, effects not implemented yet)
         public bool isAir = false; //Is the vehicle an aircraft? i.e. airplane, helicopter
