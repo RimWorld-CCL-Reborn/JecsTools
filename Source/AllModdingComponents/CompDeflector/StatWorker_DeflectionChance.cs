@@ -1,6 +1,4 @@
 ﻿using System.Text;
-using Verse;
-using RimWorld;
 
 namespace CompDeflector
 {

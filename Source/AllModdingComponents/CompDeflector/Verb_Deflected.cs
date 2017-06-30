@@ -1,8 +1,4 @@
-﻿using RimWorld;
-using UnityEngine;
-using Verse;
-
-namespace CompDeflector
+﻿namespace CompDeflector
 {
     public class Verb_Deflected : Verb_Shoot
     {

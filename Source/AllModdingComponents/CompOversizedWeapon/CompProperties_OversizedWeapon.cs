@@ -1,6 +1,4 @@
-﻿using Verse;
-
-namespace CompOversizedWeapon
+﻿namespace CompOversizedWeapon
 {
     internal class CompProperties_OversizedWeapon : CompProperties
     {

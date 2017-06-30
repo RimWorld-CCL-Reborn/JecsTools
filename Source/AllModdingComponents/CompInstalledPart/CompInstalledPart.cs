@@ -1,8 +1,4 @@
-﻿using RimWorld;
-using Verse;
-using Verse.AI;
-
-namespace CompInstalledPart
+﻿namespace CompInstalledPart
 {
     public class CompInstalledPart : ThingComp
     {

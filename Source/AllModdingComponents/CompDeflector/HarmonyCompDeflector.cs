@@ -1,8 +1,5 @@
 ﻿using Harmony;
-using RimWorld;
 using System;
-using Verse;
-using UnityEngine;
 
 namespace CompDeflector
 {

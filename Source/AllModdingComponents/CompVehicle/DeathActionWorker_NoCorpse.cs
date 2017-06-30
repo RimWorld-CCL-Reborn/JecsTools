@@ -1,12 +1,7 @@
-﻿using System;
-using RimWorld;
-using Verse;
-using Verse.AI;
-using UnityEngine;
-using System.Collections.Generic;
+﻿using Verse;
 namespace CompVehicle
 {
-	public class DeathActionWorker_NoCorpse : DeathActionWorker
+    public class DeathActionWorker_NoCorpse : DeathActionWorker
 	{
 
 		Map map;

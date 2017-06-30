@@ -1,8 +1,4 @@
-﻿using UnityEngine;
-using Verse;
-
-
-namespace AbilityUser
+﻿namespace AbilityUser
 {
     public class Projectile_Ability : Projectile_AbilityBase
     {

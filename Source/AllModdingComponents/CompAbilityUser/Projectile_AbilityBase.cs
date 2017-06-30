@@ -1,11 +1,6 @@
-﻿using RimWorld;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
-using Verse;
-using Verse.AI.Group;
-using Verse.Sound;
 
 namespace AbilityUser
 {

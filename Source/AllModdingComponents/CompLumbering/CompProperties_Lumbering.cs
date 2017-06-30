@@ -1,6 +1,4 @@
-﻿using Verse;
-
-namespace CompLumbering
+﻿namespace CompLumbering
 {
     internal class CompProperties_Lumbering : CompProperties
     {

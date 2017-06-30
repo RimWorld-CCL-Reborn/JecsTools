@@ -1,7 +1,4 @@
-﻿using RimWorld;
-using Verse;
-
-namespace CompDeflector
+﻿namespace CompDeflector
 {
     [DefOf]
     public static class CompDeflectorDefOf

@@ -1,7 +1,4 @@
-﻿using Verse;
-using Verse.Sound;
-
-namespace AbilityUser
+﻿namespace AbilityUser
 {
     public class FlyingObject_Equipable : FlyingObject
     {

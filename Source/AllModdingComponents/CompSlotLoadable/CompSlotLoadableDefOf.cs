@@ -1,7 +1,4 @@
-﻿using RimWorld;
-using Verse;
-
-namespace CompSlotLoadable
+﻿namespace CompSlotLoadable
 {
     [DefOf]
     public static class CompSlotLoadableDefOf

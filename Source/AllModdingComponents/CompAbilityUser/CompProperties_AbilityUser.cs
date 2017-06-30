@@ -1,6 +1,4 @@
-﻿using Verse;
-
-namespace AbilityUser
+﻿namespace AbilityUser
 {
     public class CompProperties_AbilityUser : CompProperties
     {

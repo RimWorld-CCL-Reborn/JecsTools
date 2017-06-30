@@ -1,8 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
-using Verse.Sound;
-using Verse.AI;
-using Verse;
 
 namespace CompSlotLoadable
 {

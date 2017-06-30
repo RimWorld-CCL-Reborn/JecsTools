@@ -1,6 +1,4 @@
-﻿using Verse;
-
-namespace CompExtraSounds
+﻿namespace CompExtraSounds
 {
     internal class CompProperties_ExtraSounds : CompProperties
     {

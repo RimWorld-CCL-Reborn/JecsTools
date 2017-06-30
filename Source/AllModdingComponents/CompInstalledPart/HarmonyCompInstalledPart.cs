@@ -1,9 +1,5 @@
 ﻿using Harmony;
-using RimWorld;
 using System.Collections.Generic;
-using Verse;
-using UnityEngine;
-using Verse.Sound;
 using System.Linq;
 
 namespace CompInstalledPart

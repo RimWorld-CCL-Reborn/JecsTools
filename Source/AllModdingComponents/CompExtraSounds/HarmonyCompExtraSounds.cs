@@ -1,6 +1,4 @@
 ﻿using Harmony;
-using RimWorld;
-using Verse;
 
 namespace CompExtraSounds
 {

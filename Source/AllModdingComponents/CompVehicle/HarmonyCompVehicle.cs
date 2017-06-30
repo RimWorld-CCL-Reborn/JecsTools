@@ -10,7 +10,6 @@ using System.Reflection.Emit;
 using RimWorld.Planet;
 using System.Runtime.CompilerServices;
 using RimWorld.BaseGen;
-using Verse.AI.Group;
 using System.Text;
 using System;
 using Verse.Sound;

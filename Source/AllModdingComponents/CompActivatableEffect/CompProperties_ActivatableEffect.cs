@@ -1,6 +1,4 @@
-﻿using Verse;
-
-namespace CompActivatableEffect
+﻿namespace CompActivatableEffect
 {
     public class CompProperties_ActivatableEffect : CompProperties
     {

@@ -1,7 +1,4 @@
-﻿using RimWorld;
-using System.Collections.Generic;
-using UnityEngine;
-using Verse;
+﻿using System.Collections.Generic;
 
 namespace CompSlotLoadable
 {

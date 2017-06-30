@@ -1,7 +1,5 @@
 ﻿using Harmony;
 using System.Linq;
-using Verse;
-using UnityEngine;
 
 namespace CompOversizedWeapon
 {

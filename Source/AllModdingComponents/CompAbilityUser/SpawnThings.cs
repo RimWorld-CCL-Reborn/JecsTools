@@ -1,7 +1,4 @@
-﻿using RimWorld;
-using Verse;
-
-namespace AbilityUser
+﻿namespace AbilityUser
 {
     public class SpawnThings
     {

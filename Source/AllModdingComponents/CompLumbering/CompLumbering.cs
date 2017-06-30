@@ -1,7 +1,4 @@
-﻿using UnityEngine;
-using Verse;
-using Verse.Sound;
-//
+﻿//
 namespace CompLumbering
 {
     internal class CompLumbering : ThingComp

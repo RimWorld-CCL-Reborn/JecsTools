@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using Verse;
-using UnityEngine;
 
 namespace CompSlotLoadable
 {
