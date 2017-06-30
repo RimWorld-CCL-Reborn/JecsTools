@@ -44,7 +44,8 @@ namespace CompVehicle
             harmony.Patch(AccessTools.Method(typeof(LordToil_PrepareCaravan_GatherSlaves), "LordToilTick"), new HarmonyMethod(typeof(HarmonyCompVehicle), "LordToilTick_PreFix"), null);
             harmony.Patch(AccessTools.Method(typeof(CaravanExitMapUtility), "CanExitMapAndJoinOrCreateCaravanNow"), null, new HarmonyMethod(typeof(HarmonyCompVehicle), "CanExit_PostFix"), null);
             harmony.Patch(AccessTools.Method(typeof(ThinkNode_ConditionalColonist), "Satisfied"), null, new HarmonyMethod(typeof(HarmonyCompVehicle), "Satisfied_PostFix"), null);
-			
+            harmony.Patch(AccessTools.Property(typeof(MapPawns), nameof(MapPawns.FreeColonistsSpawnedOrInPlayerEjectablePodsCount)).GetGetMethod(), null, new HarmonyMethod(typeof(HarmonyCompVehicle), nameof(FreeColonistsSpawnedOrInPlayerEjectablePodsCountPostfix)));
+
             // ------ Additions Made By Swenzi ------
 
             //Modifies caravan movement speed if vehicles are present
@@ -88,6 +89,12 @@ namespace CompVehicle
 
 			//harmony.Patch(AccessTools.Method(typeof(Dialog_FormCaravan), "Dialog_FormCaravan.<CheckForErrors>c__AnonStorey3F6.<>m__569"), null, new HarmonyMethod(typeof(HarmonyCompVehicle), "CanLoad_PostFix"));
 		}
+
+        public static void FreeColonistsSpawnedOrInPlayerEjectablePodsCountPostfix(MapPawns __instance, ref int __result)
+        {
+            __result += __instance.AllPawns.Where(p => p.Faction == Faction.OfPlayer && p.TryGetComp<CompVehicle>() != null).Sum(p => p.TryGetComp<CompVehicle>().AllOccupants.Count);
+        }
+
 
 		// ------- Additions Made By Swenzi --------
 		// -------     Harmony Patches      --------
