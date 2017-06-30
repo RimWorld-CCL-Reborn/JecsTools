@@ -45,6 +45,7 @@ namespace CompVehicle
             harmony.Patch(AccessTools.Method(typeof(CaravanExitMapUtility), "CanExitMapAndJoinOrCreateCaravanNow"), null, new HarmonyMethod(typeof(HarmonyCompVehicle), "CanExit_PostFix"), null);
             harmony.Patch(AccessTools.Method(typeof(ThinkNode_ConditionalColonist), "Satisfied"), null, new HarmonyMethod(typeof(HarmonyCompVehicle), "Satisfied_PostFix"), null);
             harmony.Patch(AccessTools.Property(typeof(MapPawns), nameof(MapPawns.FreeColonistsSpawnedOrInPlayerEjectablePodsCount)).GetGetMethod(), null, new HarmonyMethod(typeof(HarmonyCompVehicle), nameof(FreeColonistsSpawnedOrInPlayerEjectablePodsCountPostfix)));
+            harmony.Patch(AccessTools.Method(typeof(GameEnder), "IsPlayerControlledWithFreeColonist"), null, new HarmonyMethod(typeof(HarmonyCompVehicle), nameof(IsPlayerControlledWithFreeColonistPostfix)));
 
             // ------ Additions Made By Swenzi ------
 
@@ -89,6 +90,12 @@ namespace CompVehicle
 
 			//harmony.Patch(AccessTools.Method(typeof(Dialog_FormCaravan), "Dialog_FormCaravan.<CheckForErrors>c__AnonStorey3F6.<>m__569"), null, new HarmonyMethod(typeof(HarmonyCompVehicle), "CanLoad_PostFix"));
 		}
+
+        public static void IsPlayerControlledWithFreeColonistPostfix(Caravan caravan, ref bool __result)
+        {
+            if (!__result)
+                __result = caravan.PawnsListForReading.Any(p => p.Faction == Faction.OfPlayer && (p.TryGetComp<CompVehicle>()?.AllOccupants.Any() ?? false));
+        }
 
         public static void FreeColonistsSpawnedOrInPlayerEjectablePodsCountPostfix(MapPawns __instance, ref int __result)
         {
