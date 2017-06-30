@@ -33,17 +33,17 @@ namespace AbilityUser
             {
                 if (this.allPowers == null)
                 {
-                    allPowers = new List<PawnAbility>();
-                    if (!this.Powers.NullOrEmpty()) allPowers.AddRange(this.Powers);
-                    if (!this.temporaryApparelPowers.NullOrEmpty()) allPowers.AddRange(this.temporaryApparelPowers);
-                    if (!this.temporaryWeaponPowers.NullOrEmpty()) allPowers.AddRange(this.temporaryWeaponPowers);
+                    this.allPowers = new List<PawnAbility>();
+                    if (!this.Powers.NullOrEmpty())
+                        this.allPowers.AddRange(this.Powers);
+                    if (!this.temporaryApparelPowers.NullOrEmpty())
+                        this.allPowers.AddRange(this.temporaryApparelPowers);
+                    if (!this.temporaryWeaponPowers.NullOrEmpty())
+                        this.allPowers.AddRange(this.temporaryWeaponPowers);
                 }
-                return allPowers;
+                return this.allPowers;
             }
-            set
-            {
-                allPowers = value;
-            }
+            set => this.allPowers = value;
         }
         public List<Verb_UseAbility> AbilityVerbs = new List<Verb_UseAbility>();
 
@@ -59,15 +59,15 @@ namespace AbilityUser
 
         public void RemovePawnAbility(AbilityDef abilityDef) => this.RemoveAbilityInternal(abilityDef, ref this.Powers); public void RemoveWeaponAbility(AbilityDef abilityDef) => this.RemoveAbilityInternal(abilityDef, ref this.temporaryWeaponPowers); public void RemoveApparelAbility(AbilityDef abilityDef) => this.RemoveAbilityInternal(abilityDef, ref this.temporaryApparelPowers); private void RemoveAbilityInternal(AbilityDef abilityDef, ref List<PawnAbility> thelist)
         {
-            var abilityToRemove = thelist.FirstOrDefault(x => x.powerdef == abilityDef);
+            PawnAbility abilityToRemove = thelist.FirstOrDefault(x => x.powerdef == abilityDef);
             if (abilityToRemove != null)
             {
                 thelist.Remove(abilityToRemove);
             }
-            abilityToRemove = Powers.FirstOrDefault(x => x.powerdef == abilityDef);
+            abilityToRemove = this.Powers.FirstOrDefault(x => x.powerdef == abilityDef);
             if (abilityToRemove != null)
             {
-                Powers.Remove(abilityToRemove);
+                this.Powers.Remove(abilityToRemove);
             }
             this.UpdateAbilities();
         }

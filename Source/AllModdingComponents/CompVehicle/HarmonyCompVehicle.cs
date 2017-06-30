@@ -15,7 +15,6 @@ using System;
 using Verse.Sound;
 namespace CompVehicle
 {
-
     [StaticConstructorOnStartup]
     static class HarmonyCompVehicle
     {
@@ -70,7 +69,7 @@ namespace CompVehicle
             //Bug fixes social tab issue with vehicles
             harmony.Patch(AccessTools.Method(typeof(RimWorld.SocialCardUtility), "Recache"), new HarmonyMethod(typeof(HarmonyCompVehicle), nameof(Recache_PreFix)), null);
             //Modifies the Caravan Needs WITab to show vehicle fuel
-            harmony.Patch(AccessTools.Method(typeof(RimWorld.Planet.CaravanPeopleAndItemsTabUtility), "DoRow", new Type[] { typeof(Rect), typeof(Thing), typeof(Caravan), typeof(Pawn).MakeByRefType(), typeof(bool), typeof(bool) }), new HarmonyMethod(typeof(HarmonyCompVehicle),nameof(DoRow_PreFix)), null);
+            harmony.Patch(AccessTools.Method(typeof(RimWorld.Planet.CaravanPeopleAndItemsTabUtility), "DoRow", new Type[] { typeof(Rect), typeof(Thing), typeof(Caravan), typeof(Pawn).MakeByRefType(), typeof(bool), typeof(bool) }), new HarmonyMethod(typeof(HarmonyCompVehicle),nameof(DoRow_Transpiler)), null);
 
             //Modifies the Caravan Contents Window when forming a caravan to show the fuel carried by the caravan
             harmony.Patch(AccessTools.Method(typeof(RimWorld.Dialog_FormCaravan), "DoWindowContents"), new HarmonyMethod(typeof(HarmonyCompVehicle),nameof(DoWindowContents_PreFix)), null);
@@ -253,13 +252,13 @@ namespace CompVehicle
 		{
 			foreach (Pawn vpawn in pawns)
 			{
-				var vehicle = vpawn.GetComp<CompVehicle>();
+                CompVehicle vehicle = vpawn.GetComp<CompVehicle>();
 				if (vehicle != null)
 				{
 					if (vehicle.handlers != null && vehicle.handlers.Count > 0)
 					{
                         //Store vehicle handler group structure in comp variable
-                        vehicle.pawnsInVehicle = vehicle.handlers;
+                        vehicle.PawnsInVehicle = vehicle.handlers;
 						foreach (VehicleHandlerGroup group in vehicle.handlers)
 						{
 							for (int i = 0; i < group.handlers.Count; i++)
@@ -268,7 +267,7 @@ namespace CompVehicle
 								if (vehicle.AllOccupants.Count > 0)
 								{
                                     //Add pawns to the comp variable for usage on reentering the map
-									foreach (VehicleHandlerGroup vgroup in vehicle.pawnsInVehicle)
+									foreach (VehicleHandlerGroup vgroup in vehicle.PawnsInVehicle)
 									{
 										if (vgroup.role == group.role)
 										{
@@ -297,11 +296,11 @@ namespace CompVehicle
 		public static void ExitMapAndJoinOrCreateCaravan_PostFix(Pawn pawn)
 		{
 			Caravan caravan = CaravanExitMapUtility.FindCaravanToJoinFor(pawn);
-			var vehicle = pawn.GetComp<CompVehicle>();
+            CompVehicle vehicle = pawn.GetComp<CompVehicle>();
 			if (vehicle.AllOccupants.Count > 0)
 			{
-				if (vehicle.pawnsInVehicle == null)
-					vehicle.pawnsInVehicle = vehicle.handlers;
+				if (vehicle.PawnsInVehicle == null)
+					vehicle.PawnsInVehicle = vehicle.handlers;
 			}
 			if (vehicle != null && vehicle.handlers != null && vehicle.handlers.Count > 0)
 			{
@@ -314,7 +313,7 @@ namespace CompVehicle
 						if (vehicle.AllOccupants.Count > 0)
 						{
 							//Add pawns to the comp variable for usage on reentering the map
-							foreach (VehicleHandlerGroup vgroup in vehicle.pawnsInVehicle)
+							foreach (VehicleHandlerGroup vgroup in vehicle.PawnsInVehicle)
 							{
 								if (vgroup.role == group.role)
 								{
@@ -340,15 +339,15 @@ namespace CompVehicle
 			List<Pawn> members = caravan.PawnsListForReading;
 			for (int i = 0; i < members.Count; i++)
 			{
-				var vehicle = members[i].GetComp<CompVehicle>();
+                CompVehicle vehicle = members[i].GetComp<CompVehicle>();
                 //Did the vehicle have pawns in it previously?
-				if (vehicle != null && vehicle.pawnsInVehicle != null && vehicle.pawnsInVehicle.Count > 0)
+				if (vehicle != null && vehicle.PawnsInVehicle != null && vehicle.PawnsInVehicle.Count > 0)
 				{
 					for (int j = 0; j < members.Count; j++)
 					{
-						for (int l = 0; l < vehicle.pawnsInVehicle.Count; l++)
+						for (int l = 0; l < vehicle.PawnsInVehicle.Count; l++)
 						{
-							VehicleHandlerGroup group = vehicle.pawnsInVehicle[l];
+							VehicleHandlerGroup group = vehicle.PawnsInVehicle[l];
 							for (int k = 0; k < group.handlers.Count; k++)
                             {
                                 //Is the pawn still in the caravan?
@@ -364,7 +363,7 @@ namespace CompVehicle
 						}
 					}
                     //Clear the comp variable to allow an empty one to be created when forming a caravan/exiting map
-                    vehicle.pawnsInVehicle = null;
+                    vehicle.PawnsInVehicle = null;
 				}
 			}
 		}
@@ -422,119 +421,45 @@ namespace CompVehicle
 				return false;
 			return true;
 		}
-
-		//  ---------- BAD CODE...... but...... it works---------
-
+        
 		//Purpose: Modifies the Caravan Needs WITab to show vehicle fuel
 		//Logic: Players should be able to see how much fuel each vehicle has
-		//Improvements: Transpiler? Brrainz said that copying the code is bad
-        //Don't know how to do a transpiler and didn't have time to try
 
-		public static bool DoRow_PreFix(Rect rect, Thing thing, Caravan caravan, ref Pawn specificNeedsTabForPawn, bool doNeeds, bool listingUsesAbandonSpecificCountButtons)
+		public static IEnumerable<CodeInstruction> DoRow_Transpiler(IEnumerable<CodeInstruction> instructions)
 		{
-            //Stuff I copied from original method start
-			List<Need> tmpNeeds = (System.Collections.Generic.List<RimWorld.Need>)AccessTools.Field(typeof(CaravanPeopleAndItemsTabUtility), "tmpNeeds").GetValue(null);
-			GUI.BeginGroup(rect);
-			Rect rect2 = rect.AtZero();
-			Pawn pawn = thing as Pawn;
-			if (listingUsesAbandonSpecificCountButtons)
-			{
-				if (thing.stackCount != 1)
-				{
-					AccessTools.Method(typeof(CaravanPeopleAndItemsTabUtility), "DoAbandonSpecificCountButton").Invoke(null, new object[] { rect2, thing, caravan });
-				}
-				rect2.width -= 24f;
-			}
-			CaravanPeopleAndItemsTabUtility.DoAbandonButton(rect2, thing, caravan);
-			rect2.width -= 24f;
-			Widgets.InfoCardButton(rect2.width - 24f, (rect.height - 24f) / 2f, thing);
-			rect2.width -= 24f;
-			if (pawn != null && !pawn.Dead)
-			{
-				CaravanPeopleAndItemsTabUtility.DoOpenSpecificTabButton(rect2, pawn, ref specificNeedsTabForPawn);
-				rect2.width -= 24f;
-			}
-			if (pawn == null)
-			{
-				Rect rect3 = rect2;
-				rect3.xMin = rect3.xMax - 60f;
-				CaravanPeopleAndItemsTabUtility.TryDrawMass(thing, rect3);
-				rect2.width -= 60f;
-			}
-			if (Mouse.IsOver(rect2))
-			{
-				Widgets.DrawHighlight(rect2);
-			}
-			Rect rect4 = new Rect(4f, (rect.height - 27f) / 2f, 27f, 27f);
-			Widgets.ThingIcon(rect4, thing, 1f);
-			if (pawn != null)
-			{
-				Rect bgRect = new Rect(rect4.xMax + 4f, 16f, 100f, 18f);
-				GenMapUI.DrawPawnLabel(pawn, bgRect, 1f, 100f, null, GameFont.Small, false, false);
-				if (doNeeds)
-				{
-					AccessTools.Method(typeof(CaravanPeopleAndItemsTabUtility), "GetNeedsToDisplay").Invoke(null, new object[] { pawn, tmpNeeds });
-					float xMax = bgRect.xMax;
-					for (int i = 0; i < tmpNeeds.Count; i++)
-					{
-						Need need = tmpNeeds[i];
-						int maxThresholdMarkers = 0;
-						bool doTooltip = true;
-						Rect rect5 = new Rect(xMax, 0f, 100f, 50f);
-                        if (need is Need_Mood mood)
-                        {
-                            maxThresholdMarkers = 1;
-                            doTooltip = false;
-                            TooltipHandler.TipRegion(rect5, new TipSignal(() => (string)AccessTools.Method(typeof(CaravanPeopleAndItemsTabUtility), "CustomMoodNeedTooltip").Invoke(null, new object[] { mood }), rect5.GetHashCode()));
-                        }
-                        need.DrawOnGUI(rect5, maxThresholdMarkers, 10f, false, doTooltip);
-						xMax = rect5.xMax;
-					}
+            List<CodeInstruction> instructionList = instructions.ToList();
 
-				}
-                //Stuff copied from original method end
+            for (int i = 0; i < instructionList.Count; i++)
+            {
+                CodeInstruction instruction = instructionList[i];
+
+                /*
 
                 // Stuff I added start
-				if (pawn.GetComp<CompRefuelable>() != null)
-				{
-					bgRect = new Rect(rect4.xMax + 4f, 16f, 100f, 18f);
-					float xMax = bgRect.xMax;
-					int maxThresholdMarkers = 0;
-					Rect rect5 = new Rect(xMax, 0f, 100f, 50f);
+                if (pawn.GetComp<CompRefuelable>() != null)
+                {
+                    bgRect = new Rect(rect4.xMax + 4f, 16f, 100f, 18f);
+                    float xMax = bgRect.xMax;
+                    int maxThresholdMarkers = 0;
+                    Rect rect5 = new Rect(xMax, 0f, 100f, 50f);
                     //Draw fuel bar
-					DrawOnGUI(pawn.GetComp<CompRefuelable>(), rect5, true, maxThresholdMarkers, 10f, false);
-				}
-                // Stuff I added end
-
-				if (pawn.Downed)
-				{
-					GUI.color = new Color(1f, 0f, 0f, 0.5f);
-					Widgets.DrawLineHorizontal(0f, rect.height / 2f, rect.width);
-					GUI.color = Color.white;
-				}
-			}
-			else
-			{
-				Rect rect6 = new Rect(rect4.xMax + 4f, 0f, 300f, 30f);
-				Text.Anchor = TextAnchor.MiddleLeft;
-				Text.WordWrap = false;
-				Widgets.Label(rect6, thing.LabelCap);
-				Text.Anchor = TextAnchor.UpperLeft;
-				Text.WordWrap = true;
-			}
-			GUI.EndGroup();
-			return false;
+                    DrawOnGUI(pawn.GetComp<CompRefuelable>(), rect5, true, maxThresholdMarkers, 10f, false);
+                }*/
+                yield return instruction;
+            }
 		}
 
-		//Purpose: Modifies the Caravan Contents Window when forming a caravan to show the fuel carried by the caravan
+        //  ---------- BAD CODE...... but...... it works---------
+
+        //Purpose: Modifies the Caravan Contents Window when forming a caravan to show the fuel carried by the caravan
         //Modifies the food count to include pawns still inside a vehicle
-		//Logic: Players should be able to see how much fuel the caravan is carrying when forming a caravan
-		//Improvements: Transpiler? Brrainz said that copying the code is bad
-		//Don't know how to do a transpiler and didn't have time to try
+        //Logic: Players should be able to see how much fuel the caravan is carrying when forming a caravan
+        //Improvements: Transpiler? Brrainz said that copying the code is bad
+        //Don't know how to do a transpiler and didn't have time to try
 
         //Variable needed to keep track of the tab last the player was last at for window refresh
         //__instance version of this was not working
-		static object tab;
+        static object tab;
 		public static bool DoWindowContents_PreFix(Rect inRect, Dialog_FormCaravan __instance)
 		{
             //Create a traverse object and grab private variables from the instance
@@ -749,24 +674,18 @@ namespace CompVehicle
             {
                 Log.Message("2Three");
 
-                var meetingPoint = Traverse.Create(__instance).Field("meetingPoint").GetValue<IntVec3>();
+                IntVec3 meetingPoint = Traverse.Create(__instance).Field("meetingPoint").GetValue<IntVec3>();
                 GatherAnimalsAndSlavesForCaravanUtility.CheckArrived(__instance.lord, meetingPoint, "AllSlavesGathered", (Pawn x) => (!x.IsColonist && !(x.GetComp<CompVehicle>() is CompVehicle compVehicle && compVehicle.MovementHandlerAvailable)) && !x.RaceProps.Animal, (Pawn x) => GatherAnimalsAndSlavesForCaravanUtility.IsFollowingAnyone(x));
             }
         }
 
 
         //public class ThinkNode_ConditionalColonist : ThinkNode_Conditional
-        public static void Satisfied_PostFix(Pawn pawn, ref bool __result)
-        {
-            __result = pawn.IsColonist || (pawn.GetComp<CompVehicle>() is CompVehicle compVehicle && compVehicle.MovementHandlerAvailable);
-        }
+        public static void Satisfied_PostFix(Pawn pawn, ref bool __result) => __result = pawn.IsColonist || (pawn.GetComp<CompVehicle>() is CompVehicle compVehicle && compVehicle.MovementHandlerAvailable);
 
 
         // RimWorld.Planet.CaravanExitMapUtility
-        public static void CanExit_PostFix(Pawn pawn, ref bool __result)
-        {
-            __result = pawn.Spawned && pawn.Map.exitMapGrid.MapUsesExitGrid && ((pawn.IsColonist || (pawn.GetComp<CompVehicle>() is CompVehicle compVehicle && compVehicle.MovementHandlerAvailable)) || CaravanExitMapUtility.FindCaravanToJoinFor(pawn) != null);
-        }
+        public static void CanExit_PostFix(Pawn pawn, ref bool __result) => __result = pawn.Spawned && pawn.Map.exitMapGrid.MapUsesExitGrid && ((pawn.IsColonist || (pawn.GetComp<CompVehicle>() is CompVehicle compVehicle && compVehicle.MovementHandlerAvailable)) || CaravanExitMapUtility.FindCaravanToJoinFor(pawn) != null);
 
         // RimWorld.LordToil_PrepareCaravan_GatherAnimals
         public static void UpdateAllDutiesTwo_Prefix(LordToil_PrepareCaravan_GatherAnimals __instance)
@@ -781,12 +700,13 @@ namespace CompVehicle
                     Pawn pawn = __instance.lord.ownedPawns[i];
                     if (pawn.IsColonist || pawn.RaceProps.Animal || (pawn.GetComp<CompVehicle>() is CompVehicle compVehicle && compVehicle.MovementHandlerAvailable))
                     {
-                        var meetingPoint = Traverse.Create(__instance).Field("meetingPoint").GetValue<IntVec3>();
+                        IntVec3 meetingPoint = Traverse.Create(__instance).Field("meetingPoint").GetValue<IntVec3>();
 
-                        pawn.mindState.duty = new PawnDuty(DutyDefOf.PrepareCaravan_GatherPawns, meetingPoint, -1f);
-                        pawn.mindState.duty.pawnsToGather = PawnsToGather.Animals;
-                    }
-                    else
+                        pawn.mindState.duty = new PawnDuty(DutyDefOf.PrepareCaravan_GatherPawns, meetingPoint, -1f)
+                        {
+                            pawnsToGather = PawnsToGather.Animals
+                        };
+                    } else
                     {
                         pawn.mindState.duty = new PawnDuty(DutyDefOf.PrepareCaravan_Wait);
                     }
@@ -815,7 +735,7 @@ namespace CompVehicle
                     }
                     else if (pawn.RaceProps.Animal)
                     {
-                        var meetingPoint = Traverse.Create(__instance).Field("meetingPoint").GetValue<IntVec3>();
+                        IntVec3 meetingPoint = Traverse.Create(__instance).Field("meetingPoint").GetValue<IntVec3>();
                         pawn.mindState.duty = new PawnDuty(DutyDefOf.PrepareCaravan_Wait, meetingPoint, -1f);
                     }
                     else
@@ -1178,7 +1098,7 @@ namespace CompVehicle
 					fuel = thing2;
 					owner = CaravanInventoryUtility.GetOwnerOf(caravan, thing2);
                     //Reset the spammer preventer since the vehicle now has fuel
-                    forPawn.GetComp<CompVehicle>().warnedOnNoFuel = false;
+                    forPawn.GetComp<CompVehicle>().WarnedOnNoFuel = false;
 					return true;
 				}
 			}
@@ -1188,12 +1108,12 @@ namespace CompVehicle
 			if (!forPawn.GetComp<CompRefuelable>().HasFuel)
 			{
                 //Spam preventer Boolean Check
-				if (forPawn.GetComp<CompVehicle>().warnedOnNoFuel == false)
+				if (forPawn.GetComp<CompVehicle>().WarnedOnNoFuel == false)
 				{
                     //Notify player that caravan is out of fuel
 					Messages.Message("MessageCaravanRunOutOfFuel".Translate(new object[] { caravan.LabelCap, forPawn.Label }), caravan, MessageSound.SeriousAlert);
 					//No more spam
-                    forPawn.GetComp<CompVehicle>().warnedOnNoFuel = true;
+                    forPawn.GetComp<CompVehicle>().WarnedOnNoFuel = true;
 				}
 			}
 			return false;
@@ -1273,7 +1193,7 @@ namespace CompVehicle
                     supplies += item.stackCount;
             }
 
-			if (Math.Abs(totalFuelUse) > Double.Epsilon)
+			if (Math.Abs(totalFuelUse) > double.Epsilon)
 				return (supplies / (GenDate.TicksPerDay * totalFuelUse));
 			else
 				return 10000;
@@ -1330,25 +1250,22 @@ namespace CompVehicle
 			Text.Font = GameFont.Small;
 		}
 
-		//Purpose: Get the Tip String explaining what fuel does
-		//Corresponding Patch Class: RimWorld.Planet.CaravanPeopleAndItemsTabUtility
-		//Corresponding Patch Method: DoRow_PreFix
-		private static string GetTipString(CompRefuelable refuel)
-		{
-			return string.Concat(new string[]
-			{
-				"Fuel: ",
-				refuel.FuelPercentOfMax.ToStringPercent(),
-				"\n",
-				"Fuel is necessary for vehicles and other machines to operate."
-			});
-		}
+        //Purpose: Get the Tip String explaining what fuel does
+        //Corresponding Patch Class: RimWorld.Planet.CaravanPeopleAndItemsTabUtility
+        //Corresponding Patch Method: DoRow_PreFix
+        private static string GetTipString(CompRefuelable refuel) => string.Concat(new string[]
+            {
+                "Fuel: ",
+                refuel.FuelPercentOfMax.ToStringPercent(),
+                "\n",
+                "Fuel is necessary for vehicles and other machines to operate."
+            });
 
-		//Purpose: Draw the bar marker
-		//Corresponding Patch Class: RimWorld.Planet.CaravanPeopleAndItemsTabUtility
-		//Corresponding Patch Method: DoRow_PreFix
-		//Improvements: Find a way to use the bar marker method from Needs?
-		private static void DrawBarInstantMarkerAt(Rect barRect, float pct)
+        //Purpose: Draw the bar marker
+        //Corresponding Patch Class: RimWorld.Planet.CaravanPeopleAndItemsTabUtility
+        //Corresponding Patch Method: DoRow_PreFix
+        //Improvements: Find a way to use the bar marker method from Needs?
+        private static void DrawBarInstantMarkerAt(Rect barRect, float pct)
 		{
 			float num = 12f;
 			if (barRect.width < 150f)
@@ -1412,7 +1329,7 @@ namespace CompVehicle
 				}
 
 			}
-			if (Math.Abs(fueluse) > Double.Epsilon)
+			if (Math.Abs(fueluse) > double.Epsilon)
 				return (FuelCounts / (GenDate.TicksPerDay * fueluse));
 			else
 				return 10000;

@@ -44,31 +44,21 @@ namespace CompVehicle
         //Purpose: Control the boolean warnedOnNoFuel
         //Logic: Needed to prevent spamming of the warning message
 
-        public bool warnedOnNoFuel{
-            get{
-                return this.warnedNoFuel;
-            }
+        public bool WarnedOnNoFuel{
+            get => this.warnedNoFuel;
 
-            set{
-                this.warnedNoFuel = value;
-            }
+            set => this.warnedNoFuel = value;
         }
 
 		//Purpose: Store the pawns in the vehicle while it is in a caravan
 		//Logic: Allows the vehicle to remember what pawns were inside it so they can be put back in later on map entry
 		
-        public List<VehicleHandlerGroup> pawnsInVehicle
+        public List<VehicleHandlerGroup> PawnsInVehicle
 		{
-			get
-			{
-                return this.vehicleContents;
-			}
+            get => this.vehicleContents;
 
-			set
-			{
-				this.vehicleContents = value;
-			}
-		}
+            set => this.vehicleContents = value;
+        }
 		//------ Additions By Swenzi -------
 		
         public bool MovementHandlerAvailable
@@ -607,7 +597,7 @@ namespace CompVehicle
                                 button.defaultDesc = desc.Translate(group.role.label.CapitalizeFirst());
                                 button.icon = TexCommand.Install;  //ContentFinder<Texture2D>.Get("UI/Commands/TryReconnect", true);
 
-                                var pctFilled = Pawn.health.summaryHealth.SummaryHealthPercent;
+                                float pctFilled = this.Pawn.health.summaryHealth.SummaryHealthPercent;
                                 button.disabled = this.Pawn.Downed || this.Pawn.Dead || (pctFilled < this.Props.ejectIfBelowHealthPercent);
                                 button.disabledReason = "CompVehicle_DisabledDesc".Translate();
                                 

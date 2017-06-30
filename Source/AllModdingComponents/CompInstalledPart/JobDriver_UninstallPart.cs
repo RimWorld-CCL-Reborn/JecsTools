@@ -27,7 +27,7 @@ namespace CompInstalledPart
         {
             get
             {
-                return TotalNeededWork - (int)workLeft;
+                return this.TotalNeededWork - (int)this.workLeft;
             }
         }
 

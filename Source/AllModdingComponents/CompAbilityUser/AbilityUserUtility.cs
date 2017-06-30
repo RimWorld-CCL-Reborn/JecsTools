@@ -17,14 +17,14 @@ namespace AbilityUser
         public static List<Type> GetAllChildrenOf(Type pType)
         {
             List<Type> retval = new List<Type>();
-            var asslist = new List<Assembly>(AppDomain.CurrentDomain.GetAssemblies());
+            List<Assembly> asslist = new List<Assembly>(AppDomain.CurrentDomain.GetAssemblies());
             if (asslist != null)
             {
                 foreach (System.Reflection.Assembly ass in asslist)
                 {
                     if (ass != null)
                     {
-                        var asschildren = ass.GetTypes().Where(t => t.IsClass && t != pType && pType.IsAssignableFrom(t)).ToList();
+                        List<Type> asschildren = ass.GetTypes().Where(t => t.IsClass && t != pType && pType.IsAssignableFrom(t)).ToList();
                         if (asschildren != null) retval.AddRange(asschildren);
                     }
                 }
