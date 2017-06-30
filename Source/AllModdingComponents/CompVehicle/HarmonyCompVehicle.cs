@@ -69,7 +69,7 @@ namespace CompVehicle
             //Bug fixes social tab issue with vehicles
             harmony.Patch(AccessTools.Method(typeof(RimWorld.SocialCardUtility), "Recache"), new HarmonyMethod(typeof(HarmonyCompVehicle), nameof(Recache_PreFix)), null);
             //Modifies the Caravan Needs WITab to show vehicle fuel
-            harmony.Patch(AccessTools.Method(typeof(RimWorld.Planet.CaravanPeopleAndItemsTabUtility), "DoRow", new Type[] { typeof(Rect), typeof(Thing), typeof(Caravan), typeof(Pawn).MakeByRefType(), typeof(bool), typeof(bool) }), new HarmonyMethod(typeof(HarmonyCompVehicle),nameof(DoRow_Transpiler)), null);
+            harmony.Patch(AccessTools.Method(typeof(CaravanPeopleAndItemsTabUtility), "DoRow", new Type[] { typeof(Rect), typeof(Thing), typeof(Caravan), typeof(Pawn).MakeByRefType(), typeof(bool), typeof(bool) }), null, null, new HarmonyMethod(typeof(HarmonyCompVehicle),nameof(DoRow_Transpiler)));
 
             //Modifies the Caravan Contents Window when forming a caravan to show the fuel carried by the caravan
             harmony.Patch(AccessTools.Method(typeof(RimWorld.Dialog_FormCaravan), "DoWindowContents"), new HarmonyMethod(typeof(HarmonyCompVehicle),nameof(DoWindowContents_PreFix)), null);
@@ -425,26 +425,43 @@ namespace CompVehicle
 		//Purpose: Modifies the Caravan Needs WITab to show vehicle fuel
 		//Logic: Players should be able to see how much fuel each vehicle has
 
-		public static IEnumerable<CodeInstruction> DoRow_Transpiler(IEnumerable<CodeInstruction> instructions)
+		public static IEnumerable<CodeInstruction> DoRow_Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator ilg)
 		{
-            List<CodeInstruction> instructionList = instructions.ToList();
+            MethodInfo downedInfo = AccessTools.Property(typeof(Pawn), nameof(Pawn.Downed)).GetGetMethod();
+            MethodInfo getCompInfo = AccessTools.Method(typeof(ThingWithComps), nameof(Pawn.GetComp)).MakeGenericMethod(typeof(CompRefuelable));
+            MethodInfo thisMethodInfo = AccessTools.Method(typeof(CaravanPeopleAndItemsTabUtility), "DoRow", new Type[] { typeof(Rect), typeof(Thing), typeof(Caravan), typeof(Pawn).MakeByRefType(), typeof(bool), typeof(bool) });
+
+
+            List <CodeInstruction> instructionList = instructions.ToList();
 
             for (int i = 0; i < instructionList.Count; i++)
             {
                 CodeInstruction instruction = instructionList[i];
 
-                /*
-
-                // Stuff I added start
-                if (pawn.GetComp<CompRefuelable>() != null)
+                if(instruction.operand == downedInfo)
                 {
-                    bgRect = new Rect(rect4.xMax + 4f, 16f, 100f, 18f);
-                    float xMax = bgRect.xMax;
-                    int maxThresholdMarkers = 0;
-                    Rect rect5 = new Rect(xMax, 0f, 100f, 50f);
-                    //Draw fuel bar
-                    DrawOnGUI(pawn.GetComp<CompRefuelable>(), rect5, true, maxThresholdMarkers, 10f, false);
-                }*/
+                    yield return new CodeInstruction(OpCodes.Callvirt, getCompInfo);
+                    yield return new CodeInstruction(OpCodes.Ldnull);
+                    yield return new CodeInstruction(OpCodes.Cgt_Un);
+                    Label endLabel = ilg.DefineLabel();
+                    yield return new CodeInstruction(OpCodes.Brfalse_S, endLabel);
+                    yield return new CodeInstruction(OpCodes.Nop);
+                    yield return new CodeInstruction(instructionList[i - 1]) { labels = new List<Label>() };
+                    yield return new CodeInstruction(OpCodes.Callvirt, getCompInfo);
+                    yield return new CodeInstruction(OpCodes.Ldc_R4, 135f);
+                    yield return new CodeInstruction(OpCodes.Ldc_R4, 0.0f);
+                    yield return new CodeInstruction(OpCodes.Ldc_R4, 100f);
+                    yield return new CodeInstruction(OpCodes.Ldc_R4, 50f);
+                    yield return new CodeInstruction(OpCodes.Newobj, AccessTools.Constructor(typeof(Rect), new Type[] { typeof(float), typeof(float), typeof(float), typeof(float)}));
+                    yield return new CodeInstruction(OpCodes.Ldc_I4_1);
+                    yield return new CodeInstruction(OpCodes.Ldc_I4_0);
+                    yield return new CodeInstruction(OpCodes.Ldc_R4, 10f);
+                    yield return new CodeInstruction(OpCodes.Ldc_I4_0);
+                    yield return new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(HarmonyCompVehicle), nameof(DrawOnGUI)));
+                    yield return new CodeInstruction(OpCodes.Nop);
+                    yield return new CodeInstruction(OpCodes.Nop);
+                    yield return new CodeInstruction(instructionList[i - 1]) { labels = new List<Label>() { endLabel } };
+                }
                 yield return instruction;
             }
 		}
