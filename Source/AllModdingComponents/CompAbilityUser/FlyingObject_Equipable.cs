@@ -1,4 +1,9 @@
-﻿namespace AbilityUser
+﻿using RimWorld;
+using Verse;
+using UnityEngine;
+using Verse.Sound;
+
+namespace AbilityUser
 {
     public class FlyingObject_Equipable : FlyingObject
     {

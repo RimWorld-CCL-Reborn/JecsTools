@@ -1,4 +1,7 @@
-﻿namespace AbilityUser
+﻿using UnityEngine;
+using Verse;
+
+namespace AbilityUser
 {
     [StaticConstructorOnStartup]
     public class AbilityButtons

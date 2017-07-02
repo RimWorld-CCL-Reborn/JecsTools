@@ -1,4 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using RimWorld;
+using Verse;
+using UnityEngine;
+using Verse.AI;
+using Verse.Sound;
 
 namespace AbilityUser
 {

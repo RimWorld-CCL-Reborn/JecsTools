@@ -1,6 +1,8 @@
 ﻿// This Verb's main purpose is to treat bursts as over time and not at once, as in the parent class. This
 // changes was in response to CompAbilityUser adding VerbTicks to its verbs.
 
+using Verse;
+
 namespace AbilityUser
 {
     public class Verb_UseAbility_TrueBurst : Verb_UseAbility

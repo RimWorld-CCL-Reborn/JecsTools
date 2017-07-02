@@ -1,3 +1,6 @@
+using UnityEngine;
+using Verse;
+
 namespace CompToggleDef
 {
     public class ToggleDefCardUtility

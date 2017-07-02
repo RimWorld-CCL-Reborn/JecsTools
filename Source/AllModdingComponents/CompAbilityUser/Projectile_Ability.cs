@@ -1,4 +1,9 @@
-﻿namespace AbilityUser
+﻿using System.Collections.Generic;
+using RimWorld;
+using Verse;
+using UnityEngine;
+using Verse.AI;
+namespace AbilityUser
 {
     public class Projectile_Ability : Projectile_AbilityBase
     {

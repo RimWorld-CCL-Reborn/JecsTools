@@ -36,9 +36,9 @@ namespace CompVehicle
 		public int tickCount = 0; //Counter for how long the vehicle has traveled without a driver
 		public bool warnedNoFuel = false; //Boolean connected to comp to prevent spamming of the Caravan No Fuel warning message
 		public List<VehicleHandlerGroup> vehicleContents; //Stores the handlergroups of the vehicle and its pawns while the vehicle is in a caravan
-
 		public List<VehicleHandlerGroup> handlers = new List<VehicleHandlerGroup>();
         public List<Bill_LoadVehicle> bills = new List<Bill_LoadVehicle>();
+        public List<ThingCountClass> repairCostList = new List<ThingCountClass>();
 
         //------ Additions By Swenzi -------
         //Purpose: Control the boolean warnedOnNoFuel

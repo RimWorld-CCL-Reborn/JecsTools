@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using RimWorld;
+using System.Collections.Generic;
+using Verse;
 
 namespace AbilityUser
 {

@@ -7,6 +7,17 @@ namespace CompVehicle
 {
     internal class Recipe_RepairVehicle : RecipeWorker
     {
+
+        //public override string GetLabelWhenUsedOn(Pawn pawn, BodyPartRecord part)
+        //{
+
+        //    if (pawn?.GetComp<CompVehicle>() is CompVehicle compVehicle)
+        //    {
+        //        string result = base.GetLabelWhenUsedOn(pawn, part);
+        //    }
+        //    else return base.GetLabelWhenUsedOn(pawn, part);
+        //}
+
         [DebuggerHidden]
         public override IEnumerable<BodyPartRecord> GetPartsToApplyOn(Pawn pawn, RecipeDef recipe)
         {

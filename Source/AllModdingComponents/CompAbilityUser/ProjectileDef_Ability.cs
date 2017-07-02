@@ -1,4 +1,5 @@
-﻿namespace AbilityUser
+﻿using Verse;
+namespace AbilityUser
 {
     public class ProjectileDef_Ability : ThingDef
     {

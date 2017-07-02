@@ -1,6 +1,10 @@
 ﻿using Harmony;
 using System.Collections.Generic;
 using System.Linq;
+using RimWorld;
+using Verse;
+using UnityEngine;
+using Verse.Sound;
 
 namespace AbilityUser
 {

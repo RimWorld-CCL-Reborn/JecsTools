@@ -1,4 +1,6 @@
-﻿namespace AbilityUser
+﻿using RimWorld;
+using Verse;
+namespace AbilityUser
 {
     public class ExtraDamage
     {

@@ -1,4 +1,6 @@
-﻿namespace AbilityUser
+﻿using Verse;
+
+namespace AbilityUser
 {
     public class ApplyHediffs
     {

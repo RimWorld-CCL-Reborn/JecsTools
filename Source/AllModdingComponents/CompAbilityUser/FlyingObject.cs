@@ -1,4 +1,7 @@
-﻿namespace AbilityUser
+﻿using RimWorld;
+using UnityEngine;
+using Verse;
+namespace AbilityUser
 {
     /// <summary>
     /// A special version of a projectile.

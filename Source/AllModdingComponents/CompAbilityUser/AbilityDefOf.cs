@@ -1,4 +1,7 @@
-﻿namespace AbilityUser
+﻿using RimWorld;
+using Verse;
+
+namespace AbilityUser
 {
     [DefOf]
     public static class AbilityDefOf
