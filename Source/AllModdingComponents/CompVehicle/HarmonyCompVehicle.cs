@@ -433,7 +433,7 @@ namespace CompVehicle
 		{
             //Grab the original String
 			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.Append(__result);
+			stringBuilder.AppendLine(__result);
 
             //Check if Caravan is out of fuel
 			if (AnythingOutOfFuel(__instance))
@@ -1012,40 +1012,68 @@ namespace CompVehicle
                 if (compPilotable != null)
                 {
                     curY += 4f;
-                    Text.Font = GameFont.Tiny;
-                    Text.Anchor = TextAnchor.UpperLeft;
-                    GUI.color = new Color(0.9f, 0.9f, 0.9f);
-                    string text = StringOf.Movement;
-                    if (compPilotable.movingStatus == MovingState.able)
+
+                    if (compPilotable.Props.movementHandling > HandlingType.Incapable)
                     {
-                        text = text + ": " + StringOf.On;
+                        //Movement Systems: Online
+
+                        Text.Font = GameFont.Tiny;
+                        Text.Anchor = TextAnchor.UpperLeft;
+                        GUI.color = new Color(0.9f, 0.9f, 0.9f);
+                        string text = StringOf.Movement;
+                        if (compPilotable.movingStatus == MovingState.able)
+                        {
+                            text = text + ": " + StringOf.On;
+                        }
+                        else
+                        {
+                            text = text + ": " + StringOf.Off;
+                        }
+                        Rect rect = new Rect(0f, curY, leftRect.width, 34f);
+                        Widgets.Label(rect, text.CapitalizeFirst());
                     }
-                    else
+
+                    if (compPilotable.Props.manipulationHandling > HandlingType.Incapable)
                     {
-                        text = text + ": " + StringOf.Off;
+                        //Manipulation Systems: Online
+
+                        curY += 34f;
+                        Text.Font = GameFont.Tiny;
+                        Text.Anchor = TextAnchor.UpperLeft;
+                        GUI.color = new Color(0.9f, 0.9f, 0.9f);
+                        string textM = StringOf.Manipulation;
+                        if (compPilotable.manipulationStatus == ManipulationState.able)
+                        {
+                            textM = textM + ": " + StringOf.On;
+                        }
+                        else
+                        {
+                            textM = textM + ": " + StringOf.Off;
+                        }
+                        Rect rectM = new Rect(0f, curY, leftRect.width, 34f);
+                        Widgets.Label(rectM, textM.CapitalizeFirst());
                     }
-                    Rect rect = new Rect(0f, curY, leftRect.width, 34f);
-                    Widgets.Label(rect, text.CapitalizeFirst());
-                    //TooltipHandler.TipRegion(rect, () => pawn.ageTracker.AgeTooltipString, 73412);
-                    //if (Mouse.IsOver(rect))
-                    //{
-                    //    Widgets.DrawHighlight(rect);
-                    //}
-                    curY += 34f;
-                    Text.Font = GameFont.Tiny;
-                    Text.Anchor = TextAnchor.UpperLeft;
-                    GUI.color = new Color(0.9f, 0.9f, 0.9f);
-                    string text2 = StringOf.Weapons;
-                    if (compPilotable.weaponStatus == WeaponState.able)
+
+                    if (compPilotable.Props.weaponHandling > HandlingType.Incapable)
                     {
-                        text2 = text2 + ": " + StringOf.On;
+                        //Weapons Systems: Online
+
+                        curY += 34f;
+                        Text.Font = GameFont.Tiny;
+                        Text.Anchor = TextAnchor.UpperLeft;
+                        GUI.color = new Color(0.9f, 0.9f, 0.9f);
+                        string text2 = StringOf.Weapons;
+                        if (compPilotable.weaponStatus == WeaponState.able)
+                        {
+                            text2 = text2 + ": " + StringOf.On;
+                        }
+                        else
+                        {
+                            text2 = text2 + ": " + StringOf.Off;
+                        }
+                        Rect rect2 = new Rect(0f, curY, leftRect.width, 34f);
+                        Widgets.Label(rect2, text2.CapitalizeFirst());
                     }
-                    else
-                    {
-                        text2 = text2 + ": " + StringOf.Off;
-                    }
-                    Rect rect2 = new Rect(0f, curY, leftRect.width, 34f);
-                    Widgets.Label(rect2, text2.CapitalizeFirst());
                     curY += 34f;
                     __result = curY;
                     return false;

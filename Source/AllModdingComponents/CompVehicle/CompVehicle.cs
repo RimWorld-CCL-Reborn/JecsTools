@@ -17,12 +17,18 @@ namespace CompVehicle
         crew,
         dutiless
     }
+
     public enum MovingState
     {
         frozen = 0,
         able
     }
     public enum WeaponState
+    {
+        frozen = 0,
+        able
+    }
+    public enum ManipulationState
     {
         frozen = 0,
         able
@@ -59,8 +65,32 @@ namespace CompVehicle
 
             set => this.vehicleContents = value;
         }
-		//------ Additions By Swenzi -------
-		
+        //------ Additions By Swenzi -------
+
+        public bool ManipulationHandlerAvailable
+        {
+            get
+            {
+                bool result = false;
+                if (this.handlers != null && this.handlers.Count > 0)
+                {
+                    foreach (VehicleHandlerGroup group in this.handlers)
+                    {
+                        if (group.handlers != null && group.handlers.Count > 0)
+                        {
+                            if (group.role != null)
+                            {
+                                if ((group.role.handlingTypes & HandlingTypeFlags.Manipulation) != HandlingTypeFlags.None)
+                                {
+                                    result = group.handlers.Any((Pawn x) => !x.Dead && !x.Downed);
+                                }
+                            }
+                        }
+                    }
+                }
+                return result;
+            }
+        }
         public bool MovementHandlerAvailable
         {
             get
@@ -74,7 +104,7 @@ namespace CompVehicle
                         {
                             if (group.role != null)
                             {
-                                if (group.role.handlesMovement)
+                                if ((group.role.handlingTypes & HandlingTypeFlags.Movement) != HandlingTypeFlags.None)
                                 {
                                     result = group.handlers.Any((Pawn x) => !x.Dead && !x.Downed);
                                 }
@@ -96,7 +126,7 @@ namespace CompVehicle
                     {
                         if (group.role != null && group.handlers != null && group.handlers.Count > 0)
                         {
-                            if (group.role.handlesWeapons)
+                            if ((group.role.handlingTypes & HandlingTypeFlags.Weapons) != HandlingTypeFlags.None)
                             {
                                 result = group.handlers.Any((Pawn x) => !x.Dead && !x.Downed);
                             }
@@ -109,8 +139,9 @@ namespace CompVehicle
 
         public Pawn Pawn => this.parent as Pawn;
 
-        public MovingState movingStatus = MovingState.able;
-        public WeaponState weaponStatus = WeaponState.able;
+        public MovingState movingStatus             = MovingState.able;
+        public WeaponState weaponStatus             = WeaponState.able;
+        public ManipulationState manipulationStatus = ManipulationState.able;
 
         public bool ResolvedITTab = false;
         public bool ResolvedPawns = false;
@@ -326,8 +357,8 @@ namespace CompVehicle
             //Other Info: Changes marked with --- ADB Swenzi --- due to the dispersion of modifications in the method
 
             //Safety check in case the modder didn't assign a vehicle locomotion type. Defaults to Land Vehicle
-			if (!this.Props.isWater && !this.Props.isLand && !this.Props.isAir)
-				this.Props.isLand = true;
+			//if (!this.Props.isWater && !this.Props.isLand && !this.Props.isAir)
+			//	this.Props.isLand = true;
             
             //If refuelable, then check for fuel.
             CompRefuelable compRefuelable = this.Pawn.GetComp<CompRefuelable>();
@@ -361,11 +392,15 @@ namespace CompVehicle
 
             if (!this.MovementHandlerAvailable && this.movingStatus == MovingState.able)
             {
-                if (!this.Props.canMoveWithoutHandler) this.movingStatus = MovingState.frozen;
+                if (this.Props.movementHandling != HandlingType.NoHandlerRequired ) this.movingStatus = MovingState.frozen;
             }
             if (!this.WeaponHandlerAvailable && this.weaponStatus == WeaponState.able)
             {
-                if (!this.Props.canFireWithoutHandler) this.weaponStatus = WeaponState.frozen;
+                if (this.Props.weaponHandling != HandlingType.NoHandlerRequired) this.weaponStatus = WeaponState.frozen;
+            }
+            if (!this.ManipulationHandlerAvailable && this.manipulationStatus == ManipulationState.able)
+            {
+                if (this.Props.manipulationHandling != HandlingType.NoHandlerRequired) this.manipulationStatus = ManipulationState.frozen;
             }
 
             // ------ ADB Swenzi -------

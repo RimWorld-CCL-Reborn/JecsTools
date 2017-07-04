@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<!--Usual Stuff-->
+<ThinkTrees>
+	<ThinkTreeDef>
+		<defName>RE_Vehicle</defName>
+		<thinkRoot Class="ThinkNode_Priority">
+            <subNodes>
+                <li Class="ThinkNode_Subtree">
+                    <treeDef>Downed</treeDef>
+                </li>
+                <li Class="ThinkNode_Subtree">
+                    <treeDef>LordDuty</treeDef>
+                </li>
+                <li Class="ThinkNode_Tagger">
+                    <tagToGive>Idle</tagToGive>
+                </li>
+
+<!--Vehicle Unloads its own inventory, logical so long as someone is inside-->
+<li Class="ThinkNode_Tagger">
+    <tagToGive>UnloadingOwnInventory</tagToGive>
+    <subNodes>
+        <li Class="JobGiver_UnloadYourInventory" />
+    </subNodes>
+</li>
+
+<!--Mod determined, some mods may not want their vehicle to haul-->
+<!--<li Class="ThinkNode_Tagger">-->
+<!--    <tagToGive>Fieldwork</tagToGive>-->
+<!--    <subNodes>-->
+<!--        <li Class="JobGiver_Haul" />-->
+<!--    </subNodes>-->
+<!--</li>-->
+
+<!--Needed for caravan forming-->
+    <li Class="ThinkNode_ConditionalHasFaction">
+        <subNodes>
+            <li Class="ThinkNode_Subtree">
+                <treeDef>JoinAutoJoinableCaravan</treeDef>
+            </li>
+        </subNodes>
+    </li>
+    
+<!--    Neutral Vehicles shouldn't be in the player map, get them out'-->
+    <li Class="ThinkNode_ConditionalNeutralFaction">
+        <subNodes>
+            <li Class="ThinkNode_Tagger">
+                <tagToGive>Misc</tagToGive>
+                <subNodes>
+                    <li Class="JobGiver_ExitMapBest">
+                        <defaultLocomotion>Walk</defaultLocomotion>
+                    </li>
+                </subNodes>
+            </li>
+        </subNodes>
+    </li>
+    
+<!--  Lets you set vehicle "parking spots, vehicles will stay in that zone"  -->
+    <li Class="ThinkNode_ConditionalForcedGoto">
+        <subNodes>
+            <li Class="ThinkNode_Tagger">
+                <tagToGive>Misc</tagToGive>
+                <subNodes>
+                    <li Class="JobGiver_ForcedGoto" />
+                </subNodes>
+            </li>
+        </subNodes>
+    </li>
+    <li Class="JobGiver_SeekAllowedArea" />
+    </subNodes>
+        </thinkRoot>
+    </ThinkTreeDef>
+    
+<!-- Don't know what this does, but all think trees have it   -->
+    <ThinkTreeDef>
+        <defName>VehicleConstant</defName>
+        <thinkRoot Class="ThinkNode_Priority">
+            <subNodes>
+                <li Class="ThinkNode_ConditionalCanDoConstantThinkTreeJobNow">
+                    <subNodes>
+                        <!-- Lord directives -->
+                        <li Class="ThinkNode_Subtree">
+                            <treeDef>LordDutyConstant</treeDef>
+                        </li>
+                    </subNodes>
+                </li>
+            </subNodes>
+        </thinkRoot>
+    </ThinkTreeDef>
+    
+</ThinkTrees>
