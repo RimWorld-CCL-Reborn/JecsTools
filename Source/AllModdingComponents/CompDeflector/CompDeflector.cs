@@ -1,11 +1,14 @@
 ﻿using Harmony;
-using RimWorld;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
+using System.Text;
+using System.Diagnostics;
+using System.Collections.Generic;
+using RimWorld;
 using Verse;
+using UnityEngine;
 using Verse.AI;
+using Verse.Sound;
 
 namespace CompDeflector
 {

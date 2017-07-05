@@ -1,8 +1,11 @@
-﻿using RimWorld;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
-using UnityEngine;
+using System.Text;
+using System.Collections.Generic;
+using RimWorld;
 using Verse;
+using UnityEngine;
+using Verse.AI;
 using Verse.Sound;
 
 namespace AbilityUser
@@ -70,11 +73,11 @@ namespace AbilityUser
                 //Handle friendly fire targets.
                 if (!this.UseAbilityProps.TargetAoEProperties.friendlyFire)
                 {
-                    targets = this.caster.Map.listerThings.AllThings.Where(x => (x.Position.InHorDistOf(aoeStartPosition, this.UseAbilityProps.TargetAoEProperties.range)) && (x.GetType() == this.UseAbilityProps.TargetAoEProperties.targetClass) && !x.Faction.HostileTo(Faction.OfPlayer)).ToList<Thing>();
+                    targets = this.caster.Map.listerThings.AllThings.Where(x => (x.Position.InHorDistOf(aoeStartPosition, this.UseAbilityProps.TargetAoEProperties.range)) && (this.UseAbilityProps.TargetAoEProperties.targetClass.IsAssignableFrom(x.GetType())) && !x.Faction.HostileTo(Faction.OfPlayer)).ToList<Thing>();
                 }
                 else if ((this.UseAbilityProps.TargetAoEProperties.targetClass == typeof(Plant)) || (this.UseAbilityProps.TargetAoEProperties.targetClass == typeof(Building)))
                 {
-                    targets = this.caster.Map.listerThings.AllThings.Where(x => (x.Position.InHorDistOf(aoeStartPosition, this.UseAbilityProps.TargetAoEProperties.range)) && (x.GetType() == this.UseAbilityProps.TargetAoEProperties.targetClass)).ToList<Thing>();
+                    targets = this.caster.Map.listerThings.AllThings.Where(x => (x.Position.InHorDistOf(aoeStartPosition, this.UseAbilityProps.TargetAoEProperties.range)) && (this.UseAbilityProps.TargetAoEProperties.targetClass.IsAssignableFrom(x.GetType()))).ToList<Thing>();
                     foreach (Thing targ in targets)
                     {
                         LocalTargetInfo tinfo = new LocalTargetInfo(targ);
@@ -88,7 +91,7 @@ namespace AbilityUser
                     targets.Clear();
                     targets = this.caster.Map.listerThings.AllThings.Where(x =>
                         (x.Position.InHorDistOf(aoeStartPosition, this.UseAbilityProps.TargetAoEProperties.range)) &&
-                        (x.GetType() == this.UseAbilityProps.TargetAoEProperties.targetClass) &&
+                        (this.UseAbilityProps.TargetAoEProperties.targetClass.IsAssignableFrom(x.GetType())) &&
                         (x.HostileTo(Faction.OfPlayer) || this.UseAbilityProps.TargetAoEProperties.friendlyFire)).ToList<Thing>();
                 }
 

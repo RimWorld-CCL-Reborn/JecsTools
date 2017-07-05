@@ -1,7 +1,6 @@
 ﻿using RimWorld;
 using UnityEngine;
 using Verse;
-
 namespace AbilityUser
 {
     /// <summary>

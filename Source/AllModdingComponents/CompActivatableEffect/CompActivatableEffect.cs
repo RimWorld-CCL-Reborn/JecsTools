@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using RimWorld;
 using Verse;
-using Verse.Sound;
 using UnityEngine;
-
+using Verse.AI;
+using Verse.Sound;
 namespace CompActivatableEffect
 {
     public class CompActivatableEffect : CompUseEffect

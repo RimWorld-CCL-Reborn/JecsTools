@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
-using UnityEngine;
-using Verse;
 using RimWorld;
-
+using Verse;
+using UnityEngine;
+using Verse.AI;
 
 namespace CompToggleDef
 {
