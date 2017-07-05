@@ -37,6 +37,7 @@ namespace CompVehicle
         public bool canWiggleWhenDowned = false;                              // Does this wiggle when downed?
         public SoundDef soundEntry = null;                                    // Sound for when a character enters the vehicle.
         public SoundDef soundEject = null;                                    // Sound when a character exits the vehicle.
+        public SoundDef soundMoving = null;                                   // For a sound to play while the vehicle is moving.
         public string labelUndamaged = "Undamaged";                           // Label replacer for when the vehicle is undamaged.
         public string labelDamaged = "Damaged";                               // Label replacer for when the vehicle is damaged.
         public string labelInoperable = "Inoperable";                         // Label replacer for when the vehicle is inoperable / "downed".

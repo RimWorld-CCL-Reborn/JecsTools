@@ -45,6 +45,7 @@ namespace CompVehicle
 		public List<VehicleHandlerGroup> handlers = new List<VehicleHandlerGroup>();
         public List<Bill_LoadVehicle> bills = new List<Bill_LoadVehicle>();
         public List<ThingCountClass> repairCostList = new List<ThingCountClass>();
+        private Sustainer movingSustainer;
 
         //------ Additions By Swenzi -------
         //Purpose: Control the boolean warnedOnNoFuel
@@ -539,12 +540,32 @@ namespace CompVehicle
             ResolveFactionPilots();
             ResolveEjection();
             ResolveStatus();
+            ResolveMovementSound();
 
             //------ Additions made by Swenzi ------
             ResolveNeeds();
             //------ Additions made by Swenzi ------
-
         }
+
+        public void ResolveMovementSound()
+        {
+            if (this.parent is Pawn p && Props.soundMoving != null)
+            {
+                var isMovingNow = p?.pather?.Moving ?? false;
+                if (isMovingNow && movingSustainer == null)
+                {
+                    SoundInfo info = SoundInfo.InMap(this.parent, MaintenanceType.None);
+                    this.movingSustainer = Props.soundMoving.TrySpawnSustainer(info);
+                    return;
+                }
+                else if (!isMovingNow && this.movingSustainer != null)
+                {
+                    this.movingSustainer.End();
+                    this.movingSustainer = null;
+                }
+            }
+        }
+
         public void GetVehicleButtonFloatMenu(VehicleHandlerGroup group, bool canLoad)
         {
             List<FloatMenuOption> list = new List<FloatMenuOption>();
