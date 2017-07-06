@@ -17,12 +17,18 @@ namespace CompVehicle
         crew,
         dutiless
     }
+
     public enum MovingState
     {
         frozen = 0,
         able
     }
     public enum WeaponState
+    {
+        frozen = 0,
+        able
+    }
+    public enum ManipulationState
     {
         frozen = 0,
         able
@@ -36,41 +42,56 @@ namespace CompVehicle
 		public int tickCount = 0; //Counter for how long the vehicle has traveled without a driver
 		public bool warnedNoFuel = false; //Boolean connected to comp to prevent spamming of the Caravan No Fuel warning message
 		public List<VehicleHandlerGroup> vehicleContents; //Stores the handlergroups of the vehicle and its pawns while the vehicle is in a caravan
-
 		public List<VehicleHandlerGroup> handlers = new List<VehicleHandlerGroup>();
         public List<Bill_LoadVehicle> bills = new List<Bill_LoadVehicle>();
+        public List<ThingCountClass> repairCostList = new List<ThingCountClass>();
+        private Sustainer movingSustainer;
 
         //------ Additions By Swenzi -------
         //Purpose: Control the boolean warnedOnNoFuel
         //Logic: Needed to prevent spamming of the warning message
 
-        public bool warnedOnNoFuel{
-            get{
-                return this.warnedNoFuel;
-            }
+        public bool WarnedOnNoFuel{
+            get => this.warnedNoFuel;
 
-            set{
-                this.warnedNoFuel = value;
-            }
+            set => this.warnedNoFuel = value;
         }
 
 		//Purpose: Store the pawns in the vehicle while it is in a caravan
 		//Logic: Allows the vehicle to remember what pawns were inside it so they can be put back in later on map entry
 		
-        public List<VehicleHandlerGroup> pawnsInVehicle
+        public List<VehicleHandlerGroup> PawnsInVehicle
 		{
-			get
-			{
-                return this.vehicleContents;
-			}
+            get => this.vehicleContents;
 
-			set
-			{
-				this.vehicleContents = value;
-			}
-		}
-		//------ Additions By Swenzi -------
-		
+            set => this.vehicleContents = value;
+        }
+        //------ Additions By Swenzi -------
+
+        public bool ManipulationHandlerAvailable
+        {
+            get
+            {
+                bool result = false;
+                if (this.handlers != null && this.handlers.Count > 0)
+                {
+                    foreach (VehicleHandlerGroup group in this.handlers)
+                    {
+                        if (group.handlers != null && group.handlers.Count > 0)
+                        {
+                            if (group.role != null)
+                            {
+                                if ((group.role.handlingTypes & HandlingTypeFlags.Manipulation) != HandlingTypeFlags.None)
+                                {
+                                    result = group.handlers.Any((Pawn x) => !x.Dead && !x.Downed);
+                                }
+                            }
+                        }
+                    }
+                }
+                return result;
+            }
+        }
         public bool MovementHandlerAvailable
         {
             get
@@ -84,7 +105,7 @@ namespace CompVehicle
                         {
                             if (group.role != null)
                             {
-                                if (group.role.handlesMovement)
+                                if ((group.role.handlingTypes & HandlingTypeFlags.Movement) != HandlingTypeFlags.None)
                                 {
                                     result = group.handlers.Any((Pawn x) => !x.Dead && !x.Downed);
                                 }
@@ -106,7 +127,7 @@ namespace CompVehicle
                     {
                         if (group.role != null && group.handlers != null && group.handlers.Count > 0)
                         {
-                            if (group.role.handlesWeapons)
+                            if ((group.role.handlingTypes & HandlingTypeFlags.Weapons) != HandlingTypeFlags.None)
                             {
                                 result = group.handlers.Any((Pawn x) => !x.Dead && !x.Downed);
                             }
@@ -119,8 +140,9 @@ namespace CompVehicle
 
         public Pawn Pawn => this.parent as Pawn;
 
-        public MovingState movingStatus = MovingState.able;
-        public WeaponState weaponStatus = WeaponState.able;
+        public MovingState movingStatus             = MovingState.able;
+        public WeaponState weaponStatus             = WeaponState.able;
+        public ManipulationState manipulationStatus = ManipulationState.able;
 
         public bool ResolvedITTab = false;
         public bool ResolvedPawns = false;
@@ -336,8 +358,8 @@ namespace CompVehicle
             //Other Info: Changes marked with --- ADB Swenzi --- due to the dispersion of modifications in the method
 
             //Safety check in case the modder didn't assign a vehicle locomotion type. Defaults to Land Vehicle
-			if (!this.Props.isWater && !this.Props.isLand && !this.Props.isAir)
-				this.Props.isLand = true;
+			//if (!this.Props.isWater && !this.Props.isLand && !this.Props.isAir)
+			//	this.Props.isLand = true;
             
             //If refuelable, then check for fuel.
             CompRefuelable compRefuelable = this.Pawn.GetComp<CompRefuelable>();
@@ -371,11 +393,15 @@ namespace CompVehicle
 
             if (!this.MovementHandlerAvailable && this.movingStatus == MovingState.able)
             {
-                if (!this.Props.canMoveWithoutHandler) this.movingStatus = MovingState.frozen;
+                if (this.Props.movementHandling != HandlingType.NoHandlerRequired ) this.movingStatus = MovingState.frozen;
             }
             if (!this.WeaponHandlerAvailable && this.weaponStatus == WeaponState.able)
             {
-                if (!this.Props.canFireWithoutHandler) this.weaponStatus = WeaponState.frozen;
+                if (this.Props.weaponHandling != HandlingType.NoHandlerRequired) this.weaponStatus = WeaponState.frozen;
+            }
+            if (!this.ManipulationHandlerAvailable && this.manipulationStatus == ManipulationState.able)
+            {
+                if (this.Props.manipulationHandling != HandlingType.NoHandlerRequired) this.manipulationStatus = ManipulationState.frozen;
             }
 
             // ------ ADB Swenzi -------
@@ -514,12 +540,32 @@ namespace CompVehicle
             ResolveFactionPilots();
             ResolveEjection();
             ResolveStatus();
+            ResolveMovementSound();
 
             //------ Additions made by Swenzi ------
             ResolveNeeds();
             //------ Additions made by Swenzi ------
-
         }
+
+        public void ResolveMovementSound()
+        {
+            if (this.parent is Pawn p && Props.soundMoving != null)
+            {
+                var isMovingNow = p?.pather?.Moving ?? false;
+                if (isMovingNow && movingSustainer == null)
+                {
+                    SoundInfo info = SoundInfo.InMap(this.parent, MaintenanceType.None);
+                    this.movingSustainer = Props.soundMoving.TrySpawnSustainer(info);
+                    return;
+                }
+                else if (!isMovingNow && this.movingSustainer != null)
+                {
+                    this.movingSustainer.End();
+                    this.movingSustainer = null;
+                }
+            }
+        }
+
         public void GetVehicleButtonFloatMenu(VehicleHandlerGroup group, bool canLoad)
         {
             List<FloatMenuOption> list = new List<FloatMenuOption>();
@@ -607,7 +653,7 @@ namespace CompVehicle
                                 button.defaultDesc = desc.Translate(group.role.label.CapitalizeFirst());
                                 button.icon = TexCommand.Install;  //ContentFinder<Texture2D>.Get("UI/Commands/TryReconnect", true);
 
-                                var pctFilled = Pawn.health.summaryHealth.SummaryHealthPercent;
+                                float pctFilled = this.Pawn.health.summaryHealth.SummaryHealthPercent;
                                 button.disabled = this.Pawn.Downed || this.Pawn.Dead || (pctFilled < this.Props.ejectIfBelowHealthPercent);
                                 button.disabledReason = "CompVehicle_DisabledDesc".Translate();
                                 

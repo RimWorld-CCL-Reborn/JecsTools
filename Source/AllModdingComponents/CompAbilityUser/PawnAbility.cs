@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
+using RimWorld;
 using Verse;
-
+using UnityEngine;
+using Verse.AI;
 namespace AbilityUser
 {
     //public class PawnAbility : ThingWithComps

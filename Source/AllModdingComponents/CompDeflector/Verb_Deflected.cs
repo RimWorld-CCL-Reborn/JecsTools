@@ -1,7 +1,13 @@
-﻿using RimWorld;
-using UnityEngine;
+﻿using System;
+using System.Linq;
+using System.Text;
+using System.Diagnostics;
+using System.Collections.Generic;
+using RimWorld;
 using Verse;
-
+using UnityEngine;
+using Verse.AI;
+using Verse.Sound;
 namespace CompDeflector
 {
     public class Verb_Deflected : Verb_Shoot

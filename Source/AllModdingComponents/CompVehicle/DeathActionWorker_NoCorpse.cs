@@ -1,12 +1,7 @@
-﻿using System;
-using RimWorld;
-using Verse;
-using Verse.AI;
-using UnityEngine;
-using System.Collections.Generic;
+﻿using Verse;
 namespace CompVehicle
 {
-	public class DeathActionWorker_NoCorpse : DeathActionWorker
+    public class DeathActionWorker_NoCorpse : DeathActionWorker
 	{
 
 		Map map;
@@ -16,8 +11,8 @@ namespace CompVehicle
 			//Corpse NullCheck
 			if (corpse == null)
 				return;
-			//Get Corpse Properties
-			map = corpse.Map;
+            //Get Corpse Properties
+            this.map = corpse.Map;
 			IntVec3 pos = corpse.Position;
             Pawn pawn = corpse.InnerPawn;
 
@@ -33,7 +28,7 @@ namespace CompVehicle
 			//Generate items/amount in list
 			for (int i = 0; i < thingOwner.Count; i++)
 			{
-				GenPlace.TryPlaceThing(thingOwner[i], pos, map, ThingPlaceMode.Near, null);
+				GenPlace.TryPlaceThing(thingOwner[i], pos, this.map, ThingPlaceMode.Near, null);
 
 			}
 

@@ -1,10 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Linq;
+using System.Text;
 using System.Diagnostics;
-using UnityEngine;
-using Verse;
-using Verse.AI;
+using System.Collections.Generic;
 using RimWorld;
-
+using Verse;
+using UnityEngine;
+using Verse.AI;
+using Verse.Sound;
 namespace CompInstalledPart
 {
     /// <summary>
@@ -31,7 +34,7 @@ namespace CompInstalledPart
         {
             get
             {
-                return TotalNeededWork - (int)workLeft;
+                return this.TotalNeededWork - (int)this.workLeft;
             }
         }
 

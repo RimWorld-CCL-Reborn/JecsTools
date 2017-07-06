@@ -1,9 +1,13 @@
-﻿using RimWorld;
-using System.Collections.Generic;
+﻿using System;
+using System.Linq;
+using System.Text;
 using System.Diagnostics;
-using UnityEngine;
+using System.Collections.Generic;
+using RimWorld;
 using Verse;
-
+using UnityEngine;
+using Verse.AI;
+using Verse.Sound;
 namespace CompDeflector
 {
     public class CompProperties_Deflector : CompProperties

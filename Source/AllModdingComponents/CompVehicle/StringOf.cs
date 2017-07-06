@@ -14,6 +14,7 @@
         public static string Inoperable = "Inoperable";
         public static string Operational = "Operational";
         public static string Movement = "Movement Systems";
+        public static string Manipulation = "Manipulation Systems";
         public static string Weapons = "Weapon Systems";
         public static string On = "Online";
         public static string Off = "Offline";

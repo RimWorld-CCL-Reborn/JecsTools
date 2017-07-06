@@ -1,10 +1,14 @@
 ﻿using Harmony;
-using RimWorld;
+using System;
+using System.Linq;
+using System.Text;
+using System.Diagnostics;
 using System.Collections.Generic;
+using RimWorld;
 using Verse;
 using UnityEngine;
+using Verse.AI;
 using Verse.Sound;
-using System.Linq;
 
 namespace CompInstalledPart
 {
