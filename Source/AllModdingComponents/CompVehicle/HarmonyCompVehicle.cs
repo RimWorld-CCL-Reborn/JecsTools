@@ -78,6 +78,9 @@ namespace CompVehicle
             harmony.Patch(AccessTools.Method(typeof(LordToil_PrepareCaravan_GatherAnimals), "UpdateAllDuties"), new HarmonyMethod(typeof(HarmonyCompVehicle), "UpdateAllDutiesTwo_Prefix"), null);
             harmony.Patch(AccessTools.Method(typeof(LordToil_PrepareCaravan_GatherSlaves), "LordToilTick"), new HarmonyMethod(typeof(HarmonyCompVehicle), "LordToilTick_PreFix"), null);
 
+            //Adds fuel to Inspect Pane when a vehicle is selected that uses fuel.
+            //harmony.Patch(AccessTools.Method(AccessTools.TypeByName("InspectPaneFiller"), "DrawMood"), null, new HarmonyMethod(typeof(HarmonyCompVehicle), "DrawMood_PostFix"), null);
+
             //harmony.Patch(AccessTools.Method(typeof(HealthCardUtility), "DrawMedOperationsTab"), new HarmonyMethod(typeof(HarmonyCompVehicle), "DrawMedOperationsTab_PreFix"), null);
 
             #endregion JecsPatches
@@ -101,7 +104,7 @@ namespace CompVehicle
 
             //Modifies caravan movement speed if vehicles are present
             //The math on this is sound, I just don't know what the game is doing to turn the result into tiny values
-            //harmony.Patch(AccessTools.Method(typeof(RimWorld.Planet.CaravanTicksPerMoveUtility), "GetTicksPerMove", new Type[] { typeof(List<Pawn>) }), null, new HarmonyMethod(typeof(HarmonyCompVehicle),nameof(GetTicksPerMove_PostFix)));
+            harmony.Patch(AccessTools.Method(typeof(RimWorld.Planet.CaravanTicksPerMoveUtility), "GetTicksPerMove", new Type[] { typeof(List<Pawn>) }), null, new HarmonyMethod(typeof(HarmonyCompVehicle),nameof(GetTicksPerMove_PostFix)));
 
             //Tries to find satisfy the vehicle's fuel "need"
             harmony.Patch(AccessTools.Method(typeof(RimWorld.Planet.CaravanPawnsNeedsUtility), "TrySatisfyPawnNeeds"), new HarmonyMethod(typeof(HarmonyCompVehicle),nameof(TrySatisfyPawnNeeds_PreFix)), null);
@@ -136,6 +139,18 @@ namespace CompVehicle
             #endregion SwenziPatches
         }
 
+        ////InspectPaneFiller
+        //public static void DrawMood_PostFix(WidgetRow row, Pawn pawn)
+        //{
+        //    if (pawn?.GetComp<CompVehicle>() != null && pawn?.GetComp<CompRefuelable>() is CompRefuelable compRefuelable)
+        //    {
+        //        row.Gap(6f);
+        //        string report = "Fuel".Translate();
+        //        if (compRefuelable.FuelPercentOfMax < 0.3) report = "CompVehicle_LowFuel".Translate();
+        //        if (!compRefuelable.HasFuel) report = "NotAllFuelingPortSourcesInGroupHaveAnyFuel".Translate();
+        //        row.FillableBar(93f, 16f, compRefuelable.FuelPercentOfMax, report.CapitalizeFirst(), (Texture2D)AccessTools.Field(AccessTools.TypeByName("InspectPaneFiller"), "MoodTex").GetValue(null), (Texture2D)AccessTools.Field(AccessTools.TypeByName("InspectPaneFiller"), "BarBGTex").GetValue(null));
+        //    }
+        //}
 
         // RimWorld.FloatMenuMakerMap
         public static void AddHumanlikeOrders_PostFix(Vector3 clickPos, Pawn pawn, List<FloatMenuOption> opts)
@@ -171,159 +186,213 @@ namespace CompVehicle
         // RimWorld.RestUtility
         public static void FindBedFor_PostFix(ref Building_Bed __result, Pawn sleeper) => __result = (sleeper?.GetComp<CompVehicle>() is CompVehicle compVehicle) ? null : __result;
 
-            //public static bool DrawMedOperationsTab(Rect leftRect, Pawn pawn, Thing thingForMedBills, float curY, ref float __result)
+        //public static bool DrawMedOperationsTab(Rect leftRect, Pawn pawn, Thing thingForMedBills, float curY, ref float __result)
+        //{
+        //    curY += 2f;
+        //    Func<List<FloatMenuOption>> recipeOptionsMaker = delegate
+        //    {
+        //        List<FloatMenuOption> list = new List<FloatMenuOption>();
+        //        foreach (RecipeDef current in thingForMedBills.def.AllRecipes)
+        //        {
+        //            if (current.AvailableNow)
+        //            {
+        //                IEnumerable<ThingDef> enumerable = current.PotentiallyMissingIngredients(null, thingForMedBills.Map);
+        //                if (!enumerable.Any((ThingDef x) => x.isBodyPartOrImplant))
+        //                {
+        //                    if (!enumerable.Any((ThingDef x) => x.IsDrug))
+        //                    {
+        //                        if (current.targetsBodyPart)
+        //                        {
+        //                            foreach (BodyPartRecord current2 in current.Worker.GetPartsToApplyOn(pawn, current))
+        //                            {
+        //                                list.Add((FloatMenuOption)AccessTools.Method(typeof(HealthCardUtility), "GenerateSurgeryOption").Invoke(null, new object[] { pawn, thingForMedBills, current, enumerable, current2 }));
+        //                            }
+        //                        }
+        //                        else
+        //                        {
+        //                            list.Add((FloatMenuOption)AccessTools.Method(typeof(HealthCardUtility), "GenerateSurgeryOption").Invoke(null, new object[] { pawn, thingForMedBills, current, enumerable, null }));
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //        }
+        //        return list;
+        //    };
+        //    Rect rect = new Rect(leftRect.x - 9f, curY, leftRect.width, leftRect.height - curY - 20f);
+        //    ((IBillGiver)thingForMedBills).BillStack.DoListing(rect, recipeOptionsMaker, ref HealthCardUtility.billsScrollPosition, ref HealthCardUtility.billsScrollHeight);
+        //    return curY;
+        //}
+
+        // ------- Additions Made By Swenzi --------
+        // -------     Harmony Patches      --------
+
+        //Purpose: Modifies caravan speed if vehicles are present
+        //Logic: If a vehicle is present than the caravan should move faster, if there are multiple vehicles it should be an average, 
+        //Improvements:Different algorithm for calculating world movement speed?
+
+        //Algorithm explanation:
+        // given 5 pawns with vehicle status denoted with V and their corresponding ticks per speed being: 
+        // 100V, 150, 200V, 250, 300V
+        // The none modified ticks per move would be 190f * sigma(100,150,200,250,300)/5 aka the average (200) * 190f or 38,000
+        // Since 190f is a constant we can remove that number and our postfixed calculations will be modified from  sigma(100,150,200,250,300)/5 aka 200
+
+        // Case 1: All vehicles are fueled and fueled vehicles travel twice as fast aka half the ticks needed or Speed Modifer of 2
+        // The original equation would now become sigma(50V,150,100V,250,150V)/5 or 140
+        // To prevent the recalculation of TicksPerMove we can rewrite that equation as
+        // sigma(100V,150,200V,250,300V)/5 - sigma(50V,0,100V,0,150V)/5 or 140
+        // which can be rewritten as __result/190 - sigma((SpeedModifier-1) * (originaTickSpeed)/SpeedModifier) for all pawns)/(number of pawns)
+        // I.e. __result/190 - ((2-1) * 100/2 + (1-1) * 150/1 + (2-1) * 200/2 + (1-1) * 250/1 + (2-1) * 300/2) or 140
+
+        //Case 2: Vehicle 1 is fueled (100V) but the other two vehicles aren't (200V and 300V)
+        // Fueled Vehicles travel twice as fast (speed modifier of 2) and nonfueled vehicles travel half as a fast (speed modifier of 0.5)
+        // The original equation would now become sigma(50V, 150, 400V, 250, 600V)/5 or 290
+        // As again to prevent the recalculation of TicksPerMove we can rewrite it as the following
+        // sigma(100V,150,200V,250,300V)/5 - sigma(50V,0,0V,0,0V)/5 + sigma(0V,0,200V,0,300V)/5 or 290
+        // this can be rewritten as __result/190 - (sigma function from case 1) + sigma((originalTickSpeed / speedModifier - originalTickSpeed for all pawns)/(number of pawns)
+        // or __result/190 - ((2-1) * 100/2 + 0 + 0 + 0 + 0)/5 + (0 + 0 + (200 / 0.5 - 200) + 0 + (300/0.5 - 300))/5 or 290
+
+
+        //The math on this is sound, the game is being weird though:
+        //Game function:
+
+        //public static int GetTicksPerMove(List<Pawn> pawns)
+        //{
+        //	if (pawns.Any<Pawn>())
+        //	{
+        //		float num = 0f;
+        //		for (int i = 0; i < pawns.Count; i++)
+        //		{
+        //			int num2 = (!pawns[i].Downed) ? pawns[i].TicksPerMoveCardinal : 450;
+        //			num += (float)num2 / (float)pawns.Count;
+        //		}
+        //		num *= 190f;
+        //		return Mathf.Max(Mathf.RoundToInt(num), 1);
+        //	}
+        //	return 2500;
+        //}
+
+        //Given the above ^^^ if there were two pawns who had the following TicksPerMoveCardinal value and were not downed
+        //Colonist: 18
+        //Wagon: 12
+        //the value returned should be 190(12/2 + 18/2) or 15*190 which is NOT equal to the value returned
+        //the error logging in the postfix (2.101948E-44). Even if it were, the Mathf.Max(Mathf.RoundToInt(num), 1);
+        //should have returned 1 as 1 > 2.101948E-44. Something is weird with the function, I can't catch what is happening,
+        //I believe that I'm not breaking any math/logic rules.
+
+        //Addendum by Jecrell
+        // I've modified this method to be based on another concept.
+        // No matter how much we "average" out vehicle speed, I believe it makes more sense, logically, to assume that the caravan
+        // will move at the speed of the slowest pawn. So therefore, we should check firstly to see if characters are outside
+        // the vehicles. If they are, do not apply vehicle bonus speed. If everyone is inside vehicles, then we should consider
+        // which vehicle is the slowest and then make caravan speed go at that rate.
+
+        //RimWorld.Planet.CaravanTicksPerMoveUtility
+        public static void GetTicksPerMove_PostFix(List<Pawn> pawns, ref int __result)
+        {
+            //Only do this if a vehicle is present. Then make a list of vehicles.
+            if (!pawns.NullOrEmpty() && pawns.FindAll(x => x?.GetComp<CompVehicle>() != null && !x.Dead && !x.Downed) is List<Pawn> vehicles && vehicles.Count > 0)
+            {
+                //Make a list of non-vehicle characters that are not inside vehicles.
+                //This method is long and ugly, so bear with me...
+                List<Pawn> pawnsOutsideVehicle = new List<Pawn>(pawns.FindAll(x => x?.GetComp<CompVehicle>() == null));
+                if (pawnsOutsideVehicle != null && pawnsOutsideVehicle.Count > 0)
+                {
+                    if ((vehicles?.Count ?? 0) > 0)
+                    {
+                        foreach (Pawn vehicle in vehicles)
+                        {
+                            if ((vehicle?.GetComp<CompVehicle>().PawnsInVehicle?.Count ?? 0) > 0)
+                            {
+                                foreach (VehicleHandlerGroup group in vehicle?.GetComp<CompVehicle>().PawnsInVehicle)
+                                {
+                                    if ((group?.handlers?.Count ?? 0) > 0)
+                                    {
+                                        foreach (Pawn p in group.handlers)
+                                        {
+                                            if (pawnsOutsideVehicle.Count == 0) break;
+                                            if (pawnsOutsideVehicle.Contains(p)) pawnsOutsideVehicle.Remove(p);
+                                        }
+                                    }
+                                    if (pawnsOutsideVehicle.Count == 0) break;
+                                }
+                            }
+                            if (pawnsOutsideVehicle.Count == 0) break;
+                        }
+                    }
+                }
+
+                //Are there any characters not inside vehicles?
+                //If so, make no changes to default speeds.
+                //This will be similar to vehicles slowly coasing alongside walking characters.
+                if ((pawnsOutsideVehicle?.Count ?? 0) > 0) { return; }
+
+                //Log.Message("2");
+                var slowestLandSpeed = 999f;
+                foreach (Pawn vehicle in vehicles)
+                {
+                    slowestLandSpeed = Math.Min(vehicle.GetComp<CompVehicle>().Props.worldSpeedFactor, slowestLandSpeed);
+                }
+                __result = (int)(__result / slowestLandSpeed);
+            }
+
+            //Previous code.
+            //float speedModifier;
+            //remove constant to make math easier, put it back later
+            //__result = (int)(__result / 190f);
+            //if (pawns.Any<Pawn>())
             //{
-            //    curY += 2f;
-            //    Func<List<FloatMenuOption>> recipeOptionsMaker = delegate
-            //    {
-            //        List<FloatMenuOption> list = new List<FloatMenuOption>();
-            //        foreach (RecipeDef current in thingForMedBills.def.AllRecipes)
-            //        {
-            //            if (current.AvailableNow)
-            //            {
-            //                IEnumerable<ThingDef> enumerable = current.PotentiallyMissingIngredients(null, thingForMedBills.Map);
-            //                if (!enumerable.Any((ThingDef x) => x.isBodyPartOrImplant))
-            //                {
-            //                    if (!enumerable.Any((ThingDef x) => x.IsDrug))
-            //                    {
-            //                        if (current.targetsBodyPart)
-            //                        {
-            //                            foreach (BodyPartRecord current2 in current.Worker.GetPartsToApplyOn(pawn, current))
-            //                            {
-            //                                list.Add((FloatMenuOption)AccessTools.Method(typeof(HealthCardUtility), "GenerateSurgeryOption").Invoke(null, new object[] { pawn, thingForMedBills, current, enumerable, current2 }));
-            //                            }
-            //                        }
-            //                        else
-            //                        {
-            //                            list.Add((FloatMenuOption)AccessTools.Method(typeof(HealthCardUtility), "GenerateSurgeryOption").Invoke(null, new object[] { pawn, thingForMedBills, current, enumerable, null }));
-            //                        }
-            //                    }
-            //                }
-            //            }
-            //        }
-            //        return list;
-            //    };
-            //    Rect rect = new Rect(leftRect.x - 9f, curY, leftRect.width, leftRect.height - curY - 20f);
-            //    ((IBillGiver)thingForMedBills).BillStack.DoListing(rect, recipeOptionsMaker, ref HealthCardUtility.billsScrollPosition, ref HealthCardUtility.billsScrollHeight);
-            //    return curY;
+                //__result *= pawns.Count;
+                //Log.Error(pawns.Count.ToString());
+                //for (int i = 0; i < pawns.Count; i++)
+                //{
+                    //Log.Error(pawns[i].def.defName);
+                    //Log.Error((pawns[i].TicksPerMoveCardinal.ToString()));
+                    //CompVehicle compVehicle = pawns[i].GetComp<CompVehicle>();
+                    //Movement magic only occurs if it's a vehicle
+                    //if (compVehicle != null)
+                    //{
+
+                        //if (pawns[i].GetComp<CompRefuelable>() != null && !pawns[i].GetComp<CompRefuelable>().HasFuel)
+                        //{
+                            //Vehicle has no fuel, add ticks
+                            //Log.Error(("no fuel"));
+                            //speedModifier = pawns[i].GetComp<CompVehicle>().Props.worldSpeedFactorNoFuel;
+                            //Log.Error(("result: " + __result.ToString()));
+                            //Log.Error(("TPMC: " + pawns[i].TicksPerMoveCardinal.ToString()));
+                            //Log.Error("smod: " + (speedModifier.ToString()));
+                            //Log.Error("math: " + ((pawns[i].TicksPerMoveCardinal / speedModifier) - pawns[i].TicksPerMoveCardinal).ToString());
+                            //__result += (int)(pawns[i].TicksPerMoveCardinal / speedModifier) - pawns[i].TicksPerMoveCardinal;
+                            //Log.Error(("result2: " + __result.ToString()));
+                        //}
+                        //else
+                        //{
+                            //Vehicle has fuel, subtract ticks
+                            ///Log.Error(("fuel"));
+                            //speedModifier = pawns[i].GetComp<CompVehicle>().Props.worldSpeedFactor;
+                            //Log.Error(("result: " + __result.ToString()));
+                            //Log.Error(("TPMC: " + pawns[i].TicksPerMoveCardinal.ToString()));
+                            //Log.Error("smod: " + (speedModifier.ToString()));
+                            //Log.Error("math: " + (((speedModifier - 1) * pawns[i].TicksPerMoveCardinal / speedModifier)));
+
+                            //__result -= (int)((speedModifier - 1) * pawns[i].TicksPerMoveCardinal / speedModifier);
+                            //Log.Error(("result2: " + __result.ToString()));
+                        //}
+
+                    //}
+                //}
+                //__result /= pawns.Count;
             //}
+            //multiply by 190f (the constant)
+            //Log.Error(("b" + __result.ToString()));
+            //__result *= 190;
+        }
 
-            // ------- Additions Made By Swenzi --------
-            // -------     Harmony Patches      --------
+        //Purpose: Try and find satisfy the vehicle's fuel "need"
+        //Logic: If the vehicle is using fuel, it needs to refuel while on caravan trips
+        //Improvements: Effects of different fuel sources on vehicle performance or effectiveness of fuel source?
 
-            //Purpose: Modifies caravan speed if vehicles are present
-            //Logic: If a vehicle is present than the caravan should move faster, if there are multiple vehicles it should be an average, 
-            //Improvements:Different algorithm for calculating world movement speed?
-
-            //Algorithm explanation:
-            // given 5 pawns with vehicle status denoted with V and their corresponding ticks per speed being: 
-            // 100V, 150, 200V, 250, 300V
-            // The none modified ticks per move would be 190f * sigma(100,150,200,250,300)/5 aka the average (200) * 190f or 38,000
-            // Since 190f is a constant we can remove that number and our postfixed calculations will be modified from  sigma(100,150,200,250,300)/5 aka 200
-
-            // Case 1: All vehicles are fueled and fueled vehicles travel twice as fast aka half the ticks needed or Speed Modifer of 2
-            // The original equation would now become sigma(50V,150,100V,250,150V)/5 or 140
-            // To prevent the recalculation of TicksPerMove we can rewrite that equation as
-            // sigma(100V,150,200V,250,300V)/5 - sigma(50V,0,100V,0,150V)/5 or 140
-            // which can be rewritten as __result/190 - sigma((SpeedModifier-1) * (originaTickSpeed)/SpeedModifier) for all pawns)/(number of pawns)
-            // I.e. __result/190 - ((2-1) * 100/2 + (1-1) * 150/1 + (2-1) * 200/2 + (1-1) * 250/1 + (2-1) * 300/2) or 140
-
-            //Case 2: Vehicle 1 is fueled (100V) but the other two vehicles aren't (200V and 300V)
-            // Fueled Vehicles travel twice as fast (speed modifier of 2) and nonfueled vehicles travel half as a fast (speed modifier of 0.5)
-            // The original equation would now become sigma(50V, 150, 400V, 250, 600V)/5 or 290
-            // As again to prevent the recalculation of TicksPerMove we can rewrite it as the following
-            // sigma(100V,150,200V,250,300V)/5 - sigma(50V,0,0V,0,0V)/5 + sigma(0V,0,200V,0,300V)/5 or 290
-            // this can be rewritten as __result/190 - (sigma function from case 1) + sigma((originalTickSpeed / speedModifier - originalTickSpeed for all pawns)/(number of pawns)
-            // or __result/190 - ((2-1) * 100/2 + 0 + 0 + 0 + 0)/5 + (0 + 0 + (200 / 0.5 - 200) + 0 + (300/0.5 - 300))/5 or 290
-
-
-            //The math on this is sound, the game is being weird though:
-            //Game function:
-
-            //public static int GetTicksPerMove(List<Pawn> pawns)
-            //{
-            //	if (pawns.Any<Pawn>())
-            //	{
-            //		float num = 0f;
-            //		for (int i = 0; i < pawns.Count; i++)
-            //		{
-            //			int num2 = (!pawns[i].Downed) ? pawns[i].TicksPerMoveCardinal : 450;
-            //			num += (float)num2 / (float)pawns.Count;
-            //		}
-            //		num *= 190f;
-            //		return Mathf.Max(Mathf.RoundToInt(num), 1);
-            //	}
-            //	return 2500;
-            //}
-
-            //Given the above ^^^ if there were two pawns who had the following TicksPerMoveCardinal value and were not downed
-            //Colonist: 18
-            //Wagon: 12
-            //the value returned should be 190(12/2 + 18/2) or 15*190 which is NOT equal to the value returned
-            //the error logging in the postfix (2.101948E-44). Even if it were, the Mathf.Max(Mathf.RoundToInt(num), 1);
-            //should have returned 1 as 1 > 2.101948E-44. Something is weird with the function, I can't catch what is happening,
-            //I believe that I'm not breaking any math/logic rules.
-
-            //RimWorld.Planet.CaravanTicksPerMoveUtility
-            //public static void GetTicksPerMove_PostFix(List<Pawn> pawns, ref float __result)
-            //{
-            //	float speedModifier;
-            //          //remove constant to make math easier, put it back later
-            //          __result /= 190f;
-            //          Log.Error(("a" + __result.ToString()));
-            //	if (pawns.Any<Pawn>())
-            //	{
-            //		__result *= pawns.Count;
-            //              Log.Error(pawns.Count.ToString());
-            //		for (int i = 0; i < pawns.Count; i++)
-            //		{
-            //                  Log.Error(pawns[i].def.defName);
-            //                  Log.Error((pawns[i].TicksPerMoveCardinal.ToString()));
-            //                  CompVehicle compVehicle = pawns[i].GetComp<CompVehicle>();
-            //                  //Movement magic only occurs if it's a vehicle
-            //			if ( compVehicle != null)
-            //			{
-
-            //				if (pawns[i].GetComp<CompRefuelable>() != null && !pawns[i].GetComp<CompRefuelable>().HasFuel)
-            //				{
-            //                          //Vehicle has no fuel, add ticks
-            //                          Log.Error(("no fuel"));
-            //                          speedModifier = pawns[i].GetComp<CompVehicle>().Props.worldSpeedFactorNoFuel;
-            //                          Log.Error(("result: " + __result.ToString()));
-            //                          Log.Error(("TPMC: " + pawns[i].TicksPerMoveCardinal.ToString()));
-            //                          Log.Error("smod: " + (speedModifier.ToString()));
-            //                          Log.Error("math: " + ((pawns[i].TicksPerMoveCardinal / speedModifier) - pawns[i].TicksPerMoveCardinal).ToString());
-            //                          __result += (pawns[i].TicksPerMoveCardinal / speedModifier) - pawns[i].TicksPerMoveCardinal;
-            //                          Log.Error(("result2: " + __result.ToString()));
-            //                      }
-            //                      else{
-            //                          //Vehicle has fuel, subtract ticks
-            //                          Log.Error(("fuel"));
-            //					speedModifier = pawns[i].GetComp<CompVehicle>().Props.worldSpeedFactor;
-            //                          Log.Error(("result: " + __result.ToString()));
-            //					Log.Error(("TPMC: " + pawns[i].TicksPerMoveCardinal.ToString()));
-            //					Log.Error("smod: " + (speedModifier.ToString()));
-            //                          Log.Error("math: " + (((speedModifier - 1) * pawns[i].TicksPerMoveCardinal / speedModifier)));
-
-            //                          __result -= (speedModifier - 1) * pawns[i].TicksPerMoveCardinal / speedModifier;
-            //                          Log.Error(("result2: " + __result.ToString()));
-            //                      }
-
-            //			}
-            //		}
-            //              __result /= pawns.Count;
-            //	}
-            //          //multiply by 190f (the constant)
-            //          Log.Error(("b" + __result.ToString()));
-            //          __result *= 190;
-            //}
-
-            //Purpose: Try and find satisfy the vehicle's fuel "need"
-            //Logic: If the vehicle is using fuel, it needs to refuel while on caravan trips
-            //Improvements: Effects of different fuel sources on vehicle performance or effectiveness of fuel source?
-
-            //RimWorld.Planet.CaravanPawnsNeedsUtility
-            public static bool TrySatisfyPawnNeeds_PreFix(Pawn pawn, Caravan caravan)
+        //RimWorld.Planet.CaravanPawnsNeedsUtility
+        public static bool TrySatisfyPawnNeeds_PreFix(Pawn pawn, Caravan caravan)
 		{
             //If the pawn's dead, not a vehicle, or doesn't need fuel, it's a regular pawn and has needs
 			CompRefuelable refuelable = pawn.GetComp<CompRefuelable>();

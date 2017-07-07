@@ -6,7 +6,7 @@ using Verse.Sound;
 
 namespace CompVehicle
 {
-    public class ITab_Passengers : ITab
+    public class ITab_Passengers2 : ITab
     {
         private const float RowHeight = 50f;
 
@@ -65,17 +65,17 @@ namespace CompVehicle
         {
             get
             {
-                ITab_Passengers.capacitiesToDisplay.Clear();
+                ITab_Passengers2.capacitiesToDisplay.Clear();
                 List<PawnCapacityDef> allDefsListForReading = DefDatabase<PawnCapacityDef>.AllDefsListForReading;
                 for (int i = 0; i < allDefsListForReading.Count; i++)
                 {
                     if (allDefsListForReading[i].showOnCaravanHealthTab)
                     {
-                        ITab_Passengers.capacitiesToDisplay.Add(allDefsListForReading[i]);
+                        ITab_Passengers2.capacitiesToDisplay.Add(allDefsListForReading[i]);
                     }
                 }
-                ITab_Passengers.capacitiesToDisplay.SortBy((PawnCapacityDef x) => x.listOrder);
-                return ITab_Passengers.capacitiesToDisplay;
+                ITab_Passengers2.capacitiesToDisplay.SortBy((PawnCapacityDef x) => x.listOrder);
+                return ITab_Passengers2.capacitiesToDisplay;
             }
         }
 
@@ -91,7 +91,9 @@ namespace CompVehicle
             }
         }
 
-        public ITab_Passengers() => this.labelKey = "Contents";
+        public ITab_Passengers2() {
+            this.labelKey = "Contents";
+        }
 
         protected override void FillTab()
         {
