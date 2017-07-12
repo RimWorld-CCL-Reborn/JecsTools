@@ -668,123 +668,128 @@ namespace CompVehicle
         static object tab;
 		public static bool DoWindowContents_PreFix(Rect inRect, Dialog_FormCaravan __instance)
 		{
-            //Create a traverse object and grab private variables from the instance
-			Traverse traverseobj = Traverse.Create(__instance);
-			bool reform = traverseobj.Field("reform").GetValue<bool>();
-			List<TabRecord> tabsList = traverseobj.Field("tabsList").GetValue<List<TabRecord>>();
-			float MassUsage = traverseobj.Property("MassUsage").GetValue<float>();
-			float MassCapacity = traverseobj.Property("MassCapacity").GetValue<float>();
-			float lastMassFlashTime = traverseobj.Field("lastMassFlashTime").GetValue<float>();
-			Map map = traverseobj.Field("map").GetValue<Map>();
-			if (tab == null)
-				tab = traverseobj.Field("tab").GetValue();
+            Traverse traverseobj = Traverse.Create(__instance);
+            List<TransferableOneWay> transferables = traverseobj.Field("transferables").GetValue<List<TransferableOneWay>>();
+            var vehicleTransferrable = transferables?.FirstOrDefault(x => x.HasAnyThing && x.AnyThing is Pawn p && p.GetComp<CompVehicle>() is CompVehicle vehicle);
+            if (vehicleTransferrable != null)
+            {
+                //Create a traverse object and grab private variables from the instance
+                bool reform = traverseobj.Field("reform").GetValue<bool>();
+                List<TabRecord> tabsList = traverseobj.Field("tabsList").GetValue<List<TabRecord>>();
+                float MassUsage = traverseobj.Property("MassUsage").GetValue<float>();
+                float MassCapacity = traverseobj.Property("MassCapacity").GetValue<float>();
+                float lastMassFlashTime = traverseobj.Field("lastMassFlashTime").GetValue<float>();
+                Map map = traverseobj.Field("map").GetValue<Map>();
+                if (tab == null)
+                    tab = traverseobj.Field("tab").GetValue();
 
-			bool EnvironmentAllowsEatingVirtualPlantsNow = traverseobj.Property("EnvironmentAllowsEatingVirtualPlantsNow").GetValue<bool>();
-			TransferableOneWayWidget pawnsTransfer = traverseobj.Field("pawnsTransfer").GetValue<TransferableOneWayWidget>();
-			TransferableOneWayWidget itemsTransfer = traverseobj.Field("itemsTransfer").GetValue<TransferableOneWayWidget>();
-			List<TransferableOneWay> transferables = traverseobj.Field("transferables").GetValue<List<TransferableOneWay>>();
+                bool EnvironmentAllowsEatingVirtualPlantsNow = traverseobj.Property("EnvironmentAllowsEatingVirtualPlantsNow").GetValue<bool>();
+                TransferableOneWayWidget pawnsTransfer = traverseobj.Field("pawnsTransfer").GetValue<TransferableOneWayWidget>();
+                TransferableOneWayWidget itemsTransfer = traverseobj.Field("itemsTransfer").GetValue<TransferableOneWayWidget>();
 
-            
-			List<ThingCount> tmpThingCounts = new List<ThingCount>();
-			List<Pawn> list = new List<Pawn>();
-			for (int i = 0; i < transferables.Count; i++)
-			{
-				TransferableOneWay transferableOneWay = transferables[i];
-				if (transferableOneWay.HasAnyThing)
-				{
-                    //If it's a pawn
-					if (transferableOneWay.AnyThing is Pawn)
-					{
-						for (int l = 0; l < transferableOneWay.CountToTransfer; l++)
-						{
-							Pawn pawn = (Pawn)transferableOneWay.things[l];
-                            //Look at the contents of the vehicle and if it has any pawns in it, add it to the list
-							if (pawn.GetComp<CompVehicle>() != null && pawn.GetComp<CompVehicle>().AllOccupants != null)
-							{
-								for (int j = 0; j < pawn.GetComp<CompVehicle>().AllOccupants.Count; j++)
-								{
-									list.Add(pawn.GetComp<CompVehicle>().AllOccupants[j]);
-								}
-							}
-						}
-					}
-					else
-					{
-                        //It's not a pawn so it's an item
-						tmpThingCounts.Add(new ThingCount(transferableOneWay.ThingDef, transferableOneWay.CountToTransfer));
-					}
-				}
-			}
 
-            //Calculate days worth of food using the list with pawns in vehicles
-			Pair<float, float> DaysWorthOfFood = new Pair<float, float>((float)AccessTools.Method(typeof(DaysWorthOfFoodCalculator), "ApproxDaysWorthOfFood", new Type[] { typeof(List<Pawn>), typeof(List<ThingCount>), typeof(bool), typeof(IgnorePawnsInventoryMode) }).Invoke(__instance, new object[] { list, tmpThingCounts, EnvironmentAllowsEatingVirtualPlantsNow, IgnorePawnsInventoryMode.IgnoreIfAssignedToUnload }), DaysUntilRotCalculator.ApproxDaysUntilRot(transferables, map.Tile, IgnorePawnsInventoryMode.IgnoreIfAssignedToUnload));
+                List<ThingCount> tmpThingCounts = new List<ThingCount>();
+                List<Pawn> list = new List<Pawn>();
+                for (int i = 0; i < transferables.Count; i++)
+                {
+                    TransferableOneWay transferableOneWay = transferables[i];
+                    if (transferableOneWay.HasAnyThing)
+                    {
+                        //If it's a pawn
+                        if (transferableOneWay.AnyThing is Pawn)
+                        {
+                            for (int l = 0; l < transferableOneWay.CountToTransfer; l++)
+                            {
+                                Pawn pawn = (Pawn)transferableOneWay.things[l];
+                                //Look at the contents of the vehicle and if it has any pawns in it, add it to the list
+                                if (pawn.GetComp<CompVehicle>() != null && pawn.GetComp<CompVehicle>().AllOccupants != null)
+                                {
+                                    for (int j = 0; j < pawn.GetComp<CompVehicle>().AllOccupants.Count; j++)
+                                    {
+                                        list.Add(pawn.GetComp<CompVehicle>().AllOccupants[j]);
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            //It's not a pawn so it's an item
+                            tmpThingCounts.Add(new ThingCount(transferableOneWay.ThingDef, transferableOneWay.CountToTransfer));
+                        }
+                    }
+                }
 
-            //Calculate the days worth of fuel
-            float DaysWorthOfFuel = ApproxDaysWorthOfFuel(transferables, IgnorePawnsInventoryMode.IgnoreIfAssignedToUnload);
-			Rect rect = new Rect(0f, 0f, inRect.width, 40f);
-			Text.Font = GameFont.Medium;
-			Text.Anchor = TextAnchor.MiddleCenter;
-			Widgets.Label(rect, ((!reform) ? "FormCaravan" : "ReformCaravan").Translate());
-			Text.Font = GameFont.Small;
-			Text.Anchor = TextAnchor.UpperLeft;
-			tabsList.Clear();
-            //Tabs: get the current tab
-			tabsList.Add(new TabRecord("PawnsTab".Translate(), delegate
-	{
-		Traverse.Create(tab).Field("value__").SetValue(0);//Since Tab.Pawns == 0
-	}, tab.ToString() == "Pawns"));
-			tabsList.Add(new TabRecord("ItemsTab".Translate(), delegate
-{
-	Traverse.Create(tab).Field("value__").SetValue(1);//Since Tab.Items == 1
+                //Calculate days worth of food using the list with pawns in vehicles
+                Pair<float, float> DaysWorthOfFood = new Pair<float, float>((float)AccessTools.Method(typeof(DaysWorthOfFoodCalculator), "ApproxDaysWorthOfFood", new Type[] { typeof(List<Pawn>), typeof(List<ThingCount>), typeof(bool), typeof(IgnorePawnsInventoryMode) }).Invoke(__instance, new object[] { list, tmpThingCounts, EnvironmentAllowsEatingVirtualPlantsNow, IgnorePawnsInventoryMode.IgnoreIfAssignedToUnload }), DaysUntilRotCalculator.ApproxDaysUntilRot(transferables, map.Tile, IgnorePawnsInventoryMode.IgnoreIfAssignedToUnload));
+
+                //Calculate the days worth of fuel
+                float DaysWorthOfFuel = ApproxDaysWorthOfFuel(transferables, IgnorePawnsInventoryMode.IgnoreIfAssignedToUnload);
+                Rect rect = new Rect(0f, 0f, inRect.width, 40f);
+                Text.Font = GameFont.Medium;
+                Text.Anchor = TextAnchor.MiddleCenter;
+                Widgets.Label(rect, ((!reform) ? "FormCaravan" : "ReformCaravan").Translate());
+                Text.Font = GameFont.Small;
+                Text.Anchor = TextAnchor.UpperLeft;
+                tabsList.Clear();
+                //Tabs: get the current tab
+                tabsList.Add(new TabRecord("PawnsTab".Translate(), delegate
+        {
+            Traverse.Create(tab).Field("value__").SetValue(0);//Since Tab.Pawns == 0
+    }, tab.ToString() == "Pawns"));
+                tabsList.Add(new TabRecord("ItemsTab".Translate(), delegate
+    {
+        Traverse.Create(tab).Field("value__").SetValue(1);//Since Tab.Items == 1
 }, tab.ToString() == "Items"));
-			if (!reform)
-			{
-				tabsList.Add(new TabRecord("CaravanConfigTab".Translate(), delegate
-{
-	Traverse.Create(tab).Field("value__").SetValue(2);//Since Tab.Pawns == 3
+                if (!reform)
+                {
+                    tabsList.Add(new TabRecord("CaravanConfigTab".Translate(), delegate
+    {
+        Traverse.Create(tab).Field("value__").SetValue(2);//Since Tab.Pawns == 3
 }, tab.ToString() == "Config"));
-			}
-			inRect.yMin += 72f;
-			Widgets.DrawMenuSection(inRect, true);
-			TabDrawer.DrawTabs(inRect, tabsList);
-			inRect = inRect.ContractedBy(17f);
-			GUI.BeginGroup(inRect);
-			Rect rect2 = inRect.AtZero();
-            //Show the info stuff if it's not the config tab
-			if (tab.ToString() != "Config")
-			{
-				Rect rect3 = rect2;
-				rect3.xMin += rect2.width - 515f;
-				rect3.y += 32f;
-				TransferableUIUtility.DrawMassInfo(rect3, MassUsage, MassCapacity, "CaravanMassUsageTooltip".Translate(), lastMassFlashTime, true);
-				CaravanUIUtility.DrawDaysWorthOfFoodInfo(new Rect(rect3.x, rect3.y + 19f, rect3.width, rect3.height), DaysWorthOfFood.First, DaysWorthOfFood.Second, EnvironmentAllowsEatingVirtualPlantsNow, true, 3.40282347E+38f);
-				//Draw fuel info
-                DrawDaysWorthOfFuelInfo(new Rect(rect3.x, rect3.y + 38f, rect3.width, rect3.height), DaysWorthOfFuel, true, 3.40282347E+38f);
-			}
-			DoBottomButtons(rect2, __instance, DaysWorthOfFood, traverseobj, reform, transferables, DaysWorthOfFuel, StuffHasNoFuel(transferables, IgnorePawnsInventoryMode.IgnoreIfAssignedToUnload));
-			Rect inRect2 = rect2;
-			inRect2.yMax -= 59f;
-			bool flag = false;
-			switch (tab.ToString())
-			{
-				case "Pawns":
-					pawnsTransfer.OnGUI(inRect2, out flag);
-					break;
-				case "Items":
-					itemsTransfer.OnGUI(inRect2, out flag);
-					break;
-				case "Config":
-                    //There was an issue calling the private method DrawConfig, I forget why
-					DrawConfig(rect2, traverseobj);
-					break;
-			}
-			if (flag)
-			{
-				AccessTools.Method(typeof(Dialog_FormCaravan), "CountToTransferChanged").Invoke(__instance, new object[] { });
-				transferables = traverseobj.Field("transferables").GetValue<List<TransferableOneWay>>();
-			}
-			GUI.EndGroup();
-			return false;
+                }
+                inRect.yMin += 72f;
+                Widgets.DrawMenuSection(inRect, true);
+                TabDrawer.DrawTabs(inRect, tabsList);
+                inRect = inRect.ContractedBy(17f);
+                GUI.BeginGroup(inRect);
+                Rect rect2 = inRect.AtZero();
+                //Show the info stuff if it's not the config tab
+                if (tab.ToString() != "Config")
+                {
+                    Rect rect3 = rect2;
+                    rect3.xMin += rect2.width - 515f;
+                    rect3.y += 32f;
+                    TransferableUIUtility.DrawMassInfo(rect3, MassUsage, MassCapacity, "CaravanMassUsageTooltip".Translate(), lastMassFlashTime, true);
+                    CaravanUIUtility.DrawDaysWorthOfFoodInfo(new Rect(rect3.x, rect3.y + 19f, rect3.width, rect3.height), DaysWorthOfFood.First, DaysWorthOfFood.Second, EnvironmentAllowsEatingVirtualPlantsNow, true, 3.40282347E+38f);
+                    //Draw fuel info
+                    DrawDaysWorthOfFuelInfo(new Rect(rect3.x, rect3.y + 38f, rect3.width, rect3.height), DaysWorthOfFuel, true, 3.40282347E+38f);
+                }
+                DoBottomButtons(rect2, __instance, DaysWorthOfFood, traverseobj, reform, transferables, DaysWorthOfFuel, StuffHasNoFuel(transferables, IgnorePawnsInventoryMode.IgnoreIfAssignedToUnload));
+                Rect inRect2 = rect2;
+                inRect2.yMax -= 59f;
+                bool flag = false;
+                switch (tab.ToString())
+                {
+                    case "Pawns":
+                        pawnsTransfer.OnGUI(inRect2, out flag);
+                        break;
+                    case "Items":
+                        itemsTransfer.OnGUI(inRect2, out flag);
+                        break;
+                    case "Config":
+                        //There was an issue calling the private method DrawConfig, I forget why
+                        AccessTools.Method(typeof(Dialog_FormCaravan), "DrawConfig").Invoke(__instance, new object[] { rect2 });
+                        break;
+                }
+                if (flag)
+                {
+                    AccessTools.Method(typeof(Dialog_FormCaravan), "CountToTransferChanged").Invoke(__instance, new object[] { });
+                    transferables = traverseobj.Field("transferables").GetValue<List<TransferableOneWay>>();
+                }
+                GUI.EndGroup();
+                return false;
+            }
+            return true;
 		}
 
 		// -------- Not Working --------

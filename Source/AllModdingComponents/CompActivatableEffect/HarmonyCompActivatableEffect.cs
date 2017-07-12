@@ -32,84 +32,36 @@ namespace CompActivatableEffect
         // Verse.Pawn_EquipmentTracker
         public static void TryDropEquipment_PreFix(Pawn_EquipmentTracker __instance, ThingWithComps eq)
         {
-            Pawn_EquipmentTracker pawn_EquipmentTracker = __instance;
-            if (pawn_EquipmentTracker != null)
-            {
-                //Log.Message("2");
-                //ThingWithComps thingWithComps = (ThingWithComps)AccessTools.Field(typeof(Pawn_EquipmentTracker), "primaryInt").GetValue(pawn_EquipmentTracker);
-                ThingWithComps thingWithComps = pawn_EquipmentTracker.Primary;
-
-                if (thingWithComps != null)
-                {
-                    //Log.Message("3");
-                    CompActivatableEffect compActivatableEffect = thingWithComps.GetComp<CompActivatableEffect>();
-                    if (compActivatableEffect != null)
-                    {
-                        if (compActivatableEffect.CurrentState == CompActivatableEffect.State.Activated)
-                        {
-                            compActivatableEffect.Deactivate();
-                        }
-                    }
-                }
-            }
+            if (__instance is Pawn_EquipmentTracker eqq &&
+                eqq.Primary is ThingWithComps t && t.GetComp<CompActivatableEffect>() is CompActivatableEffect compActivatableEffect &&
+                compActivatableEffect.CurrentState == CompActivatableEffect.State.Activated)
+                compActivatableEffect.TryDeactivate();
         }
 
         public static void ExitMap_PreFix(Pawn __instance, bool allowedToJoinOrCreateCaravan)
         {
-            Pawn pawn = __instance;
-            if (pawn != null)
-            {
-                Pawn_EquipmentTracker pawn_EquipmentTracker = pawn.equipment;
-                if (pawn_EquipmentTracker != null)
-                {
-                    //Log.Message("2");
-                    //ThingWithComps thingWithComps = (ThingWithComps)AccessTools.Field(typeof(Pawn_EquipmentTracker), "primaryInt").GetValue(pawn_EquipmentTracker);
-                    ThingWithComps thingWithComps = pawn_EquipmentTracker.Primary; //(ThingWithComps)AccessTools.Field(typeof(Pawn_EquipmentTracker), "primaryInt").GetValue(pawn_EquipmentTracker);
-
-                    if (thingWithComps != null)
-                    {
-                        //Log.Message("3");
-                        CompActivatableEffect compActivatableEffect = thingWithComps.GetComp<CompActivatableEffect>();
-                        if (compActivatableEffect != null)
-                        {
-                            if (compActivatableEffect.CurrentState == CompActivatableEffect.State.Activated)
-                            {
-                                compActivatableEffect.Deactivate();
-                            }
-                        }
-                    }
-                }
-            }
+            if (__instance is Pawn p && p.equipment is Pawn_EquipmentTracker eq &&
+                eq.Primary is ThingWithComps t && t.GetComp<CompActivatableEffect>() is CompActivatableEffect compActivatableEffect &&
+                compActivatableEffect.CurrentState == CompActivatableEffect.State.Activated)
+                compActivatableEffect.TryDeactivate();
         }
 
-        public static void Set_Drafted_PostFix(Pawn_DraftController __instance, bool value)
+        public static void set_DraftedPostFix(Pawn_DraftController __instance, bool value)
         {
-            if (!value)
+            if (__instance.pawn is Pawn p && p.equipment is Pawn_EquipmentTracker eq && 
+                eq.Primary is ThingWithComps t && t.GetComp<CompActivatableEffect>() is CompActivatableEffect compActivatableEffect)
             {
-                Pawn pawn = __instance.pawn;
-                if (pawn != null)
+                if (value == false)
                 {
-                    Pawn_EquipmentTracker pawn_EquipmentTracker = pawn.equipment;
-                    if (pawn_EquipmentTracker != null)
-                    {
-                        //Log.Message("2");
-                        //ThingWithComps thingWithComps = (ThingWithComps)AccessTools.Field(typeof(Pawn_EquipmentTracker), "primaryInt").GetValue(pawn_EquipmentTracker);
-                        ThingWithComps thingWithComps = pawn_EquipmentTracker.Primary; //(ThingWithComps)AccessTools.Field(typeof(Pawn_EquipmentTracker), "primaryInt").GetValue(pawn_EquipmentTracker);
-
-                        if (thingWithComps != null)
-                        {
-                            //Log.Message("3");
-                            CompActivatableEffect compActivatableEffect = thingWithComps.GetComp<CompActivatableEffect>();
-                            if (compActivatableEffect != null)
-                            {
-                                if (compActivatableEffect.CurrentState == CompActivatableEffect.State.Activated)
-                                {
-                                    compActivatableEffect.Deactivate();
-                                } 
-                            }
-                        }
-                    }
+                    if (compActivatableEffect.CurrentState == CompActivatableEffect.State.Activated)
+                       compActivatableEffect.TryDeactivate();
                 }
+                else
+                {
+                    if (compActivatableEffect.CurrentState == CompActivatableEffect.State.Deactivated)
+                        compActivatableEffect.TryActivate();
+                }
+
             }
         }
 
