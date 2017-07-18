@@ -47,7 +47,7 @@ Total list of components:
 *CompSlotLoadable*
  - Adds slots to objects, weapons, apparel, etc that can be filled to have effects. (e.g. an ammo slot for guns with different kinds of ammunition, crystal slots for lightsabers, etc)
  
-*CompVehicle (Experimental)*
+*CompVehicle (Experimental, Additions by Swenzi)*
  - Allows for a pawn to be treated as a vehicle that can be loaded with pilots, gunners, crew, and passengers.
 
 *CompInstalledPart*
@@ -58,6 +58,7 @@ Total list of components:
 
 	
 Additions by roxxploxx.
+Additions by Swenzi.
 Transpilers by Erdelf.
 	
 Special thanks to Pardeike's amazing non-destructive patching library, Harmony. Without his work, none of this would be possible.
