@@ -34,7 +34,7 @@ namespace CompSlotLoadable
 
         public SlotLoadable(Thing newOwner)
         {
-            Log.Message("Slot started");
+            //Log.Message("Slot started");
             SlotLoadableDef def = this.def as SlotLoadableDef;
             this.slottableThingDefs = def.slottableThingDefs;
             this.owner = newOwner;
@@ -44,7 +44,7 @@ namespace CompSlotLoadable
 
         public SlotLoadable(SlotLoadableDef xmlDef, Thing newOwner)
         {
-            Log.Message("Slot Loaded");
+            //Log.Message("Slot Loaded");
             this.def = xmlDef;
             this.slottableThingDefs = xmlDef.slottableThingDefs;
             this.owner = newOwner;

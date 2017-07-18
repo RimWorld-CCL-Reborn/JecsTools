@@ -78,7 +78,6 @@ namespace CompVehicle
 
         public VehicleHandlerGroup(Pawn newVehicle, VehicleRole newRole, List<Pawn> newHandlers)
         {
-            Log.Message("1");
             this.uniqueID = Find.UniqueIDsManager.GetNextThingID();
             this.vehicle = newVehicle;
             this.role = newRole;

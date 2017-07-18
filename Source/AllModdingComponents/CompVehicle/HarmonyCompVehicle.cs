@@ -1047,10 +1047,10 @@ namespace CompVehicle
         // RimWorld.LordToil_PrepareCaravan_GatherAnimals
         public static void UpdateAllDutiesTwo_Prefix(LordToil_PrepareCaravan_GatherAnimals __instance)
         {
-            Log.Message("Two1");
+            //Log.Message("Two1");
             if (__instance.lord.ownedPawns is List<Pawn> pawns && !pawns.NullOrEmpty() && pawns.FirstOrDefault(x => x.GetComp<CompVehicle>() != null) != null)
             {
-                Log.Message("Two2");
+                //Log.Message("Two2");
 
                 for (int i = 0; i < __instance.lord.ownedPawns.Count; i++)
                 {
