@@ -53,12 +53,15 @@
   <ItemGroup>
     <Compile Include="Bill_LoadVehicle.cs" />
     <Compile Include="Command_VehicleHandler.cs" />
+    <Compile Include="CompProperties_VehicleSpawner.cs" />
     <Compile Include="CompVehicle.cs" />
     <Compile Include="CompProperties_Vehicle.cs" />
+    <Compile Include="CompVehicleSpawner.cs" />
     <Compile Include="HandlingTypeFlags.cs" />
     <Compile Include="HarmonyCompVehicle.cs" />
     <Compile Include="ITab_Passengers.cs" />
     <Compile Include="ITab_Passengers2.cs" />
+    <Compile Include="JobDriver_AssembleVehicle.cs" />
     <Compile Include="JobDriver_LoadPassenger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Recipe_RepairVehicle.cs" />

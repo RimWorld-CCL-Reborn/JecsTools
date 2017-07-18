@@ -23,6 +23,12 @@ namespace CompVehicle
             HarmonyInstance harmony = HarmonyInstance.Create("rimworld.jecrell.comps.pilotable");
 
             #region JecsPatches
+            //Shows "Vehicles" in the caravan tab. Messy patch.
+            harmony.Patch(AccessTools.Method(typeof(CaravanPeopleAndItemsTabUtility), "DoRows"), new HarmonyMethod(typeof(HarmonyCompVehicle), "DoRows_PreFix"), null);
+
+            //Make sure that when players attempt to draft vehicles, vehicles have the ability to move.
+            harmony.Patch(AccessTools.Method(typeof(Pawn_DraftController), "set_Drafted"), new HarmonyMethod(typeof(HarmonyCompVehicle), "set_Drafted_PreFix"), null);
+
             //When characters fire upon the vehicle, if the vehicle's body part defs include a tag that references a vehicle role,
             //there is a chance that a character holding that role can be injured. Critical injury chances also exist.
             harmony.Patch(AccessTools.Method(typeof(DamageWorker_AddInjury), "FinalizeAndAddInjury"), null, new HarmonyMethod(typeof(HarmonyCompVehicle), "FinalizeAndAddInjury_PostFix"));
@@ -151,6 +157,137 @@ namespace CompVehicle
         //        row.FillableBar(93f, 16f, compRefuelable.FuelPercentOfMax, report.CapitalizeFirst(), (Texture2D)AccessTools.Field(AccessTools.TypeByName("InspectPaneFiller"), "MoodTex").GetValue(null), (Texture2D)AccessTools.Field(AccessTools.TypeByName("InspectPaneFiller"), "BarBGTex").GetValue(null));
         //    }
         //}
+
+        // This is a lazy prefix to reroute the code to use our list if they have a vehicle in the list.
+        // RimWorld.Planet.CaravanPeopleAndItemsTabUtility
+        public static bool DoRows_PreFix(Vector2 size, ref List<Thing> things, Caravan caravan, ref Vector2 scrollPosition, ref float scrollViewHeight, bool alwaysShowItemsSection, ref Pawn specificNeedsTabForPawn, bool doNeeds = true)
+        {
+            if (things.Any(x => x is Pawn p && p.TryGetComp<CompVehicle>() != null))
+            {
+                if (specificNeedsTabForPawn != null && (!things.Contains(specificNeedsTabForPawn) || specificNeedsTabForPawn.Dead))
+                {
+                    specificNeedsTabForPawn = null;
+                }
+                var methodDoRow = (typeof(CaravanPeopleAndItemsTabUtility).GetMethods(BindingFlags.NonPublic | BindingFlags.Static).First(mi => mi.Name == "DoRow" && mi.GetParameters().Count() == 9));
+                var methodAnyItemOrEmpty = AccessTools.Method(typeof(CaravanPeopleAndItemsTabUtility), "AnyItemOrEmpty");
+
+                Text.Font = GameFont.Small;
+                Rect rect = new Rect(0f, 0f, size.x, size.y).ContractedBy(10f);
+                Rect viewRect = new Rect(0f, 0f, rect.width - 16f, scrollViewHeight);
+                bool listingUsesAbandonSpecificCountButtons = (bool)methodAnyItemOrEmpty.Invoke(null, new object[] { things });
+                Widgets.BeginScrollView(rect, ref scrollPosition, viewRect, true);
+                float num = 0f;
+                bool flag = false;
+                for (int i = 0; i < things.Count; i++)
+                {
+                    Pawn pawn = things[i] as Pawn;
+                    if (pawn != null && pawn.IsColonist)
+                    {
+                        if (!flag)
+                        {
+                            Widgets.ListSeparator(ref num, viewRect.width, "CaravanColonists".Translate());
+                            flag = true;
+                        }
+                        var args = new object[] { num, viewRect, rect, scrollPosition, pawn, caravan, specificNeedsTabForPawn, doNeeds, listingUsesAbandonSpecificCountButtons };
+                        methodDoRow.Invoke(null, args);
+                        num = (float)args[0];
+                        specificNeedsTabForPawn = (Pawn)args[6];
+                    }
+                }
+                bool flagV = false;
+                for (int k = 0; k < things.Count; k++)
+                {
+                    Pawn pawnV = things[k] as Pawn;
+                    if (pawnV != null && pawnV.TryGetComp<CompVehicle>() != null)
+                    {
+                        if (!flagV)
+                        {
+                            Widgets.ListSeparator(ref num, viewRect.width, "CompVehicle_VehicleSection".Translate());
+                            flagV = true;
+                        }
+                        var args = new object[] { num, viewRect, rect, scrollPosition, pawnV, caravan, specificNeedsTabForPawn, doNeeds, listingUsesAbandonSpecificCountButtons };
+                        methodDoRow.Invoke(null, args);
+                        num = (float)args[0];
+                        specificNeedsTabForPawn = (Pawn)args[6];
+                    }
+                }
+
+                bool flag2 = false;
+                for (int j = 0; j < things.Count; j++)
+                {
+                    Pawn pawn2 = things[j] as Pawn;
+                    if (pawn2 != null && !pawn2.IsColonist && pawn2.TryGetComp<CompVehicle>() == null)
+                    {
+                        if (!flag2)
+                        {
+                            Widgets.ListSeparator(ref num, viewRect.width, "CaravanPrisonersAndAnimals".Translate());
+                            flag2 = true;
+                        }
+                        var args = new object[] { num, viewRect, rect, scrollPosition, pawn2, caravan, specificNeedsTabForPawn, doNeeds, listingUsesAbandonSpecificCountButtons };
+                        methodDoRow.Invoke(null, args);
+                        num = (float)args[0];
+                        specificNeedsTabForPawn = (Pawn)args[6];
+                    }
+                }
+                bool flag3 = false;
+                if (alwaysShowItemsSection)
+                {
+                    Widgets.ListSeparator(ref num, viewRect.width, "CaravanItems".Translate());
+                }
+                for (int k = 0; k < things.Count; k++)
+                {
+                    if (!(things[k] is Pawn))
+                    {
+                        if (!flag3)
+                        {
+                            if (!alwaysShowItemsSection)
+                            {
+                                Widgets.ListSeparator(ref num, viewRect.width, "CaravanItems".Translate());
+                            }
+                            flag3 = true;
+                        }
+                        var args = new object[] { num, viewRect, rect, scrollPosition, things[k], caravan, specificNeedsTabForPawn, doNeeds, listingUsesAbandonSpecificCountButtons };
+                        methodDoRow.Invoke(null, args);
+                        num = (float)args[0];
+                        specificNeedsTabForPawn = (Pawn)args[6];
+                    }
+                }
+                if (alwaysShowItemsSection && !flag3)
+                {
+                    GUI.color = Color.gray;
+                    Text.Anchor = TextAnchor.UpperCenter;
+                    Widgets.Label(new Rect(0f, num, viewRect.width, 25f), "NoneBrackets".Translate());
+                    Text.Anchor = TextAnchor.UpperLeft;
+                    num += 25f;
+                    GUI.color = Color.white;
+                }
+                if (Event.current.type == EventType.Layout)
+                {
+                    scrollViewHeight = num + 30f;
+                }
+                Widgets.EndScrollView();
+                return false;
+            }
+            return true;
+ 
+        }
+
+
+        public static bool set_Drafted_PreFix(Pawn_DraftController __instance, bool value)
+        {
+            if (__instance?.pawn?.TryGetComp<CompVehicle>() is CompVehicle v)
+            {
+                if (value == true && !__instance.Drafted)
+                {
+                    if (!v.CanMove)
+                    {
+                        Messages.Message("CompVehicle_CannotMove".Translate(__instance.pawn.KindLabel), MessageSound.RejectInput);
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
 
         // RimWorld.FloatMenuMakerMap
         public static void AddHumanlikeOrders_PostFix(Vector3 clickPos, Pawn pawn, List<FloatMenuOption> opts)
@@ -434,6 +571,9 @@ namespace CompVehicle
         //Logic: Pawns should be displayable while in the caravan, this allows needs to be calculated by the game instead of through ResolveNeeds()
 		//Improvements: Make pawn cards appear while in a vehicle but not in the caravan? 
         //Modify vehicle Needs card while not in caravan to display needs of pawns inside it?
+        //
+        //Addendum by Jecrell:
+        //  Added WorldPawn considerations.
 		
         //RimWorld.Planet.CaravanMaker
         public static void MakeCaravan_PostFix(IEnumerable<Pawn> pawns, bool addToWorldPawnsIfNotAlready, Caravan __result)
@@ -465,8 +605,17 @@ namespace CompVehicle
 								}
 
                                 //Remove the pawn from the vehicle and add it to the caravan
+                                if (pawn.holdingOwner != null) pawn.holdingOwner = null;
 								__result.AddPawn(pawn, addToWorldPawnsIfNotAlready);
-								group.handlers.Remove(pawn);
+                                if (addToWorldPawnsIfNotAlready && !pawn.IsWorldPawn())
+                                {
+                                    if (pawn.Spawned)
+                                    {
+                                        pawn.DeSpawn();
+                                    }
+                                    Find.WorldPawns.PassToWorld(pawn, PawnDiscardDecideMode.KeepForever);
+                                }
+                                group.handlers.Remove(pawn);
 							}
 						}
 					}

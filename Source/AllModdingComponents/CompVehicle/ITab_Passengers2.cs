@@ -172,16 +172,20 @@ namespace CompVehicle
             {
                 foreach (VehicleHandlerGroup group in vehicle.handlers)
                 {
-                    var flag = false;
-                    for (int i = 0; i < group.handlers.Count; i++)
+                    if ((group?.handlers?.Count ?? 0) > 0)
                     {
-                        Pawn pawn = group.handlers[i] as Pawn;
-                        if (!flag)
+
+                        var flag = false;
+                        for (int i = 0; i < group.handlers.Count; i++)
                         {
-                            Widgets.ListSeparator(ref num, viewRect.width, group.role.label.CapitalizeFirst());
-                            flag = true;
+                            Pawn pawn = group.handlers[i] as Pawn;
+                            if (!flag)
+                            {
+                                Widgets.ListSeparator(ref num, viewRect.width, group.role.label.CapitalizeFirst());
+                                flag = true;
+                            }
+                            DoRow(ref num, viewRect, rect, scrollPosition, pawn, vehicle, ref specificNeedsTabForPawn, doNeeds);
                         }
-                        DoRow(ref num, viewRect, rect, scrollPosition, pawn, vehicle, ref specificNeedsTabForPawn, doNeeds);
                     }
 
                 }

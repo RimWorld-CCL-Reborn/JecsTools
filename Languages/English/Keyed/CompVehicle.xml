@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <LanguageData>
 
+ <!-- Addition 7/18/17 -->
+
+  <CompVehicle_CannotMove>{0} is currently incapable of movement.</CompVehicle_CannotMove>
+
+ <!-- Previous -->
+
   <CompVehicle_LowFuel>Low Fuel</CompVehicle_LowFuel>
   <MessageCaravanRunOutOfFuel>{0} has run out of fuel ({1}). {0} will now move at a quarter of normal speed.</MessageCaravanRunOutOfFuel>
   <MessagePawnLeftVehicle>{0} has left the vehicle ({1}) due to {2} needs.</MessagePawnLeftVehicle>

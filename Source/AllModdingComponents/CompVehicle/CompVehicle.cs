@@ -68,6 +68,7 @@ namespace CompVehicle
         }
         //------ Additions By Swenzi -------
 
+        public bool CanManipulate => this.Props.manipulationHandling > HandlingType.HandlerRequired || ManipulationHandlerAvailable;
         public bool ManipulationHandlerAvailable
         {
             get
@@ -92,6 +93,7 @@ namespace CompVehicle
                 return result;
             }
         }
+        public bool CanMove => this.Props.movementHandling > HandlingType.HandlerRequired || MovementHandlerAvailable;
         public bool MovementHandlerAvailable
         {
             get
@@ -116,6 +118,7 @@ namespace CompVehicle
                 return result;
             }
         }
+        public bool CanFireWeapons => this.Props.weaponHandling > HandlingType.HandlerRequired || WeaponHandlerAvailable;
         public bool WeaponHandlerAvailable
         {
             get
@@ -250,7 +253,8 @@ namespace CompVehicle
                                     Pawn newPawn = GeneratePawn(role.preferredHandlers);
                                     if (newPawn != null)
                                     {
-                                        group.handlers.Add(newPawn);
+                                        group.handlers.TryAdd(newPawn);
+                                        //group.handlers.Add(newPawn);
                                     }
                                 }
                             }
@@ -273,34 +277,38 @@ namespace CompVehicle
                 {
                     foreach (VehicleHandlerGroup group in this.handlers)
                     {
-                        for (int i = 0; i < group.handlers.Count; i++)
+                        if ((group?.handlers?.Count ?? 0) > 0)
                         {
-                            Pawn pawn = group.handlers[i];
-                            List<Need> pawnNeeds = pawn.needs.AllNeeds;
-                            for (int j = 0; j < pawnNeeds.Count; j++)
+                            for (int i = 0; i < group.handlers.Count; i++)
                             {
-                                if (pawnNeeds[j].CurLevelPercentage < this.Props.ejectIfBelowNeedPercent)
+                                Pawn pawn = group.handlers[i];
+                                List<Need> pawnNeeds = pawn.needs.AllNeeds;
+                                for (int j = 0; j < pawnNeeds.Count; j++)
                                 {
-									//Prevents annoying issues where the pawn leaves the vehicle due to needs when forming a caravan
-									//since they can wait till world map, world needs are handled seperately by the game
-									if (!this.Pawn.IsCaravanMember() && !((this.Pawn.GetLord()?.LordJob?.ToString()) == "RimWorld.LordJob_FormAndSendCaravan"))
+                                    if (pawnNeeds[j].CurLevelPercentage < this.Props.ejectIfBelowNeedPercent)
                                     {
-                                        //Prevents annoying issues where the pawn leaves the vehicle despite the player wanting
-                                        //the pawn to enter the vehicle. I.e. Life and death situation? Ignore Needs. Live!!!!
-                                        if (!this.Pawn.IsFighting() && !pawn.IsFighting())
+                                        //Prevents annoying issues where the pawn leaves the vehicle due to needs when forming a caravan
+                                        //since they can wait till world map, world needs are handled seperately by the game
+                                        if (!this.Pawn.IsCaravanMember() && !((this.Pawn.GetLord()?.LordJob?.ToString()) == "RimWorld.LordJob_FormAndSendCaravan"))
                                         {
-                                            //Notify the player that "Johnny" has left the vehicle so the pawn can be punished as appropriate
-                                            Messages.Message("MessagePawnLeftVehicle".Translate(new object[] { pawn.Label, this.Pawn.Label, pawnNeeds[j].def.defName }), this.Pawn, MessageSound.SeriousAlert);
-                                            Eject(pawn, group.handlers);
-                                            group.handlers.Remove(pawn);
-                                            break;
+                                            //Prevents annoying issues where the pawn leaves the vehicle despite the player wanting
+                                            //the pawn to enter the vehicle. I.e. Life and death situation? Ignore Needs. Live!!!!
+                                            if (!this.Pawn.IsFighting() && !pawn.IsFighting())
+                                            {
+                                                //Notify the player that "Johnny" has left the vehicle so the pawn can be punished as appropriate
+                                                Messages.Message("MessagePawnLeftVehicle".Translate(new object[] { pawn.Label, this.Pawn.Label, pawnNeeds[j].def.defName }), this.Pawn, MessageSound.SeriousAlert);
+                                                Eject(pawn, group.handlers);
+                                                group.handlers.Remove(pawn);
+                                                break;
+                                            }
                                         }
                                     }
                                 }
+
+
                             }
-
-
                         }
+
                     }
                 }
             }
@@ -462,21 +470,25 @@ namespace CompVehicle
                 {
                     foreach (VehicleHandlerGroup group in this.handlers)
                     {
-                        for (int i = 0; i < group.handlers.Count; i++)
+                        if ((group?.handlers?.Count ?? 0) > 0)
                         {
-                            Pawn pawn = group.handlers[i];
-                            List<Need> pawn_needs = pawn.needs.AllNeeds;
-                            //These needs are major and should change
-                            for (int j = 0; j < pawn_needs.Count; j++)
+                            for (int i = 0; i < group.handlers.Count; i++)
                             {
-                                if (pawn_needs[j].def == NeedDefOf.Rest)
-                                    pawn_needs[j].CurLevel -= this.Props.restNeedRate;
-                                if (pawn_needs[j].def == NeedDefOf.Food)
-                                    pawn_needs[j].CurLevel -= this.Props.foodNeedRate;
-                                if (pawn_needs[j].def == NeedDefOf.Joy)
-                                    pawn_needs[j].CurLevel -= this.Props.joyNeedRate;
+                                Pawn pawn = group.handlers[i];
+                                List<Need> pawn_needs = pawn.needs.AllNeeds;
+                                //These needs are major and should change
+                                for (int j = 0; j < pawn_needs.Count; j++)
+                                {
+                                    if (pawn_needs[j].def == NeedDefOf.Rest)
+                                        pawn_needs[j].CurLevel -= this.Props.restNeedRate;
+                                    if (pawn_needs[j].def == NeedDefOf.Food)
+                                        pawn_needs[j].CurLevel -= this.Props.foodNeedRate;
+                                    if (pawn_needs[j].def == NeedDefOf.Joy)
+                                        pawn_needs[j].CurLevel -= this.Props.joyNeedRate;
+                                }
                             }
                         }
+
                     }
                 }
             }
@@ -485,12 +497,15 @@ namespace CompVehicle
         }
 		// ------ Additions made by Swenzi ------
 		
-        public void Eject(Pawn pawn, List<Pawn> list)
+        public void Eject(Pawn pawn, ThingOwner<Pawn> list)
         {
-            GenSpawn.Spawn(pawn, this.Pawn.PositionHeld.RandomAdjacentCell8Way(), this.Pawn.MapHeld);
+            if (!pawn.Spawned)
+            {
+                GenSpawn.Spawn(pawn, this.Pawn.PositionHeld.RandomAdjacentCell8Way(), this.Pawn.MapHeld);
+            }
             list.Remove(pawn);
         }
-        public void EjectAll(List<Pawn> pawns)
+        public void EjectAll(ThingOwner<Pawn> pawns)
         {
             List<Pawn> pawnsToEject = new List<Pawn>(pawns);
             if (pawnsToEject != null && pawnsToEject.Count > 0)
@@ -527,8 +542,12 @@ namespace CompVehicle
                 Bill_LoadVehicle bill = this.bills.FirstOrDefault((x) => x.pawnToLoad == pawnToLoad);
                 if (bill != null)
                 {
+                    var curFaction = pawnToLoad.Faction;
                     pawnToLoad.DeSpawn();
-                    bill.group.handlers.Add(pawnToLoad);
+                    if (pawnToLoad.holdingOwner != null) pawnToLoad.holdingOwner = null;
+                    bill.group.handlers.TryAdd(pawnToLoad);
+                    Find.WorldPawns.PassToWorld(pawnToLoad, PawnDiscardDecideMode.KeepForever);
+                    pawnToLoad.SetFaction(curFaction);
                     this.bills.Remove(bill);
                 }
             }
@@ -572,7 +591,7 @@ namespace CompVehicle
         {
             List<FloatMenuOption> list = new List<FloatMenuOption>();
             Map map = this.Pawn.Map;
-            List<Pawn> tempList = new List<Pawn>(group.handlers);
+            List<Pawn> tempList = (group?.handlers?.InnerListForReading != null) ? new List<Pawn>(group.handlers.InnerListForReading) : new List<Pawn>();
             if (canLoad)
             {
                 string text = "CompVehicle_Load".Translate(group.role.label);
@@ -621,11 +640,11 @@ namespace CompVehicle
                     foreach (VehicleHandlerGroup group in this.handlers)
                     {
                         //Log.Message("3");
-                        if (group.role != null && group.handlers != null)
+                        if (group.role != null)
                         {
                             //Log.Message("4");
                             bool loadable = group.AreSlotsAvailable;
-                            bool unloadable = group.handlers.Count > 0;
+                            bool unloadable = (group?.handlers?.Count ?? 0) > 0;
                             if (loadable || unloadable)
                             {
                                 //Log.Message("5");
@@ -676,6 +695,7 @@ namespace CompVehicle
             Scribe_Values.Look<bool>(ref this.ResolvedPawns, "ResolvedPawns", false);
             Scribe_Values.Look<WeaponState>(ref this.weaponStatus, "weaponStatus", WeaponState.able);
             Scribe_Values.Look<MovingState>(ref this.movingStatus, "movingStatus", MovingState.able);
+
             Scribe_Collections.Look<VehicleHandlerGroup>(ref this.handlers, "handlers", LookMode.Deep, new object[0]);
             Scribe_Collections.Look<Bill_LoadVehicle>(ref this.bills, "bills", LookMode.Deep, new object[0]);
 
