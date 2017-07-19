@@ -7,7 +7,22 @@ namespace AbilityUser
 {
     public class JobDriver_CastAbilityVerb : JobDriver
     {
-        private CompAbilityUser CompAbilityUser => this.pawn.TryGetComp<CompAbilityUser>();
+        private List<CompAbilityUser> CompAbilityUsers
+        {
+            get
+            {
+                List<CompAbilityUser> results = new List<CompAbilityUser>();
+                var allCompAbilityUsers = this.pawn.GetComps<CompAbilityUser>();
+                if (allCompAbilityUsers.TryRandomElement<CompAbilityUser>(out CompAbilityUser comp))
+                {
+                    foreach (CompAbilityUser compy in allCompAbilityUsers)
+                    {
+                        results.Add(compy);
+                    }
+                }
+                return results;
+            }
+        }
 
         protected override IEnumerable<Toil> MakeNewToils()
         {
@@ -31,7 +46,13 @@ namespace AbilityUser
                 //{
                 //PsykerUtility.PsykerShockEvents(CompAbilityUser, CompAbilityUser.curPower.PowerLevel);
                 //}
-                this.CompAbilityUser.PostAbilityAttempt(this.pawn, verb.ability.powerdef);
+                if (this.CompAbilityUsers is List<CompAbilityUser> users && !users.NullOrEmpty())
+                {
+                    foreach (CompAbilityUser u in users)
+                    {
+                        u.PostAbilityAttempt(this.pawn, verb.ability.powerdef);
+                    }
+                }
                 //this.CompAbilityUser.ShotFired = true;
             });
         }

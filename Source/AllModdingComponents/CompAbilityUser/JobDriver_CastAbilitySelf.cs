@@ -8,7 +8,22 @@ namespace AbilityUser
 {
     public class JobDriver_CastAbilitySelf : JobDriver
     {
-        private CompAbilityUser CompAbilityUser => this.pawn.TryGetComp<CompAbilityUser>();
+        private List<CompAbilityUser> CompAbilityUsers
+        {
+            get
+            {
+                List<CompAbilityUser> results = new List<CompAbilityUser>();
+                var allCompAbilityUsers = this.pawn.GetComps<CompAbilityUser>();
+                if (allCompAbilityUsers.TryRandomElement<CompAbilityUser>(out CompAbilityUser comp))
+                {
+                    foreach (CompAbilityUser compy in allCompAbilityUsers)
+                    {
+                        results.Add(compy);
+                    }
+                }
+                return results;
+            }
+        }
 
         public void EvaluateCell(IntVec3 c, CastPositionRequest req,
             float maxRangeFromTargetSquared,
@@ -355,7 +370,13 @@ namespace AbilityUser
 
                 //}
                 //compAbilityUser.IsActive = false;
-                this.CompAbilityUser.PostAbilityAttempt(this.pawn, verb.ability.powerdef);
+                if (this.CompAbilityUsers is List<CompAbilityUser> users && !users.NullOrEmpty())
+                {
+                    foreach (CompAbilityUser u in users)
+                    {
+                        u.PostAbilityAttempt(this.pawn, verb.ability.powerdef);
+                    }
+                }
             });
         }
     }
