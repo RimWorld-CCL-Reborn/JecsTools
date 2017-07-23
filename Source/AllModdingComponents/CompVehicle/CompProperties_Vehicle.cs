@@ -26,6 +26,9 @@ namespace CompVehicle
 
     public class CompProperties_Vehicle : CompProperties
     {
+        //Added 7/23/17
+        public float cargoCapacity = 385.554f;                                // Cargo capacity for your vehicle in kilograms.
+
         public VehicleType vehicleType = VehicleType.LandWheeled;             // Defaults to wheeled land vehicles.
         public HandlingType movementHandling = HandlingType.HandlerRequired;  // Is the movement automatic?
         public HandlingType weaponHandling = HandlingType.HandlerRequired;    // Are the weapons automatic?
