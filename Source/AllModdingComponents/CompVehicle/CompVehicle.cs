@@ -448,6 +448,19 @@ namespace CompVehicle
             //If it can move and it's in a caravan wandering than it might be stuck 
             //aka the movement thing hasn't kicked in. Change draft status just to be safe.
 
+            //Fixes bug where weapon tries to fire even after gunner is removed
+            if (this.weaponStatus != WeaponState.able){
+                if (this.Pawn.CurJob.def == JobDefOf.WaitCombat || this.Pawn.CurJob.def == JobDefOf.AttackStatic || this.Pawn.CurJob.def == JobDefOf.AttackMelee){
+                    if (!this.Pawn.pather.Moving)
+                    {
+                        this.Pawn.jobs.EndCurrentJob(JobCondition.None, false);
+                    }else{
+                        this.Pawn.jobs.EndCurrentJob(JobCondition.None, true);
+                    }
+
+                }
+                //Log.Error(this.Pawn.CurJob.ToString());
+            }
             if (this.movingStatus == MovingState.able)
             {
                 //Removed caravan member check as apparently pawns currently forming a caravan aren't part of one yet
@@ -468,13 +481,17 @@ namespace CompVehicle
                 //Vehicles that can't move shouldn't have Lords, it causes problems cause they never complete their jobs and toils
 				if (this.Pawn.GetLord() != null)
 					this.Pawn.GetLord().lordManager.RemoveLord(this.Pawn.GetLord());
+                
 				if (this.Pawn.pather != null && this.Pawn.pather.Moving)
 				{
 
                     if (this.tickCount > this.Props.momentumTimeSeconds * 60)
                     {
                         //No more fake momentum, vehicle should stop
-                        this.Pawn.jobs.StopAll();
+                        //this.Pawn.jobs.
+                        if(this.Pawn.pather.Moving){
+                            this.Pawn.jobs.EndCurrentJob(JobCondition.None, false);
+                        }
                         this.Pawn.pather.StopDead();
                         this.tickCount = 0;
                     }
@@ -484,6 +501,9 @@ namespace CompVehicle
                         this.tickCount++;
 				    }
 				}
+            }
+            if(this.movingStatus != MovingState.able && this.weaponStatus != WeaponState.able){
+                this.Pawn.mindState.lastJobTag = JobTag.Idle;
             }
             // ------ ADB Swenzi -------
         }

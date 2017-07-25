@@ -155,24 +155,41 @@ namespace CompVehicle
             #endregion SwenziPatches
         }
 
-		//RimWorld.LordToil_PrepareCaravan_GatherItems
+        //RimWorld.LordToil_PrepareCaravan_GatherItems
         //Needs a transpiler i think.... Can't transpile cause my VM is down so i can't see IL code
-		public static bool ItemsLordToilTick_PreFix(LordToil_PrepareCaravan_GatherItems __instance)
+        private static bool firstRun = false;
+        public static bool ItemsLordToilTick_PreFix(LordToil_PrepareCaravan_GatherItems __instance)
 		{
 			if (Find.TickManager.TicksGame % 120 == 0)
 			{
+                
 				bool flag = true;
 				for (int i = 0; i < __instance.lord.ownedPawns.Count; i++)
 				{
 					Pawn pawn = __instance.lord.ownedPawns[i];
                     if ((pawn.IsColonist || pawn.GetComp<CompVehicle>() != null) && pawn.mindState.lastJobTag != JobTag.WaitingForOthersToFinishGatheringItems)
 					{
-						flag = false;
-						break;
+                        //Rewrote this, it seems to fix the colonist + vehicle setups
+                        //As to why? Dunno haha
+                        if (!firstRun){
+                            flag = false;
+                            firstRun = true;
+                            break;
+                        }else{
+                            if (pawn.CurJob.def != JobDefOf.WaitWander){
+                                flag = false;
+                                break;
+                            }
+                        }
+
+						//flag = false;
+
+						//break;
 					}
 				}
 				if (flag)
 				{
+                    //Log.Error("2nd Statement");
 					List<Pawn> allPawnsSpawned = __instance.Map.mapPawns.AllPawnsSpawned;
 					for (int j = 0; j < allPawnsSpawned.Count; j++)
 					{
@@ -186,6 +203,7 @@ namespace CompVehicle
 				if (flag)
 				{
 					__instance.lord.ReceiveMemo("AllItemsGathered");
+                    firstRun = false;
 				}
 			}
             return false;
