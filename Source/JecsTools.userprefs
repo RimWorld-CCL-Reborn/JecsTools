@@ -1,28 +1,19 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workbench ActiveDocument="AllModdingComponents/CompVehicle/HarmonyCompVehicle.cs">
     <Files>
-      <File FileName="AllModdingComponents/CompVehicle/CompVehicle.cs" Line="65" Column="4" />
-      <File FileName="AllModdingComponents/CompVehicle/CompProperties_Vehicle.cs" Line="36" Column="8" />
-      <File FileName="AllModdingComponents/CompVehicle/HarmonyCompVehicle.cs" Line="151" Column="7" />
-      <File FileName="AllModdingComponents/CompVehicle/Bill_LoadVehicle.cs" Line="1" Column="1" />
-      <File FileName="AllModdingComponents/CompVehicle/Command_VehicleHandler.cs" Line="21" Column="1" />
-      <File FileName="AllModdingComponents/CompVehicle/ITab_Passengers.cs" Line="1" Column="1" />
-      <File FileName="AllModdingComponents/CompVehicle/JobDriver_LoadPassenger.cs" Line="27" Column="53" />
-      <File FileName="AllModdingComponents/CompVehicle/Recipe_RepairVehicle.cs" Line="8" Column="52" />
-      <File FileName="AllModdingComponents/CompVehicle/StringOf.cs" Line="7" Column="34" />
-      <File FileName="AllModdingComponents/CompVehicle/VehicleHandlerGroup.cs" Line="10" Column="19" />
-      <File FileName="AllModdingComponents/CompVehicle/VehicleRole.cs" Line="1" Column="15" />
-      <File FileName="AllModdingComponents/CompVehicle/SiteDefOfVehicle.cs" Line="12" Column="3" />
-      <File FileName="AllModdingComponents/CompVehicle/SitePartWorker_AbandonedVehicles.cs" Line="25" Column="33" />
-      <File FileName="AllModdingComponents/CompVehicle/AbandonedVehicleContentsComp.cs" Line="9" Column="10" />
-      <File FileName="AllModdingComponents/CompVehicle/DeathActionWorker_NoCorpse.cs" Line="21" Column="21" />
+      <File FileName="AllModdingComponents/CompVehicle/CompVehicle.cs" Line="403" Column="28" />
+      <File FileName="AllModdingComponents/CompVehicle/HarmonyCompVehicle.cs" Line="1167" Column="78" />
+      <File FileName="AllModdingComponents/CompVehicle/CompProperties_VehicleSpawner.cs" Line="1" Column="1" />
+      <File FileName="AllModdingComponents/CompVehicle/CompProperties_Vehicle.cs" Line="1" Column="1" />
+      <File FileName="AllModdingComponents/CompVehicle/VehicleRole.cs" Line="32" Column="9" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State name="__root__">
           <Node name="JecsTools" expanded="True">
             <Node name="CompVehicle" expanded="True">
-              <Node name="SitePartWorker_AbandonedVehicles.cs" selected="True" />
+              <Node name="References" expanded="True" />
+              <Node name="HarmonyCompVehicle.cs" selected="True" />
             </Node>
           </Node>
         </State>

@@ -26,6 +26,9 @@ namespace CompVehicle
 
     public class CompProperties_Vehicle : CompProperties
     {
+        //Added 7/23/17
+        public float cargoCapacity = 385.554f;                                // Cargo capacity for your vehicle in kilograms.
+
         public VehicleType vehicleType = VehicleType.LandWheeled;             // Defaults to wheeled land vehicles.
         public HandlingType movementHandling = HandlingType.HandlerRequired;  // Is the movement automatic?
         public HandlingType weaponHandling = HandlingType.HandlerRequired;    // Are the weapons automatic?
@@ -42,7 +45,7 @@ namespace CompVehicle
         public string labelDamaged = "Damaged";                               // Label replacer for when the vehicle is damaged.
         public string labelInoperable = "Inoperable";                         // Label replacer for when the vehicle is inoperable / "downed".
         public string labelBroken = "Broken";                                 // Label replacer for when the vehicle is broken / "dead".
-        public List<VehicleRole> roles = new List<VehicleRole>(); // Defines roles of passengers.
+        public List<VehicleRole> roles = new List<VehicleRole>();             // Defines roles of passengers.
 
         //---------- Additions made by Swenzi ------------
 
