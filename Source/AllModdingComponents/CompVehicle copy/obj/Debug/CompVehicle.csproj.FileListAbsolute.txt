@@ -1,4 +1,0 @@
-/Users/iankuo/Documents/Rimworld Repos/JecsTools/Source/AllModdingComponents/CompVehicle/obj/Debug/CompVehicle.csproj.CoreCompileInputs.cache
-/Users/iankuo/Documents/Rimworld Repos/JecsTools/Source/AllModdingComponents/CompVehicle/obj/Debug/CompVehicle.csprojResolveAssemblyReference.cache
-/Users/iankuo/Documents/Rimworld Repos/JecsTools/Assemblies/CompVehicle.dll
-/Users/iankuo/Documents/Rimworld Repos/JecsTools/Source/AllModdingComponents/CompVehicle/obj/Debug/CompVehicle.dll

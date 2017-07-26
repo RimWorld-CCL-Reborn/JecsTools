@@ -130,12 +130,8 @@ namespace CompVehicle
             harmony.Patch(AccessTools.Method(typeof(RimWorld.Planet.CaravanExitMapUtility), "ExitMapAndJoinOrCreateCaravan"), null, new HarmonyMethod(typeof(HarmonyCompVehicle),nameof(ExitMapAndJoinOrCreateCaravan_PostFix)));
 
             //Add pawns back to the vehicle and remove them from the caravan when entering the map
-<<<<<<< HEAD
-            harmony.Patch(AccessTools.Method(typeof(RimWorld.Planet.CaravanEnterMapUtility), "Enter", new Type[] { typeof(Caravan), typeof(Map), typeof(Func<Pawn, IntVec3>), typeof(CaravanDropInventoryMode), typeof(bool) }), null, new HarmonyMethod(typeof(HarmonyCompVehicle),nameof(Enter_PostFix)), null);
-=======
-            //Converted to prefix which should fix map enter cloning (Cloning did occur previously but clones were removed via resolve ejection)
+            //Swenzy - Converted to prefix which should fix map enter cloning (Cloning did occur previously but clones were removed via resolve ejection)
             harmony.Patch(AccessTools.Method(typeof(RimWorld.Planet.CaravanEnterMapUtility), "Enter", new Type[] { typeof(Caravan), typeof(Map), typeof(Func<Pawn, IntVec3>), typeof(CaravanDropInventoryMode), typeof(bool) }), new HarmonyMethod(typeof(HarmonyCompVehicle), nameof(Enter_PreFix)), null, null);
->>>>>>> pr/6
 
             //Modifies the caravan inspect string so fuel is shown
             harmony.Patch(AccessTools.Method(typeof(RimWorld.Planet.Caravan), "GetInspectString"), null, new HarmonyMethod(typeof(HarmonyCompVehicle),nameof(GetInspectString_PostFix)));
@@ -158,9 +154,7 @@ namespace CompVehicle
             // ------ Additions Made By Swenzi ------
             #endregion SwenziPatches
         }
-
-<<<<<<< HEAD
-=======
+        
 		//RimWorld.LordToil_PrepareCaravan_GatherItems
         //Needs a transpiler i think.... Can't transpile cause my VM is down so i can't see IL code
 		public static bool ItemsLordToilTick_PreFix(LordToil_PrepareCaravan_GatherItems __instance)
@@ -198,7 +192,6 @@ namespace CompVehicle
 
 
 		} 
->>>>>>> pr/6
         // RimWorld.MassUtility
         public static void Capacity_PostFix(ref float __result, Pawn p)
         {
@@ -736,12 +729,8 @@ namespace CompVehicle
 		//Improvements: Have this function for incidents? Or leave pawns outside since incidents "catch the player (pawns by extension) off guard"
 
 		//RimWorld.Planet.CaravanExitMapUtility
-<<<<<<< HEAD
-		public static void Enter_PostFix(Caravan caravan)
-=======
         //Converted to Prefix as the pawns weren't being removed since they were all being spawned before the postfix ran
 		public static void Enter_PreFix(Caravan caravan)
->>>>>>> pr/6
 		{
 			List<Pawn> members = caravan.PawnsListForReading;
             //Log.Error(members.Count().ToString());
@@ -763,11 +752,6 @@ namespace CompVehicle
 								Pawn pawn = group.handlers[k];
 								if (pawn == members[j])
 								{
-<<<<<<< HEAD
-                                    //Add the pawn to the vehicle and remove it from the caravan
-									if (!pawn.Spawned) vehicle.handlers.Add(new VehicleHandlerGroup(members[j], group.role, new List<Pawn>()));
-									caravan.RemovePawn(members[j]);
-=======
                                     //Old Addition and Removal code wasn't working, led to additional groups being created
 									foreach (VehicleHandlerGroup vgroup in vehicle.handlers)
 									{
@@ -778,7 +762,6 @@ namespace CompVehicle
                                             break;
 										}
 									}
->>>>>>> pr/6
 								}
 							}
 
@@ -1158,20 +1141,12 @@ namespace CompVehicle
         // RimWorld.JobGiver_PrepareCaravan_GatherItems
         public static bool TryGiveItemJob_PreFix(ref Job __result, Pawn pawn)
         {
-<<<<<<< HEAD
-            Log.Message("Fail0");
-=======
             //Log.Message("Fail0");
->>>>>>> pr/6
             if (pawn?.TryGetComp<CompVehicle>() is CompVehicle v)
             {
                 if (!pawn.health.capacities.CapableOf(PawnCapacityDefOf.Manipulation))
                 {
-<<<<<<< HEAD
-                    Log.Message("Fail1");
-=======
                     //Log.Message("Fail1");
->>>>>>> pr/6
                     __result = null;
                     return false;
                 }
@@ -1179,11 +1154,8 @@ namespace CompVehicle
                 Thing thing = GatherItemsForCaravanUtility.FindThingToHaul(pawn, lord);
                 if (thing == null)
                 {
-<<<<<<< HEAD
-                    Log.Message("Fail2");
-=======
+
                     //Log.Message("Fail2");
->>>>>>> pr/6
 
                     __result = null;
                     return false;
@@ -1192,18 +1164,8 @@ namespace CompVehicle
                 {
                     lord = lord
                 };
-<<<<<<< HEAD
-                Log.Message("Success");
 
-=======
                 //Log.Message("Success");
->>>>>>> pr/6
-
-                return false;
-            }
-            return true;
-        }
-
                 return false;
             }
             return true;
@@ -1222,11 +1184,6 @@ namespace CompVehicle
                     Pawn pawn = pawns[i];
                     if (pawn.IsColonist || pawn.GetComp<CompVehicle>() is CompVehicle comp && comp.CanMove)
                     {
-<<<<<<< HEAD
-                        Log.Message("3");
-=======
->>>>>>> pr/6
-
                         pawn.mindState.duty = new PawnDuty(DutyDefOf.PrepareCaravan_GatherItems);
                     }
                     else if (pawn.RaceProps.Animal)
@@ -1254,33 +1211,6 @@ namespace CompVehicle
         {
             if (pawns.FindAll((x) => x.GetComp<CompVehicle>() != null) is List<Pawn> vehicles)
             {
-<<<<<<< HEAD
-                Log.Message("TestA");
-                bool localReform = Traverse.Create(__instance).Field("reform").GetValue<bool>();
-                if (!localReform && 
-                    Traverse.Create(__instance).Field("startingTile").GetValue<int>() < 0)
-                {
-                    Messages.Message("NoExitDirectionForCaravanChosen".Translate(), MessageSound.RejectInput);
-                    return false;
-                }
-                if (!pawns.Any((Pawn x) => CaravanUtility.IsOwner(x, Faction.OfPlayer) && !x.Downed))
-                {
-                    if (!pawns.Any((Pawn y) => y.TryGetComp<CompVehicle>() is CompVehicle v))
-                    {
-                        if (!pawns.Any((Pawn z) => z.TryGetComp<CompVehicle>() is CompVehicle v && v.CanMove))
-                        {
-                            Messages.Message("CaravanMustHaveAtLeastOneColonist".Translate(), MessageSound.RejectInput);
-                            return false;
-                        }
-                    }
-                }
-                if (!localReform && Traverse.Create(__instance).Property("MassUsage").GetValue<float>() > Traverse.Create(__instance).Property("MassCapacity").GetValue<float>())
-                {
-                    AccessTools.Method(typeof(Dialog_FormCaravan), "FlashMass").Invoke(__instance, null);
-                    Messages.Message("TooBigCaravanMassUsage".Translate(), MessageSound.RejectInput);
-                    return false;
-                }
-=======
                 //Log.Message("TestA");
                 bool localReform = Traverse.Create(__instance).Field("reform").GetValue<bool>();
                 if (!localReform && 
@@ -1306,7 +1236,6 @@ namespace CompVehicle
                     Messages.Message("TooBigCaravanMassUsage".Translate(), MessageSound.RejectInput);
                     return false;
                 }
->>>>>>> pr/6
                 Pawn pawn = pawns.Find((Pawn x) => 
                 (x.TryGetComp<CompVehicle>() == null || x.TryGetComp<CompVehicle>() is CompVehicle v && !v.CanMove) &&
                 !pawns.Any((Pawn y) => !y.IsPrisoner && !y.RaceProps.Animal && y.CanReach(x, PathEndMode.Touch, Danger.Deadly, false, TraverseMode.ByPawn)));
