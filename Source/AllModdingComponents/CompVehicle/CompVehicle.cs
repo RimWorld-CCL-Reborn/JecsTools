@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿﻿﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -73,6 +73,7 @@ namespace CompVehicle
         public bool CanManipulate => this.Props.manipulationHandling > HandlingType.HandlerRequired || ManipulationHandlerAvailable;
         public bool ManipulationHandlerAvailable
         {
+            
             get
             {
                 bool result = false;
@@ -228,6 +229,7 @@ namespace CompVehicle
         }
         public void ResolveFactionPilots()
         {
+            //this.Pawn.pather.
             //-------- Additions Made By Swenzi --------
             //Purpose: Remove Spawning of Premade Pawns in Vehicles
             //Logic: Players should not get free pawns for making vehicles
