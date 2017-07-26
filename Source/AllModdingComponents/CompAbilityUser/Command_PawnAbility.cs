@@ -58,24 +58,21 @@ namespace AbilityUser
         public override GizmoResult GizmoOnGUI(Vector2 topLeft)
         {
             Rect rect = new Rect(topLeft.x, topLeft.y, this.Width, 75f);
-            bool flag = false;
+            bool isMouseOver = false;
             if (Mouse.IsOver(rect))
             {
-                flag = true;
+                isMouseOver = true;
                 GUI.color = GenUI.MouseoverColor;
             }
             Texture2D badTex = this.icon;
-            if (badTex == null)
-            {
-                badTex = BaseContent.BadTex;
-            }
+            if (badTex == null) badTex = BaseContent.BadTex;
 
             GUI.DrawTexture(rect, Command.BGTex);
             MouseoverSounds.DoRegion(rect, SoundDefOf.MouseoverCommand);
             GUI.color = this.IconDrawColor;
             Widgets.DrawTextureFitted(new Rect(rect), badTex, this.iconDrawScale * 0.85f, this.iconProportions, this.iconTexCoords);
             GUI.color = Color.white;
-            bool flag2 = false;
+            bool isUsed = false;
             //Rect rectFil = new Rect(topLeft.x, topLeft.y, this.Width, this.Width);
 
             KeyCode keyCode = (this.hotKey != null) ? this.hotKey.MainKey : KeyCode.None;
@@ -86,14 +83,11 @@ namespace AbilityUser
                 GizmoGridDrawer.drawnHotKeys.Add(keyCode);
                 if (this.hotKey.KeyDownEvent)
                 {
-                    flag2 = true;
+                    isUsed = true;
                     Event.current.Use();
                 }
             }
-            if (Widgets.ButtonInvisible(rect, false))
-            {
-                flag2 = true;
-            }
+            if (Widgets.ButtonInvisible(rect, false)) isUsed = true;
             string labelCap = this.LabelCap;
             if (!labelCap.NullOrEmpty())
             {
@@ -125,7 +119,7 @@ namespace AbilityUser
             float y = this.pawnAbility.MaxCastingTicks;
             float fill = x / y;
             Widgets.FillableBar(rect, fill, AbilityButtons.FullTex, AbilityButtons.EmptyTex, false);
-            if (flag2)
+            if (isUsed)
             {
                 if (this.disabled)
                 {
@@ -145,10 +139,7 @@ namespace AbilityUser
             }
             else
             {
-                if (flag)
-                {
-                    return new GizmoResult(GizmoState.Mouseover, null);
-                }
+                if (isMouseOver) return new GizmoResult(GizmoState.Mouseover, null);
                 return new GizmoResult(GizmoState.Clear, null);
             }
         }

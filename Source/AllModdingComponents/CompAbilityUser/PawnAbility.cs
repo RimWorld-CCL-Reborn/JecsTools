@@ -38,7 +38,7 @@ namespace AbilityUser
         public virtual string PostAbilityVerbDesc() => "";
 
 
-        public bool CanFire
+        public virtual bool NeedsCooldown
         {
             get
             {
@@ -68,7 +68,7 @@ namespace AbilityUser
         public void ExposeData()
         {
             //base.ExposeData();
-            Scribe_Values.Look<int>(ref this.TicksUntilCasting, "TicksUntilcasting", -1);
+            Scribe_Values.Look<int>(ref this.TicksUntilCasting, "TicksUntilcasting", -2);
             Scribe_References.Look<Pawn>(ref this.pawn, "pawn");
             Scribe_Defs.Look<AbilityDef>(ref this.powerdef, "powerdef");
             if (Scribe.mode == LoadSaveMode.PostLoadInit)

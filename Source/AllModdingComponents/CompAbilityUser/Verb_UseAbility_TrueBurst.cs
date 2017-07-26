@@ -12,6 +12,7 @@ namespace AbilityUser
         // Made it so burst is not burst per each target, but back to the regular burst-over-time.
         protected override bool TryCastShot()
         {
+            this.ability.TicksUntilCasting = (int)this.UseAbilityProps.SecondsToRecharge * GenTicks.TicksPerRealSecond;
             bool result = false;
             this.TargetsAoE.Clear();
             UpdateTargets();
@@ -36,10 +37,9 @@ namespace AbilityUser
 
             // here, might want to have this set each time so people don't force stop on last burst and not hit the cooldown?
             //this.burstShotsLeft = 0;
-            if (this.burstShotsLeft == 0)
-            {
-                this.ability.TicksUntilCasting = (int)this.UseAbilityProps.SecondsToRecharge * GenTicks.TicksPerRealSecond;
-            }
+            //if (this.burstShotsLeft == 0)
+            //{
+            //}
             PostCastShot(result, out result);
             return result;
         }

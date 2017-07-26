@@ -56,7 +56,7 @@ namespace AbilityUser
         {
             PawnAbility pa = new PawnAbility(this.AbilityUser, abilityDef);
             if (activenow == false) pa.TicksUntilCasting = (int)(pa.powerdef.MainVerb.SecondsToRecharge * GenTicks.TicksPerRealSecond);
-            if (savedTicks != -1) pa.TicksUntilCasting = (int)savedTicks;
+            if (savedTicks != -2) pa.TicksUntilCasting = (int)savedTicks;
             thelist.Add(pa);
             this.UpdateAbilities();
 
@@ -260,8 +260,8 @@ namespace AbilityUser
                             command_CastPower.Disable("CannotOrderNonControlled".Translate());
                         }
                         string reason = "";
-                        if (newVerb.CasterIsPawn)
-                        {
+                        //if (newVerb.CasterIsPawn)
+                        //{
                             if (newVerb.CasterPawn.story.WorkTagIsDisabled(WorkTags.Violent) &&
                                 this.AllPowers[j].powerdef.MainVerb.isViolent)
                             {
@@ -270,14 +270,7 @@ namespace AbilityUser
                                     newVerb.CasterPawn.NameStringShort
                                 }));
                             }
-                            else if (!newVerb.CasterPawn.drafter.Drafted)
-                            {
-                                command_CastPower.Disable("IsNotDrafted".Translate(new object[]
-                                {
-                                    newVerb.CasterPawn.NameStringShort
-                                }));
-                            }
-                            else if (!newVerb.ability.CanFire)
+                            else if (!newVerb.ability.NeedsCooldown)
                             {
                                 command_CastPower.Disable("AU_PawnAbilityRecharging".Translate(new object[]
                                 {
@@ -292,7 +285,14 @@ namespace AbilityUser
                                     newVerb.CasterPawn.NameStringShort
                                 }));
                             }
-                        }
+                            else if (!newVerb.CasterPawn.drafter.Drafted)
+                            {
+                                command_CastPower.Disable("IsNotDrafted".Translate(new object[]
+                                {
+                                    newVerb.CasterPawn.NameStringShort
+                                }));
+                            }
+                        //}
                         yield return command_CastPower;
                     }
                 }
