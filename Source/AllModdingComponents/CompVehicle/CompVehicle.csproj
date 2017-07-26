@@ -71,6 +71,10 @@
     <Compile Include="VehicleHandlerGroup.cs" />
     <Compile Include="VehicleRole.cs" />
     <Compile Include="DeathActionWorker_NoCorpse.cs" />
+    <Compile Include="ITab_Passengers2.cs" />
+    <Compile Include="JobDriver_AssembleVehicle.cs" />
+    <Compile Include="CompProperties_VehicleSpawner.cs" />
+    <Compile Include="CompVehicleSpawner.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="SitePartWorker_AbandonedVehicles.cs" />
