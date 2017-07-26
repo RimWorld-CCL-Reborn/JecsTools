@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -73,6 +73,7 @@ namespace CompVehicle
         public bool CanManipulate => this.Props.manipulationHandling > HandlingType.HandlerRequired || ManipulationHandlerAvailable;
         public bool ManipulationHandlerAvailable
         {
+            
             get
             {
                 bool result = false;
@@ -228,6 +229,7 @@ namespace CompVehicle
         }
         public void ResolveFactionPilots()
         {
+            //this.Pawn.pather.
             //-------- Additions Made By Swenzi --------
             //Purpose: Remove Spawning of Premade Pawns in Vehicles
             //Logic: Players should not get free pawns for making vehicles
@@ -275,7 +277,12 @@ namespace CompVehicle
             //CompRefuelable refuelable = this.Pawn.GetComp<CompRefuelable>();
             //if (refuelable != null)
             //{
-            if (this.parent is Pawn vehicle && vehicle.Spawned && this.handlers != null && this.handlers.Count > 0)
+            if (this.parent is Pawn vehicle && vehicle.Spawned && this.handlers != null && this.handlers.Count > 0 && 
+               !((this.Pawn.GetLord()?.LordJob?.ToString()) == "RimWorld.LordJob_FormAndSendCaravan") &&
+                (!((this.Pawn.CurJob?.def) == JobDefOf.UnloadYourInventory) && 
+                 !this.Pawn.Position.InNoBuildEdgeArea(this.Pawn.Map)) && 
+                !this.Pawn.IsFighting()
+               )
             {
                 //Find and remove all spawned characters from the vehicle list.
                 foreach (VehicleHandlerGroup group in this.handlers)
@@ -283,8 +290,18 @@ namespace CompVehicle
                     Pawn toRemove = group?.handlers?.InnerListForReading?.FirstOrDefault(x => x.Spawned);
                     if (toRemove != null)
                     {
-                        //Log.Message("x");
-                        group.handlers.InnerListForReading.Remove(toRemove);
+						//Log.Message("x");
+						//Same deal as TryDrop, Remove wasn't working
+						//group.handlers.InnerListForReading.Remove(toRemove);
+						ThingOwner<Pawn> handler = new ThingOwner<Pawn>();
+						for (int z = 0; z < group.handlers.Count; z++)
+						{
+							if (group.handlers[z].def != toRemove.def)
+							{
+								handler.TryAdd(toRemove, 1, true);
+							}
+						}
+						group.handlers = handler;
                         //return;
                     }
                 }
@@ -298,8 +315,20 @@ namespace CompVehicle
                         Messages.Message("MessagePawnLeftVehicle".Translate(new object[] { toEject.Label, this.Pawn.Label, "low" }), this.Pawn, MessageSound.SeriousAlert);
                         //Eject(p, ref group.handlers);
                         Pawn b;
-                        //Log.Message("1");
-                        group.handlers.TryDrop(toEject, this.Pawn.PositionHeld, this.Pawn.MapHeld, ThingPlaceMode.Near, out b);
+						//Log.Message("1");
+						//group.handlers.TryDrop(toEject, this.Pawn.PositionHeld, this.Pawn.MapHeld, ThingPlaceMode.Near, out b);
+						//TryDrop wasn't working 
+                        Eject(toEject, ref group.handlers);
+                        ThingOwner<Pawn> handler = new ThingOwner<Pawn>();
+						for (int z = 0; z < group.handlers.Count; z++)
+						{
+							if (group.handlers[z].def != toEject.def)
+							{
+								handler.TryAdd(toEject, 1, true);
+							}
+						}
+						group.handlers = handler;
+
                         //Log.Message("2");
                         //return;
                     }
@@ -355,17 +384,26 @@ namespace CompVehicle
         }
         public void ResolveStatus()
         {
-			//-------- Additions Made By Swenzi --------
+            //-------- Additions Made By Swenzi --------
             //Purpose: Fixes bugs and adds better fuel consumption if the vehicle is refuelable
             //Logic: Better fuel consumption logic saves chemfuel, less bugs is good
             //Improvements: None I can think of.
             //Other Info: Changes marked with --- ADB Swenzi --- due to the dispersion of modifications in the method
 
             //Safety check in case the modder didn't assign a vehicle locomotion type. Defaults to Land Vehicle
-			//if (!this.Props.isWater && !this.Props.isLand && !this.Props.isAir)
-			//	this.Props.isLand = true;
-            
+            //if (!this.Props.isWater && !this.Props.isLand && !this.Props.isAir)
+            //	this.Props.isLand = true;
+
             //If refuelable, then check for fuel.
+            //if(this.Pawn.GetLord()?.CurLordToil != null){
+            //    Log.Warning(this.Pawn.GetLord().CurLordToil.ToString());
+            //}
+            //if(this.Pawn.CurJob != null){
+            //    Log.Warning(this.Pawn.CurJob.ToString());
+            //}
+            //if(this.Pawn.mindState?.duty != null){
+            //    Log.Warning(this.Pawn.mindState.duty.def.defName);
+            //}
             CompRefuelable compRefuelable = this.Pawn.GetComp<CompRefuelable>();
             if (compRefuelable != null)
             {
@@ -412,9 +450,23 @@ namespace CompVehicle
             //If it can move and it's in a caravan wandering than it might be stuck 
             //aka the movement thing hasn't kicked in. Change draft status just to be safe.
 
+            //Fixes bug where weapon tries to fire even after gunner is removed
+            if (this.weaponStatus != WeaponState.able){
+                if (this.Pawn.CurJob.def == JobDefOf.WaitCombat || this.Pawn.CurJob.def == JobDefOf.AttackStatic || this.Pawn.CurJob.def == JobDefOf.AttackMelee){
+                    if (!this.Pawn.pather.Moving)
+                    {
+                        this.Pawn.jobs.EndCurrentJob(JobCondition.None, false);
+                    }else{
+                        this.Pawn.jobs.EndCurrentJob(JobCondition.None, true);
+                    }
+
+                }
+                //Log.Error(this.Pawn.CurJob.ToString());
+            }
             if (this.movingStatus == MovingState.able)
             {
-                if (this.Pawn.CurJob != null && this.Pawn.IsCaravanMember() && this.Pawn.CurJob.def.defName == "GotoWander")
+                //Removed caravan member check as apparently pawns currently forming a caravan aren't part of one yet
+                if (this.Pawn.CurJob != null && this.Pawn.CurJob.def == JobDefOf.GotoWander)
                 {
                     if (!this.draftStatusChanged){
 						this.Pawn.drafter.Drafted = !this.Pawn.Drafted;
@@ -431,13 +483,17 @@ namespace CompVehicle
                 //Vehicles that can't move shouldn't have Lords, it causes problems cause they never complete their jobs and toils
 				if (this.Pawn.GetLord() != null)
 					this.Pawn.GetLord().lordManager.RemoveLord(this.Pawn.GetLord());
+                
 				if (this.Pawn.pather != null && this.Pawn.pather.Moving)
 				{
 
                     if (this.tickCount > this.Props.momentumTimeSeconds * 60)
                     {
                         //No more fake momentum, vehicle should stop
-                        this.Pawn.jobs.StopAll();
+                        //this.Pawn.jobs.
+                        if(this.Pawn.pather.Moving){
+                            this.Pawn.jobs.EndCurrentJob(JobCondition.None, false);
+                        }
                         this.Pawn.pather.StopDead();
                         this.tickCount = 0;
                     }
@@ -447,6 +503,9 @@ namespace CompVehicle
                         this.tickCount++;
 				    }
 				}
+            }
+            if(this.movingStatus != MovingState.able && this.weaponStatus != WeaponState.able){
+                this.Pawn.mindState.lastJobTag = JobTag.Idle;
             }
             // ------ ADB Swenzi -------
         }

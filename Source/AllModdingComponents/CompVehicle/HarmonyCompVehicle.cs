@@ -1,4 +1,4 @@
-﻿﻿using Harmony;
+﻿﻿﻿using Harmony;
 using RimWorld;
 using System.Collections.Generic;
 using System.Linq;
@@ -120,17 +120,17 @@ namespace CompVehicle
             //The math on this is sound, I just don't know what the game is doing to turn the result into tiny values
             harmony.Patch(AccessTools.Method(typeof(RimWorld.Planet.CaravanTicksPerMoveUtility), "GetTicksPerMove", new Type[] { typeof(List<Pawn>) }), null, new HarmonyMethod(typeof(HarmonyCompVehicle),nameof(GetTicksPerMove_PostFix)));
 
-            //Tries to find satisfy the vehicle's fuel "need"
+            ////Tries to find satisfy the vehicle's fuel "need"
             harmony.Patch(AccessTools.Method(typeof(RimWorld.Planet.CaravanPawnsNeedsUtility), "TrySatisfyPawnNeeds"), new HarmonyMethod(typeof(HarmonyCompVehicle),nameof(TrySatisfyPawnNeeds_PreFix)), null);
 
-            //Remove pawns from the vehicle when making a caravan
+            ////Remove pawns from the vehicle when making a caravan
             harmony.Patch(AccessTools.Method(typeof(RimWorld.Planet.CaravanMaker), "MakeCaravan"), null, new HarmonyMethod(typeof(HarmonyCompVehicle),nameof(MakeCaravan_PostFix)));
 
-            //Remove pawns from the vehicle when exiting the map in an already formed caravan
-            harmony.Patch(AccessTools.Method(typeof(RimWorld.Planet.CaravanExitMapUtility), "ExitMapAndJoinOrCreateCaravan"), null, new HarmonyMethod(typeof(HarmonyCompVehicle),nameof(ExitMapAndJoinOrCreateCaravan_PostFix)));
+            ////Remove pawns from the vehicle when exiting the map in an already formed caravan
+            harmony.Patch(AccessTools.Method(typeof(RimWorld.Planet.CaravanExitMapUtility), "ExitMapAndJoinOrCreateCaravan"), new HarmonyMethod(typeof(HarmonyCompVehicle), nameof(ExitMapAndJoinOrCreateCaravan_PreFix)), null);
 
             //Add pawns back to the vehicle and remove them from the caravan when entering the map
-            //Swenzy - Converted to prefix which should fix map enter cloning (Cloning did occur previously but clones were removed via resolve ejection)
+            //Converted to prefix which should fix map enter cloning (Cloning did occur previously but clones were removed via resolve ejection)
             harmony.Patch(AccessTools.Method(typeof(RimWorld.Planet.CaravanEnterMapUtility), "Enter", new Type[] { typeof(Caravan), typeof(Map), typeof(Func<Pawn, IntVec3>), typeof(CaravanDropInventoryMode), typeof(bool) }), new HarmonyMethod(typeof(HarmonyCompVehicle), nameof(Enter_PreFix)), null, null);
 
             //Modifies the caravan inspect string so fuel is shown
@@ -147,6 +147,12 @@ namespace CompVehicle
             //Vehicles Item Pickup Fix!
             harmony.Patch(AccessTools.Method(typeof(LordToil_PrepareCaravan_GatherItems),"LordToilTick"), new HarmonyMethod(typeof(HarmonyCompVehicle), "ItemsLordToilTick_PreFix"), null);
 
+            //Vehicles Terrain Patch
+            //harmony.Patch(AccessTools.Method(typeof(PathGrid), "CalculatedCostAt"), new HarmonyMethod(typeof(HarmonyCompVehicle), "CalculatedCostAt_PreFix"), null);
+
+            //harmony.Patch(AccessTools.Method(typeof(PathFinder), "FindPath",new Type[] { typeof(IntVec3),typeof(LocalTargetInfo), typeof(Pawn), typeof(PathEndMode) }), new HarmonyMethod(typeof(HarmonyCompVehicle), "FinalWalkableNonDoorCell_PreFix"), null);
+
+            //harmony.Patch(AccessTools.Method(typeof(JobDriver), "DriverTick"), new HarmonyMethod(typeof(HarmonyCompVehicle), "DriverTick_PreFix"), null);
             //Not Working
             //Get the vehicle to spawn at a site in the world map when abandoned
             //harmony.Patch(AccessTools.Method(typeof(RimWorld.Planet.CaravanPawnsAndItemsAbandonUtility), "TryAbandonViaInterface"),new HarmonyMethod(typeof(RevampedEconomy.HarmonyPatches),nameof(TryAbandonViaInterface_PreFix)),null);
@@ -154,10 +160,193 @@ namespace CompVehicle
             // ------ Additions Made By Swenzi ------
             #endregion SwenziPatches
         }
-        
-		//RimWorld.LordToil_PrepareCaravan_GatherItems
+
+   //     public static bool DriverTick_PreFix(JobDriver __instance){
+			//Traverse traverseobj = Traverse.Create(__instance);
+			////Map map = ;
+   //         try
+			//{
+			//	__instance.ticksLeftThisToil--;
+			//	__instance.debugTicksSpentThisToil++;
+			//	if (traverseobj.Property("CurToil").GetValue<Toil>() == null)
+			//	{
+			//		if (!__instance.pawn.stances.FullBodyBusy || traverseobj.Property("CanStartNextToilInBusyStance").GetValue<bool>())
+			//		{
+   //                     __instance.ReadyForNextToil();
+			//		}
+			//	}
+			//	else if ((bool)AccessTools.Method(typeof(JobDriver), "CheckCurrentToilEndOrFail").Invoke(__instance, new object[] {}))
+			//	{
+			//		if (traverseobj.Field("curToilCompleteMode").GetValue<ToilCompleteMode>() == ToilCompleteMode.Delay)
+			//		{
+			//			if (__instance.ticksLeftThisToil <= 0)
+			//			{
+			//				__instance.ReadyForNextToil();
+   //                         //return;
+   //                         return false;
+			//			}
+			//		}
+			//		else if (traverseobj.Field("curToilCompleteMode").GetValue<ToilCompleteMode>() == ToilCompleteMode.FinishedBusy && !__instance.pawn.stances.FullBodyBusy)
+			//		{
+			//			__instance.ReadyForNextToil();
+   //                     return false;
+			//		}
+			//		if (traverseobj.Field("wantBeginNextToil").GetValue<bool>())
+			//		{
+   //                     TryActuallyStartNextToil(__instance)
+			//			 //AccessTools.Method(typeof(JobDriver), "TryActuallyStartNextToil").Invoke(__instance, new object[] { });
+			//		}
+			//		else if (traverseobj.Field("curToilCompleteMode").GetValue<ToilCompleteMode>() == ToilCompleteMode.Instant && __instance.debugTicksSpentThisToil > 300)
+			//		{
+			//			Log.Error(string.Concat(new object[]
+			//			{
+			//				__instance.pawn,
+			//				" had to be broken from frozen state. He was doing job ",
+			//				traverseobj.Property("CurJob").GetValue<Job>(),
+			//				", toilindex=",
+			//				traverseobj.Property("CurToilIndex").GetValue<int>()
+			//			}));
+			//			__instance.ReadyForNextToil();
+			//		}
+			//		else
+			//		{
+			//			Job curJob = traverseobj.Property("CurJob").GetValue<Job>();
+			//			if (traverseobj.Property("CurToil").GetValue<Toil>().preTickActions != null)
+			//			{
+			//				Toil curToil = traverseobj.Property("CurToil").GetValue<Toil>();
+			//				for (int i = 0; i < curToil.preTickActions.Count; i++)
+			//				{
+			//					curToil.preTickActions[i]();
+			//					if (traverseobj.Property("CurJob").GetValue<Job>() != curJob)
+			//					{
+   //                                 return false;
+			//					}
+			//					if (traverseobj.Property("CurToil").GetValue<Toil>() != curToil ||traverseobj.Field("wantBeginNextToil").GetValue<bool>())
+			//					{
+   //                                 return false;
+			//					}
+			//				}
+			//			}
+   //                     if (traverseobj.Property("CurToil").GetValue<Toil>().tickAction != null)
+			//			{
+			//				traverseobj.Property("CurToil").GetValue<Toil>().tickAction();
+			//			}
+			//		}
+			//	}
+			//}
+			//catch (Exception ex)
+			//{
+			//	__instance.pawn.jobs.StartErrorRecoverJob(string.Concat(new object[]
+			//	{
+			//		"Exception in Tick (pawn=",
+			//		__instance.pawn,
+			//		", job=",
+			//		traverseobj.Property("CurJob").GetValue<Job>(),
+			//		", CurToil=",
+			//		traverseobj.Property("CurToilIndex").GetValue<int>(),
+			//		"): ",
+			//		ex
+			//	}));
+			//}
+        //    return false;
+        //}
+
+		//private static void TryActuallyStartNextToil(JobDriver __instance)
+		//{
+		//	Traverse traverseobj = Traverse.Create(__instance);
+		//	if (!__instance.pawn.Spawned)
+		//	{
+		//		return;
+		//	}
+		//	if (__instance.pawn.stances.FullBodyBusy && !traverseobj.Property("CanStartNextToilInBusyStance").GetValue<bool>())
+		//	{
+		//		return;
+		//	}
+		//	if (traverseobj.Property("HaveCurToil").GetValue<bool>())
+		//	{
+		//		traverseobj.Property("CurToil").GetValue<Toil>().Cleanup();
+		//	}
+		//	traverseobj.Field("curToilIndex").GetValue<int>()++;
+		//	traverseobj.Field("wantBeginNextToil").GetValue<bool>() = false;
+		//	if (!traverseobj.Property("HaveCurToil").GetValue<bool>())
+		//	{
+  //              if (__instance.pawn.stances != null && __instance.pawn.stances.curStance.StanceBusy)
+		//		{
+		//			Log.ErrorOnce(string.Concat(new object[]
+		//			{
+		//				__instance.pawn,
+		//				" ended job ",
+		//				traverseobj.Property("CurJob").GetValue<Job>(),
+		//				" due to running out of toils during a busy stance."
+		//			}), 6453432);
+		//		}
+		//		__instance.EndJobWith(JobCondition.Succeeded);
+		//		return;
+		//	}
+		//	__instance.debugTicksSpentThisToil = 0;
+		//	__instance.ticksLeftThisToil = traverseobj.Property("CurToil").GetValue<Toil>().defaultDuration;
+		//	traverseobj.Field("curToilCompleteMode").GetValue<ToilCompleteMode>() = traverseobj.Property("CurToil").GetValue<Toil>().defaultCompleteMode;
+		//	if (!(bool)AccessTools.Method(typeof(JobDriver), "CheckCurrentToilEndOrFail").Invoke(__instance, new object[] { }))
+		//	{
+		//		int num = __instance.CurToilIndex;
+		//		if (traverseobj.Property("CurToil").GetValue<Toil>().preInitActions != null)
+		//		{
+		//			for (int i = 0; i < traverseobj.Property("CurToil").GetValue<Toil>().preInitActions.Count; i++)
+		//			{
+		//				traverseobj.Property("CurToil").GetValue<Toil>().preInitActions[i]();
+		//				if (__instance.CurToilIndex != num)
+		//				{
+		//					break;
+		//				}
+		//			}
+		//		}
+		//		if (__instance.CurToilIndex == num)
+		//		{
+		//			if (traverseobj.Property("CurToil").GetValue<Toil>().initAction != null)
+		//			{
+		//				try
+		//				{
+		//					traverseobj.Property("CurToil").GetValue<Toil>().initAction();
+		//				}
+		//				catch (Exception ex)
+		//				{
+		//					__instance.pawn.jobs.StartErrorRecoverJob(string.Concat(new object[]
+		//					{
+		//						"JobDriver threw exception in initAction. Pawn=",
+		//						__instance.pawn,
+		//						", Job=",
+		//						traverseobj.Property("CurJob").GetValue<Job>(),
+		//						", Exception: ",
+		//						ex
+		//					}));
+		//					return;
+		//				}
+		//			}
+		//			if (__instance.CurToilIndex == num && !__instance.ended && traverseobj.Field("curToilCompleteMode").GetValue<ToilCompleteMode>() == ToilCompleteMode.Instant)
+		//			{
+		//				__instance.ReadyForNextToil();
+		//			}
+		//		}
+		//	}
+		//}
+
+        public static void FinalWalkableNonDoorCell_Prefix(){
+            Log.Error("t");
+        }
+
+        public static bool CalculatedCostAt_Prefix(IntVec3 c, bool perceivedStatic, IntVec3 prevCell, PathGrid __instance){
+            Log.Error("test");
+            Traverse traverseobj = Traverse.Create(__instance);
+            Map map = traverseobj.Field("map").GetValue<Map>();
+            Log.Error(map.thingGrid.ThingsListAt(prevCell).First().Label);
+            return true;
+        }
+
+
+        //RimWorld.LordToil_PrepareCaravan_GatherItems
         //Needs a transpiler i think.... Can't transpile cause my VM is down so i can't see IL code
-		public static bool ItemsLordToilTick_PreFix(LordToil_PrepareCaravan_GatherItems __instance)
+        private static bool firstRun = false;
+        public static bool ItemsLordToilTick_PreFix(LordToil_PrepareCaravan_GatherItems __instance)
 		{
 			if (Find.TickManager.TicksGame % 120 == 0)
 			{
@@ -167,12 +356,27 @@ namespace CompVehicle
 					Pawn pawn = __instance.lord.ownedPawns[i];
                     if ((pawn.IsColonist || pawn.GetComp<CompVehicle>() != null) && pawn.mindState.lastJobTag != JobTag.WaitingForOthersToFinishGatheringItems)
 					{
-						flag = false;
-						break;
+                        //Rewrote this, it seems to fix the colonist + vehicle setups
+                        //As to why? Dunno haha
+                        if (!firstRun){
+                            flag = false;
+                            firstRun = true;
+                            break;
+                        }else{
+                            if (pawn.CurJob.def != JobDefOf.WaitWander){
+                                flag = false;
+                                break;
+                            }
+                        }
+
+						//flag = false;
+
+						//break;
 					}
 				}
 				if (flag)
 				{
+                    //Log.Error("2nd Statement");
 					List<Pawn> allPawnsSpawned = __instance.Map.mapPawns.AllPawnsSpawned;
 					for (int j = 0; j < allPawnsSpawned.Count; j++)
 					{
@@ -186,6 +390,7 @@ namespace CompVehicle
 				if (flag)
 				{
 					__instance.lord.ReceiveMemo("AllItemsGathered");
+                    firstRun = false;
 				}
 			}
             return false;
@@ -688,40 +893,72 @@ namespace CompVehicle
 		//Improvements: Combine this with the previous patch method?
 		
         //RimWorld.Planet.CaravanExitMapUtility
-		public static void ExitMapAndJoinOrCreateCaravan_PostFix(Pawn pawn)
+
+        //Bad code, needs transpiler cause i nuked vanilla code again
+		public static bool ExitMapAndJoinOrCreateCaravan_PreFix(Pawn pawn)
 		{
+            //Vanilla code start
 			Caravan caravan = CaravanExitMapUtility.FindCaravanToJoinFor(pawn);
-            CompVehicle vehicle = pawn.GetComp<CompVehicle>();
-			if (vehicle.AllOccupants.Count > 0)
+			if (caravan != null)
 			{
-				if (vehicle.PawnsInVehicle == null)
-					vehicle.PawnsInVehicle = vehicle.handlers;
+				pawn.DeSpawn();
+				caravan.AddPawn(pawn, true);
+				pawn.ExitMap(false);
 			}
-			if (vehicle != null && vehicle.handlers != null && vehicle.handlers.Count > 0)
+            //Vanilla code edit transpiler here for if statement
+			else if (pawn.IsColonist || pawn.GetComp<CompVehicle>() != null)
 			{
-				foreach (VehicleHandlerGroup group in vehicle.handlers)
+				List<int> list = CaravanExitMapUtility.AvailableExitTilesAt(pawn.Map);
+				Caravan caravan2 = CaravanExitMapUtility.ExitMapAndCreateCaravan(Gen.YieldSingle<Pawn>(pawn), pawn.Faction, pawn.Map.Tile, (!list.Any<int>()) ? pawn.Map.Tile : list.RandomElement<int>());
+				caravan2.autoJoinable = true;
+				if (pawn.Faction == Faction.OfPlayer)
 				{
-					for (int i = 0; i < group.handlers.Count; i++)
+					Messages.Message("MessagePawnLeftMapAndCreatedCaravan".Translate(new object[]
 					{
-						Pawn tpawn = group.handlers[i];
-						//Store vehicle handler group structure in comp variable
-						if (vehicle.AllOccupants.Count > 0)
-						{
-							//Add pawns to the comp variable for usage on reentering the map
-							foreach (VehicleHandlerGroup vgroup in vehicle.PawnsInVehicle)
-							{
-								if (vgroup.role == group.role)
-								{
-									vgroup.handlers.Add(tpawn);
-								}
-							}
-						}
-						//Remove the pawn from the vehicle and add it to the caravan
-						caravan.AddPawn(tpawn, true);
-						group.handlers.Remove(tpawn);
-					}
+						pawn.LabelShort
+					}).CapitalizeFirst(), caravan2, MessageSound.Benefit);
 				}
 			}
+			else
+			{
+				Log.Error("Pawn " + pawn + " didn't find any caravan to join, and he can't create one.");
+			}
+            //Vanilla Code end
+            //caravan = CaravanExitMapUtility.FindCaravanToJoinFor(pawn);
+            if (pawn.GetComp<CompVehicle>() is CompVehicle vehicle)
+            {
+                if (!vehicle.AllOccupants.NullOrEmpty())
+                {
+                    if (vehicle.PawnsInVehicle == null)
+                        vehicle.PawnsInVehicle = vehicle.handlers;
+                }
+                if (vehicle.handlers != null && vehicle.handlers.Count > 0)
+                {
+                    foreach (VehicleHandlerGroup group in vehicle.handlers)
+                    {
+                        for (int i = 0; i < group.handlers.Count; i++)
+                        {
+                            Pawn tpawn = group.handlers[i];
+                            //Store vehicle handler group structure in comp variable
+                            if (vehicle.AllOccupants.Count > 0)
+                            {
+                                //Add pawns to the comp variable for usage on reentering the map
+                                foreach (VehicleHandlerGroup vgroup in vehicle.PawnsInVehicle)
+                                {
+                                    if (vgroup.role == group.role)
+                                    {
+                                        vgroup.handlers.Add(tpawn);
+                                    }
+                                }
+                            }
+                            //Remove the pawn from the vehicle and add it to the caravan
+                            caravan.AddPawn(tpawn, true);
+                            group.handlers.Remove(tpawn);
+                        }
+                    }
+                }
+            }
+            return false;
 		}
 
 		//Purpose: Put pawns back into vehicles on entering the map
@@ -1154,7 +1391,6 @@ namespace CompVehicle
                 Thing thing = GatherItemsForCaravanUtility.FindThingToHaul(pawn, lord);
                 if (thing == null)
                 {
-
                     //Log.Message("Fail2");
 
                     __result = null;
@@ -1164,8 +1400,9 @@ namespace CompVehicle
                 {
                     lord = lord
                 };
-
                 //Log.Message("Success");
+
+
                 return false;
             }
             return true;
@@ -1179,11 +1416,12 @@ namespace CompVehicle
             {
                 //Log.Message("2");
 
-                for (int i = 0; i < __instance.lord.ownedPawns.Count; i++)
+                for (int i = 0; i < pawns.Count; i++)
                 {
                     Pawn pawn = pawns[i];
                     if (pawn.IsColonist || pawn.GetComp<CompVehicle>() is CompVehicle comp && comp.CanMove)
                     {
+
                         pawn.mindState.duty = new PawnDuty(DutyDefOf.PrepareCaravan_GatherItems);
                     }
                     else if (pawn.RaceProps.Animal)
