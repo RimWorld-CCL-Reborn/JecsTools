@@ -744,6 +744,7 @@ namespace CompVehicle
         }
         public override void PostExposeData()
         {
+            
             base.PostExposeData();
             Scribe_Values.Look<bool>(ref this.ResolvedPawns, "ResolvedPawns", false);
             Scribe_Values.Look<WeaponState>(ref this.weaponStatus, "weaponStatus", WeaponState.able);

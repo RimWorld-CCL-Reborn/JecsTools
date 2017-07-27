@@ -924,6 +924,9 @@ namespace CompVehicle
 				Log.Error("Pawn " + pawn + " didn't find any caravan to join, and he can't create one.");
 			}
             //Vanilla Code end
+
+            //Apparently commenting out this code fixed the errors from JobDriver when
+            //leaving an invasion map
             //caravan = CaravanExitMapUtility.FindCaravanToJoinFor(pawn);
             if (pawn.GetComp<CompVehicle>() is CompVehicle vehicle)
             {
@@ -932,31 +935,31 @@ namespace CompVehicle
                     if (vehicle.PawnsInVehicle == null)
                         vehicle.PawnsInVehicle = vehicle.handlers;
                 }
-                if (vehicle.handlers != null && vehicle.handlers.Count > 0)
-                {
-                    foreach (VehicleHandlerGroup group in vehicle.handlers)
-                    {
-                        for (int i = 0; i < group.handlers.Count; i++)
-                        {
-                            Pawn tpawn = group.handlers[i];
-                            //Store vehicle handler group structure in comp variable
-                            if (vehicle.AllOccupants.Count > 0)
-                            {
-                                //Add pawns to the comp variable for usage on reentering the map
-                                foreach (VehicleHandlerGroup vgroup in vehicle.PawnsInVehicle)
-                                {
-                                    if (vgroup.role == group.role)
-                                    {
-                                        vgroup.handlers.Add(tpawn);
-                                    }
-                                }
-                            }
-                            //Remove the pawn from the vehicle and add it to the caravan
-                            caravan.AddPawn(tpawn, true);
-                            group.handlers.Remove(tpawn);
-                        }
-                    }
-                }
+                //if (vehicle.handlers != null && vehicle.handlers.Count > 0)
+                //{
+                //    foreach (VehicleHandlerGroup group in vehicle.handlers)
+                //    {
+                //        for (int i = 0; i < group.handlers.Count; i++)
+                //        {
+                //            Pawn tpawn = group.handlers[i];
+                //            //Store vehicle handler group structure in comp variable
+                //            if (vehicle.AllOccupants.Count > 0)
+                //            {
+                //                //Add pawns to the comp variable for usage on reentering the map
+                //                foreach (VehicleHandlerGroup vgroup in vehicle.PawnsInVehicle)
+                //                {
+                //                    if (vgroup.role == group.role)
+                //                    {
+                //                        vgroup.handlers.Add(tpawn);
+                //                    }
+                //                }
+                //            }
+                //            //Remove the pawn from the vehicle and add it to the caravan
+                //            caravan.AddPawn(tpawn, true);
+                //            group.handlers.Remove(tpawn);
+                //        }
+                //    }
+                //}
             }
             return false;
 		}
