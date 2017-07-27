@@ -1,4 +1,4 @@
-﻿﻿﻿using System;
+﻿﻿﻿﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -423,7 +423,7 @@ namespace CompVehicle
                     return;
                 }
             }
-
+            //Log.Error("1");
             if (this.MovementHandlerAvailable && this.movingStatus == MovingState.frozen)
             {
                 this.movingStatus = MovingState.able;
@@ -445,14 +445,15 @@ namespace CompVehicle
             {
                 if (this.Props.manipulationHandling != HandlingType.NoHandlerRequired) this.manipulationStatus = ManipulationState.frozen;
             }
-
+            //Log.Error("2");
             // ------ ADB Swenzi -------
             //If it can move and it's in a caravan wandering than it might be stuck 
             //aka the movement thing hasn't kicked in. Change draft status just to be safe.
 
             //Fixes bug where weapon tries to fire even after gunner is removed
             if (this.weaponStatus != WeaponState.able){
-                if (this.Pawn.CurJob.def == JobDefOf.WaitCombat || this.Pawn.CurJob.def == JobDefOf.AttackStatic || this.Pawn.CurJob.def == JobDefOf.AttackMelee){
+                //Added Job null check
+                if (this.Pawn.CurJob?.def == JobDefOf.WaitCombat || this.Pawn.CurJob?.def == JobDefOf.AttackStatic || this.Pawn.CurJob?.def == JobDefOf.AttackMelee){
                     if (!this.Pawn.pather.Moving)
                     {
                         this.Pawn.jobs.EndCurrentJob(JobCondition.None, false);
@@ -463,9 +464,11 @@ namespace CompVehicle
                 }
                 //Log.Error(this.Pawn.CurJob.ToString());
             }
+            //Log.Error("3");
             if (this.movingStatus == MovingState.able)
             {
                 //Removed caravan member check as apparently pawns currently forming a caravan aren't part of one yet
+                //Log.Error("4");
                 if (this.Pawn.CurJob != null && this.Pawn.CurJob.def == JobDefOf.GotoWander)
                 {
                     if (!this.draftStatusChanged){
@@ -480,6 +483,7 @@ namespace CompVehicle
                 }
             }
             else{
+                //Log.Error("5");
                 //Vehicles that can't move shouldn't have Lords, it causes problems cause they never complete their jobs and toils
 				if (this.Pawn.GetLord() != null)
 					this.Pawn.GetLord().lordManager.RemoveLord(this.Pawn.GetLord());
@@ -504,6 +508,7 @@ namespace CompVehicle
 				    }
 				}
             }
+            //Log.Error("6");
             if(this.movingStatus != MovingState.able && this.weaponStatus != WeaponState.able){
                 this.Pawn.mindState.lastJobTag = JobTag.Idle;
             }
