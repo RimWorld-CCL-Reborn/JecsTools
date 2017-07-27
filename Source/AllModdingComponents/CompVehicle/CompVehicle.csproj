@@ -57,6 +57,7 @@
     <Compile Include="CompVehicle.cs" />
     <Compile Include="CompProperties_Vehicle.cs" />
     <Compile Include="CompVehicleSpawner.cs" />
+    <Compile Include="CompVehicleUtility.cs" />
     <Compile Include="HandlingTypeFlags.cs" />
     <Compile Include="HarmonyCompVehicle.cs" />
     <Compile Include="ITab_Passengers.cs" />

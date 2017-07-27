@@ -306,33 +306,39 @@ namespace CompVehicle
                     }
                 }
 
-                //Find and eject all characters who need to have their needs met.
-                foreach (VehicleHandlerGroup group in this.handlers)
+                //Do not eject anyone from the vehicle for needs during combat.
+                //It's too dangerous to leave during combat.
+                if (this?.Pawn?.Map?.attackTargetsCache?.GetPotentialTargetsFor(this.Pawn)?.FirstOrDefault(x => !x.ThreatDisabled()) == null)
                 {
-                    Pawn toEject = group?.handlers?.InnerListForReading?.FirstOrDefault(x => !x.Spawned && x?.needs?.AllNeeds?.FirstOrDefault(y => y.CurLevelPercentage < this.Props.ejectIfBelowNeedPercent) != null);
-                    if (toEject != null)
+                    //Find and eject all characters who need to have their needs met.
+                    foreach (VehicleHandlerGroup group in this.handlers)
                     {
-                        Messages.Message("MessagePawnLeftVehicle".Translate(new object[] { toEject.Label, this.Pawn.Label, "low" }), this.Pawn, MessageSound.SeriousAlert);
-                        //Eject(p, ref group.handlers);
-                        Pawn b;
-						//Log.Message("1");
-						//group.handlers.TryDrop(toEject, this.Pawn.PositionHeld, this.Pawn.MapHeld, ThingPlaceMode.Near, out b);
-						//TryDrop wasn't working 
-                        Eject(toEject, ref group.handlers);
-                        ThingOwner<Pawn> handler = new ThingOwner<Pawn>();
-						for (int z = 0; z < group.handlers.Count; z++)
-						{
-							if (group.handlers[z].def != toEject.def)
-							{
-								handler.TryAdd(toEject, 1, true);
-							}
-						}
-						group.handlers = handler;
+                        Pawn toEject = group?.handlers?.InnerListForReading?.FirstOrDefault(x => !x.Spawned && x?.needs?.AllNeeds?.FirstOrDefault(y => y.CurLevelPercentage < this.Props.ejectIfBelowNeedPercent) != null);
+                        if (toEject != null)
+                        {
+                            Messages.Message("MessagePawnLeftVehicle".Translate(new object[] { toEject.Label, this.Pawn.Label, "low" }), this.Pawn, MessageSound.SeriousAlert);
+                            //Eject(p, ref group.handlers);
+                            Pawn b;
+                            //Log.Message("1");
+                            //group.handlers.TryDrop(toEject, this.Pawn.PositionHeld, this.Pawn.MapHeld, ThingPlaceMode.Near, out b);
+                            //TryDrop wasn't working 
+                            Eject(toEject, ref group.handlers);
+                            ThingOwner<Pawn> handler = new ThingOwner<Pawn>();
+                            for (int z = 0; z < group.handlers.Count; z++)
+                            {
+                                if (group.handlers[z].def != toEject.def)
+                                {
+                                    handler.TryAdd(toEject, 1, true);
+                                }
+                            }
+                            group.handlers = handler;
 
-                        //Log.Message("2");
-                        //return;
+                            //Log.Message("2");
+                            //return;
+                        }
                     }
                 }
+
                 //}
 
                 //----Additions Made By Swenzi-----
@@ -382,6 +388,7 @@ namespace CompVehicle
                 }
             }
         }
+
         public void ResolveStatus()
         {
             //-------- Additions Made By Swenzi --------
@@ -389,23 +396,8 @@ namespace CompVehicle
             //Logic: Better fuel consumption logic saves chemfuel, less bugs is good
             //Improvements: None I can think of.
             //Other Info: Changes marked with --- ADB Swenzi --- due to the dispersion of modifications in the method
-
-            //Safety check in case the modder didn't assign a vehicle locomotion type. Defaults to Land Vehicle
-            //if (!this.Props.isWater && !this.Props.isLand && !this.Props.isAir)
-            //	this.Props.isLand = true;
-
-            //If refuelable, then check for fuel.
-            //if(this.Pawn.GetLord()?.CurLordToil != null){
-            //    Log.Warning(this.Pawn.GetLord().CurLordToil.ToString());
-            //}
-            //if(this.Pawn.CurJob != null){
-            //    Log.Warning(this.Pawn.CurJob.ToString());
-            //}
-            //if(this.Pawn.mindState?.duty != null){
-            //    Log.Warning(this.Pawn.mindState.duty.def.defName);
-            //}
-            CompRefuelable compRefuelable = this.Pawn.GetComp<CompRefuelable>();
-            if (compRefuelable != null)
+            
+            if (this.Pawn?.GetComp<CompRefuelable>() is CompRefuelable compRefuelable)
             {
                 //------ ADB Swenzi ------
                 //If it isn't moving than it shouldn't use fuel
@@ -424,27 +416,23 @@ namespace CompVehicle
                 }
             }
 
-            if (this.MovementHandlerAvailable && this.movingStatus == MovingState.frozen)
-            {
+            if (MovementHandlerAvailable && this.movingStatus == MovingState.frozen)
                 this.movingStatus = MovingState.able;
-            }
-            if (this.WeaponHandlerAvailable && this.weaponStatus == WeaponState.frozen)
-            {
-                this.weaponStatus = WeaponState.able;
-            }
 
-            if (!this.MovementHandlerAvailable && this.movingStatus == MovingState.able)
-            {
-                if (this.Props.movementHandling != HandlingType.NoHandlerRequired ) this.movingStatus = MovingState.frozen;
-            }
-            if (!this.WeaponHandlerAvailable && this.weaponStatus == WeaponState.able)
-            {
-                if (this.Props.weaponHandling != HandlingType.NoHandlerRequired) this.weaponStatus = WeaponState.frozen;
-            }
-            if (!this.ManipulationHandlerAvailable && this.manipulationStatus == ManipulationState.able)
-            {
-                if (this.Props.manipulationHandling != HandlingType.NoHandlerRequired) this.manipulationStatus = ManipulationState.frozen;
-            }
+            if (WeaponHandlerAvailable && this.weaponStatus == WeaponState.frozen)
+                this.weaponStatus = WeaponState.able;
+
+            if ((!MovementHandlerAvailable && this.movingStatus == MovingState.able) && 
+                Props.movementHandling != HandlingType.NoHandlerRequired)
+                this.movingStatus = MovingState.frozen;
+
+            if ((!WeaponHandlerAvailable && this.weaponStatus == WeaponState.able) && 
+                Props.weaponHandling != HandlingType.NoHandlerRequired)
+                this.weaponStatus = WeaponState.frozen;
+
+            if ((!ManipulationHandlerAvailable && this.manipulationStatus == ManipulationState.able) && 
+                Props.manipulationHandling != HandlingType.NoHandlerRequired)
+                this.manipulationStatus = ManipulationState.frozen;
 
             // ------ ADB Swenzi -------
             //If it can move and it's in a caravan wandering than it might be stuck 
@@ -452,14 +440,14 @@ namespace CompVehicle
 
             //Fixes bug where weapon tries to fire even after gunner is removed
             if (this.weaponStatus != WeaponState.able){
-                if (this.Pawn.CurJob.def == JobDefOf.WaitCombat || this.Pawn.CurJob.def == JobDefOf.AttackStatic || this.Pawn.CurJob.def == JobDefOf.AttackMelee){
-                    if (!this.Pawn.pather.Moving)
-                    {
+                if (this?.Pawn?.CurJob?.def == JobDefOf.WaitCombat || 
+                    this?.Pawn?.CurJob?.def == JobDefOf.AttackStatic || 
+                    this?.Pawn?.CurJob?.def == JobDefOf.AttackMelee)
+                {
+                    if (!this?.Pawn?.pather?.Moving ?? false)
                         this.Pawn.jobs.EndCurrentJob(JobCondition.None, false);
-                    }else{
+                    else
                         this.Pawn.jobs.EndCurrentJob(JobCondition.None, true);
-                    }
-
                 }
                 //Log.Error(this.Pawn.CurJob.ToString());
             }
@@ -479,9 +467,10 @@ namespace CompVehicle
       //              this.draftStatusChanged = false;
       //          }
             }
-            else{
+            else
+            {
                 //Vehicles that can't move shouldn't have Lords, it causes problems cause they never complete their jobs and toils
-				if (this.Pawn.GetLord() != null)
+				if (this?.Pawn?.GetLord() != null)
 					this.Pawn.GetLord().lordManager.RemoveLord(this.Pawn.GetLord());
                 
 				if (this.Pawn.pather != null && this.Pawn.pather.Moving)
@@ -504,10 +493,16 @@ namespace CompVehicle
 				    }
 				}
             }
-            if(this.movingStatus != MovingState.able && this.weaponStatus != WeaponState.able){
+            if((this.movingStatus != MovingState.able && this.weaponStatus != WeaponState.able) &&
+                this?.Pawn?.mindState != null)
+            {
                 this.Pawn.mindState.lastJobTag = JobTag.Idle;
             }
             // ------ ADB Swenzi -------
+            if (this.Pawn.Drafted && this.movingStatus == MovingState.frozen)
+            {
+                this.Pawn.drafter.Drafted = false;
+            }
         }
 
 		// ------ Additions made by Swenzi ------
@@ -515,6 +510,9 @@ namespace CompVehicle
 		//Logic: Prevent cryosleep gimmicks by storing pawns in vehicles forever
         //To prevent unneccessary patching of game methods, needs are modified by this function
         //Improvements: Mood modifiers if they stay too long? Traits effecting mood? Driving Experience?
+        //
+        //Addendum by Jecrell:
+        //-Added the ability for some pawns to resolve needs inside the vehicle.
 		public void ResolveNeeds(){
             //Player only, NPC factions is weird unless better logic is make them go back to vehicles after being ejected
             if (this.Pawn.Faction.IsPlayer)
@@ -532,12 +530,24 @@ namespace CompVehicle
                                 //These needs are major and should change
                                 for (int j = 0; j < pawn_needs.Count; j++)
                                 {
-                                    if (pawn_needs[j].def == NeedDefOf.Rest)
+                                    if (pawn_needs[j] is Need_Rest need_Rest)
+                                    {
                                         pawn_needs[j].CurLevel -= this.Props.restNeedRate;
-                                    if (pawn_needs[j].def == NeedDefOf.Food)
+                                        CompVehicleUtility.TrySatisfyRestNeed(pawn, need_Rest, this.Pawn);
+                                    }
+                                    if (pawn_needs[j] is Need_Food need_Food)
+                                    {
                                         pawn_needs[j].CurLevel -= this.Props.foodNeedRate;
+                                        CompVehicleUtility.TrySatisfyFoodNeed(pawn, need_Food, this.Pawn);
+                                    }
+                                    if (pawn_needs[j] is Need_Chemical need_Chemical)
+                                    {
+                                        pawn_needs[j].CurLevel -= this.Props.foodNeedRate;
+                                        CompVehicleUtility.TrySatisfyChemicalNeed(pawn, need_Chemical, this.Pawn);
+                                    }
                                     if (pawn_needs[j].def == NeedDefOf.Joy)
                                         pawn_needs[j].CurLevel -= this.Props.joyNeedRate;
+
                                 }
                             }
                         }
@@ -545,11 +555,10 @@ namespace CompVehicle
                     }
                 }
             }
-
-
         }
-		// ------ Additions made by Swenzi ------
-		
+        
+        // ------ Additions made by Swenzi ------
+
         public void Eject(Pawn pawn, ref ThingOwner<Pawn> list)
         {
             if (!pawn.Spawned)
@@ -645,18 +654,37 @@ namespace CompVehicle
             List<FloatMenuOption> list = new List<FloatMenuOption>();
             Map map = this.Pawn.Map;
             List<Pawn> tempList = (group?.handlers?.InnerListForReading != null) ? new List<Pawn>(group.handlers.InnerListForReading) : new List<Pawn>();
-            if (canLoad)
+            if (canLoad && tempList.Count == 0)
+            {
+                SoundDefOf.TickTiny.PlayOneShotOnCamera(null);
+                Find.Targeter.BeginTargeting(new TargetingParameters() { validator = ti => ti.Thing is Pawn p && (p.RaceProps.Humanlike && p.IsColonistPlayerControlled) }, delegate (LocalTargetInfo target)
+                {
+                    GiveLoadJob(target.Thing, group);
+                }, null, null, null);
+                return;
+            }
+            else if (canLoad)
             {
                 string text = "CompVehicle_Load".Translate(group.role.label);
                 //Func<Rect, bool> extraPartOnGUI = (Rect rect) => Widgets.InfoCardButton(rect.x + 5f, rect.y + (rect.height - 24f) / 2f, handler);
                 list.Add(new FloatMenuOption(text, delegate
                 {
                     SoundDefOf.TickTiny.PlayOneShotOnCamera(null);
-                    Find.Targeter.BeginTargeting(new TargetingParameters() { validator = ti => ti.Thing is Pawn p && (p.RaceProps.Humanlike && p.IsColonistPlayerControlled ) }, delegate (LocalTargetInfo target)
+                    Find.Targeter.BeginTargeting(new TargetingParameters() { validator = ti => ti.Thing is Pawn p && (p.RaceProps.Humanlike && p.IsColonistPlayerControlled) }, delegate (LocalTargetInfo target)
                     {
                         GiveLoadJob(target.Thing, group);
                     }, null, null, null);
                 }, MenuOptionPriority.Default, null, null, 29f, null, null));
+            }
+            if (!canLoad && tempList.Count == 1)
+            {
+                List<Pawn> temptempList = new List<Pawn>(tempList);
+                foreach (Pawn handler in temptempList)
+                {
+                   Eject(handler, ref group.handlers);
+                }
+                temptempList.Clear();
+                return;
             }
             if (tempList.Count != 0)
             {
