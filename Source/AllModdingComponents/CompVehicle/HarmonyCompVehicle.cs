@@ -876,7 +876,7 @@ namespace CompVehicle
                                     {
                                         pawn.DeSpawn();
                                     }
-                                    Find.WorldPawns.PassToWorld(pawn, PawnDiscardDecideMode.KeepForever);
+                                    Find.WorldPawns.PassToWorld(pawn, PawnDiscardDecideMode.Decide);
                                 }
                                 group.handlers.Remove(pawn);
 							}
@@ -992,10 +992,11 @@ namespace CompVehicle
                                     //Old Addition and Removal code wasn't working, led to additional groups being created
 									foreach (VehicleHandlerGroup vgroup in vehicle.handlers)
 									{
-										if (vgroup.role == group.role)
+										if (vgroup.role == group.role && !vgroup.handlers.Contains(pawn))
 										{
 											vgroup.handlers.Add(pawn);
                                             caravan.RemovePawn(pawn);
+                                            //if (pawn.IsWorldPawn()) Find.WorldPawns.RemovePawn(pawn);
                                             break;
 										}
 									}

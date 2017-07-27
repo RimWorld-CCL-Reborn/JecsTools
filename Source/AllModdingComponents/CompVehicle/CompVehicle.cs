@@ -466,18 +466,18 @@ namespace CompVehicle
             if (this.movingStatus == MovingState.able)
             {
                 //Removed caravan member check as apparently pawns currently forming a caravan aren't part of one yet
-                if (this.Pawn.CurJob != null && this.Pawn.CurJob.def == JobDefOf.GotoWander)
-                {
-                    if (!this.draftStatusChanged){
-						this.Pawn.drafter.Drafted = !this.Pawn.Drafted;
-						this.draftStatusChanged = true;
-                    }
-                }
-                else
-                {
-                    //Safety to allow this for future caravans
-                    this.draftStatusChanged = false;
-                }
+      //          if (this.Pawn.CurJob != null && this.Pawn.CurJob.def == JobDefOf.GotoWander)
+      //          {
+      //              if (!this.draftStatusChanged){
+						//this.Pawn.drafter.Drafted = !this.Pawn.Drafted;
+						//this.draftStatusChanged = true;
+      //              }
+      //          }
+      //          else
+      //          {
+      //              //Safety to allow this for future caravans
+      //              this.draftStatusChanged = false;
+      //          }
             }
             else{
                 //Vehicles that can't move shouldn't have Lords, it causes problems cause they never complete their jobs and toils

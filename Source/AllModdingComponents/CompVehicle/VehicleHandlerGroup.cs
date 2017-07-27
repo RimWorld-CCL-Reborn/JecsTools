@@ -91,24 +91,55 @@ namespace CompVehicle
                 {
                     if (p.Spawned) p.DeSpawn();
                     if (p.holdingOwner != null) p.holdingOwner = null;
-                    Find.WorldPawns.PassToWorld(p, PawnDiscardDecideMode.KeepForever);
+                    Find.WorldPawns.PassToWorld(p, PawnDiscardDecideMode.Decide);
                 }
             }
             this.handlers.TryAddRange(newHandlers);
             //this.handlers = newHandlers;
         }
-        
 
+        //private List<Thing> tmpThings = new List<Thing>();
+        private List<Pawn> tmpSavedPawns = new List<Pawn>();
         public void ExposeData()
         {
             Scribe_Values.Look<int>(ref this.uniqueID, "uniqueID", -1);
             Scribe_References.Look<Pawn>(ref this.vehicle, "vehicle");
             Scribe_Deep.Look<VehicleRole>(ref this.role, "role", new object[0]);
             //Scribe_Values.Look<VehicleRole>(ref this.role, "role", null);
+
+            if (Scribe.mode == LoadSaveMode.Saving)
+            {
+                //this.tmpThings.Clear();
+                //this.tmpThings.AddRange(this.handlers);
+                this.tmpSavedPawns.Clear();
+                this.tmpSavedPawns.AddRange(this.handlers.InnerListForReading);
+                this.handlers.RemoveAll(x => x is Pawn);
+                //for (int i = 0; i < this.tmpThings.Count; i++)
+                //{
+                //    Pawn pawn = this.tmpThings[i] as Pawn;
+                //    if (pawn != null)
+                //    {
+                //        this.innerContainer.Remove(pawn);
+                //        this.tmpSavedPawns.Add(pawn);
+                //    }
+                //}
+                //this.tmpThings.Clear();
+            }
+            Scribe_Collections.Look<Pawn>(ref this.tmpSavedPawns, "tmpSavedPawns", LookMode.Reference, new object[0]);
             Scribe_Deep.Look<ThingOwner<Pawn>>(ref this.handlers, "handlers", new object[]
             {
                     this
             });
+
+            if (Scribe.mode == LoadSaveMode.PostLoadInit || Scribe.mode == LoadSaveMode.Saving)
+            {
+                for (int j = 0; j < this.tmpSavedPawns.Count; j++)
+                {
+                    this.handlers.TryAdd(this.tmpSavedPawns[j], true);
+                }
+                this.tmpSavedPawns.Clear();
+            }
+
             //Scribe_Collections.Look<Pawn>(ref this.handlers, "handlers", LookMode.Deep, new object[0]);
         }
 
