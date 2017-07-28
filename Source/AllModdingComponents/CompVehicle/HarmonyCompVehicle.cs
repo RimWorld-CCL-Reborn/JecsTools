@@ -31,6 +31,8 @@ namespace CompVehicle
             /// vehicles are present.
             ///
 
+            harmony.Patch(AccessTools.Method(typeof(PawnRotator), "PawnRotatorTick"), new HarmonyMethod(typeof(HarmonyCompVehicle),
+                nameof(VehicleRotatorTick)), null);
             harmony.Patch(AccessTools.Method(typeof(DamageWorker_AddInjury), "FinalizeAndAddInjury"), null, 
                 new HarmonyMethod(typeof(HarmonyCompVehicle), 
                 nameof(TryInjureVehicleOccupants)));
@@ -64,6 +66,8 @@ namespace CompVehicle
             /// into existing/new games and handle errors / exceptions.
             ///
 
+            harmony.Patch(AccessTools.Method(typeof(PawnUtility), "IsTravelingInTransportPodWorldObject"), null, new HarmonyMethod(typeof(HarmonyCompVehicle),
+                nameof(PreventAssigningRandomFaction)));
             harmony.Patch(AccessTools.Method(typeof(SocialCardUtility), "Recache"), new HarmonyMethod(typeof(HarmonyCompVehicle), 
                 nameof(SocialTabNullHandling)), null);
             harmony.Patch(AccessTools.Method(typeof(Pawn), "get_IsColonistPlayerControlled"), null, new HarmonyMethod(typeof(HarmonyCompVehicle), 
@@ -158,6 +162,146 @@ namespace CompVehicle
         /// ??? = Needs cleaning
         
         #region FunctionsMethods
+        
+        //J Vehicles will no longer rotate when drafted.
+        public static bool VehicleRotatorTick(PawnRotator __instance)
+        {
+            if (Traverse.Create(__instance).Field("pawn").GetValue<Pawn>() is Pawn thisPawn &&
+                thisPawn?.GetComp<CompVehicle>() is CompVehicle compVehicle)
+            {
+                if (thisPawn.Destroyed)
+                {
+                    return false;
+                }
+                if (thisPawn.jobs.HandlingFacing)
+                {
+                    return false;
+                }
+                if (thisPawn.pather.Moving)
+                {
+                    if (thisPawn.pather.curPath == null || thisPawn.pather.curPath.NodesLeftCount < 1)
+                    {
+                        return false;
+                    }
+                    //this.FaceAdjacentCell(thisPawn.pather.nextCell);
+                    AccessTools.Method(typeof(PawnRotator), "FaceAdjacentCell").Invoke(__instance, new object[] { thisPawn.pather.nextCell });
+                    //Traverse.Create(__instance).Method("FaceAdjacentCell", new object[] { thisPawn.pather.nextCell });
+                    //compVehicle.lastDirection = thisPawn.Rotation;
+                    return false;
+                }
+                else
+                {
+                    Stance_Busy stance_Busy = thisPawn.stances.curStance as Stance_Busy;
+                    if (stance_Busy != null && stance_Busy.focusTarg.IsValid)
+                    {
+                        if (stance_Busy.focusTarg.HasThing)
+                        {
+                            //this.Face(stance_Busy.focusTarg.Thing.DrawPos);
+                            //Traverse.Create(__instance).Method("Face", new object[] { stance_Busy.focusTarg.Thing.DrawPos });
+                            AccessTools.Method(typeof(PawnRotator), "Face").Invoke(__instance, new object[] { stance_Busy.focusTarg.Thing.DrawPos });
+                        }
+                        else
+                        {
+                            //this.FaceCell(stance_Busy.focusTarg.Cell);
+                            //Traverse.Create(__instance).Method("FaceCell", new object[] { stance_Busy.focusTarg.Cell });
+                            AccessTools.Method(typeof(PawnRotator), "FaceCell").Invoke(__instance, new object[] { stance_Busy.focusTarg.Cell });
+                        }
+                        return false;
+                    }
+                    if (thisPawn.jobs.curJob != null)
+                    {
+                        LocalTargetInfo target = thisPawn.CurJob.GetTarget(thisPawn.jobs.curDriver.rotateToFace);
+                        if (target.HasThing)
+                        {
+                            if (compVehicle.CanMove)
+                            {
+                                bool flag = false;
+                                IntVec3 c = default(IntVec3);
+                                CellRect cellRect = target.Thing.OccupiedRect();
+                                for (int i = cellRect.minZ; i <= cellRect.maxZ; i++)
+                                {
+                                    for (int j = cellRect.minX; j <= cellRect.maxX; j++)
+                                    {
+                                        if (thisPawn.Position == new IntVec3(j, 0, i))
+                                        {
+                                            //this.Face(target.Thing.DrawPos);
+                                            //Traverse.Create(__instance).Method("Face", new object[] { target.Thing.DrawPos });
+                                            AccessTools.Method(typeof(PawnRotator), "Face").Invoke(__instance, new object[] { target.Thing.DrawPos });
+                                            return false;
+                                        }
+                                    }
+                                }
+                                for (int k = cellRect.minZ; k <= cellRect.maxZ; k++)
+                                {
+                                    for (int l = cellRect.minX; l <= cellRect.maxX; l++)
+                                    {
+                                        IntVec3 intVec = new IntVec3(l, 0, k);
+                                        if (intVec.AdjacentToCardinal(thisPawn.Position))
+                                        {
+                                            //this.FaceAdjacentCell(intVec);
+                                            AccessTools.Method(typeof(PawnRotator), "FaceAdjacentCell").Invoke(__instance, new object[] { intVec });
+                                            //Traverse.Create(__instance).Method("FaceAdjacentCell", new object[] { intVec });
+                                            return false;
+                                        }
+                                        if (intVec.AdjacentTo8Way(thisPawn.Position))
+                                        {
+                                            flag = true;
+                                            c = intVec;
+                                        }
+                                    }
+                                }
+                                if (flag)
+                                {
+                                    if (DebugViewSettings.drawPawnRotatorTarget)
+                                    {
+                                        thisPawn.Map.debugDrawer.FlashCell(thisPawn.Position, 0.6f, "jbthing");
+                                        GenDraw.DrawLineBetween(thisPawn.Position.ToVector3Shifted(), c.ToVector3Shifted());
+                                    }
+                                    //this.FaceAdjacentCell(c);
+                                    AccessTools.Method(typeof(PawnRotator), "FaceAdjacentCell").Invoke(__instance, new object[] { c });
+                                    //Traverse.Create(__instance).Method("FaceAdjacentCell", new object[] { c });
+                                    return false;
+                                }
+                                AccessTools.Method(typeof(PawnRotator), "Face").Invoke(__instance, new object[] { target.Thing.DrawPos });
+                                //Traverse.Create(__instance).Method("Face", new object[] { target.Thing.DrawPos });
+                                return false;
+                            }
+                            
+                        }
+                        else
+                        {
+                            if (thisPawn.Position.AdjacentTo8Way(target.Cell))
+                            {
+                                if (DebugViewSettings.drawPawnRotatorTarget)
+                                {
+                                    thisPawn.Map.debugDrawer.FlashCell(thisPawn.Position, 0.2f, "jbloc");
+                                    GenDraw.DrawLineBetween(thisPawn.Position.ToVector3Shifted(), target.Cell.ToVector3Shifted());
+                                }
+                                //this.FaceAdjacentCell(target.Cell);
+                                AccessTools.Method(typeof(PawnRotator), "FaceAdjacentCell").Invoke(__instance, new object[] { target.Cell });
+                                //Traverse.Create(__instance).Method("FaceAdjacentCell", new object[] { target.Cell });
+                                return false;
+                            }
+                            if (target.Cell.IsValid && target.Cell != thisPawn.Position)
+                            {
+                                //this.Face(target.Cell.ToVector3());
+                                //Traverse.Create(__instance).Method("Face", new object[] { target.Cell.ToVector3() });
+                                AccessTools.Method(typeof(PawnRotator), "Face").Invoke(__instance, new object[] { target.Cell.ToVector3() });
+                                return false;
+                            }
+                        }
+                    }
+                    //if (thisPawn.Drafted)
+                    //{
+                    //    thisPawn.Rotation = compVehicle.lastDirection;
+                    //}
+                    return false;
+                }
+            }
+            return true;
+
+        }
+            
         //J When characters fire upon the vehicle, if the vehicle's body part defs include a tag that references a vehicle role,
         //J there is a chance that a character holding that role can be injured. Critical injury chances also exist.
         // Verse.DamageWorker_AddInjury
@@ -375,6 +519,18 @@ namespace CompVehicle
         #endregion FunctionsMethods
 
         #region ErrorHandlingMethods
+        // J This patch allows colonists to freely join vehicles 
+        //   without having their factions randomly switched around.
+        // RimWorld.PawnUtility
+        public static void PreventAssigningRandomFaction(ref bool __result, Pawn pawn)
+        {
+            bool prevResult = __result;
+            __result = prevResult || ThingOwnerUtility.AnyParentIs<VehicleHandlerGroup>(pawn);
+        }
+
+
+        
+
         //S Bug fixes social tab issue with vehicles
         //Purpose: Bug fixes IWTab social issue for caravans
         //Logic: Vehicles don't have socialinfo so skip them

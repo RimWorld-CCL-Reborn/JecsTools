@@ -37,7 +37,8 @@ namespace CompVehicle
 
     public class CompVehicle : ThingComp
     {
-		public float fuelConsumptionRate = 80f; //Stores what the fuel usage rate is, i.e. how much fuel is lost
+        public Rot4 lastDirection = Rot4.South; //J Stores the last direction a vehicle was facing. 
+        public float fuelConsumptionRate = 80f; //Stores what the fuel usage rate is, i.e. how much fuel is lost
 		public bool draftStatusChanged = false; //Boolean connected to comp to prevent excessive changing of the draftstatus when forming a caravan
 		public int tickCount = 0; //Counter for how long the vehicle has traveled without a driver
 		public bool warnedNoFuel = false; //Boolean connected to comp to prevent spamming of the Caravan No Fuel warning message
@@ -604,11 +605,15 @@ namespace CompVehicle
                 Bill_LoadVehicle bill = this.bills.FirstOrDefault((x) => x.pawnToLoad == pawnToLoad);
                 if (bill != null)
                 {
+                    if (pawnToLoad.IsWorldPawn())
+                    {
+                        Log.Warning("Called LoadPawn on world pawn");
+                    }
                     var curFaction = pawnToLoad.Faction;
                     pawnToLoad.DeSpawn();
                     if (pawnToLoad.holdingOwner != null) pawnToLoad.holdingOwner = null;
                     bill.group.handlers.TryAdd(pawnToLoad);
-                    Find.WorldPawns.PassToWorld(pawnToLoad, PawnDiscardDecideMode.KeepForever);
+                    Find.WorldPawns.PassToWorld(pawnToLoad, PawnDiscardDecideMode.Decide);
                     pawnToLoad.SetFaction(curFaction);
                     this.bills.Remove(bill);
                 }
@@ -776,6 +781,7 @@ namespace CompVehicle
             Scribe_Values.Look<bool>(ref this.ResolvedPawns, "ResolvedPawns", false);
             Scribe_Values.Look<WeaponState>(ref this.weaponStatus, "weaponStatus", WeaponState.able);
             Scribe_Values.Look<MovingState>(ref this.movingStatus, "movingStatus", MovingState.able);
+            Scribe_Values.Look<Rot4>(ref this.lastDirection, "lastDirection", Rot4.South);
 
             Scribe_Collections.Look<VehicleHandlerGroup>(ref this.handlers, "handlers", LookMode.Deep, new object[0]);
             Scribe_Collections.Look<Bill_LoadVehicle>(ref this.bills, "bills", LookMode.Deep, new object[0]);

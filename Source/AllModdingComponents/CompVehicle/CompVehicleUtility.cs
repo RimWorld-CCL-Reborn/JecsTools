@@ -10,6 +10,7 @@ namespace CompVehicle
 {
     public class CompVehicleUtility
     {
+
         // ToDo: Rotate pawns to allow for some pawns to rest while others
         // use the vehicle.
         // RimWorld.Planet.CaravanPawnsNeedsUtility
