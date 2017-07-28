@@ -572,10 +572,10 @@ namespace CompVehicle
                 {
                     if (tempGroup.handlers.Remove(pawn))
                     {
-                        Log.Message("Removed " + pawn.LabelShort);
+                        //Log.Message("Removed " + pawn.LabelShort);
                         return;
                     }
-                    Log.Message("Failed to remove " + pawn.LabelShort);
+                    //Log.Message("Failed to remove " + pawn.LabelShort);
                 }
             }
         }

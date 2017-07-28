@@ -20,7 +20,7 @@ namespace CompToggleDef
                 if ( selected != null ) {
                     CompToggleDef td = selected.GetComp<CompToggleDef>();
                     if (  td != null ) {
-//                        Log.Message("ITab_isvisible");
+                        //Log.Message("ITab_isvisible");
                         this.labelKey = td.LabelKey; // defined by the Comp
                         return true;
                     }

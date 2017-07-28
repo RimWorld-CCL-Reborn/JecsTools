@@ -356,7 +356,7 @@ namespace CompSlotLoadable
                                 {
                                     float v = DetermineSlottableStatAugment(slot.SlotOccupant,mod.stat);
                                     string modstring = 	mod.stat.ValueToString(v, ToStringNumberSense.Offset);
-//                                    Log.Message("Determined slot stat augment "+v+" and made string "+modstring);
+                                    //Log.Message("Determined slot stat augment "+v+" and made string "+modstring);
                                     s.AppendLine("  " + mod.stat.LabelCap + " " + modstring);
                                     //s.AppendLine("\t" + mod.stat.LabelCap + " " + mod.ToStringAsOffset);
                                 }

@@ -942,40 +942,25 @@ namespace CompVehicle
         // RimWorld.Planet.Dialog_SplitCaravan
         public static bool DontSplitCaravansWithVehicles(Dialog_SplitCaravan __instance, ref bool __result, List<Pawn> pawns)
         {
-            Log.Message("0");
             Caravan thisCaravan = Traverse.Create(__instance).Field("caravan").GetValue<Caravan>();
             if (thisCaravan?.pawns?.InnerListForReading?.Any(x => x.GetComp<CompVehicle>() != null) ?? false)
             {
-                Log.Message("1");
                 bool result = __result;
-
                 //Check the caravan's pawn list.
                 if ((!thisCaravan?.PawnsListForReading?.NullOrEmpty() ?? false) && !pawns.NullOrEmpty())
                 {
-                    Log.Message("2");
-
                     foreach (Pawn p in thisCaravan.PawnsListForReading)
                     {
-                        Log.Message("3");
-
                         if (p.GetComp<CompVehicle>() is CompVehicle compVehicle && 
                             compVehicle?.PawnsInVehicle is List<VehicleHandlerTemp> vehicleHandlers && !vehicleHandlers.NullOrEmpty())
                         {
-                            Log.Message("4");
-
                             //Check every vehicle's occupants.
                             foreach (VehicleHandlerTemp temp in vehicleHandlers)
                             {
-                                Log.Message("5");
-
                                 foreach (Pawn o in pawns)
                                 {
-                                    Log.Message("6");
-
                                     if (temp?.handlers?.Contains(o) ?? false)
                                     {
-                                        Log.Message("7");
-
                                         Messages.Message("CompVehicle_CannotSplitWhileInVehicles".Translate(), MessageSound.RejectInput);
                                         __result = false;
                                         return false;
@@ -985,8 +970,6 @@ namespace CompVehicle
                         }
                     }
                 }
-                
-
             }
             return true;
         }
@@ -1500,7 +1483,7 @@ namespace CompVehicle
                             compVehicle.PawnsInVehicle = new List<VehicleHandlerTemp>();
                             foreach (VehicleHandlerGroup group in compVehicle.handlers)
                             {
-                                Log.Message("Adding group to " + compVehicle.Pawn.ToString());
+                                //Log.Message("Adding group to " + compVehicle.Pawn.ToString());
                                 compVehicle.PawnsInVehicle.Add(new VehicleHandlerTemp(group));
                             }
                         }
@@ -1548,48 +1531,32 @@ namespace CompVehicle
             List<Pawn> members = caravan.PawnsListForReading;
             //Log.Error(members.Count().ToString());
             //Log.Error();
-            Log.Message("1");
             for (int i = 0; i < members.Count; i++)
             {
-                Log.Message("2");
-
                 CompVehicle vehicle = members[i].GetComp<CompVehicle>();
                 //Did the vehicle have pawns in it previously?
                 if (vehicle != null && vehicle.PawnsInVehicle != null && vehicle.PawnsInVehicle.Count > 0)
                 {
-                    Log.Message("3");
-
                     for (int j = 0; j < members.Count; j++)
                     {
-                        Log.Message("4");
-
                         for (int l = 0; l < vehicle.PawnsInVehicle.Count; l++)
                         {
-                            Log.Message("5");
-
                             VehicleHandlerTemp group = vehicle.PawnsInVehicle[l];
                             for (int k = 0; k < group.handlers.Count; k++)
                             {
-                                Log.Message("6");
-
                                 //Is the pawn still in the caravan?
                                 Pawn pawn = group.handlers[k];
                                 if (pawn == members[j])
                                 {
-                                    Log.Message("7");
-
                                     //Old Addition and Removal code wasn't working, led to additional groups being created
                                     foreach (VehicleHandlerGroup vgroup in vehicle.handlers)
                                     {
-                                        Log.Message("8");
-
                                         if (vgroup.role.label == group.role.label)
                                         {
-                                            Log.Message("9");
                                             vgroup.handlers.Add(pawn);
                                             caravan.RemovePawn(pawn);
-                                            Log.Message("RemovedPawn " + pawn.LabelShort);
-                                            Log.Message(caravan.PawnsListForReading.ToString());
+                                            //Log.Message("RemovedPawn " + pawn.LabelShort);
+                                            //Log.Message(caravan.PawnsListForReading.ToString());
                                             //if (pawn.IsWorldPawn()) Find.WorldPawns.RemovePawn(pawn);
                                             break;
                                         }

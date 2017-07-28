@@ -72,7 +72,7 @@ namespace CompExtraSounds
                         {
                             if (CompExtraSounds.Props.soundMiss != null)
                             {
-                                Log.Message("Returned");
+                               //Log.Message("Returned");
                                 __result = CompExtraSounds.Props.soundMiss;
                                 return;
                             }

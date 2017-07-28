@@ -25,7 +25,7 @@ namespace CompToggleDef
             string tdbase;
             string tdkey;
 
-            //            Log.Message("CompToggleDef Initialize entered");
+            //Log.Message("CompToggleDef Initialize entered");
             if (this.toggleDefs == null)
             {
 
@@ -45,7 +45,7 @@ namespace CompToggleDef
         public void fillToggleDefs(string tdbase, string tdkey)
         {
             // go through all and find the ones that match
-            //            Log.Message("CompToggleDef.fillToggleDefs" + tdbase +" " + tdkey);
+            //Log.Message("CompToggleDef.fillToggleDefs" + tdbase +" " + tdkey);
             this.toggleDefs = new List<ThingDef>();
             List<ThingDef> allDefsListForReading = DefDatabase<ThingDef>.AllDefsListForReading;
             string tdbasematch = tdbase + this.TDTag;
@@ -54,7 +54,7 @@ namespace CompToggleDef
                 ThingDef adef = allDefsListForReading[i];
                 if (adef.defName.StartsWith(tdbasematch))
                 {
-                    //                    Log.Message("  ... adding in "+adef.defName);
+                    //Log.Message("  ... adding in "+adef.defName);
                     this.toggleDefs.Add(adef);
                 }
             }
