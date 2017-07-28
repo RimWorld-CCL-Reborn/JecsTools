@@ -91,7 +91,7 @@ namespace CompVehicle
                 {
                     if (p.Spawned) p.DeSpawn();
                     if (p.holdingOwner != null) p.holdingOwner = null;
-                    Find.WorldPawns.PassToWorld(p, PawnDiscardDecideMode.Decide);
+                    if (!p.IsWorldPawn()) Find.WorldPawns.PassToWorld(p, PawnDiscardDecideMode.Decide);
                 }
             }
             this.handlers.TryAddRange(newHandlers);

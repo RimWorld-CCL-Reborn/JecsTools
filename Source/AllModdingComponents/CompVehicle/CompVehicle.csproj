@@ -70,6 +70,7 @@
     <Compile Include="ThinkNode_ConditionalCanManipulate.cs" />
     <Compile Include="ThinkNode_ConditionalPawnInside.cs" />
     <Compile Include="VehicleHandlerGroup.cs" />
+    <Compile Include="VehicleHandlerTemp.cs" />
     <Compile Include="VehicleRole.cs" />
     <Compile Include="DeathActionWorker_NoCorpse.cs" />
   </ItemGroup>

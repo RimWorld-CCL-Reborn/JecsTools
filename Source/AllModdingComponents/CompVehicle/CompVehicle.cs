@@ -42,7 +42,7 @@ namespace CompVehicle
 		public bool draftStatusChanged = false; //Boolean connected to comp to prevent excessive changing of the draftstatus when forming a caravan
 		public int tickCount = 0; //Counter for how long the vehicle has traveled without a driver
 		public bool warnedNoFuel = false; //Boolean connected to comp to prevent spamming of the Caravan No Fuel warning message
-		public List<VehicleHandlerGroup> vehicleContents; //Stores the handlergroups of the vehicle and its pawns while the vehicle is in a caravan
+		public List<VehicleHandlerTemp> vehicleContents = new List<VehicleHandlerTemp>(); //Stores the handlergroups of the vehicle and its pawns while the vehicle is in a caravan
 		public List<VehicleHandlerGroup> handlers = new List<VehicleHandlerGroup>();
         public List<Bill_LoadVehicle> bills = new List<Bill_LoadVehicle>();
         public List<ThingCountClass> repairCostList = new List<ThingCountClass>();
@@ -62,7 +62,7 @@ namespace CompVehicle
 		//Purpose: Store the pawns in the vehicle while it is in a caravan
 		//Logic: Allows the vehicle to remember what pawns were inside it so they can be put back in later on map entry
 		
-        public List<VehicleHandlerGroup> PawnsInVehicle
+        public List<VehicleHandlerTemp> PawnsInVehicle
 		{
             get => this.vehicleContents;
 
@@ -323,7 +323,7 @@ namespace CompVehicle
                             //Log.Message("1");
                             //group.handlers.TryDrop(toEject, this.Pawn.PositionHeld, this.Pawn.MapHeld, ThingPlaceMode.Near, out b);
                             //TryDrop wasn't working 
-                            Eject(toEject, ref group.handlers);
+                            Eject(toEject);
                             ThingOwner<Pawn> handler = new ThingOwner<Pawn>();
                             for (int z = 0; z < group.handlers.Count; z++)
                             {
@@ -355,7 +355,7 @@ namespace CompVehicle
                             {
                                 foreach (VehicleHandlerGroup group in this.handlers)
                                 {
-                                    EjectAll(ref group.handlers);
+                                    EjectAll();
                                 }
                                 this.weaponStatus = WeaponState.frozen;
                                 this.movingStatus = MovingState.frozen;
@@ -375,7 +375,7 @@ namespace CompVehicle
                                     {
                                         foreach (VehicleHandlerGroup group in this.handlers)
                                         {
-                                            EjectAll(ref group.handlers);
+                                            EjectAll();
                                         }
                                         this.weaponStatus = WeaponState.frozen;
                                         this.movingStatus = MovingState.frozen;
@@ -514,6 +514,7 @@ namespace CompVehicle
         //
         //Addendum by Jecrell:
         //-Added the ability for some pawns to resolve needs inside the vehicle.
+        //-Prevent needs from falling while resting.
 		public void ResolveNeeds(){
             //Player only, NPC factions is weird unless better logic is make them go back to vehicles after being ejected
             if (this.Pawn.Faction.IsPlayer)
@@ -527,6 +528,8 @@ namespace CompVehicle
                             for (int i = 0; i < group.handlers.Count; i++)
                             {
                                 Pawn pawn = group.handlers[i];
+                                //Don't change needs while a caravan member.
+                                if (pawn.IsCaravanMember()) continue;
                                 List<Need> pawn_needs = pawn.needs.AllNeeds;
                                 //These needs are major and should change
                                 for (int j = 0; j < pawn_needs.Count; j++)
@@ -560,22 +563,39 @@ namespace CompVehicle
         
         // ------ Additions made by Swenzi ------
 
-        public void Eject(Pawn pawn, ref ThingOwner<Pawn> list)
+        public void RemovePawn(Pawn pawn)
+        {
+            if (this.handlers is List<VehicleHandlerGroup> groups && !groups.NullOrEmpty())
+            {
+                var tempGroup = groups.FirstOrDefault(x => x.handlers.Contains(pawn));
+                if (tempGroup != null)
+                {
+                    if (tempGroup.handlers.Remove(pawn))
+                    {
+                        Log.Message("Removed " + pawn.LabelShort);
+                        return;
+                    }
+                    Log.Message("Failed to remove " + pawn.LabelShort);
+                }
+            }
+        }
+
+        public void Eject(Pawn pawn)
         {
             if (!pawn.Spawned)
             {
                 GenSpawn.Spawn(pawn, this.Pawn.PositionHeld.RandomAdjacentCell8Way(), this.Pawn.MapHeld);
             }
-            list.Remove(pawn);
+            RemovePawn(pawn);
         }
-        public void EjectAll(ref ThingOwner<Pawn> pawns)
+        public void EjectAll()
         {
-            List<Pawn> pawnsToEject = new List<Pawn>(pawns);
+            List<Pawn> pawnsToEject = new List<Pawn>(AllOccupants);
             if (pawnsToEject != null && pawnsToEject.Count > 0)
             {
                 foreach (Pawn p in pawnsToEject)
                 {
-                    Eject(p, ref pawns);
+                    Eject(p);
                 }
             }
         }
@@ -609,12 +629,12 @@ namespace CompVehicle
                     {
                         Log.Warning("Called LoadPawn on world pawn");
                     }
-                    var curFaction = pawnToLoad.Faction;
+                    //var curFaction = pawnToLoad.Faction;
                     pawnToLoad.DeSpawn();
                     if (pawnToLoad.holdingOwner != null) pawnToLoad.holdingOwner = null;
                     bill.group.handlers.TryAdd(pawnToLoad);
-                    Find.WorldPawns.PassToWorld(pawnToLoad, PawnDiscardDecideMode.Decide);
-                    pawnToLoad.SetFaction(curFaction);
+                    if (!pawnToLoad.IsWorldPawn()) Find.WorldPawns.PassToWorld(pawnToLoad, PawnDiscardDecideMode.Decide);
+                    //pawnToLoad.SetFaction(curFaction);
                     this.bills.Remove(bill);
                 }
             }
@@ -686,7 +706,7 @@ namespace CompVehicle
                 List<Pawn> temptempList = new List<Pawn>(tempList);
                 foreach (Pawn handler in temptempList)
                 {
-                   Eject(handler, ref group.handlers);
+                   Eject(handler);
                 }
                 temptempList.Clear();
                 return;
@@ -700,7 +720,7 @@ namespace CompVehicle
                     Func<Rect, bool> extraPartOnGUI = (Rect rect) => Widgets.InfoCardButton(rect.x + 5f, rect.y + (rect.height - 24f) / 2f, handler);
                     list.Add(new FloatMenuOption(text, delegate
                     {
-                        Eject(handler, ref group.handlers);
+                        Eject(handler);
                     }, MenuOptionPriority.Default, null, null, 29f, extraPartOnGUI, null));
                 }
             }
@@ -783,6 +803,7 @@ namespace CompVehicle
             Scribe_Values.Look<MovingState>(ref this.movingStatus, "movingStatus", MovingState.able);
             Scribe_Values.Look<Rot4>(ref this.lastDirection, "lastDirection", Rot4.South);
 
+		    Scribe_Collections.Look<VehicleHandlerTemp>(ref this.vehicleContents, "vehicleContents", LookMode.Deep, new object[0]); //Stores the handlergroups of the vehicle and its pawns while the vehicle is in a caravan
             Scribe_Collections.Look<VehicleHandlerGroup>(ref this.handlers, "handlers", LookMode.Deep, new object[0]);
             Scribe_Collections.Look<Bill_LoadVehicle>(ref this.bills, "bills", LookMode.Deep, new object[0]);
 

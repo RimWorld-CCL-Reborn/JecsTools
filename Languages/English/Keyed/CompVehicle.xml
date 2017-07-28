@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <LanguageData>
 
+ <!-- Addition 7/28/17 -->
+ <CompVehicle_CannotSplitWhileInVehicles>Cannot split caravan while colonists are in vehicles.</CompVehicle_CannotSplitWhileInVehicles>
+
  <!-- Addition 7/18/17 -->
 
   <CompVehicle_CannotMove>{0} is currently incapable of movement.</CompVehicle_CannotMove>
