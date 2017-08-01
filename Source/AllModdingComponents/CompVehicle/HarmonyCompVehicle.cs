@@ -131,7 +131,8 @@ namespace CompVehicle
             /// These patches handle exceptions and
             /// cases involving vehicles and caravans.
             ///
-
+            harmony.Patch(AccessTools.Method(typeof(Caravan), "AddPawn"), new HarmonyMethod(typeof(HarmonyCompVehicle),
+                nameof(AddVehiclePawnsToCaravan)), null);
             harmony.Patch(AccessTools.Method(typeof(Dialog_SplitCaravan), "CheckForErrors"), new HarmonyMethod(typeof(HarmonyCompVehicle),
                 nameof(DontSplitCaravansWithVehicles)), null);
             harmony.Patch(AccessTools.Method(typeof(Dialog_FormCaravan), "CheckForErrors"), new HarmonyMethod(typeof(HarmonyCompVehicle), 
@@ -146,8 +147,8 @@ namespace CompVehicle
                 nameof(Capacity_PostFix)), null);
             harmony.Patch(AccessTools.Method(typeof(CaravanTicksPerMoveUtility), "GetTicksPerMove", new Type[] { typeof(List<Pawn>) }), null, new HarmonyMethod(typeof(HarmonyCompVehicle), 
                 nameof(GetTicksPerMove_PostFix)));
-            harmony.Patch(AccessTools.Method(typeof(RimWorld.Planet.CaravanMaker), "MakeCaravan"), null, new HarmonyMethod(typeof(HarmonyCompVehicle), 
-                nameof(MakeCaravan_PostFix)));
+            //harmony.Patch(AccessTools.Method(typeof(RimWorld.Planet.CaravanMaker), "MakeCaravan"), null, new HarmonyMethod(typeof(HarmonyCompVehicle), 
+            //    nameof(MakeCaravan_PostFix)));
             harmony.Patch(AccessTools.Method(typeof(RimWorld.Planet.CaravanExitMapUtility), "ExitMapAndJoinOrCreateCaravan"), new HarmonyMethod(typeof(HarmonyCompVehicle), 
                 nameof(ExitMapAndJoinOrCreateCaravan_PreFix)), null);
             harmony.Patch(AccessTools.Method(typeof(RimWorld.Planet.CaravanEnterMapUtility), "Enter", new Type[] { typeof(Caravan), typeof(Map), typeof(Func<Pawn, IntVec3>), typeof(CaravanDropInventoryMode), typeof(bool) }), new HarmonyMethod(typeof(HarmonyCompVehicle), 
@@ -159,6 +160,21 @@ namespace CompVehicle
             harmony.Patch(AccessTools.Method(typeof(RimWorld.Dialog_FormCaravan), "DoWindowContents"), new HarmonyMethod(typeof(HarmonyCompVehicle), 
                 nameof(DoWindowContents_PreFix)), null);
             #endregion CaravanHandling
+
+            #region Tests
+            ///
+            /// TESTS
+            /// This is for testing or debugging for errors.
+            /// Most of these methods are prefix detours to make tests.
+            /// 
+
+            //harmony.Patch(AccessTools.Method(typeof(RimWorld.Planet.CaravanMaker), "MakeCaravan"), new HarmonyMethod(typeof(HarmonyCompVehicle),
+            //    nameof(MakeCaravan_PreFix)), null);
+            //harmony.Patch(AccessTools.Method(typeof(CaravanExitMapUtility), "ExitMapAndCreateCaravan", new Type[] { typeof(IEnumerable<Pawn>), typeof(Faction), typeof(int) }), new HarmonyMethod(typeof(HarmonyCompVehicle),
+            //    nameof(ExitMapAndCreateCaravan_Test)), null);
+            //harmony.Patch(AccessTools.Method(typeof(Pawn), "ExitMap"), new HarmonyMethod(typeof(HarmonyCompVehicle),
+            //    nameof(ExitMap_Test)), null);
+            #endregion
         }
 
         /// CODE LEGEND
@@ -166,24 +182,24 @@ namespace CompVehicle
         /// S = Swenzi's patch.
         /// E = Erdelf's patch.
         /// ??? = Needs cleaning
-        
+
         #region FunctionsMethods
-        
+
         //J Vehicles will no longer rotate when drafted.
         public static bool VehicleRotatorTick(PawnRotator __instance)
         {
             if (Traverse.Create(__instance).Field("pawn").GetValue<Pawn>() is Pawn thisPawn &&
                 thisPawn?.GetComp<CompVehicle>() is CompVehicle compVehicle)
             {
-                if (thisPawn.Destroyed)
+                if (thisPawn?.Destroyed ?? false)
                 {
                     return false;
                 }
-                if (thisPawn.jobs.HandlingFacing)
+                if (thisPawn?.jobs?.HandlingFacing ?? false)
                 {
                     return false;
                 }
-                if (thisPawn.pather.Moving)
+                if (thisPawn?.pather?.Moving ?? false)
                 {
                     if (thisPawn.pather.curPath == null || thisPawn.pather.curPath.NodesLeftCount < 1)
                     {
@@ -214,7 +230,7 @@ namespace CompVehicle
                         }
                         return false;
                     }
-                    if (thisPawn.jobs.curJob != null)
+                    if (thisPawn?.jobs?.curJob != null)
                     {
                         LocalTargetInfo target = thisPawn.CurJob.GetTarget(thisPawn.jobs.curDriver.rotateToFace);
                         if (target.HasThing)
@@ -531,7 +547,8 @@ namespace CompVehicle
         public static void PreventAssigningRandomFaction(ref bool __result, Pawn pawn)
         {
             bool prevResult = __result;
-            __result = prevResult || ThingOwnerUtility.AnyParentIs<VehicleHandlerGroup>(pawn);
+            //Check for vehicles...
+            __result = prevResult || (ThingOwnerUtility.AnyParentIs<VehicleHandlerGroup>(pawn));
         }
 
 
@@ -937,6 +954,102 @@ namespace CompVehicle
 
         #region CaravanHandlingMethods
 
+        //J This code checks all the characters inside a vehicle.
+        // It then adds all of the characters into a temporary list to track them.
+        // Then it adds them all to the caravan, as well.
+        // RimWorld.Planet.Caravan
+        public static bool AddVehiclePawnsToCaravan(Caravan __instance, Pawn p, bool addCarriedPawnToWorldPawnsIfAny)
+        {
+            //Log.Message("AddVehicles0");
+
+            if (p?.GetComp<CompVehicle>() is CompVehicle compVehicle)
+            {
+                //Log.Message("AddVehicles1");
+                if (p == null || p.Dead)
+                {
+                    Log.Warning("Tried to add a null or dead pawn to " + __instance);
+                    return false;
+                }
+                if (__instance.pawns.TryAdd(p, true))
+                {
+                    //Log.Message("AddVehicles2");
+
+                    //All passengers in the vehicle go into the caravan.
+                    if (compVehicle.handlers != null && compVehicle.handlers.Count > 0)
+                    {
+                        //Log.Message("AddVehicles3");
+
+                        //Store vehicle handler group structure in comp variable
+                        //compVehicle.PawnsInVehicle.Clear();
+                        compVehicle.PawnsInVehicle = new List<VehicleHandlerTemp>();
+                        foreach (VehicleHandlerGroup group in compVehicle.handlers)
+                        {
+                            //Log.Message("AddVehicles4");
+                            compVehicle.PawnsInVehicle.Add(new VehicleHandlerTemp(group));
+                            //Log.Message("AddVehicles5");
+
+                            for (int i = 0; i < group.handlers.Count; i++)
+                            {
+                                //Log.Message("AddVehicles6a");
+
+                                Pawn innerPawn = group.handlers[i];
+
+                                //Remove the pawn from the vehicle and add it to the caravan
+                                if (innerPawn.holdingOwner != null)
+                                {
+                                    //Log.Message("AddVehicles7a");
+
+                                    innerPawn.holdingOwner.Remove(innerPawn);
+                                    if (!__instance.pawns.TryAdd(innerPawn, true))
+                                    {
+                                        Log.Message("Failed to load caravan with vehicle pawn: " + innerPawn.Label);
+                                    }
+                                    //Log.Message("AddVehicles7b");
+
+                                }
+                                else
+                                {
+                                    //Log.Message("AddVehicles8a");
+
+                                    if (!__instance.pawns.TryAdd(innerPawn, true))
+                                    {
+                                        Log.Message("Failed to load caravan with vehicle pawn: " + innerPawn.Label);
+                                    }
+                                    //Log.Message("AddVehicles8b");
+
+                                }
+                                //Log.Message("AddVehicles6b");
+
+                                //group.handlers.Remove(pawn);
+                            }
+                        }
+                    }
+
+
+                    Pawn pawn = p.carryTracker.CarriedThing as Pawn;
+                    if (pawn != null)
+                    {
+                        //Anything in-hand also goes into the caravan.
+                        p.carryTracker.innerContainer.Remove(pawn);
+                        __instance.AddPawn(pawn, addCarriedPawnToWorldPawnsIfAny);
+                        if (addCarriedPawnToWorldPawnsIfAny)
+                        {
+                            Find.WorldPawns.PassToWorld(pawn, PawnDiscardDecideMode.Decide);
+                        }
+
+
+                    }
+                }
+                else
+                {
+                    Log.Error("Couldn't add pawn " + p + " to caravan.");
+                }
+                return false;
+            }
+            return true;
+        }
+
+
         //J Prevents caravans from being split while having colonists that are in vehicles.
         //  This is a lazy fix for now. It may need to be revised later.
         // RimWorld.Planet.Dialog_SplitCaravan
@@ -1200,7 +1313,7 @@ namespace CompVehicle
 
         //J Movement handlers in vehicles are counted in caravan forming.
         // RimWorld.Planet.CaravanExitMapUtility
-        public static void CanExit_PostFix(Pawn pawn, ref bool __result) => __result = pawn.Spawned && pawn.Map.exitMapGrid.MapUsesExitGrid && ((pawn.IsColonist || (pawn.GetComp<CompVehicle>() is CompVehicle compVehicle && compVehicle.MovementHandlerAvailable)) || CaravanExitMapUtility.FindCaravanToJoinFor(pawn) != null);
+        public static void CanExit_PostFix(Pawn pawn, ref bool __result) => __result = pawn.Spawned && pawn.Map.exitMapGrid.MapUsesExitGrid && ((pawn.IsColonist || (pawn.GetComp<CompVehicle>() is CompVehicle compVehicle && compVehicle.CanMove)) || CaravanExitMapUtility.FindCaravanToJoinFor(pawn) != null);
 
         //J Changes the caravan capacity for the vehicle.
         // RimWorld.MassUtility
@@ -1387,51 +1500,51 @@ namespace CompVehicle
           Added WorldPawn considerations.
         */
         //RimWorld.Planet.CaravanMaker
-        public static void MakeCaravan_PostFix(IEnumerable<Pawn> pawns, bool addToWorldPawnsIfNotAlready, Caravan __result)
-        {
-            if (pawns != null && pawns.Count() > 0 && pawns.Any(x => x.GetComp<CompVehicle>() != null))
-            {
-                foreach (Pawn vpawn in pawns)
-                {
-                    if (vpawn.GetComp<CompVehicle>() is CompVehicle vehicle)
-                    {
-                        if (!vehicle.handlers.NullOrEmpty())
-                        {
-                            //Store vehicle handler group structure in comp variable
-                            vehicle.PawnsInVehicle = new List<VehicleHandlerTemp>();
-                            foreach (VehicleHandlerGroup group in vehicle.handlers)
-                            {
-                                vehicle.PawnsInVehicle.Add(new VehicleHandlerTemp(group));
-                                for (int i = 0; i < group.handlers.Count; i++)
-                                {
-                                    Pawn pawn = group.handlers[i];
+        //public static void MakeCaravan_PostFix(IEnumerable<Pawn> pawns, bool addToWorldPawnsIfNotAlready, Caravan __result)
+        //{
+        //    if (pawns != null && pawns.Count() > 0 && pawns.Any(x => x.GetComp<CompVehicle>() != null))
+        //    {
+        //        foreach (Pawn vpawn in pawns)
+        //        {
+        //            if (vpawn.GetComp<CompVehicle>() is CompVehicle vehicle)
+        //            {
+        //                if (!vehicle.handlers.NullOrEmpty())
+        //                {
+        //                    //Store vehicle handler group structure in comp variable
+        //                    vehicle.PawnsInVehicle = new List<VehicleHandlerTemp>();
+        //                    foreach (VehicleHandlerGroup group in vehicle.handlers)
+        //                    {
+        //                        vehicle.PawnsInVehicle.Add(new VehicleHandlerTemp(group));
+        //                        for (int i = 0; i < group.handlers.Count; i++)
+        //                        {
+        //                            Pawn pawn = group.handlers[i];
 
-                                    //Remove the pawn from the vehicle and add it to the caravan
-                                    if (!__result.ContainsPawn(pawn))
-                                    {
-                                        if (pawn.holdingOwner != null) pawn.holdingOwner = null;
-                                        __result.AddPawn(pawn, addToWorldPawnsIfNotAlready);
-                                        if (addToWorldPawnsIfNotAlready && !pawn.IsWorldPawn())
-                                        {
-                                            if (pawn.Spawned)
-                                            {
-                                                pawn.DeSpawn();
-                                            }
-                                            if (!pawn.IsWorldPawn()) Find.WorldPawns.PassToWorld(pawn, PawnDiscardDecideMode.Decide);
-                                        }
-                                    }
-                                    group.handlers.Remove(pawn);
-                                }
-                            }
-                        }
+        //                            //Remove the pawn from the vehicle and add it to the caravan
+        //                            if (!__result.ContainsPawn(pawn))
+        //                            {
+        //                                if (pawn.holdingOwner != null) pawn.holdingOwner = null;
+        //                                __result.AddPawn(pawn, addToWorldPawnsIfNotAlready);
+        //                                if (addToWorldPawnsIfNotAlready && !pawn.IsWorldPawn())
+        //                                {
+        //                                    if (pawn.Spawned)
+        //                                    {
+        //                                        pawn.DeSpawn();
+        //                                    }
+        //                                    if (!pawn.IsWorldPawn()) Find.WorldPawns.PassToWorld(pawn, PawnDiscardDecideMode.Decide);
+        //                                }
+        //                            }
+        //                            group.handlers.Remove(pawn);
+        //                        }
+        //                    }
+        //                }
 
-                    }
+        //            }
 
-                }
+        //        }
 
-            }
+        //    }
 
-        }
+        //}
 
         //S Remove pawns from the vehicle when exiting the map in an already formed caravan
         //Purpose: Remove pawns from the vehicle when exiting the map in a already formed caravan
@@ -1446,48 +1559,66 @@ namespace CompVehicle
             if (pawn.GetComp<CompVehicle>() is CompVehicle compVehicle)
             {
                 //Vanilla code start
+                //Log.Message("EMJOC_1");
                 Caravan caravan = CaravanExitMapUtility.FindCaravanToJoinFor(pawn);
+                //Log.Message("EMJOC_2");
+
                 if (caravan != null)
                 {
+                    //Log.Message("EMJOC_3a");
+
                     pawn.DeSpawn();
+                    //Log.Message("EMJOC_3b");
+
                     caravan.AddPawn(pawn, true);
+                    //Log.Message("EMJOC_3c");
+
                     pawn.ExitMap(false);
+                    //Log.Message("EMJOC_3d");
+
                 }
                 //Vanilla code edit transpiler here for if statement
-                else if (pawn.IsColonist || compVehicle != null)
+                //Log.Message("EMJOC_4");
+
+                List<int> list = CaravanExitMapUtility.AvailableExitTilesAt(pawn.Map);
+                //Log.Message("EMJOC_4a");
+
+                Caravan caravan2 = CaravanExitMapUtility.ExitMapAndCreateCaravan(Gen.YieldSingle<Pawn>(pawn), pawn.Faction, pawn.Map.Tile, (!list.Any<int>()) ? pawn.Map.Tile : list.RandomElement<int>());
+                //Log.Message("EMJOC_4b");
+
+                caravan2.autoJoinable = true;
+                //Log.Message("EMJOC_4c");
+
+                if (pawn.Faction == Faction.OfPlayer)
                 {
-                    List<int> list = CaravanExitMapUtility.AvailableExitTilesAt(pawn.Map);
-                    Caravan caravan2 = CaravanExitMapUtility.ExitMapAndCreateCaravan(Gen.YieldSingle<Pawn>(pawn), pawn.Faction, pawn.Map.Tile, (!list.Any<int>()) ? pawn.Map.Tile : list.RandomElement<int>());
-                    caravan2.autoJoinable = true;
-                    if (pawn.Faction == Faction.OfPlayer)
+                    //Log.Message("EMJOC_4d");
+
+                    Messages.Message("MessagePawnLeftMapAndCreatedCaravan".Translate(new object[]
                     {
-                        Messages.Message("MessagePawnLeftMapAndCreatedCaravan".Translate(new object[]
-                        {
-                        pawn.LabelShort
-                        }).CapitalizeFirst(), caravan2, MessageSound.Benefit);
-                    }
+                    pawn.LabelShort
+                    }).CapitalizeFirst(), caravan2, MessageSound.Benefit);
+                    //Log.Message("EMJOC_4e");
+
                 }
-                else
-                {
-                    Log.Error("Pawn " + pawn + " didn't find any caravan to join, and he can't create one.");
-                }
+                //Log.Message("EMJOC_4f");
+                    
                 //Vanilla Code end
 
                 //Apparently commenting out this code fixed the errors from JobDriver when
                 //leaving an invasion map
                 //caravan = CaravanExitMapUtility.FindCaravanToJoinFor(pawn);
-                    if (!compVehicle.AllOccupants.NullOrEmpty())
-                    {
-                        if (compVehicle.PawnsInVehicle == null)
-                        {
-                            compVehicle.PawnsInVehicle = new List<VehicleHandlerTemp>();
-                            foreach (VehicleHandlerGroup group in compVehicle.handlers)
-                            {
-                                //Log.Message("Adding group to " + compVehicle.Pawn.ToString());
-                                compVehicle.PawnsInVehicle.Add(new VehicleHandlerTemp(group));
-                            }
-                        }
-                    }
+                //if (!compVehicle.AllOccupants.NullOrEmpty())
+                //{
+                //    if (compVehicle.PawnsInVehicle == null)
+                //    {
+                //        compVehicle.PawnsInVehicle = new List<VehicleHandlerTemp>();
+                //        foreach (VehicleHandlerGroup group in compVehicle.handlers)
+                //        {
+                //            //Log.Message("Adding group to " + compVehicle.Pawn.ToString());
+                //            compVehicle.PawnsInVehicle.Add(new VehicleHandlerTemp(group));
+                //        }
+                //    }
+                //}
                 //if (vehicle.handlers != null && vehicle.handlers.Count > 0)
                 //{
                 //    foreach (VehicleHandlerGroup group in vehicle.handlers)
@@ -1513,6 +1644,7 @@ namespace CompVehicle
                 //        }
                 //    }
                 //}
+                Log.Message("EMJOC_6");
 
                 return false;
             }
@@ -1797,6 +1929,307 @@ namespace CompVehicle
         }
 
         #endregion CaravanHandlingMethods
+
+        #region TestMethods
+
+        // RimWorld.Planet.CaravanMaker
+        public static bool MakeCaravan_PreFix(ref Caravan __result, IEnumerable<Pawn> pawns, Faction faction, int startingTile, bool addToWorldPawnsIfNotAlready)
+        {
+            Log.Message("MC1");
+            if (startingTile < 0 && addToWorldPawnsIfNotAlready)
+            {
+                Log.Warning("Tried to create a caravan but chose not to spawn a caravan but pass pawns to world. This can cause bugs because pawns can be discarded.");
+            }
+
+            Log.Message("MC2");
+
+            List<Pawn> tmpPawns = (List<Pawn>)AccessTools.Field(typeof(CaravanMaker), "tmpPawns").GetValue(null);
+
+            tmpPawns.Clear();
+            tmpPawns.AddRange(pawns);
+            Log.Message("MC3");
+
+            Caravan caravan = (Caravan)WorldObjectMaker.MakeWorldObject(WorldObjectDefOf.Caravan);
+            Log.Message("MC4");
+
+            if (startingTile >= 0)
+            {
+                Log.Message("MC5a");
+
+                caravan.Tile = startingTile;
+                Log.Message("MC5b");
+
+            }
+            Log.Message("MC6");
+
+            caravan.SetFaction(faction);
+            Log.Message("MC7");
+
+            caravan.Name = CaravanNameGenerator.GenerateCaravanName(caravan);
+            Log.Message("MC8");
+
+            if (startingTile >= 0)
+            {
+                Log.Message("MC9a");
+
+                Find.WorldObjects.Add(caravan);
+                Log.Message("MC9b");
+
+            }
+            for (int i = 0; i < tmpPawns.Count; i++)
+            {
+                Log.Message("MC10a");
+
+                Pawn pawn = tmpPawns[i];
+                if (pawn.Spawned)
+                {
+                    Log.Message("MC11a");
+
+                    pawn.DeSpawn();
+                    Log.Message("MC11b");
+
+                }
+                if (pawn.Dead)
+                {
+
+                    Log.Warning("Tried to form a caravan with a dead pawn " + pawn);
+                }
+                else
+                {
+                    Log.Message("MC12a");
+
+                    caravan.AddPawn(pawn, addToWorldPawnsIfNotAlready);
+                    Log.Message("MC12b");
+
+                    if (addToWorldPawnsIfNotAlready && !pawn.IsWorldPawn())
+                    {
+                        Log.Message("MC13a");
+
+                        if (pawn.Spawned)
+                        {
+                            pawn.DeSpawn();
+                        }
+                        Find.WorldPawns.PassToWorld(pawn, PawnDiscardDecideMode.Decide);
+                        Log.Message("MC13b");
+
+                    }
+                    Log.Message("MC12c");
+
+                }
+            }
+            __result = caravan;
+            return false;
+        }
+        
+        // RimWorld.Planet.CaravanExitMapUtility
+        public static bool ExitMapAndCreateCaravan_Test(ref Caravan __result, IEnumerable<Pawn> pawns, Faction faction, int startingTile)
+        {
+            Log.Message("EMACC1");
+            if (!GenWorldClosest.TryFindClosestPassableTile(startingTile, out startingTile))
+            {
+                Log.Error("Could not find any passable tile for a new caravan.");
+                __result = null;
+                return false;
+            }
+            Log.Message("EMACC2");
+
+            List<Pawn> tmpPawns = (List<Pawn>)AccessTools.Field(typeof(CaravanExitMapUtility), "tmpPawns").GetValue(null);
+            Log.Message("EMACC3");
+
+            tmpPawns.Clear();
+            tmpPawns.AddRange(pawns);
+            Log.Message("EMACC4");
+
+            Map map = null;
+            for (int i = 0; i < tmpPawns.Count; i++)
+            {
+                map = tmpPawns[i].MapHeld;
+                if (map != null)
+                {
+                    break;
+                }
+            }
+            Log.Message("EMACC5");
+
+            Caravan caravan = CaravanMaker.MakeCaravan(tmpPawns, faction, startingTile, false);
+            Log.Message("EMACC6");
+
+            for (int j = 0; j < tmpPawns.Count; j++)
+            {
+                Log.Message("EMACC7");
+
+                tmpPawns[j].ExitMap(false);
+                Log.Message("EMACC7b");
+
+            }
+            Log.Message("EMACC8");
+
+            List<Pawn> pawnsListForReading = caravan.PawnsListForReading;
+            Log.Message("EMACC9");
+
+            for (int k = 0; k < pawnsListForReading.Count; k++)
+            {
+                Log.Message("EMACC10a");
+
+                if (!pawnsListForReading[k].IsWorldPawn())
+                {
+                    Log.Message("EMACC10b");
+
+                    Find.WorldPawns.PassToWorld(pawnsListForReading[k], PawnDiscardDecideMode.Decide);
+                    Log.Message("EMACC10c");
+
+                }
+            }
+            if (map != null)
+            {
+                Log.Message("EMACC11");
+
+                map.info.parent.Notify_CaravanFormed(caravan);
+                Log.Message("EMACC11b");
+
+            }
+            Log.Message("EMACC12");
+
+            __result = caravan;
+            return false;
+        }
+
+        // Verse.Pawn
+        public static bool ExitMap_Test(Pawn __instance, bool allowedToJoinOrCreateCaravan)
+        {
+            if (__instance?.GetComp<CompVehicle>() is CompVehicle compVehicle)
+            {
+                Log.Message("ExitMap1");
+                if (__instance.IsWorldPawn())
+                {
+                    Log.Warning("Called ExitMap() on world pawn " + __instance);
+                    return false;
+                }
+                if (allowedToJoinOrCreateCaravan && CaravanExitMapUtility.CanExitMapAndJoinOrCreateCaravanNow(__instance))
+                {
+                    Log.Message("ExitMap2");
+
+                    CaravanExitMapUtility.ExitMapAndJoinOrCreateCaravan(__instance);
+                    Log.Message("ExitMap2b");
+
+                    return false;
+                }
+                Lord lord = __instance.GetLord();
+                Log.Message("ExitMap3");
+
+                if (lord != null)
+                {
+                    Log.Message("ExitMap3a");
+
+                    lord.Notify_PawnLost(__instance, PawnLostCondition.ExitedMap);
+                    Log.Message("ExitMap3b");
+
+                }
+                if (__instance.carryTracker != null && __instance.carryTracker.CarriedThing != null)
+                {
+                    Log.Message("ExitMap4");
+
+                    var carriedThing = __instance?.carryTracker?.CarriedThing;
+                    Log.Message("ExitMap4a");
+
+                    if (carriedThing is Pawn pawn)
+                    {
+                        Log.Message("ExitMap4b");
+
+                        if (__instance.Faction != null && __instance.Faction != pawn.Faction)
+                        {
+                            Log.Message("ExitMap4c");
+
+                            __instance.Faction.kidnapped.KidnapPawn(pawn, __instance);
+                            Log.Message("ExitMap4d");
+
+                        }
+                        else
+                        {
+                            Log.Message("ExitMap4e");
+
+                            __instance.carryTracker.innerContainer.Remove(pawn);
+                            Log.Message("ExitMap4f");
+
+                            pawn.ExitMap(false);
+                            Log.Message("ExitMap4g");
+
+                        }
+                    }
+                    else
+                    {
+                        Log.Message("ExitMap4h");
+
+                        __instance.carryTracker.CarriedThing.Destroy(DestroyMode.Vanish);
+                    }
+                    Log.Message("ExitMap4i");
+
+                    __instance.carryTracker.innerContainer.Clear();
+                }
+                Log.Message("ExitMap5");
+
+                bool flag = !__instance.IsCaravanMember() && !PawnUtility.IsTravelingInTransportPodWorldObject(__instance);
+                Log.Message("ExitMap5a");
+
+                if (flag && __instance.HostFaction != null && __instance.guest != null && (__instance.guest.released || !__instance.IsPrisoner) && !__instance.InMentalState && __instance.health.hediffSet.BleedRateTotal < 0.001f && __instance.Faction.def.appreciative && !__instance.Faction.def.hidden)
+                {
+                    Log.Message("ExitMap6");
+
+                    float num = 15f;
+                    if (PawnUtility.IsFactionLeader(__instance))
+                    {
+                        num += 50f;
+                    }
+                    Messages.Message("MessagePawnExitMapRelationsGain".Translate(new object[]
+                    {
+                        __instance.LabelShort,
+                        __instance.Faction.Name,
+                        num.ToString("F0")
+                    }), MessageSound.Benefit);
+                    __instance.Faction.AffectGoodwillWith(__instance.HostFaction, num);
+                }
+                if (__instance.ownership != null)
+                {
+                    Log.Message("ExitMap7");
+
+                    __instance.ownership.UnclaimAll();
+                    Log.Message("ExitMap7b");
+
+                }
+                if (__instance.guest != null && flag)
+                {
+                    Log.Message("ExitMap8a");
+
+                    __instance.guest.SetGuestStatus(null, false);
+                    Log.Message("ExitMap8b");
+
+                }
+                if (__instance.Spawned)
+                {
+                    Log.Message("ExitMap9a");
+
+                    __instance.DeSpawn();
+                    Log.Message("ExitMap9b");
+
+                }
+                __instance.inventory.UnloadEverything = false;
+                Log.Message("ExitMap10");
+
+                __instance.ClearMind(false);
+                Log.Message("ExitMap11");
+
+                __instance.ClearReservations(true);
+                Log.Message("ExitMap12");
+
+                Find.WorldPawns.PassToWorld(__instance, PawnDiscardDecideMode.Decide);
+                Log.Message("ExitMap13");
+
+                return false;
+            }
+            return true;
+
+        }
+        #endregion TestMethods
 
         // RimWorld.RestUtility
         //public static bool DrawMedOperationsTab(Rect leftRect, Pawn pawn, Thing thingForMedBills, float curY, ref float __result)
@@ -2250,7 +2683,7 @@ namespace CompVehicle
 								{
 									if ((bool)AccessTools.Method(typeof(Dialog_FormCaravan), "TryFormAndSendCaravan").Invoke(instance, new object[] { }))
 									{
-										instance.Close(false);
+                                        instance.Close(false);
 										tab = traverseobj.Field("tab").GetValue();
 									}
 								}, false, null));
