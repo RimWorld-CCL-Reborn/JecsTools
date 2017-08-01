@@ -5,7 +5,7 @@
   <url></url>
   <targetVersion>0.17.0</targetVersion>
   <description>
-[1.0.4.17] Adds modding components to RimWorld: vehicles, spell casting, weapon slots, oversized weapons, and more!
+[1.0.5.0] Adds modding components to RimWorld: vehicles, spell casting, weapon slots, oversized weapons, and more!
 
 Note to players: This mod will not change your game, but rather it lets modders do more, so you can have an even more amazing RimWorld experience.
 
@@ -37,11 +37,20 @@ CompSlotLoadable
 CompToggleDef (by Roxxploxx)
 - Allows for something to despawn, change its def, and respawn.
 
-CompVehicle (Experimental)
+CompVehicle
  - Allows for a pawn to be treated as a vehicle that can be loaded with pilots, gunners, crew, and passengers.
 
 CompInstalledPart (WIP)
 - Allows installation and uninstallation of things onto other things. This is particularly useful for weapons on vehicles.
+
+Total List of Classes
+
+JecsTools.Hediff_TransformedPart
+ - Similar to added part, however, transformed parts will not remove the original parts when removed from the character. This allows for us to "transform" pawn parts. Such as having a colonists' hands turn into deadly claws.
+
+JecsTools.JobGiver_AIFirelessTrashColonyClose
+JecsTools.JobGiver_AIFirelessTrashColonyDistant
+ - These classes lets us call a special jobgiver for raiders that does not include setting fire to objects. This is good for monstrous creatures that do not have the ability to start fires but still want to break things.
 
 Additions by roxxploxx.
 Additions and transpilers by Erdelf.
