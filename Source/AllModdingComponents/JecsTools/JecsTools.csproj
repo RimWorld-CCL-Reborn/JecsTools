@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{417B8649-7A66-4580-8C75-473E46DA9C7A}</ProjectGuid>
+    <ProjectGuid>{106BF102-0379-41CF-9C5D-E21AAC5F051B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>AbilityUser</RootNamespace>
-    <AssemblyName>AbilityUser</AssemblyName>
+    <RootNamespace>JecsTools</RootNamespace>
+    <AssemblyName>JecsTools</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -32,7 +32,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="0Harmony">
-      <HintPath>..\..\..\..\GlobalAssemblies\0Harmony.dll</HintPath>
+      <HintPath>..\..\..\..\Harmony1091\0Harmony.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Assembly-CSharp">
       <HintPath>..\..\..\..\..\RimWorldWin_Data\Managed\Assembly-CSharp.dll</HintPath>
@@ -50,38 +51,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AbilityButtons.cs" />
-    <Compile Include="AbilityDef.cs" />
-    <Compile Include="AbilityDefOf.cs" />
-    <Compile Include="AbilityUserUtility.cs" />
-    <Compile Include="AoEProperties.cs" />
-    <Compile Include="ApplyHediffs.cs" />
-    <Compile Include="ApplyMentalStates.cs" />
-    <Compile Include="Command_PawnAbility.cs" />
-    <Compile Include="CompAbilityItem.cs" />
-    <Compile Include="CompAbilityUser.cs" />
-    <Compile Include="CompProperties_AbilityItem.cs" />
-    <Compile Include="CompProperties_AbilityUser.cs" />
-    <Compile Include="ExtraDamage.cs" />
-    <Compile Include="FlyingObject.cs" />
-    <Compile Include="FlyingObject_Equipable.cs" />
-    <Compile Include="HarmonyPatches.cs" />
-    <Compile Include="JobDriver_CastAbilitySelf.cs" />
-    <Compile Include="JobDriver_CastAbilityVerb.cs" />
-    <Compile Include="PawnAbility.cs" />
-    <Compile Include="PawnAbilityTargetCategory.cs" />
-    <Compile Include="ProjectileDef_Ability.cs" />
-    <Compile Include="Projectile_Ability.cs" />
-    <Compile Include="Projectile_AbilityBase.cs" />
-    <Compile Include="Projectile_AbilityLaser.cs" />
+    <Compile Include="FirelessTrashUtility.cs" />
+    <Compile Include="JobGiver_AIFirelessTrashColonyClose.cs" />
+    <Compile Include="JobGiver_AIFirelessTrashColonyDistant.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ProjectileDef_LaserProjectile.cs" />
-    <Compile Include="SpawnThings.cs" />
-    <Compile Include="StringsToTranslate.cs" />
-    <Compile Include="VerbProperties_Ability.cs" />
-    <Compile Include="Verb_UseAbility.cs" />
-    <Compile Include="Verb_UseAbility_TrueBurst.cs" />
+    <Compile Include="TransformedPart.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

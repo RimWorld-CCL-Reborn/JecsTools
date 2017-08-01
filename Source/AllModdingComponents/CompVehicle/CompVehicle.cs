@@ -565,17 +565,27 @@ namespace CompVehicle
 
         public void RemovePawn(Pawn pawn)
         {
+            //Log.Message("Remove1");
             if (this.handlers is List<VehicleHandlerGroup> groups && !groups.NullOrEmpty())
             {
-                var tempGroup = groups.FirstOrDefault(x => x.handlers.Contains(pawn));
-                if (tempGroup != null)
+                //Log.Message("Remove2");
+
+                var tempGroups = groups.FindAll(x => x.handlers.InnerListForReading.Contains(pawn));
+                if (!tempGroups.NullOrEmpty())
                 {
-                    if (tempGroup.handlers.Remove(pawn))
+                    //Log.Message("Remove3");
+
+                    foreach (VehicleHandlerGroup group in tempGroups)
                     {
-                        //Log.Message("Removed " + pawn.LabelShort);
-                        return;
+                        //Log.Message("Remove4");
+
+                        if (group.handlers.InnerListForReading.Remove(pawn))
+                        {
+                            //Log.Message("Remove5");
+
+                            return;
+                        }
                     }
-                    //Log.Message("Failed to remove " + pawn.LabelShort);
                 }
             }
         }
@@ -631,8 +641,11 @@ namespace CompVehicle
                     }
                     //var curFaction = pawnToLoad.Faction;
                     pawnToLoad.DeSpawn();
-                    if (pawnToLoad.holdingOwner != null) pawnToLoad.holdingOwner = null;
-                    bill.group.handlers.TryAdd(pawnToLoad);
+                    if (pawnToLoad.holdingOwner != null)
+                    {
+                        pawnToLoad.holdingOwner.TryTransferToContainer(pawnToLoad, bill.group.handlers);
+                    }
+                    else bill.group.handlers.TryAdd(pawnToLoad);
                     if (!pawnToLoad.IsWorldPawn()) Find.WorldPawns.PassToWorld(pawnToLoad, PawnDiscardDecideMode.Decide);
                     //pawnToLoad.SetFaction(curFaction);
                     this.bills.Remove(bill);
