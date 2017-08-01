@@ -56,6 +56,14 @@ Total list of components:
 *CompToggleDef (by Roxxploxx)*
  - A situational Component that allows you to toggle the ThingDef of a selected Thing via a radio button menu. ex. Change a ring to be for a pinky finger versus a ring or index finger.
 
+Total List of Classes
+
+*JecsTools.Hediff_TransformedPart*
+ - Similar to added part, however, transformed parts will not remove the original parts when removed from the character. This allows for us to "transform" pawn parts. Such as having a colonists' hands turn into deadly claws.
+
+*JecsTools.JobGiver_AIFirelessTrashColonyClose*
+*JecsTools.JobGiver_AIFirelessTrashColonyDistant*
+ - These classes lets us call a special jobgiver for raiders that does not include setting fire to objects. This is good for monstrous creatures that do not have the ability to start fires but still want to break things.
 	
 Additions by roxxploxx.
 Additions by Swenzi.
