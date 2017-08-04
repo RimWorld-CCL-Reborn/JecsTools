@@ -56,6 +56,9 @@ Total list of components:
 *CompToggleDef (by Roxxploxx)*
  - A situational Component that allows you to toggle the ThingDef of a selected Thing via a radio button menu. ex. Change a ring to be for a pinky finger versus a ring or index finger.
 
+*CompDelayedSpawner* 
+- Allows us to create things or pawns after a set amount of time. For instance, I created an invisible spawner for the Star Vampire (as of this update) that uses this CompDelayedSpawner. This lets me trigger the Star Vampire incident, drop down some delayed spawners, and enjoy results after a short period of time. The CompDelayedSpawner is highly customizable for things, pawns, and even allows for setting mental states and hediffs.
+
 Total List of Classes
 
 *JecsTools.Hediff_TransformedPart*
