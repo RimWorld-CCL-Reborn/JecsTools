@@ -25,6 +25,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompToggleDef", "AllModding
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JecsTools", "AllModdingComponents\JecsTools\JecsTools.csproj", "{106BF102-0379-41CF-9C5D-E21AAC5F051B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompDelayedSpawner", "AllModdingComponents\CompDelayedSpawner\CompDelayedSpawner.csproj", "{4074F652-2FDA-41D0-A631-F6C83A2351F1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -75,6 +77,10 @@ Global
 		{106BF102-0379-41CF-9C5D-E21AAC5F051B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{106BF102-0379-41CF-9C5D-E21AAC5F051B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{106BF102-0379-41CF-9C5D-E21AAC5F051B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4074F652-2FDA-41D0-A631-F6C83A2351F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4074F652-2FDA-41D0-A631-F6C83A2351F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4074F652-2FDA-41D0-A631-F6C83A2351F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4074F652-2FDA-41D0-A631-F6C83A2351F1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

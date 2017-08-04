@@ -1,6 +1,5 @@
 D:\SteamLibrary\steamapps\common\RimWorld\Mods\Assemblies\JecsTools.dll
 D:\SteamLibrary\steamapps\common\RimWorld\Mods\JecsTools\Source\CompAbilityUser\obj\Debug\JecsTools.csprojResolveAssemblyReference.cache
 D:\SteamLibrary\steamapps\common\RimWorld\Mods\JecsTools\Source\CompAbilityUser\obj\Debug\JecsTools.dll
-D:\SteamLibrary\steamapps\common\RimWorld\Mods\JecsTools\Source\AllModdingComponents\JecsTools\obj\Debug\JecsTools.csprojResolveAssemblyReference.cache
 D:\SteamLibrary\steamapps\common\RimWorld\Mods\JecsTools\Source\AllModdingComponents\JecsTools\obj\Debug\JecsTools.dll
 D:\SteamLibrary\steamapps\common\RimWorld\Mods\JecsTools\Assemblies\JecsTools.dll
