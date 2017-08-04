@@ -4,7 +4,7 @@
 
 <p align="center">
   <a href="https://github.com/jecrell/JecsTools/releases/">
-    <img src="https://img.shields.io/badge/release-1.0.4-4BC51D.svg?style=flat" alt="v1.0.9.1" />
+    <img src="https://img.shields.io/badge/release-1.0.5-4BC51D.svg?style=flat" alt="v1.0.9.1" />
   </a>
   <a href="https://github.com/roxxploxx/RimWorldModGuide/wiki">
     <img src="https://img.shields.io/badge/documentation-Wiki-4BC51D.svg?style=flat" alt="Documentation" />
@@ -56,6 +56,14 @@ Total list of components:
 *CompToggleDef (by Roxxploxx)*
  - A situational Component that allows you to toggle the ThingDef of a selected Thing via a radio button menu. ex. Change a ring to be for a pinky finger versus a ring or index finger.
 
+Total List of Classes
+
+*JecsTools.Hediff_TransformedPart*
+ - Similar to added part, however, transformed parts will not remove the original parts when removed from the character. This allows for us to "transform" pawn parts. Such as having a colonists' hands turn into deadly claws.
+
+*JecsTools.JobGiver_AIFirelessTrashColonyClose*
+*JecsTools.JobGiver_AIFirelessTrashColonyDistant*
+ - These classes lets us call a special jobgiver for raiders that does not include setting fire to objects. This is good for monstrous creatures that do not have the ability to start fires but still want to break things.
 	
 Additions by roxxploxx.
 Additions by Swenzi.
