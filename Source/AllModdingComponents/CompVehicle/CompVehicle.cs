@@ -274,10 +274,8 @@ namespace CompVehicle
             //Purpose: Ejects pawns if the need of that pawn is below the threshold set by ejectIfBelowNeedPercent
             //Logic: Prevents pawns from starving to death or other need related issues i.e. moral from poor management of pawns in vehicles
             //Improvements: Have pawns remember the vehicle they left, so they return after needs are satisfied?
-
-            //CompRefuelable refuelable = this.Pawn.GetComp<CompRefuelable>();
-            //if (refuelable != null)
-            //{
+            //Adjustments by Jecrell
+            
             if (this.parent is Pawn vehicle && vehicle.Spawned && this.handlers != null && this.handlers.Count > 0 && 
                !((this.Pawn.GetLord()?.LordJob?.ToString()) == "RimWorld.LordJob_FormAndSendCaravan") &&
                 (!((this.Pawn.CurJob?.def) == JobDefOf.UnloadYourInventory) && 
@@ -285,57 +283,20 @@ namespace CompVehicle
                 !this.Pawn.IsFighting()
                )
             {
-                //Find and remove all spawned characters from the vehicle list.
-                foreach (VehicleHandlerGroup group in this.handlers)
-                {
-                    Pawn toRemove = group?.handlers?.InnerListForReading?.FirstOrDefault(x => x.Spawned);
-                    if (toRemove != null)
-                    {
-						//Log.Message("x");
-						//Same deal as TryDrop, Remove wasn't working
-						//group.handlers.InnerListForReading.Remove(toRemove);
-						ThingOwner<Pawn> handler = new ThingOwner<Pawn>();
-						for (int z = 0; z < group.handlers.Count; z++)
-						{
-							if (group.handlers[z].def != toRemove.def)
-							{
-								handler.TryAdd(toRemove, 1, true);
-							}
-						}
-						group.handlers = handler;
-                        //return;
-                    }
-                }
-
                 //Do not eject anyone from the vehicle for needs during combat.
                 //It's too dangerous to leave during combat.
                 if (this?.Pawn?.Map?.attackTargetsCache?.GetPotentialTargetsFor(this.Pawn)?.FirstOrDefault(x => !x.ThreatDisabled()) == null)
                 {
                     //Find and eject all characters who need to have their needs met.
+                    //Removed ThingOwner-related code
                     foreach (VehicleHandlerGroup group in this.handlers)
                     {
                         Pawn toEject = group?.handlers?.InnerListForReading?.FirstOrDefault(x => !x.Spawned && x?.needs?.AllNeeds?.FirstOrDefault(y => y.CurLevelPercentage < this.Props.ejectIfBelowNeedPercent) != null);
                         if (toEject != null)
                         {
                             Messages.Message("MessagePawnLeftVehicle".Translate(new object[] { toEject.Label, this.Pawn.Label, "low" }), this.Pawn, MessageSound.SeriousAlert);
-                            //Eject(p, ref group.handlers);
                             Pawn b;
-                            //Log.Message("1");
-                            //group.handlers.TryDrop(toEject, this.Pawn.PositionHeld, this.Pawn.MapHeld, ThingPlaceMode.Near, out b);
-                            //TryDrop wasn't working 
                             Eject(toEject);
-                            ThingOwner<Pawn> handler = new ThingOwner<Pawn>();
-                            for (int z = 0; z < group.handlers.Count; z++)
-                            {
-                                if (group.handlers[z].def != toEject.def)
-                                {
-                                    handler.TryAdd(toEject, 1, true);
-                                }
-                            }
-                            group.handlers = handler;
-
-                            //Log.Message("2");
-                            //return;
                         }
                     }
                 }
