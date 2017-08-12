@@ -23,7 +23,13 @@ namespace JecsTools
             {
                 StringBuilder stringBuilder = new StringBuilder();
                 stringBuilder.Append(base.TipStringExtra);
-                stringBuilder.AppendLine("Efficiency".Translate() + ": " + this.def.addedPartProps.partEfficiency.ToStringPercent());
+                if (this.def.comps.FirstOrDefault(x => x is HediffCompProperties_VerbGiver) is HediffCompProperties_VerbGiver props)
+                {
+                    for (int i = 0; i < props.verbs.Count(); i++)
+                    {
+                        stringBuilder.AppendLine("Damage".Translate() + ": " + props.verbs[i].meleeDamageBaseAmount);
+                    }
+                }
                 return stringBuilder.ToString();
             }
         }

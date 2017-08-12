@@ -51,6 +51,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DamageDefCleave.cs" />
+    <Compile Include="DamageWorker_Cleave.cs" />
     <Compile Include="FirelessTrashUtility.cs" />
     <Compile Include="JobGiver_AIFirelessTrashColonyClose.cs" />
     <Compile Include="JobGiver_AIFirelessTrashColonyDistant.cs" />
