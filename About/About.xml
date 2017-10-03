@@ -5,7 +5,7 @@
   <url></url>
   <targetVersion>0.17.0</targetVersion>
   <description>
-[1.0.5.2] Adds modding components to RimWorld: vehicles, spell casting, weapon slots, oversized weapons, and more!
+[1.0.5.3] Adds modding components to RimWorld: vehicles, spell casting, weapon slots, oversized weapons, and more!
 
 Note to players: This mod will not change your game, but rather it lets modders do more, so you can have an even more amazing RimWorld experience.
 
@@ -51,6 +51,10 @@ JecsTools.Hediff_TransformedPart
 JecsTools.JobGiver_AIFirelessTrashColonyClose
 JecsTools.JobGiver_AIFirelessTrashColonyDistant
  - These classes lets us call a special jobgiver for raiders that does not include setting fire to objects. This is good for monstrous creatures that do not have the ability to start fires but still want to break things.
+ 
+JecsTools.DamageWorker_Cleave
+JecsTools.DamageDefCleave
+ - These classes add a new damage worker called "cleave" that allows for an attack to swipe multiple targets in front of a user based on XML settings defined in a new damage def. This update is in preperation of the upcoming Werewolves mod.
 
 Additions by roxxploxx.
 Additions and transpilers by Erdelf.

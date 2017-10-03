@@ -51,12 +51,36 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CaravanJobs\CaravanJob.cs" />
+    <Compile Include="CaravanJobs\CaravanJobDef.cs" />
+    <Compile Include="CaravanJobs\CaravanJobDriver.cs" />
+    <Compile Include="CaravanJobs\CaravanJobQueue.cs" />
+    <Compile Include="CaravanJobs\CaravanJobsUtility.cs" />
+    <Compile Include="CaravanJobs\CaravanToils_GoTo.cs" />
+    <Compile Include="CaravanJobs\CaravanToils_Effects.cs" />
+    <Compile Include="CaravanJobs\Caravan_JobTracker.cs" />
+    <Compile Include="CaravanJobs\CaravanToil.cs" />
+    <None Include="CaravanJobs\WorldEffecter.cs" />
+    <None Include="CaravanJobs\WorldMote.cs" />
+    <Compile Include="CaravanJobs\HarmonyCaravanJobs.cs" />
+    <Compile Include="CaravanJobs\WorldObjectBlueprint.cs" />
+    <None Include="CaravanJobs\WorldSubEffecter.cs" />
+    <None Include="CaravanJobs\WorldSubEffecter_ProgressBar.cs" />
+    <Compile Include="CaravanJobs\WorldObjectRecipeDef.cs" />
+    <Compile Include="CaravanJobs\WorldObject_ProgressBar.cs" />
+    <None Include="CaravanJobs\WorldProgressBarDrawer.cs" />
     <Compile Include="DamageDefCleave.cs" />
     <Compile Include="DamageWorker_Cleave.cs" />
     <Compile Include="FirelessTrashUtility.cs" />
+    <Compile Include="HediffCompDamageOverTime.cs" />
+    <Compile Include="HediffCompProperties_DamageOverTime.cs" />
+    <Compile Include="Hediff_InjuryCustomLabel.cs" />
     <Compile Include="JobGiver_AIFirelessTrashColonyClose.cs" />
     <Compile Include="JobGiver_AIFirelessTrashColonyDistant.cs" />
+    <Compile Include="PlaceWorker_Outline.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="CaravanJobs\CaravanJobGiver.cs" />
+    <Compile Include="CaravanJobs\QueuedCaravanJob.cs" />
     <Compile Include="TransformedPart.cs" />
   </ItemGroup>
   <ItemGroup />
