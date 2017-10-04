@@ -97,7 +97,7 @@ namespace JecsTools
                     return didCancel;
                 }
             }
-            return false;
+            return true;
         }
 
         public override IEnumerable<FloatMenuOption> GetFloatMenuOptions(Caravan caravan)
