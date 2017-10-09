@@ -6,7 +6,7 @@
 		<defName>MeleeWeapon_TestKnife</defName>
 		<label>slotted knife</label>
 		<description>One of humankind's oldest tools, the knife is both an everyday tool and a deadly weapon.</description>
-		<tickerType>Normal</tickerType>			
+		<tickerType>Normal</tickerType>
 		<comps>
 		  <li Class="CompSlotLoadable.CompProperties_SlotLoadable">
 		    <slots>
@@ -22,7 +22,7 @@
 			<graphicClass>Graphic_Single</graphicClass>
 		</graphicData>
 		<soundInteract>InteractPistol</soundInteract>
-		<costStuffCount>40</costStuffCount>	
+		<costStuffCount>40</costStuffCount>
 		<statBases>
 			<WorkToMake>4000</WorkToMake>
 			<Mass>0.5</Mass>
@@ -55,10 +55,12 @@
 		<useHitPoints>true</useHitPoints>
 		<pathCost>10</pathCost>
 		<selectable>true</selectable>
+		<tradeability>Never</tradeability>
 		<statBases>
 			<MaxHitPoints>100</MaxHitPoints>
 			<Flammability>1.0</Flammability>
 			<DeteriorationRate>2</DeteriorationRate>
+			<MarketValue>1</MarketValue>
 			<Beauty>-6</Beauty>
 			<SellPriceFactor>0.20</SellPriceFactor>
 		</statBases>
@@ -107,7 +109,7 @@
       <li>ITab_Art</li>
     </inspectorTabs>
   </ThingDef>
-	
+
   <ThingDef Name="BaseMeleeTestWeapon_Sharp" ParentName="BaseMeleeTestWeapon" Abstract="True">
     <recipeMaker>
     <defaultIngredientFilter>
