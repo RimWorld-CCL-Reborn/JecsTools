@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+
+  <CompInstalledPart_Install>安装在{2}上</CompInstalledPart_Install>
+  <CompInstalledPart_Uninstall>卸下{0}</CompInstalledPart_Uninstall>
+  <CompInstalledPart_Installed>{0}将{1}安装在{2}上</CompInstalledPart_Installed>
+  <CompInstalledPart_Uninstalled>{0}将{1}从{2}上卸下</CompInstalledPart_Uninstalled>
+
+</LanguageData>
