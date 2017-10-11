@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+
+  <AU_DISABLED>禁用</AU_DISABLED>
+
+  <AU_Type>类型：</AU_Type>
+  <AU_TargetAoE>有效范围</AU_TargetAoE>
+  <AU_TargetSelf>以自己为目标</AU_TargetSelf>
+  <AU_TargetThing>以其他为目标</AU_TargetThing>
+  <AU_TargetLocation>目标位置</AU_TargetLocation>
+  <AU_Cooldown>冷却：</AU_Cooldown>
+  <AU_Extra>附加</AU_Extra>
+  <AU_MentalStateChance>精神影响几率</AU_MentalStateChance>
+  <AU_EffectChance>影响几率</AU_EffectChance>
+  <AU_PawnAbilityRecharging>{0}需要时间恢复能量</AU_PawnAbilityRecharging>
+
+
+  <AU_AoEProperties>有效范围属性</AU_AoEProperties>
+  <AU_TargetClass>目标：</AU_TargetClass>
+  <AU_AoECharacters>角色</AU_AoECharacters>
+  <AU_AoEFriendlyFire>误伤：</AU_AoEFriendlyFire>
+  <AU_AoEMaxTargets>最大目标数：</AU_AoEMaxTargets>
+  <AU_AoEStartsFromCaster>从施法者开始：</AU_AoEStartsFromCaster>
+
+</LanguageData>

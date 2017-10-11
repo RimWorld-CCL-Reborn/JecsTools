@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+
+  <JecsTools_WorldObjectConst_AbandonReason>该位置没有可交易的商队</JecsTools_WorldObjectConst_AbandonReason>
+  <JecsTools_WorldObjectConst_ResourcesNeeded>资源：{0}</JecsTools_WorldObjectConst_ResourcesNeeded>
+  <JecsTools_WorldObjectConst_NotEnoughStuff>失败。需要材料{0}：{1} 。</JecsTools_WorldObjectConst_NotEnoughStuff>
+
+</LanguageData>
