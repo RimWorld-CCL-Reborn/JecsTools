@@ -363,23 +363,16 @@ namespace AbilityUser
             //yield return getInRangeToil;
 
             Find.Targeter.targetingVerb = verb;
-            yield return Toils_Combat.CastVerb(TargetIndex.A, false);
-            
-            this.AddFinishAction(() =>
+            yield return new Toil
             {
-                //if (compAbilityUser.IsActive)
-                //{
-
-                //}
-                //compAbilityUser.IsActive = false;
-                if (this.CompAbilityUsers is List<CompAbilityUser> users && !users.NullOrEmpty())
+                initAction = delegate
                 {
-                    foreach (CompAbilityUser u in users)
-                    {
-                        u.PostAbilityAttempt(this.pawn, verb.ability.powerdef);
-                    }
-                }
-            });
+                    verb.Ability.PostAbilityAttempt();
+
+                },
+                defaultCompleteMode = ToilCompleteMode.Instant
+            };
+            yield return Toils_Combat.CastVerb(TargetIndex.A, false);
         }
     }
 }

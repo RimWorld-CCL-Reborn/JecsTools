@@ -18,42 +18,39 @@ namespace AbilityUser
         public CompAbilityUser compAbilityUser = null;
         public Verb verb = null;
         public PawnAbility pawnAbility = null;
+        public int curTicks = -1;
 
-
-        public Command_PawnAbility(CompAbilityUser compAbilityUser, PawnAbility ability)
+        public Command_PawnAbility(CompAbilityUser compAbilityUser, PawnAbility ability, int ticks)
         {
             this.compAbilityUser = compAbilityUser;
             this.pawnAbility = ability;
+            this.curTicks = ticks;
         }
 
         public override void ProcessInput(Event ev)
         {
-            Action<LocalTargetInfo> actionToInput = delegate(LocalTargetInfo x)
+            if (this.pawnAbility.Def.MainVerb.AbilityTargetCategory != AbilityTargetCategory.TargetSelf)
             {
-                this.action(x.Thing);
-            };
+                base.ProcessInput(ev);
+                return;
+            }
+            this.action(null);
 
             if (this.CurActivateSound != null)
             {
                 this.CurActivateSound.PlayOneShotOnCamera();
             }
+
             SoundDefOf.TickTiny.PlayOneShotOnCamera();
-            Targeter targeter = Find.Targeter;
-            if (this.verb.CasterIsPawn && targeter.targetingVerb != null && targeter.targetingVerb.verbProps == this.verb.verbProps)
-            {
-                Pawn casterPawn = this.verb.CasterPawn;
-                if (!targeter.IsPawnTargeting(casterPawn))
-                {
-                    targeter.targetingVerbAdditionalPawns.Add(casterPawn);
-                }
-            }
-            else
-            {
-                Find.Targeter.BeginTargeting(this.verb);
-                //AccessTools.Field(typeof(Targeter), "action").SetValue(Find.Targeter, new Action<LocalTargetInfo>((LocalTargetInfo x) =>
-                //this.action(x.Thing)));
-            }
+
         }
+
+        //public override bool GroupsWith(Gizmo other)
+        //{
+        //    if (other is Command_PawnAbility p && p.pawnAbility.Def.abilityClass == this.pawnAbility.Def.abilityClass)
+        //        return true;
+        //    return false;
+        //}
 
         public override GizmoResult GizmoOnGUI(Vector2 topLeft)
         {
@@ -115,10 +112,14 @@ namespace AbilityUser
             {
                 UIHighlighter.HighlightOpportunity(rect, this.HighlightTag);
             }
-            float x = this.pawnAbility.TicksUntilCasting;
+            float x = this.curTicks;
             float y = this.pawnAbility.MaxCastingTicks;
             float fill = x / y;
-            Widgets.FillableBar(rect, fill, AbilityButtons.FullTex, AbilityButtons.EmptyTex, false);
+            if (x != -1 && x < y)
+            {
+                Log.Message(x.ToString());
+                Widgets.FillableBar(rect, fill, AbilityButtons.FullTex, AbilityButtons.EmptyTex, false);
+            }
             if (isUsed)
             {
                 if (this.disabled)

@@ -37,24 +37,16 @@ namespace AbilityUser
             }
 
             Find.Targeter.targetingVerb = verb;
-            yield return Toils_Combat.CastVerb(TargetIndex.A, false);
-            //CompAbilityUser.IsActive = true;
-            this.AddFinishAction(() =>
+            yield return new Toil
             {
-                //   //Log.Message("FinishACtion");
-                //if (CompAbilityUser.IsActive)
-                //{
-                //PsykerUtility.PsykerShockEvents(CompAbilityUser, CompAbilityUser.curPower.PowerLevel);
-                //}
-                if (this.CompAbilityUsers is List<CompAbilityUser> users && !users.NullOrEmpty())
+                initAction = delegate
                 {
-                    foreach (CompAbilityUser u in users)
-                    {
-                        u.PostAbilityAttempt(this.pawn, verb.ability.powerdef);
-                    }
-                }
-                //this.CompAbilityUser.ShotFired = true;
-            });
+                    verb.Ability.PostAbilityAttempt();
+
+                },
+                defaultCompleteMode = ToilCompleteMode.Instant
+            };
+            yield return Toils_Combat.CastVerb(TargetIndex.A, false);
         }
     }
 }

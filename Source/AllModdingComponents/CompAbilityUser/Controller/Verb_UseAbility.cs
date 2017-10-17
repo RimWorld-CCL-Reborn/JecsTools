@@ -12,26 +12,13 @@ namespace AbilityUser
 {
     public class Verb_UseAbility : Verb_LaunchProjectile
     {
-        public VerbProperties_Ability UseAbilityProps => (VerbProperties_Ability)this.verbProps;
+        private PawnAbility ability = null;
 
-        public ProjectileDef_Ability AbilityProjectileDef => this.UseAbilityProps.projectileDef as ProjectileDef_Ability;
-
-        public PawnAbility ability = null;
+        public PawnAbility Ability { get => ability; set => ability = value; }
         public List<LocalTargetInfo> TargetsAoE = new List<LocalTargetInfo>();
 
-        //public Need_ForcePool soul
-        //{
-        //    get
-        //    {
-        //        return this.CasterPawn.needs.TryGetNeed<Need_Soul>();
-        //    }
-        //    set
-        //    {
-
-        //    }
-        //}
-
-
+        public VerbProperties_Ability UseAbilityProps => (VerbProperties_Ability)this.verbProps;
+        public ProjectileDef_Ability AbilityProjectileDef => this.UseAbilityProps.projectileDef as ProjectileDef_Ability;
         public CompAbilityUser AbilityUserComp => this.CasterPawn.TryGetComp<CompAbilityUser>();
 
         public override float HighlightFieldRadiusAroundTarget()
@@ -66,10 +53,7 @@ namespace AbilityUser
                 {
                     aoeStartPosition = this.currentTarget.Cell;
                 }
-
-
-                //this.TargetsAoE.Add(new LocalTargetInfo(this.currentTarget.Cell));
-
+                
                 //Handle friendly fire targets.
                 if (!this.UseAbilityProps.TargetAoEProperties.friendlyFire)
                 {
@@ -87,7 +71,6 @@ namespace AbilityUser
                 }
                 else
                 {
-                    ////Log.Message("Expected call");
                     targets.Clear();
                     targets = this.caster.Map.listerThings.AllThings.Where(x =>
                         (x.Position.InHorDistOf(aoeStartPosition, this.UseAbilityProps.TargetAoEProperties.range)) &&
@@ -103,7 +86,6 @@ namespace AbilityUser
                     {
                         maxTargets--;
                         this.TargetsAoE.Add(new LocalTargetInfo(targ));
-                        ////Log.Message(targ.Label);
                     }
                 }
             }
@@ -118,32 +100,60 @@ namespace AbilityUser
 
         protected override bool TryCastShot()
         {
-            this.ability.TicksUntilCasting = (int)this.UseAbilityProps.SecondsToRecharge * GenTicks.TicksPerRealSecond;
             bool result = false;
             this.TargetsAoE.Clear();
             UpdateTargets();
-            int burstshots = this.ShotsPerBurst;
+            int burstShots = this.ShotsPerBurst;
             if (this.UseAbilityProps.AbilityTargetCategory != AbilityTargetCategory.TargetAoE && this.TargetsAoE.Count > 1)
             {
                 this.TargetsAoE.RemoveRange(0, this.TargetsAoE.Count - 1);
             }
             for (int i = 0; i < this.TargetsAoE.Count; i++)
             {
-                for (int j = 0; j < burstshots; j++)
+                //                for (int j = 0; j < burstshots; j++)
+                //                {
+                bool? attempt = TryLaunchProjectile(this.verbProps.projectileDef, this.TargetsAoE[i]);
+                ////Log.Message(TargetsAoE[i].ToString());
+                if (attempt != null)
                 {
-                    bool? attempt = TryLaunchProjectile(this.verbProps.projectileDef, this.TargetsAoE[i]);
-                    if (attempt != null)
-                    {
-                        if (attempt == true)
-                            result = true;
-                        if (attempt == false)
-                            result = false;
-                    }
+                    if (attempt == true) result = true;
+                    if (attempt == false) result = false;
                 }
+                //                }
             }
-            this.burstShotsLeft = 0;
+
+            // here, might want to have this set each time so people don't force stop on last burst and not hit the cooldown?
+            //this.burstShotsLeft = 0;
+            //if (this.burstShotsLeft == 0)
+            //{
+            //}
             PostCastShot(result, out result);
             return result;
+            //bool result = false;
+            //this.TargetsAoE.Clear();
+            //UpdateTargets();
+            //int burstshots = this.ShotsPerBurst;
+            //if (this.UseAbilityProps.AbilityTargetCategory != AbilityTargetCategory.TargetAoE && this.TargetsAoE.Count > 1)
+            //{
+            //    this.TargetsAoE.RemoveRange(0, this.TargetsAoE.Count - 1);
+            //}
+            //for (int i = 0; i < this.TargetsAoE.Count; i++)
+            //{
+            //    for (int j = 0; j < burstshots; j++)
+            //    {
+            //        bool? attempt = TryLaunchProjectile(this.verbProps.projectileDef, this.TargetsAoE[i]);
+            //        if (attempt != null)
+            //        {
+            //            if (attempt == true)
+            //                result = true;
+            //            if (attempt == false)
+            //                result = false;
+            //        }
+            //    }
+            //}
+            //this.burstShotsLeft = 0;
+            //PostCastShot(result, out result);
+            //return result;
         }
 
         protected bool? TryLaunchProjectile(ThingDef projectileDef, LocalTargetInfo launchTarget)
@@ -184,7 +194,6 @@ namespace AbilityUser
                     {
                         projectile.InterceptWalls = true;
                     }
-                    //              //Log.Message("LaunchingIntoWild");
                     projectile.Launch(this.caster, drawPos, shootLine.Dest, this.ownerEquipment, this.UseAbilityProps.hediffsToApply, this.UseAbilityProps.mentalStatesToApply, this.UseAbilityProps.thingsToSpawn);
                     return true;
                 }
@@ -201,7 +210,6 @@ namespace AbilityUser
                         {
                             projectile.InterceptWalls = true;
                         }
-                        //            //Log.Message("LaunchingINtoCover");
                         projectile.Launch(this.caster, drawPos, randomCoverToMissInto, this.ownerEquipment, this.UseAbilityProps.hediffsToApply, this.UseAbilityProps.mentalStatesToApply, this.UseAbilityProps.thingsToSpawn);
                         return true;
                     }

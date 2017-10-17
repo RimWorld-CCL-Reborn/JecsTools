@@ -158,6 +158,7 @@ namespace AbilityUser
                                     {
                                         success = true;
                                         victim.mindState.mentalStateHandler.TryStartMentalState(MentalStateDefOf.Manhunter, str, true);
+
                                     }
                                 }
                                 else
@@ -170,9 +171,12 @@ namespace AbilityUser
                                 }
                             }
                             if (success)
-                                MoteMaker.ThrowText(this.Caster.PositionHeld.ToVector3(), this.Caster.MapHeld, StringsToTranslate.AU_CastSuccess, 12f);
+                            {
+                                victim.Drawer.Notify_DebugAffected();
+                                MoteMaker.ThrowText(victim.DrawPos, victim.Map, mentalStateGiver.mentalStateDef.LabelCap + ": " + StringsToTranslate.AU_CastSuccess, -1f);
+                            }
                             else
-                                MoteMaker.ThrowText(this.Caster.PositionHeld.ToVector3(), this.Caster.MapHeld, StringsToTranslate.AU_CastFailure, 12f);
+                                MoteMaker.ThrowText(victim.DrawPos, victim.Map, mentalStateGiver.mentalStateDef.LabelCap + ": " + StringsToTranslate.AU_CastFailure, -1f);
                         }
                     }
                 }
@@ -187,23 +191,27 @@ namespace AbilityUser
                             {
                                 if (victim == this.Caster || CanOverpower(this.Caster, victim))
                                 {
-                                    Hediff newHediff = HediffMaker.MakeHediff(hediffs.hediffDef, victim, null);
-                                    victim.health.AddHediff(newHediff, null, null);
-                                    newHediff.Severity = hediffs.severity;
+                                    HealthUtility.AdjustSeverity(victim, hediffs.hediffDef, hediffs.severity);
+                                    //Hediff newHediff = HediffMaker.MakeHediff(hediffs.hediffDef, victim, null);
+                                    //victim.health.AddHediff(newHediff, null, null);
+                                    //newHediff.Severity = hediffs.severity;
                                     success = true;
                                 }
                             }
                             if (success)
-                                MoteMaker.ThrowText(this.Caster.PositionHeld.ToVector3(), this.Caster.MapHeld, StringsToTranslate.AU_CastSuccess);
+                            {
+                                victim.Drawer.Notify_DebugAffected();
+                                MoteMaker.ThrowText(victim.DrawPos, victim.Map, hediffs.hediffDef.LabelCap + ": " + StringsToTranslate.AU_CastSuccess, -1f);
+                            }
                             else
-                                MoteMaker.ThrowText(this.Caster.PositionHeld.ToVector3(), this.Caster.MapHeld, StringsToTranslate.AU_CastFailure);
+                                MoteMaker.ThrowText(victim.DrawPos, victim.Map, StringsToTranslate.AU_CastFailure, -1f);
                         }
                     }
                 }
             }
-            catch (NullReferenceException)
+            catch (NullReferenceException e)
             {
-                
+                Log.Message(e.ToString());
             }
         }
 

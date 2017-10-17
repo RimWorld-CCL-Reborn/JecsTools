@@ -51,24 +51,27 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AbilityButtons.cs" />
-    <Compile Include="AbilityDef.cs" />
+    <Compile Include="Controller\AbilityContext.cs" />
+    <Compile Include="Model\AbilityDef.cs" />
     <Compile Include="AbilityDefOf.cs" />
     <Compile Include="AbilityUserUtility.cs" />
     <Compile Include="AoEProperties.cs" />
     <Compile Include="ApplyHediffs.cs" />
     <Compile Include="ApplyMentalStates.cs" />
-    <Compile Include="Command_PawnAbility.cs" />
+    <Compile Include="View\Command_PawnAbility.cs" />
     <Compile Include="CompAbilityItem.cs" />
-    <Compile Include="CompAbilityUser.cs" />
+    <Compile Include="Model\CompAbilityUser.cs" />
     <Compile Include="CompProperties_AbilityItem.cs" />
     <Compile Include="CompProperties_AbilityUser.cs" />
     <Compile Include="ExtraDamage.cs" />
     <Compile Include="FlyingObject.cs" />
     <Compile Include="FlyingObject_Equipable.cs" />
     <Compile Include="HarmonyPatches.cs" />
-    <Compile Include="JobDriver_CastAbilitySelf.cs" />
-    <Compile Include="JobDriver_CastAbilityVerb.cs" />
-    <Compile Include="PawnAbility.cs" />
+    <Compile Include="Controller\JobDriver_CastAbilitySelf.cs" />
+    <Compile Include="Controller\JobDriver_CastAbilityVerb.cs" />
+    <Compile Include="PassiveEffectProperties.cs" />
+    <Compile Include="PassiveEffectWorker.cs" />
+    <Compile Include="Controller\PawnAbility.cs" />
     <Compile Include="PawnAbilityTargetCategory.cs" />
     <Compile Include="ProjectileDef_Ability.cs" />
     <Compile Include="Projectile_Ability.cs" />
@@ -78,9 +81,9 @@
     <Compile Include="ProjectileDef_LaserProjectile.cs" />
     <Compile Include="SpawnThings.cs" />
     <Compile Include="StringsToTranslate.cs" />
-    <Compile Include="VerbProperties_Ability.cs" />
-    <Compile Include="Verb_UseAbility.cs" />
-    <Compile Include="Verb_UseAbility_TrueBurst.cs" />
+    <Compile Include="Model\VerbProperties_Ability.cs" />
+    <Compile Include="Controller\Verb_UseAbility.cs" />
+    <Compile Include="Controller\Verb_UseAbility_TrueBurst.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

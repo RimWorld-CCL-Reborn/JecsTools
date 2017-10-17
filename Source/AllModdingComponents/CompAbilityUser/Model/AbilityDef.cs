@@ -1,17 +1,59 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
+using UnityEngine;
 using Verse;
+using Verse.AI;
 
 namespace AbilityUser
 {
-    public class AbilityDef : ThingDef
+    public class AbilityDef : Def
     {
-        public int RechargeTicks;
-
-        public int CastTime = 0;
-
+        public string uiIconPath;
+        public Type abilityClass = typeof(PawnAbility);
         public VerbProperties_Ability MainVerb;
+        public PassiveEffectProperties PassiveProps;
 
+        [Unsaved]
+        public Texture2D uiIcon = BaseContent.BadTex;
 
+        public override void PostLoad()
+        {
+            base.PostLoad();
+            LongEventHandler.ExecuteWhenFinished(delegate
+            {
+                if (!this.uiIconPath.NullOrEmpty())
+                {
+                    this.uiIcon = ContentFinder<Texture2D>.Get(this.uiIconPath, true);
+                }
+                //else if (this.DrawMatSingle != null && this.DrawMatSingle != BaseContent.BadMat)
+                //{
+                //    this.uiIcon = (Texture2D)this.DrawMatSingle.mainTexture;
+                //}
+            });
+        }
+
+        public Job GetJob(AbilityTargetCategory cat, LocalTargetInfo target)
+        {
+            switch (cat)
+            {
+                case AbilityTargetCategory.TargetSelf:
+                    {
+                        return new Job(AbilityDefOf.CastAbilitySelf, target);
+                    }
+                case AbilityTargetCategory.TargetAoE:
+                    {
+                        return new Job(AbilityDefOf.CastAbilitySelf, target);
+                    }
+                case AbilityTargetCategory.TargetThing:
+                    {
+                        return new Job(AbilityDefOf.CastAbilityVerb, target);
+                    }
+                default:
+                    {
+                        return new Job(AbilityDefOf.CastAbilityVerb, target);
+                    }
+            }
+        }
 
         public virtual string GetDescription()
         {

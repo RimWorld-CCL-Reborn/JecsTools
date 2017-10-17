@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 
-<ThingDefs>
+<Defs>
 
   <!-- ========================Vanilla Abstracts ======================= -->
   <ThingDef Name="BaseBullet" Abstract="True">
@@ -19,7 +19,7 @@
 
   <!-- ========================BaseDef================================== -->
 
-  <ThingDef Class="AbilityUser.AbilityDef" Name="BaseAbility" Abstract="True">
+  <AbilityUser.AbilityDef Name="BaseAbility" Abstract="True">
     <category>None</category>
     <uiIconPath>UI/Glow_Corrupt</uiIconPath>
     <thingClass>ThingWithComps</thingClass>
@@ -32,7 +32,6 @@
         <compClass>CompEquippable</compClass>
       </li>
     </comps>
+  </AbilityUser.AbilityDef>
 
-  </ThingDef>
-
-</ThingDefs>
+</Defs>
