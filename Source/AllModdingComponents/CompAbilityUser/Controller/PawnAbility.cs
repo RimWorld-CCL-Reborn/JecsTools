@@ -197,7 +197,8 @@ namespace AbilityUser
         public virtual bool CanCastPowerCheck(AbilityContext context, out string reason)
         {
             reason = "";
-            if (Verb.caster.Faction != Faction.OfPlayer)
+
+            if (context == AbilityContext.Player && Verb.caster.Faction != Faction.OfPlayer)
             {
                 reason = "CannotOrderNonControlled".Translate();
                 return false;
