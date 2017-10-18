@@ -13,6 +13,7 @@ namespace AbilityUser
     public class Verb_UseAbility : Verb_LaunchProjectile
     {
         private PawnAbility ability = null;
+        public Action<Thing> timeSavingActionVariable = null;
 
         public PawnAbility Ability { get => ability; set => ability = value; }
         public List<LocalTargetInfo> TargetsAoE = new List<LocalTargetInfo>();
@@ -39,7 +40,7 @@ namespace AbilityUser
             this.TargetsAoE.Clear();
             if (this.UseAbilityProps.AbilityTargetCategory == AbilityTargetCategory.TargetAoE)
             {
-                ////Log.Message("AoE Called");
+                //Log.Message("AoE Called");
                 if (this.UseAbilityProps.TargetAoEProperties == null)
                 {
                     Log.Error("Tried to Cast AoE-Ability without defining a target class");
@@ -79,13 +80,13 @@ namespace AbilityUser
                 }
 
                 int maxTargets = this.UseAbilityProps.abilityDef.MainVerb.TargetAoEProperties.maxTargets;
-                foreach (Thing targ in targets.InRandomOrder<Thing>())
+                List<Thing> randTargets = new List<Thing>(targets.InRandomOrder<Thing>());
+                for (int i = 0; i < maxTargets && i < randTargets.Count(); i++)
                 {
-                    TargetInfo tinfo = new TargetInfo(targ);
-                    if (this.UseAbilityProps.targetParams.CanTarget(tinfo) && maxTargets > 0)
+                    TargetInfo tinfo = new TargetInfo(randTargets[i]);
+                    if (this.UseAbilityProps.targetParams.CanTarget(tinfo))
                     {
-                        maxTargets--;
-                        this.TargetsAoE.Add(new LocalTargetInfo(targ));
+                        this.TargetsAoE.Add(new LocalTargetInfo(randTargets[i]));
                     }
                 }
             }
@@ -100,6 +101,7 @@ namespace AbilityUser
 
         protected override bool TryCastShot()
         {
+            //Log.Message("Cast");
             bool result = false;
             this.TargetsAoE.Clear();
             UpdateTargets();

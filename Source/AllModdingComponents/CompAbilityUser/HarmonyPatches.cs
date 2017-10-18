@@ -5,6 +5,7 @@ using RimWorld;
 using Verse;
 using UnityEngine;
 using Verse.Sound;
+using System;
 
 namespace AbilityUser
 {
@@ -14,8 +15,12 @@ namespace AbilityUser
         static HarmonyPatches()
         {
             HarmonyInstance harmony = HarmonyInstance.Create("rimworld.jecrell.abilityuser");
-            harmony.Patch(AccessTools.Method(typeof(Targeter), "TargeterUpdate"), new HarmonyMethod(typeof(HarmonyPatches).GetMethod("TargeterUpdate_PostFix")), null);
+            harmony.Patch(AccessTools.Method(typeof(Targeter), "TargeterUpdate"), null, new HarmonyMethod(typeof(HarmonyPatches).GetMethod("TargeterUpdate_PostFix")), null);
             harmony.Patch(AccessTools.Method(typeof(Targeter), "ProcessInputEvents"), new HarmonyMethod(typeof(HarmonyPatches).GetMethod("ProcessInputEvents_PreFix")), null);
+            harmony.Patch(AccessTools.Method(typeof(Targeter), "ConfirmStillValid"), new HarmonyMethod(typeof(HarmonyPatches).GetMethod(nameof(ConfirmStillValid))), null);
+
+            // RimWorld.Targeter
+            //private void ConfirmStillValid()
 
             // Initializes the AbilityUsers on Pawns
             harmony.Patch(AccessTools.Method(typeof(ThingWithComps), "InitializeComps"), null, new HarmonyMethod(typeof(HarmonyPatches).GetMethod("InitializeComps_PostFix")), null);
@@ -101,62 +106,115 @@ namespace AbilityUser
         }
 
         // RimWorld.Targeter
-        public static bool ProcessInputEvents_PreFix(Targeter __instance)
+        public static bool ConfirmStillValid(Targeter __instance)
         {
-            if (__instance == null) return false;
-            if (__instance.targetingVerb is Verb_UseAbility v && v.UseAbilityProps.AbilityTargetCategory == AbilityTargetCategory.TargetSelf)
+            if (__instance.targetingVerb is Verb_UseAbility)
             {
-                Pawn caster = (Pawn)__instance.targetingVerb.caster;
-                v.Ability.TryCastAbility(AbilityContext.Player, caster); // caster, source.First<LocalTargetInfo>(), caster.GetComp<CompAbilityUser>(), (Verb_UseAbility)__instance.targetingVerb, ((Verb_UseAbility)(__instance.targetingVerb)).ability.powerdef as AbilityDef)?.Invoke();
-                SoundDefOf.TickHigh.PlayOneShotOnCamera();
-                __instance.StopTargeting();
-                Event.current.Use();
-                return false;
-            }
-            AccessTools.Method(typeof(Targeter), "ConfirmStillValid").Invoke(__instance, null);
-            if (Event.current.type == EventType.MouseDown)
-            {
-                if (Event.current.button == 0 && __instance.IsTargeting)
+                Pawn caster = (Pawn)Traverse.Create(__instance).Field("caster").GetValue<Pawn>();
+
+                if (caster != null && (caster.Map != Find.VisibleMap || caster.Destroyed || !Find.Selector.IsSelected(caster)))
                 {
-
-                    if (__instance.targetingVerb != null)
+                    __instance.StopTargeting();
+                }
+                if (__instance.targetingVerb != null)
+                {
+                    Selector selector = Find.Selector;
+                    if (__instance.targetingVerb.caster.Map != Find.VisibleMap || __instance.targetingVerb.caster.Destroyed || !selector.IsSelected(__instance.targetingVerb.caster))
                     {
-
-                        if (__instance.targetingVerb is Verb_UseAbility)
+                        __instance.StopTargeting();
+                    }
+                    else
+                    {
+                        if (!__instance.targetingVerbAdditionalPawns.NullOrEmpty())
                         {
-                            Verb_UseAbility abilityVerb = __instance.targetingVerb as Verb_UseAbility;
-                            if (abilityVerb.Ability.Def.MainVerb.AbilityTargetCategory != AbilityTargetCategory.TargetSelf)
+                            for (int i = 0; i < __instance.targetingVerbAdditionalPawns.Count; i++)
                             {
-                                TargetingParameters targetParams = abilityVerb.Ability.Def.MainVerb.targetParams;
-                                if (targetParams != null)
+
+                                if (__instance.targetingVerbAdditionalPawns[i].Destroyed || !selector.IsSelected(__instance.targetingVerbAdditionalPawns[i]))
                                 {
-                                    IEnumerable<LocalTargetInfo> source = GenUI.TargetsAtMouse(targetParams, false);
-                                    if (source != null && source.Count<LocalTargetInfo>() > 0)
-                                    {
-                                        if (source.Any<LocalTargetInfo>())
-                                        {
-                                            Pawn caster = (Pawn)__instance.targetingVerb.caster;
-                                            abilityVerb.Ability.TryCastAbility(AbilityContext.Player, source.First<LocalTargetInfo>());// caster, source.First<LocalTargetInfo>(), caster.GetComp<CompAbilityUser>(), (Verb_UseAbility)__instance.targetingVerb, ((Verb_UseAbility)(__instance.targetingVerb)).ability.powerdef as AbilityDef)?.Invoke();
-                                            SoundDefOf.TickHigh.PlayOneShotOnCamera();
-                                            __instance.StopTargeting();
-                                            Event.current.Use();
-                                            return false;
-                                        }
-                                    }
+                                    __instance.StopTargeting();
+                                    break;
                                 }
                             }
-                            else
-                            {
-                                Pawn caster = (Pawn)__instance.targetingVerb.caster;
-                                abilityVerb.Ability.TryCastAbility(AbilityContext.Player, null);// caster.GetComp<CompAbilityUser>(), (Verb_UseAbility)__instance.targetingVerb, ((Verb_UseAbility)(__instance.targetingVerb)).ability.powerdef as AbilityDef)?.Invoke();
-                                SoundDefOf.TickHigh.PlayOneShotOnCamera();
-                                __instance.StopTargeting();
-                                Event.current.Use();
-                                return false;
-                            }
-
-                            //}
                         }
+                    }
+                }
+                return false;
+            }
+            return true;
+        }
+
+
+        // RimWorld.Targeter
+        public static bool ProcessInputEvents_PreFix(Targeter __instance)
+        {
+            if (__instance.targetingVerb is Verb_UseAbility v)
+            {
+                if (v.UseAbilityProps.AbilityTargetCategory == AbilityTargetCategory.TargetSelf)
+                {
+                    Pawn caster = (Pawn)__instance.targetingVerb.caster;
+                    v.Ability.TryCastAbility(AbilityContext.Player, caster); // caster, source.First<LocalTargetInfo>(), caster.GetComp<CompAbilityUser>(), (Verb_UseAbility)__instance.targetingVerb, ((Verb_UseAbility)(__instance.targetingVerb)).ability.powerdef as AbilityDef)?.Invoke();
+                    SoundDefOf.TickHigh.PlayOneShotOnCamera();
+                    __instance.StopTargeting();
+                    Event.current.Use();
+                    return false;
+                }
+                AccessTools.Method(typeof(Targeter), "ConfirmStillValid").Invoke(__instance, null);
+                if (Event.current.type == EventType.MouseDown)
+                {
+                    if (Event.current.button == 0 && __instance.IsTargeting)
+                    {
+                        LocalTargetInfo obj = (LocalTargetInfo)AccessTools.Method(typeof(Targeter), "CurrentTargetUnderMouse").Invoke(__instance, new object[] { false });
+                        if (obj.IsValid)
+                        {
+                            Log.Message("1");
+                            v.Ability.TryCastAbility(AbilityContext.Player, obj);
+                            //v.timeSavingActionVariable(obj.Thing);
+                            //((Action<LocalTargetInfo>)AccessTools.Field(typeof(Targeter), "action").GetValue(__instance)).Invoke(obj);
+                            //action(obj);
+                            //__instance.action(obj);
+                        }
+                        SoundDefOf.TickHigh.PlayOneShotOnCamera(null);
+                        __instance.StopTargeting();
+                        Event.current.Use();
+                        return false;
+                        //if (__instance.targetingVerb is Verb_UseAbility)
+                        //{
+                        //    Verb_UseAbility abilityVerb = __instance.targetingVerb as Verb_UseAbility;
+                        //    if (abilityVerb.Ability.Def.MainVerb.AbilityTargetCategory != AbilityTargetCategory.TargetSelf)
+                        //    {
+                        //        TargetingParameters targetParams = abilityVerb.Ability.Def.MainVerb.targetParams;
+                        //        if (targetParams != null)
+                        //        {
+                        //            IEnumerable<LocalTargetInfo> source = GenUI.TargetsAtMouse(targetParams, false);
+
+                        //            if (source != null && source.Count<LocalTargetInfo>() > 0)
+                        //            {
+
+                        //                if (source.Any<LocalTargetInfo>())
+                        //                {
+
+                        //                    Pawn caster = (Pawn)__instance.targetingVerb.caster;
+                        //                    abilityVerb.Ability.TryCastAbility(AbilityContext.Player, source.First<LocalTargetInfo>());// caster, source.First<LocalTargetInfo>(), caster.GetComp<CompAbilityUser>(), (Verb_UseAbility)__instance.targetingVerb, ((Verb_UseAbility)(__instance.targetingVerb)).ability.powerdef as AbilityDef)?.Invoke();
+                        //                    SoundDefOf.TickHigh.PlayOneShotOnCamera();
+                        //                    __instance.StopTargeting();
+                        //                    Event.current.Use();
+                        //                    return false;
+                        //                }
+                        //            }
+                        //        }
+                        //    }
+                        //    else
+                        //    {
+                        //        Pawn caster = (Pawn)__instance.targetingVerb.caster;
+                        //        abilityVerb.Ability.TryCastAbility(AbilityContext.Player, null);// caster.GetComp<CompAbilityUser>(), (Verb_UseAbility)__instance.targetingVerb, ((Verb_UseAbility)(__instance.targetingVerb)).ability.powerdef as AbilityDef)?.Invoke();
+                        //        SoundDefOf.TickHigh.PlayOneShotOnCamera();
+                        //        __instance.StopTargeting();
+                        //        Event.current.Use();
+                        //        return false;
+                        //    }
+                        //}
+                        //}
                     }
                 }
             }
@@ -165,26 +223,13 @@ namespace AbilityUser
 
         public static void TargeterUpdate_PostFix(Targeter __instance)
         {
-            if (Find.Targeter.targetingVerb != null)
+            if (__instance.targetingVerb is Verb_UseAbility tVerb && tVerb.verbProps is VerbProperties_Ability tVerbProps)
             {
-                ////Log.Message("2");
-                if (Find.Targeter.targetingVerb is Verb_UseAbility)
+                if (tVerbProps?.range > 0)
+                    GenDraw.DrawRadiusRing(tVerb.CasterPawn.PositionHeld, tVerbProps.range);
+                if (tVerbProps?.TargetAoEProperties?.range > 0 && Find.VisibleMap is Map map && UI.MouseCell().InBounds(map))
                 {
-
-                    ////Log.Message("3");
-                    Verb_UseAbility targetVerb = Find.Targeter.targetingVerb as Verb_UseAbility;
-                    if (targetVerb.UseAbilityProps.abilityDef.MainVerb.TargetAoEProperties != null)
-                    {
-
-                        ////Log.Message("4");
-                        if (targetVerb.UseAbilityProps.abilityDef.MainVerb.TargetAoEProperties.range > 0)
-                        {
-
-                            ////Log.Message("6");
-                            GenDraw.DrawRadiusRing(UI.MouseCell(), targetVerb.UseAbilityProps.abilityDef.MainVerb.TargetAoEProperties.range);
-
-                        }
-                    }
+                    GenDraw.DrawRadiusRing(UI.MouseCell(), tVerbProps.TargetAoEProperties.range);
                 }
             }
         }

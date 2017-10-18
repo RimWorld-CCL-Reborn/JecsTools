@@ -1,4 +1,5 @@
-﻿using RimWorld;
+﻿using Harmony;
+using RimWorld;
 using System;
 using UnityEngine;
 using Verse;
@@ -16,7 +17,7 @@ namespace AbilityUser
     public class Command_PawnAbility : Command_Target
     {
         public CompAbilityUser compAbilityUser = null;
-        public Verb verb = null;
+        public Verb_UseAbility verb = null;
         public PawnAbility pawnAbility = null;
         public int curTicks = -1;
 
@@ -27,21 +28,34 @@ namespace AbilityUser
             this.curTicks = ticks;
         }
 
+        // RimWorld.Targeter
+        public void BeginTargetingWithVerb(Verb_UseAbility verbToAdd, TargetingParameters targetParams, Action<LocalTargetInfo> action, Pawn caster = null, Action actionWhenFinished = null, Texture2D mouseAttachment = null)
+        {
+            verbToAdd.timeSavingActionVariable = this.action;
+            Find.Targeter.targetingVerb = verbToAdd;
+            Find.Targeter.targetingVerbAdditionalPawns = null;
+            AccessTools.Field(typeof(Targeter), "action").SetValue(Find.Targeter, action);
+            AccessTools.Field(typeof(Targeter), "targetParams").SetValue(Find.Targeter, targetParams);
+            AccessTools.Field(typeof(Targeter), "caster").SetValue(Find.Targeter, caster);
+            AccessTools.Field(typeof(Targeter), "actionWhenFinished").SetValue(Find.Targeter, actionWhenFinished);
+            AccessTools.Field(typeof(Targeter), "mouseAttachment").SetValue(Find.Targeter, mouseAttachment);
+        }
+
+
         public override void ProcessInput(Event ev)
         {
-            if (this.pawnAbility.Def.MainVerb.AbilityTargetCategory != AbilityTargetCategory.TargetSelf)
-            {
-                base.ProcessInput(ev);
-                return;
-            }
-            this.action(null);
-
-            if (this.CurActivateSound != null)
-            {
-                this.CurActivateSound.PlayOneShotOnCamera();
-            }
-
             SoundDefOf.TickTiny.PlayOneShotOnCamera();
+            
+            Find.Targeter.StopTargeting();
+            BeginTargetingWithVerb(verb, this.verb.verbProps.targetParams, delegate (LocalTargetInfo info) {
+                action.Invoke(info.Thing);
+                if (this.CurActivateSound != null)
+                {
+                    this.CurActivateSound.PlayOneShotOnCamera();
+                }
+
+            }, this.compAbilityUser.AbilityUser, null, null);
+             //(info.Thing ?? null);
 
         }
 
@@ -108,17 +122,14 @@ namespace AbilityUser
                 }
                 TooltipHandler.TipRegion(rect, tip);
             }
+            if (this.pawnAbility.CooldownTicksLeft != -1 && this.pawnAbility.CooldownTicksLeft < this.pawnAbility.MaxCastingTicks)
+            {
+                float math = (float)this.curTicks / (float)this.pawnAbility.MaxCastingTicks;
+                Widgets.FillableBar(rect, math, AbilityButtons.FullTex, AbilityButtons.EmptyTex, false);
+            }
             if (!this.HighlightTag.NullOrEmpty() && (Find.WindowStack.FloatMenu == null || !Find.WindowStack.FloatMenu.windowRect.Overlaps(rect)))
             {
                 UIHighlighter.HighlightOpportunity(rect, this.HighlightTag);
-            }
-            float x = this.curTicks;
-            float y = this.pawnAbility.MaxCastingTicks;
-            float fill = x / y;
-            if (x != -1 && x < y)
-            {
-                Log.Message(x.ToString());
-                Widgets.FillableBar(rect, fill, AbilityButtons.FullTex, AbilityButtons.EmptyTex, false);
             }
             if (isUsed)
             {

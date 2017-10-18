@@ -105,8 +105,8 @@ namespace AbilityUser
             }
             
             Job job;
-            if (target != null) job = powerdef.GetJob(verb.UseAbilityProps.AbilityTargetCategory, target);
-            else job = powerdef.GetJob(verb.UseAbilityProps.AbilityTargetCategory, pawn);
+            //if (target?.Thing != null) job = powerdef.GetJob(verb.UseAbilityProps.AbilityTargetCategory, target);
+            job = powerdef.GetJob(verb.UseAbilityProps.AbilityTargetCategory, target);
             job.playerForced = true;
             job.verbToUse = verb;
             if (target != null)
@@ -121,11 +121,12 @@ namespace AbilityUser
 
         public bool TryCastAbility(AbilityContext context, LocalTargetInfo target)
         {
+            Log.Message("2");
             //Can our body cast?
             string reason = "";
             if (!CanCastPowerCheck(context, out reason))
             {
-
+                Log.Message("Failed");
                 // .Disable(reason.Translate(new object[]
                 //{
                 //    Verb.CasterPawn.NameStringShort
@@ -147,10 +148,7 @@ namespace AbilityUser
                         targeter.targetingVerbAdditionalPawns.Add(casterPawn);
                     }
                 }
-                else
-                {
-                    UseAbility(AbilityContext.Player, target);
-                }
+                UseAbility(AbilityContext.Player, target);
             }
             else
             {
@@ -180,16 +178,14 @@ namespace AbilityUser
             command_CastPower.icon = this.powerdef.uiIcon;
             command_CastPower.action = delegate (Thing target)
             {
-                this.TryCastAbility(AbilityContext.Player, target);
+                LocalTargetInfo tInfo = GenUI.TargetsAt(UI.MouseMapPosition(), Verb.verbProps.targetParams, false)?.First() ?? target;
+                this.TryCastAbility(AbilityContext.Player, tInfo);
             };
 
             string reason = "";
             if (!this.CanCastPowerCheck(AbilityContext.Player, out reason))
             {
-                command_CastPower.Disable(reason.Translate(new object[]
-                {
-                    this.Verb.CasterPawn.NameStringShort
-                }));
+                command_CastPower.Disable(reason);
             }
             return command_CastPower;
         }

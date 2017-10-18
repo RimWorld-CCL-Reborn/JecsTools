@@ -42,7 +42,6 @@ namespace AbilityUser
                 initAction = delegate
                 {
                     verb.Ability.PostAbilityAttempt();
-
                 },
                 defaultCompleteMode = ToilCompleteMode.Instant
             };

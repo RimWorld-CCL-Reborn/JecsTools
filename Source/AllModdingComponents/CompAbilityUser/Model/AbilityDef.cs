@@ -42,7 +42,7 @@ namespace AbilityUser
                     }
                 case AbilityTargetCategory.TargetAoE:
                     {
-                        return new Job(AbilityDefOf.CastAbilitySelf, target);
+                        return new Job(AbilityDefOf.CastAbilityVerb, target);
                     }
                 case AbilityTargetCategory.TargetThing:
                     {
