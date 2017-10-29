@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>
+
+ <!-- Addition 7/28/17 -->
+ <CompVehicle_CannotSplitWhileInVehicles>Impossible the diviser le convoi alors que des colons se trouvent dans des véhicules.</CompVehicle_CannotSplitWhileInVehicles>
+
+ <!-- Addition 7/18/17 -->
+
+  <CompVehicle_CannotMove>{0} est immobilisé en ce moment.</CompVehicle_CannotMove>
+
+ <!-- Previous -->
+
+  <CompVehicle_LowFuel>Le niveau de carburant est bas</CompVehicle_LowFuel>
+  <MessageCaravanRunOutOfFuel>{0} est a court de carburant ({1}). {0} avancera dorénavant à 25% de sa vitesse normale.</MessageCaravanRunOutOfFuel>
+  <MessagePawnLeftVehicle>{0} a quitté le véhicule ({1}) dû au besoin {2}.</MessagePawnLeftVehicle>
+  <DaysWorthOfFuelInfo>Carrying {0} jours d'autonomie en carburant restants</DaysWorthOfFuelInfo>
+<InfiniteDaysWorthOfFuelInfo>Ne sera jamais à court de carburant</InfiniteDaysWorthOfFuelInfo>
+  <DaysWorthOfFuelTooltip>Estimation du nombre de jours restant avant que le convoi soit à court de carburant.\n\nCeci prend en compte tout les véhicules faisant partie du convoi et montre le pire scénario possible. Ceci veut dire que après ce nombre de jours, au moins un véhicule sera à court de carburant.</DaysWorthOfFuelTooltip>
+    <DaysWorthOfFuelWarningDialog_NoFuel>Votre convoi ne transporte pas de carburant et sera donc incapable de se déplacer à sa vitesse maximale.\n\nEtes vous sûr de vouloir former ce convoi?</DaysWorthOfFuelWarningDialog_NoFuel>
+      <DaysWorthOfFuelWarningDialog>Votre convoi ne transporte que {0} jours d'autonomie en carburant et sera à court de carburant très vite.\n\nEtes vous sûr que vous voulez former ce convoi?</DaysWorthOfFuelWarningDialog>
+        <CaravanOutOfFuel>A court de carburant</CaravanOutOfFuel>
+        <CaravanVehicleNoFuelWarningDialogLes véhicules du convoi doivent être alimentés en carburant.</CaravanVehicleNoFuelWarningDialog>
+
+<CompVehicle_VehicleSection>Véhicules</CompVehicle_VehicleSection>
+<CompVehicle_LoadUnload>Load/Unload {0}</CompVehicle_LoadUnload>
+<CompVehicle_Unload>Décharger {0}</CompVehicle_Unload>
+<CompVehicle_Load>Embarquer {0}</CompVehicle_Load>
+<CompVehicle_LoadUnloadDesc>Embarquer ou éjecter {0}.</CompVehicle_LoadUnloadDesc>
+<CompVehicle_LoadDesc>Embarquez un {0}</CompVehicle_LoadDesc>
+<CompVehicle_UnloadDesc>Décharger {0}</CompVehicle_UnloadDesc>
+<CompVehicle_DisabledDesc>Ce véhicule est neutralisé, détruit ou simplement trop endommagé et ne peut pas être embarqué.</CompVehicle_DisabledDesc>
+
+</LanguageData>

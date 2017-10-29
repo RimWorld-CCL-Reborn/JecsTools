@@ -117,7 +117,10 @@ namespace AbilityUser
         {
             for (int i = 0; i < this.AllPowers.Count; i++)
             {
-                yield return this.AllPowers[i].GetGizmo();
+                if (this.AllPowers[i].ShouldShowGizmo())
+                {
+                    yield return this.AllPowers[i].GetGizmo();
+                }
             }
         }
 

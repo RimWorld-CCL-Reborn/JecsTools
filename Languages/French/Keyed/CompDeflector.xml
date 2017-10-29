@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>
+
+  <DeflectChance>probabilité de détourner</DeflectChance>
+  <DeflectChanceEx>Détermines à quelle fréquence cette arme renvoie des projectiles à l'agresseur.</DeflectChanceEx>
+  
+  <MaxDeflectChance>Probabilité maximale de détournement</MaxDeflectChance>
+  <MaxDeflectChanceEx>Pour chaque point {0}, l'utilisateur a une probabilité de détourner le tir de {1}. La probabilité maximale de détournement est de {2}.
+  </MaxDeflectChanceEx>
+  
+  <DeflectChancePerLevel>Détournement % par {0} aptitude</DeflectChancePerLevel>
+  <DeflectChancePerLevelEx>Pour chaque niveau en {0}, l'utilisateur gagne tel % de probabilité de détourner un projectile.</DeflectChancePerLevelEx>
+  
+  <BaseDeflectChance>Base deflect chance</BaseDeflectChance>
+  
+  <StatsReport_DeflectionExplanation>La statistiques est affichée selon ce format:\nProbabilité de détournement égal à ( probabilité de détournement + ( Niveau * % par Niveau) / Manipulation \n\n</StatsReport_DeflectionExplanation>
+  
+  <StatsReport_DeflectChance>Probabilité de détournement</StatsReport_DeflectChance>
+  
+    <StatsReport_BaseDeflectChance>Probabilité de détournement de base</StatsReport_BaseDeflectChance>
+	
+    <StatsReport_SkillLevel>Niveau</StatsReport_SkillLevel>	
+	
+	
+    <StatsReport_DeflectPerSkillLevel>Deflect % per skill level</StatsReport_DeflectPerSkillLevel>	
+
+    <StatsReport_ManipulationModifier>Pourcentage de manipulation</StatsReport_ManipulationModifier>		
+  
+</LanguageData>

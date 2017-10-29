@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>
+
+<JecsTools_WorldObjectConst_AbandonReason>Car aucun convoi n'est présent à cet endroit</JecsTools_WorldObjectConst_AbandonReason>
+<JecsTools_WorldObjectConst_ResourcesNeeded>Resources: {0}</JecsTools_WorldObjectConst_ResourcesNeeded>
+<JecsTools_WorldObjectConst_NotEnoughStuff>Echoué. {1} demande {0}.</JecsTools_WorldObjectConst_NotEnoughStuff>
+
+</LanguageData>

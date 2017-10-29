@@ -45,16 +45,18 @@ namespace AbilityUser
         public override void ProcessInput(Event ev)
         {
             SoundDefOf.TickTiny.PlayOneShotOnCamera();
-            
             Find.Targeter.StopTargeting();
-            BeginTargetingWithVerb(verb, this.verb.verbProps.targetParams, delegate (LocalTargetInfo info) {
-                action.Invoke(info.Thing);
-                if (this.CurActivateSound != null)
-                {
-                    this.CurActivateSound.PlayOneShotOnCamera();
-                }
+            if (this.pawnAbility.Verb != null)
+            {
+                BeginTargetingWithVerb(verb, this.verb.verbProps.targetParams, delegate (LocalTargetInfo info) {
+                    action.Invoke(info.Thing);
+                    if (this.CurActivateSound != null)
+                    {
+                        this.CurActivateSound.PlayOneShotOnCamera();
+                    }
 
-            }, this.compAbilityUser.AbilityUser, null, null);
+                }, this.compAbilityUser.AbilityUser, null, null);
+            }
              //(info.Thing ?? null);
 
         }
