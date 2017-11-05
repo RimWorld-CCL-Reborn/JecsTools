@@ -112,7 +112,7 @@ namespace AbilityUser
             {
                 Pawn caster = (Pawn)Traverse.Create(__instance).Field("caster").GetValue<Pawn>();
 
-                if (caster != null && (caster.Map != Find.VisibleMap || caster.Destroyed || !Find.Selector.IsSelected(caster)))
+                if (caster != null && (caster.Map != Find.VisibleMap || caster.Destroyed || !Find.Selector.IsSelected(caster) || caster.Faction != Faction.OfPlayerSilentFail))
                 {
                     __instance.StopTargeting();
                 }
@@ -167,7 +167,6 @@ namespace AbilityUser
                         LocalTargetInfo obj = (LocalTargetInfo)AccessTools.Method(typeof(Targeter), "CurrentTargetUnderMouse").Invoke(__instance, new object[] { false });
                         if (obj.IsValid)
                         {
-                            Log.Message("1");
                             v.Ability.TryCastAbility(AbilityContext.Player, obj);
                             //v.timeSavingActionVariable(obj.Thing);
                             //((Action<LocalTargetInfo>)AccessTools.Field(typeof(Targeter), "action").GetValue(__instance)).Invoke(obj);
