@@ -8,6 +8,8 @@ namespace AbilityUser
 {
     public class JobDriver_CastAbilitySelf : JobDriver
     {
+        public AbilityContext Context { get => (job.count == 1) ? AbilityContext.Player : AbilityContext.AI; }
+
         private List<CompAbilityUser> CompAbilityUsers
         {
             get

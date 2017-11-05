@@ -103,18 +103,19 @@ namespace AbilityUser
             {
                 return null;
             }
-            Job job = GetJob(target);
+            Job job = GetJob(context, target);
             if (context == AbilityContext.Player)
                 pawn.jobs.TryTakeOrderedJob(job);
             return job;
         }
 
-        public virtual Job GetJob(LocalTargetInfo target)
+        public virtual Job GetJob(AbilityContext context, LocalTargetInfo target)
         {
             Job job;
             job = powerdef.GetJob(verb.UseAbilityProps.AbilityTargetCategory, target);
             job.playerForced = true;
             job.verbToUse = verb;
+            job.count = (context == AbilityContext.Player) ? 1 : 0; //Count 1 for Player : 0 for AI
             if (target != null)
             {
                 if (target.Thing is Pawn pawn2)

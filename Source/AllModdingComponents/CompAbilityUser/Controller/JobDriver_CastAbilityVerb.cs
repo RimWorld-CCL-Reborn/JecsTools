@@ -7,6 +7,8 @@ namespace AbilityUser
 {
     public class JobDriver_CastAbilityVerb : JobDriver
     {
+        public AbilityContext Context { get => (job.count == 1) ? AbilityContext.Player : AbilityContext.AI; }
+
         private List<CompAbilityUser> CompAbilityUsers
         {
             get
@@ -40,8 +42,10 @@ namespace AbilityUser
                 Toil getInRangeToil = Toils_Combat.GotoCastPosition(TargetIndex.A, false);
                 yield return getInRangeToil;
             }
+            
+            if (Context == AbilityContext.Player)
+                Find.Targeter.targetingVerb = verb;
 
-            Find.Targeter.targetingVerb = verb;
             yield return new Toil
             {
                 initAction = delegate
