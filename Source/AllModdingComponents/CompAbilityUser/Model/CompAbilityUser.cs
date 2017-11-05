@@ -34,7 +34,7 @@ namespace AbilityUser
             {
                 if (abilityData == null)
                 {
-                    abilityData = new AbilityData(this.GetType());
+                    abilityData = new AbilityData(this);
                 }
                 return abilityData;
             }
@@ -78,6 +78,7 @@ namespace AbilityUser
         }
 
         public Pawn abilityUserSave = null;
+        public Pawn Pawn => AbilityUser;
         public Pawn AbilityUser
         {
             get
@@ -123,10 +124,27 @@ namespace AbilityUser
 
         public override void PostExposeData()
         {
-            Scribe_Deep.Look<AbilityData>(ref this.abilityData, "abilityData", new object[] 
+            Scribe_Values.Look<bool>(ref this.IsInitialized, "IsInitialized", false);
+            Scribe_Deep.Look<AbilityData>(ref this.abilityData, "abilityData", new object[]
             {
                 this
             });
+
+            if (Scribe.mode == LoadSaveMode.PostLoadInit)
+            {
+                List<PawnAbility> tempAbilities = new List<PawnAbility>(this.AbilityData.Powers);
+                if (!tempAbilities.NullOrEmpty())
+                {
+                    foreach (PawnAbility pa in tempAbilities)
+                    {
+                        if (pa.Def.abilityClass != pa.GetType())
+                        {
+                            RemovePawnAbility(pa.Def);
+                            AddPawnAbility(pa.Def);
+                        }
+                    }
+                }
+            }
         }
 
         #region virtual

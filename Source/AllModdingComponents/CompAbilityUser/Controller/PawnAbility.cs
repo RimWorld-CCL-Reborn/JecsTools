@@ -66,6 +66,7 @@ namespace AbilityUser
 
         public PawnAbility() {}
         public PawnAbility(CompAbilityUser comp) { this.pawn = comp.AbilityUser; this.abilityUser = comp; }
+        public PawnAbility(AbilityData data) { this.pawn = data.Pawn; this.abilityUser = data.Pawn.AllComps.FirstOrDefault(x => x.GetType() == data.AbilityClass) as CompAbilityUser; }
         public PawnAbility(Pawn user, AbilityDef pdef)
         {
             this.pawn = user;
@@ -95,17 +96,22 @@ namespace AbilityUser
             return true;
         }
 
-        public virtual void UseAbility(AbilityContext context, LocalTargetInfo target)
+        public virtual Job UseAbility(AbilityContext context, LocalTargetInfo target)
         {
             string reason = "";
             if (target.Thing != null && !CanOverpowerTarget(context, target, out reason))
             {
-
-                return;
+                return null;
             }
-            
+            Job job = GetJob(target);
+            if (context == AbilityContext.Player)
+                pawn.jobs.TryTakeOrderedJob(job);
+            return job;
+        }
+
+        public virtual Job GetJob(LocalTargetInfo target)
+        {
             Job job;
-            //if (target?.Thing != null) job = powerdef.GetJob(verb.UseAbilityProps.AbilityTargetCategory, target);
             job = powerdef.GetJob(verb.UseAbilityProps.AbilityTargetCategory, target);
             job.playerForced = true;
             job.verbToUse = verb;
@@ -116,7 +122,7 @@ namespace AbilityUser
                     job.killIncappedTarget = pawn2.Downed;
                 }
             }
-            pawn.jobs.TryTakeOrderedJob(job);
+            return job;
         }
 
         public bool TryCastAbility(AbilityContext context, LocalTargetInfo target)
