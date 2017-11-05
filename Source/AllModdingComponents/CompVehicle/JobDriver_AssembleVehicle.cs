@@ -12,11 +12,16 @@ namespace CompVehicle
     {
         private TargetIndex PartsInd = TargetIndex.A;
 
+        public override bool TryMakePreToilReservations()
+        {
+            return true;
+        }
+
         private CompVehicleSpawner Spawner
         {
             get
             {
-                Thing thing = this.CurJob.GetTarget(this.PartsInd).Thing;
+                Thing thing = this.job.GetTarget(this.PartsInd).Thing;
                 if (thing == null)
                 {
                     return null;
@@ -67,7 +72,7 @@ namespace CompVehicle
                 },
                 tickAction = delegate
                 {
-                    this.pawn.Drawer.rotator.FaceCell(this.TargetA.Cell);
+                    this.pawn.rotationTracker.FaceCell(this.TargetA.Cell);
                     Pawn actor = this.pawn;
                     actor.skills.Learn(SkillDefOf.Construction, 0.275f, false);
                     float statValue = actor.GetStatValue(StatDefOf.ConstructionSpeed, true);

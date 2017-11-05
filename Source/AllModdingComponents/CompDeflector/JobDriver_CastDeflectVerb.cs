@@ -27,6 +27,11 @@ namespace CompDeflector
         }
         public override void ExposeData() => base.ExposeData();
 
+        public override bool TryMakePreToilReservations()
+        {
+            return true;
+        }
+
         protected override IEnumerable<Toil> MakeNewToils()
         {
             ////Log.Message("DeflecVErbcalls");

@@ -13,7 +13,9 @@ namespace JecsTools
         // RimWorld.TrashUtility
         public static Job TrashJob(Pawn pawn, Thing t)
         {
+#pragma warning disable IDE0019 // Use pattern matching
             Plant plant = t as Plant;
+#pragma warning restore IDE0019 // Use pattern matching
             if (plant != null)
             {
                 Job job = new Job(JobDefOf.AttackMelee, t);

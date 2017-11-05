@@ -35,7 +35,7 @@ namespace CompDeflector
                 return false;
             }
             Vector3 drawPos = this.caster.DrawPos;
-            Projectile projectile = (Projectile)GenSpawn.Spawn(this.verbProps.projectileDef, shootLine.Source, this.caster.Map);
+            Projectile projectile = (Projectile)GenSpawn.Spawn(this.verbProps.defaultProjectile, shootLine.Source, this.caster.Map);
 
             ///MODIFIED SECTION
             ////////////////////////////////////////////

@@ -258,7 +258,7 @@ namespace CompSlotLoadable
             {
                 Messages.Message(string.Format(StringOf.ExceptionSlotAlreadyFilled, new object[]{
                     this.owner.Label
-                }), MessageSound.RejectInput);
+                }), MessageTypeDefOf.RejectInput);
             }
             return false;
         }

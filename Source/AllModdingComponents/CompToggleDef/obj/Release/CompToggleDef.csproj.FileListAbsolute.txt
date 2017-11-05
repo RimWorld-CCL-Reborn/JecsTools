@@ -1,0 +1,12 @@
+J:\Modding\A17mods\JescTools-master\Source\AllModdingComponents\CompToggleDef\bin\Release\CompToggleDef.dll
+J:\Modding\A17mods\JescTools-master\Source\AllModdingComponents\CompToggleDef\bin\Release\CompToggleDef.pdb
+J:\Modding\A17mods\JescTools-master\Source\AllModdingComponents\CompToggleDef\bin\Release\0Harmony.dll
+J:\Modding\A17mods\JescTools-master\Source\AllModdingComponents\CompToggleDef\bin\Release\Assembly-CSharp.dll
+J:\Modding\A17mods\JescTools-master\Source\AllModdingComponents\CompToggleDef\bin\Release\UnityEngine.dll
+J:\Modding\A17mods\JescTools-master\Source\AllModdingComponents\CompToggleDef\bin\Release\TextMeshPro-1.0.55.56.0b11.dll
+J:\Modding\A17mods\JescTools-master\Source\AllModdingComponents\CompToggleDef\bin\Release\Assembly-CSharp-firstpass.dll
+J:\Modding\A17mods\JescTools-master\Source\AllModdingComponents\CompToggleDef\bin\Release\NAudio.dll
+J:\Modding\A17mods\JescTools-master\Source\AllModdingComponents\CompToggleDef\bin\Release\NVorbis.dll
+J:\Modding\A17mods\JescTools-master\Source\AllModdingComponents\CompToggleDef\bin\Release\UnityEngine.UI.dll
+J:\Modding\A17mods\JescTools-master\Source\AllModdingComponents\CompToggleDef\obj\Release\CompToggleDef.dll
+J:\Modding\A17mods\JescTools-master\Source\AllModdingComponents\CompToggleDef\obj\Release\CompToggleDef.pdb

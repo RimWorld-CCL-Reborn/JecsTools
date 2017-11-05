@@ -25,6 +25,11 @@ namespace AbilityUser
             }
         }
 
+        public override bool TryMakePreToilReservations()
+        {
+            return true;
+        }
+
         public void EvaluateCell(IntVec3 c, CastPositionRequest req,
             float maxRangeFromTargetSquared,
             float maxRangeFromLocusSquared,
@@ -241,7 +246,7 @@ namespace AbilityUser
                 }
                 goto MainSequence;
             }
-            if (req.caster.Map.pawnDestinationManager.DestinationIsReserved(c, req.caster))
+            if (req.caster.Map.pawnDestinationReservationManager.IsReserved(c))
             {
                 if (DebugViewSettings.drawCastPositionSearch)
                 {
@@ -343,7 +348,7 @@ namespace AbilityUser
                     }
                 }
                 toil.actor.pather.StartPath(intVec, PathEndMode.OnCell);
-                actor.Map.pawnDestinationManager.ReserveDestinationFor(actor, intVec);
+                actor.Map.pawnDestinationReservationManager.Reserve(actor, curJob, intVec);
             };
             toil.FailOnDespawnedOrNull(targetInd);
             toil.defaultCompleteMode = ToilCompleteMode.PatherArrival;

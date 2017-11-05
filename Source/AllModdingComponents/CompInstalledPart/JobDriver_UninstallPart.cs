@@ -26,9 +26,14 @@ namespace CompInstalledPart
 
         protected CompInstalledPart UninstallComp => this.PartToUninstall.GetComp<CompInstalledPart>();
 
-        protected ThingWithComps PartToUninstall => (ThingWithComps)this.CurJob.targetA.Thing;
+        protected ThingWithComps PartToUninstall => (ThingWithComps)this.job.targetA.Thing;
 
-        protected Thing UninstallTarget => this.CurJob.targetB.Thing;
+        protected Thing UninstallTarget => this.job.targetB.Thing;
+
+        public override bool TryMakePreToilReservations()
+        {
+            return true;
+        }
 
         protected int WorkDone
         {
@@ -63,7 +68,7 @@ namespace CompInstalledPart
                 tickAction = delegate
                 {
                     if (UninstallTarget is Pawn pawnTarget) pawnTarget.pather.StopDead();
-                    this.pawn.Drawer.rotator.FaceCell(this.TargetB.Cell);
+                    this.pawn.rotationTracker.FaceCell(this.TargetB.Cell);
                     Pawn actor = this.pawn;
                     actor.skills.Learn(SkillDefOf.Construction, 0.275f, false);
                     float statValue = actor.GetStatValue(StatDefOf.ConstructionSpeed, true);

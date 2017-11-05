@@ -225,7 +225,7 @@ namespace JecsTools
                         categories[i] = recipe.stuffCategories[i].label;
 
                     Messages.Message("JecsTools_WorldObjectConst_NotEnoughStuff".Translate(new object[]
-                    { string.Join(", ", categories), recipe.costStuffCount}), MessageSound.RejectInput);
+                    { string.Join(", ", categories), recipe.costStuffCount}), MessageTypeDefOf.RejectInput);
                     return false;
                 }
             }

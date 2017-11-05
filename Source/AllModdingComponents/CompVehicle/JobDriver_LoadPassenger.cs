@@ -10,11 +10,16 @@ namespace CompVehicle
     {
         private TargetIndex TransporterInd = TargetIndex.A;
 
+        public override bool TryMakePreToilReservations()
+        {
+            return true;
+        }
+
         private CompVehicle Vehicle
         {
             get
             {
-                Thing thing = this.CurJob.GetTarget(this.TransporterInd).Thing;
+                Thing thing = this.job.GetTarget(this.TransporterInd).Thing;
                 if (thing == null)
                 {
                     return null;

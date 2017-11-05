@@ -42,7 +42,7 @@ namespace JecsTools
             return Def.cleaveTargets;
         }
 
-        public override float Apply(DamageInfo dinfo, Thing victim)
+        public override DamageWorker.DamageResult Apply(DamageInfo dinfo, Thing victim)
         {
             float maxDist;
             int cleaveAttacks;
@@ -71,8 +71,11 @@ namespace JecsTools
                         }
                     }
                 }
-            }
-            return base.Apply(dinfo, victim);
+            } 
+                    DamageWorker.DamageResult result;
+                    result = base.Apply(dinfo, victim);
+                    return result;
         }
+
     }
-}
+ }

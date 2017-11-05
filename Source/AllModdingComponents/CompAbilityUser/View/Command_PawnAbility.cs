@@ -45,18 +45,16 @@ namespace AbilityUser
         public override void ProcessInput(Event ev)
         {
             SoundDefOf.TickTiny.PlayOneShotOnCamera();
+            
             Find.Targeter.StopTargeting();
-            if (this.pawnAbility.Verb != null)
-            {
-                BeginTargetingWithVerb(verb, this.verb.verbProps.targetParams, delegate (LocalTargetInfo info) {
-                    action.Invoke(info.Thing);
-                    if (this.CurActivateSound != null)
-                    {
-                        this.CurActivateSound.PlayOneShotOnCamera();
-                    }
+            BeginTargetingWithVerb(verb, this.verb.verbProps.targetParams, delegate (LocalTargetInfo info) {
+                action.Invoke(info.Thing);
+                if (this.CurActivateSound != null)
+                {
+                    this.CurActivateSound.PlayOneShotOnCamera();
+                }
 
-                }, this.compAbilityUser.AbilityUser, null, null);
-            }
+            }, this.compAbilityUser.AbilityUser, null, null);
              //(info.Thing ?? null);
 
         }
@@ -139,7 +137,7 @@ namespace AbilityUser
                 {
                     if (!this.disabledReason.NullOrEmpty())
                     {
-                        Messages.Message(this.disabledReason, MessageSound.RejectInput);
+                        Messages.Message(this.disabledReason, MessageTypeDefOf.RejectInput);
                     }
                     return new GizmoResult(GizmoState.Mouseover, null);
                 }

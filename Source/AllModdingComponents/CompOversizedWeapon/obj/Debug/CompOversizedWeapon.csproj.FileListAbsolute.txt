@@ -1,0 +1,3 @@
+D:\SteamLibrary\steamapps\common\RimWorld\Mods\JecsTools\Assemblies\CompOversizedWeapon.dll
+D:\SteamLibrary\steamapps\common\RimWorld\Mods\JecsTools\Source\AllModdingComponents\CompOversizedWeapon\obj\Debug\CompOversizedWeapon.csprojResolveAssemblyReference.cache
+D:\SteamLibrary\steamapps\common\RimWorld\Mods\JecsTools\Source\AllModdingComponents\CompOversizedWeapon\obj\Debug\CompOversizedWeapon.dll

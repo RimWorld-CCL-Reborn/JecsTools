@@ -165,7 +165,7 @@ namespace CompSlotLoadable
                 else Messages.Message(string.Format(StringOf.IsDrafted, new object[]
                     {
                         this.GetPawn.Label
-                    }), MessageSound.RejectInput);
+                    }), MessageTypeDefOf.RejectInput);
             }
         }
 

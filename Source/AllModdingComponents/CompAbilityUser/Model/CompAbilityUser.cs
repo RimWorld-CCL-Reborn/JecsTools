@@ -26,33 +26,29 @@ namespace AbilityUser
         //public AbilityDef curPower;
         //public Verb_UseAbility curVerb;
         //public Rot4 curRotation;
-        public bool IsInitialized = false;
 
-        protected List<PawnAbility> Powers = new List<PawnAbility>();
-        protected List<PawnAbility> temporaryWeaponPowers = new List<PawnAbility>();
-        protected List<PawnAbility> temporaryApparelPowers = new List<PawnAbility>();
-        protected List<PawnAbility> allPowers;
-        public List<PawnAbility> AllPowers
+        private AbilityData abilityData = null;
+        public virtual AbilityData AbilityData
         {
             get
             {
-                if (this.allPowers == null)
+                if (abilityData == null)
                 {
-                    this.allPowers = new List<PawnAbility>();
-                    if (!this.Powers.NullOrEmpty())
-                        this.allPowers.AddRange(this.Powers);
-                    if (!this.temporaryApparelPowers.NullOrEmpty())
-                        this.allPowers.AddRange(this.temporaryApparelPowers);
-                    if (!this.temporaryWeaponPowers.NullOrEmpty())
-                        this.allPowers.AddRange(this.temporaryWeaponPowers);
+                    abilityData = new AbilityData(this.GetType());
                 }
-                return this.allPowers;
+                return abilityData;
             }
-            set => this.allPowers = value;
         }
-        public List<Verb_UseAbility> AbilityVerbs = new List<Verb_UseAbility>();
 
-        public void AddPawnAbility(AbilityDef abilityDef, bool activenow = true, float savedTicks = -1) => this.AddAbilityInternal(abilityDef, ref this.Powers, activenow, savedTicks); public void AddWeaponAbility(AbilityDef abilityDef, bool activenow = true, float savedTicks = -1) => this.AddAbilityInternal(abilityDef, ref this.temporaryWeaponPowers, activenow, savedTicks); public void AddApparelAbility(AbilityDef abilityDef, bool activenow = true, float savedTicks = -1) => this.AddAbilityInternal(abilityDef, ref this.temporaryApparelPowers, activenow, savedTicks); private void AddAbilityInternal(AbilityDef abilityDef, ref List<PawnAbility> thelist, bool activenow, float savedTicks)
+        public bool IsInitialized = false;
+
+        //public List<Verb_UseAbility> AbilityVerbs = new List<Verb_UseAbility>();
+
+        public void AddPawnAbility(AbilityDef abilityDef, bool activenow = true, float savedTicks = -1) => this.AddAbilityInternal(abilityDef, this.AbilityData.Powers, activenow, savedTicks);
+        public void AddWeaponAbility(AbilityDef abilityDef, bool activenow = true, float savedTicks = -1) => this.AddAbilityInternal(abilityDef, this.AbilityData.TemporaryWeaponPowers, activenow, savedTicks);
+        public void AddApparelAbility(AbilityDef abilityDef, bool activenow = true, float savedTicks = -1) => this.AddAbilityInternal(abilityDef, this.AbilityData.TemporaryApparelPowers, activenow, savedTicks);
+
+        private void AddAbilityInternal(AbilityDef abilityDef, List<PawnAbility> thelist, bool activenow, float savedTicks)
         {
             PawnAbility pa = (PawnAbility)Activator.CreateInstance(abilityDef.abilityClass);
             Log.Message(abilityDef.abilityClass.ToString());
@@ -62,17 +58,21 @@ namespace AbilityUser
             this.UpdateAbilities();
         }
 
-        public void RemovePawnAbility(AbilityDef abilityDef) => this.RemoveAbilityInternal(abilityDef, ref this.Powers); public void RemoveWeaponAbility(AbilityDef abilityDef) => this.RemoveAbilityInternal(abilityDef, ref this.temporaryWeaponPowers); public void RemoveApparelAbility(AbilityDef abilityDef) => this.RemoveAbilityInternal(abilityDef, ref this.temporaryApparelPowers); private void RemoveAbilityInternal(AbilityDef abilityDef, ref List<PawnAbility> thelist)
+        public void RemovePawnAbility(AbilityDef abilityDef) => this.RemoveAbilityInternal(abilityDef, this.AbilityData.Powers);
+        public void RemoveWeaponAbility(AbilityDef abilityDef) => this.RemoveAbilityInternal(abilityDef, this.AbilityData.TemporaryWeaponPowers);
+        public void RemoveApparelAbility(AbilityDef abilityDef) => this.RemoveAbilityInternal(abilityDef, this.AbilityData.TemporaryApparelPowers);
+
+        private void RemoveAbilityInternal(AbilityDef abilityDef, List<PawnAbility> thelist)
         {
             PawnAbility abilityToRemove = thelist.FirstOrDefault(x => x.Def == abilityDef);
             if (abilityToRemove != null)
             {
                 thelist.Remove(abilityToRemove);
             }
-            abilityToRemove = this.Powers.FirstOrDefault(x => x.Def == abilityDef);
+            abilityToRemove = this.AbilityData.Powers.FirstOrDefault(x => x.Def == abilityDef);
             if (abilityToRemove != null)
             {
-                this.Powers.Remove(abilityToRemove);
+                this.AbilityData.Powers.Remove(abilityToRemove);
             }
             this.UpdateAbilities();
         }
@@ -103,9 +103,9 @@ namespace AbilityUser
             if (this.IsInitialized)
             {
                 ///Ticks for each ability
-                if (this.AllPowers != null && this.AllPowers.Count > 0)
+                if (this.AbilityData?.AllPowers != null && this.AbilityData?.AllPowers.Count > 0)
                 {
-                    foreach (PawnAbility power in this.AllPowers)
+                    foreach (PawnAbility power in this.AbilityData.AllPowers)
                     {
                         power.Tick();
                     }
@@ -115,38 +115,18 @@ namespace AbilityUser
 
         public override IEnumerable<Gizmo> CompGetGizmosExtra()
         {
-            for (int i = 0; i < this.AllPowers.Count; i++)
+            for (int i = 0; i < this.AbilityData?.AllPowers.Count; i++)
             {
-                if (this.AllPowers[i].ShouldShowGizmo())
-                {
-                    yield return this.AllPowers[i].GetGizmo();
-                }
+                yield return this.AbilityData?.AllPowers[i].GetGizmo();
             }
         }
 
         public override void PostExposeData()
         {
-            Scribe_Collections.Look<PawnAbility>(ref this.Powers, "Powers", LookMode.Deep, new object[]
-                {
-                    this,
-                });
-            Scribe_Values.Look<bool>(ref this.IsInitialized, "IsInitialized", false);
-
-            if (Scribe.mode == LoadSaveMode.PostLoadInit)
+            Scribe_Deep.Look<AbilityData>(ref this.abilityData, "abilityData", new object[] 
             {
-                List<PawnAbility> tempAbilities = new List<PawnAbility>(this.Powers);
-                if (!tempAbilities.NullOrEmpty())
-                {
-                    foreach (PawnAbility pa in tempAbilities)
-                    {
-                        if (pa.Def.abilityClass != pa.GetType())
-                        {
-                            RemovePawnAbility(pa.Def);
-                            AddPawnAbility(pa.Def);
-                        }
-                    }
-                }
-            }
+                this
+            });
         }
 
         #region virtual
@@ -187,13 +167,12 @@ namespace AbilityUser
             if (this.IsInitialized)
             {
                 //this.AbilityVerbs.Clear();
-
                 List<PawnAbility> abList = new List<PawnAbility>();
-                if (!this.Powers.NullOrEmpty()) abList.AddRange(this.Powers);
-                if (!this.temporaryWeaponPowers.NullOrEmpty()) abList.AddRange(this.temporaryWeaponPowers);
-                if (!this.temporaryApparelPowers.NullOrEmpty()) abList.AddRange(this.temporaryApparelPowers);
+                if (!this.AbilityData.Powers.NullOrEmpty()) abList.AddRange(this.AbilityData.Powers);
+                if (!this.AbilityData.TemporaryWeaponPowers.NullOrEmpty()) abList.AddRange(this.AbilityData.TemporaryWeaponPowers);
+                if (!this.AbilityData.TemporaryApparelPowers.NullOrEmpty()) abList.AddRange(this.AbilityData.TemporaryApparelPowers);
 
-                this.AllPowers = abList;
+                this.AbilityData.AllPowers = abList;
                 
             }
         }

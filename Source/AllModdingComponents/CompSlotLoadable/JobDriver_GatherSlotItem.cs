@@ -18,6 +18,10 @@ namespace CompSlotLoadable
     public class JobDriver_GatherSlotItem : JobDriver
     {
 
+        public override bool TryMakePreToilReservations()
+        {
+            return true;
+        }
 
         [DebuggerHidden]
         protected override IEnumerable<Toil> MakeNewToils()
@@ -37,7 +41,7 @@ namespace CompSlotLoadable
             {
                 initAction = delegate
                 {
-                    Thing itemToGather = this.CurJob.targetA.Thing;
+                    Thing itemToGather = this.job.targetA.Thing;
                     //bool flag = false;
                     Thing itemToGatherSplit;
                     if (itemToGather.def.stackLimit > 1 && itemToGather.stackCount > 1)

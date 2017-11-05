@@ -151,7 +151,7 @@ namespace CompSlotLoadable
         private static readonly Color ThingLabelColor = new Color(0.9f, 0.9f, 0.9f, 1f);
         //=================================== COMPSLOTLOADABLE
 
-        public static void DrawThingRow_PostFix(ITab_Pawn_Gear __instance, ref float y, float width, Thing thing, bool showDropButtonIfPrisoner = false)
+        public static void DrawThingRow_PostFix(ITab_Pawn_Gear __instance, ref float y, float width, Thing thing, bool inventory = false)
         {
             //Log.Message("1");
             if (thing is ThingWithComps thingWithComps)

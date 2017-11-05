@@ -122,14 +122,14 @@ namespace AbilityUser
                 }
                 if (def.tooltipShowProjectileDamage)
                 {
-                    if (def.projectileDef != null)
+                    if (def.defaultProjectile != null)
                     {
-                        if (def.projectileDef.projectile != null)
+                        if (def.defaultProjectile.projectile != null)
                         {
-                            if (def.projectileDef.projectile.damageAmountBase > 0)
+                            if (def.defaultProjectile.projectile.damageAmountBase > 0)
                             {
-                                s.AppendLine("Damage".Translate() + ": " + def.projectileDef.projectile.damageAmountBase);
-                                s.AppendLine("Damage".Translate() + " " + StringsToTranslate.AU_Type + def.projectileDef.projectile.damageDef.LabelCap);
+                                s.AppendLine("Damage".Translate() + ": " + def.defaultProjectile.projectile.damageAmountBase);
+                                s.AppendLine("Damage".Translate() + " " + StringsToTranslate.AU_Type + def.defaultProjectile.projectile.damageDef.LabelCap);
                             }
                         }
                     }

@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using Verse;
 using System.Linq;
+using RimWorld;
 
 namespace CompVehicle
 {
@@ -38,7 +39,7 @@ namespace CompVehicle
             return records.AsEnumerable<BodyPartRecord>();
         }
 
-        public override void ApplyOnPawn(Pawn pawn, BodyPartRecord part, Pawn billDoer, List<Thing> ingredients)
+        public override void ApplyOnPawn(Pawn pawn, BodyPartRecord part, Pawn billDoer, List<Thing> ingredients, Bill bill)
         {
             if (pawn != null)
             {

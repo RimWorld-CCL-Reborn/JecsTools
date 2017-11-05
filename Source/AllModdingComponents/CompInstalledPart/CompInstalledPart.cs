@@ -28,7 +28,7 @@ namespace CompInstalledPart
                     newJob.count = 2;
                     actor?.jobs?.TryTakeOrderedJob(newJob);
                 }
-                else if (actorFac != targetFac) Messages.Message("CompInstalledPart_WrongFaction".Translate(), MessageSound.RejectInput);
+                else if (actorFac != targetFac) Messages.Message("CompInstalledPart_WrongFaction".Translate(), MessageTypeDefOf.RejectInput);
             }
         }
 
@@ -45,7 +45,7 @@ namespace CompInstalledPart
                     newJob.count = 1;
                     actor?.jobs?.TryTakeOrderedJob(newJob);
                 }
-                else if (actorFac != targetFac) Messages.Message("CompInstalledPart_WrongFaction".Translate(), MessageSound.RejectInput);
+                else if (actorFac != targetFac) Messages.Message("CompInstalledPart_WrongFaction".Translate(), MessageTypeDefOf.RejectInput);
             }
         }
 
@@ -91,7 +91,7 @@ namespace CompInstalledPart
                 installer.LabelShort,
                 this.parent.LabelShort,
                 target.LabelShort
-            }), MessageSound.Benefit);
+            }), MessageTypeDefOf.PositiveEvent);
         }
 
         public void Notify_Uninstalled(Pawn uninstaller, Thing partOrigin)
@@ -131,7 +131,7 @@ namespace CompInstalledPart
                 uninstaller.LabelShort,
                 this.parent.LabelShort,
                 partOrigin.LabelShort
-            }), MessageSound.Benefit);
+            }), MessageTypeDefOf.PositiveEvent);
         }
 
         public override void PostExposeData()

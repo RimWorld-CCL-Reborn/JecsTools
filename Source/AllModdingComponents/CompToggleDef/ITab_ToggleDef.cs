@@ -16,7 +16,9 @@ namespace CompToggleDef
         {
             get
             {
+#pragma warning disable IDE0019 // Use pattern matching
                 ThingWithComps selected = this.SelThing as ThingWithComps;
+#pragma warning restore IDE0019 // Use pattern matching
                 if ( selected != null ) {
                     CompToggleDef td = selected.GetComp<CompToggleDef>();
                     if (  td != null ) {

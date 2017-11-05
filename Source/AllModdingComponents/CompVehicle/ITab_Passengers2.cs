@@ -120,7 +120,9 @@ namespace CompVehicle
                         int maxThresholdMarkers = 0;
                         bool doTooltip = true;
                         Rect rect5 = new Rect(xMax, 0f, 100f, 50f);
+#pragma warning disable IDE0019 // Use pattern matching
                         Need_Mood mood = need as Need_Mood;
+#pragma warning restore IDE0019 // Use pattern matching
                         if (mood != null)
                         {
                             maxThresholdMarkers = 1;
@@ -247,7 +249,9 @@ namespace CompVehicle
             int num = 0;
             for (int i = 0; i < things.Count; i++)
             {
+#pragma warning disable IDE0019 // Use pattern matching
                 Pawn pawn = things[i] as Pawn;
+#pragma warning restore IDE0019 // Use pattern matching
                 if (pawn != null)
                 {
                     GetNeedsToDisplay(pawn, tmpNeeds);

@@ -46,7 +46,9 @@ namespace CompActivatableEffect
                 compActivatableEffect.TryDeactivate();
         }
 
+#pragma warning disable IDE1006 // Naming Styles
         public static void set_DraftedPostFix(Pawn_DraftController __instance, bool value)
+#pragma warning restore IDE1006 // Naming Styles
         {
             if (__instance.pawn is Pawn p && p.equipment is Pawn_EquipmentTracker eq && 
                 eq.Primary is ThingWithComps t && t.GetComp<CompActivatableEffect>() is CompActivatableEffect compActivatableEffect)
@@ -88,7 +90,7 @@ namespace CompActivatableEffect
                                 {
                                     if (Find.TickManager.TicksGame % 250 == 0) Messages.Message("DeactivatedWarning".Translate(new object[] {
                                     pawn.Label
-                                }), MessageSound.RejectInput);
+                                }), MessageTypeDefOf.RejectInput);
                                     __result = false;
                                     return false;
                                 }

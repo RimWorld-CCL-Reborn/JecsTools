@@ -20,7 +20,18 @@
   <!-- ========================BaseDef================================== -->
 
   <AbilityUser.AbilityDef Name="BaseAbility" Abstract="True">
+    <category>None</category>
     <uiIconPath>UI/Glow_Corrupt</uiIconPath>
+    <thingClass>ThingWithComps</thingClass>
+    <pathCost>0</pathCost>
+    <useHitPoints>False</useHitPoints>
+    <selectable>False</selectable>
+    <tickerType>Normal</tickerType>
+    <comps>
+      <li>
+        <compClass>CompEquippable</compClass>
+      </li>
+    </comps>
   </AbilityUser.AbilityDef>
 
 </Defs>

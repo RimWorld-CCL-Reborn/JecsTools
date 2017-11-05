@@ -19,12 +19,13 @@ namespace AbilityUser
         public List<LocalTargetInfo> TargetsAoE = new List<LocalTargetInfo>();
 
         public VerbProperties_Ability UseAbilityProps => (VerbProperties_Ability)this.verbProps;
-        public ProjectileDef_Ability AbilityProjectileDef => this.UseAbilityProps.projectileDef as ProjectileDef_Ability;
+        public ProjectileDef_Ability AbilityProjectileDef => this.UseAbilityProps.defaultProjectile as ProjectileDef_Ability;
         public CompAbilityUser AbilityUserComp => this.CasterPawn.TryGetComp<CompAbilityUser>();
 
-        public override float HighlightFieldRadiusAroundTarget()
+        public override float HighlightFieldRadiusAroundTarget(out bool needLOSToCenter)
         {
-            float result =  this.verbProps.projectileDef.projectile.explosionRadius;
+            needLOSToCenter = true;
+            float result =  this.verbProps.defaultProjectile.projectile.explosionRadius;
             if (this.UseAbilityProps.abilityDef.MainVerb.TargetAoEProperties != null)
             {
                 if (this.UseAbilityProps.abilityDef.MainVerb.TargetAoEProperties.showRangeOnSelect)
@@ -114,7 +115,7 @@ namespace AbilityUser
             {
                 //                for (int j = 0; j < burstshots; j++)
                 //                {
-                bool? attempt = TryLaunchProjectile(this.verbProps.projectileDef, this.TargetsAoE[i]);
+                bool? attempt = TryLaunchProjectile(this.verbProps.defaultProjectile, this.TargetsAoE[i]);
                 ////Log.Message(TargetsAoE[i].ToString());
                 if (attempt != null)
                 {

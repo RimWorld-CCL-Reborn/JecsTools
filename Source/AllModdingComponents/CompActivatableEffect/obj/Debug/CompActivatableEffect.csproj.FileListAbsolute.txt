@@ -1,0 +1,3 @@
+D:\SteamLibrary\steamapps\common\RimWorld\Mods\JecsTools\Assemblies\CompActivatableEffect.dll
+D:\SteamLibrary\steamapps\common\RimWorld\Mods\JecsTools\Source\AllModdingComponents\CompActivatableEffect\obj\Debug\CompActivatableEffect.csprojResolveAssemblyReference.cache
+D:\SteamLibrary\steamapps\common\RimWorld\Mods\JecsTools\Source\AllModdingComponents\CompActivatableEffect\obj\Debug\CompActivatableEffect.dll

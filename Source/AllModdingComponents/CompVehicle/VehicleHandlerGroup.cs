@@ -94,7 +94,7 @@ namespace CompVehicle
                     if (!p.IsWorldPawn()) Find.WorldPawns.PassToWorld(p, PawnDiscardDecideMode.Decide);
                 }
             }
-            this.handlers.TryAddRange(newHandlers);
+            this.handlers.TryAddRangeOrTransfer(newHandlers);
             //this.handlers = newHandlers;
         }
 

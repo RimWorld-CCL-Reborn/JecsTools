@@ -24,6 +24,11 @@ namespace AbilityUser
             }
         }
 
+        public override bool TryMakePreToilReservations()
+        {
+            return true;
+        }
+
         protected override IEnumerable<Toil> MakeNewToils()
         {
 

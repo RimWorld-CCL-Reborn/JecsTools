@@ -28,9 +28,14 @@ namespace CompInstalledPart
 
         protected CompInstalledPart InstallComp => this.PartToInstall.GetComp<CompInstalledPart>();
 
-        protected ThingWithComps PartToInstall => (ThingWithComps)this.CurJob.targetA.Thing;
+        protected ThingWithComps PartToInstall => (ThingWithComps)this.job.targetA.Thing;
 
-        protected Thing InstallTarget => this.CurJob.targetB.Thing;
+        protected Thing InstallTarget => this.job.targetB.Thing;
+
+        public override bool TryMakePreToilReservations()
+        {
+            return true;
+        }
 
         protected int WorkDone
         {
@@ -68,7 +73,7 @@ namespace CompInstalledPart
                 tickAction = delegate
                 {
                     if (InstallTarget is Pawn pawnTarget) pawnTarget.pather.StopDead();
-                    this.pawn.Drawer.rotator.FaceCell(this.TargetB.Cell);
+                    this.pawn.rotationTracker.FaceCell(this.TargetB.Cell);
                     Pawn actor = this.pawn;
                     actor.skills.Learn(SkillDefOf.Construction, 0.275f, false);
                     float statValue = actor.GetStatValue(StatDefOf.ConstructionSpeed, true);

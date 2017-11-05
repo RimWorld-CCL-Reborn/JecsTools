@@ -164,7 +164,7 @@ namespace CompDeflector
                                             {
                                                 if (!dinfo.Def.isExplosive)
                                                 {
-                                                    if (!dinfo.WeaponGear.IsMeleeWeapon)
+                                                    if (!dinfo.Weapon.IsMeleeWeapon)
                                                     {
                                                         compDeflector.PostPreApplyDamage(dinfo, out bool newAbsorbed);
                                                         if (newAbsorbed)

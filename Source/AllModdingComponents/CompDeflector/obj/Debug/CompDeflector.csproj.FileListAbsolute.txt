@@ -1,0 +1,3 @@
+D:\SteamLibrary\steamapps\common\RimWorld\Mods\JecsTools\Assemblies\CompDeflector.dll
+D:\SteamLibrary\steamapps\common\RimWorld\Mods\JecsTools\Source\AllModdingComponents\CompDeflector\obj\Debug\CompDeflector.csprojResolveAssemblyReference.cache
+D:\SteamLibrary\steamapps\common\RimWorld\Mods\JecsTools\Source\AllModdingComponents\CompDeflector\obj\Debug\CompDeflector.dll

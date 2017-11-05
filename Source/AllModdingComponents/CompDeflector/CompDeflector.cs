@@ -230,7 +230,7 @@ namespace CompDeflector
 
                     //Copy values over to a new verb props
                     hasStandardCommand = newVerb.verbProps.hasStandardCommand,
-                    projectileDef = newVerb.verbProps.projectileDef,
+                    defaultProjectile = newVerb.verbProps.defaultProjectile,
                     range = newVerb.verbProps.range,
                     muzzleFlashScale = newVerb.verbProps.muzzleFlashScale,
                     warmupTime = 0,
@@ -298,7 +298,7 @@ namespace CompDeflector
 
                     //Copy values over to a new verb props
                     hasStandardCommand = newVerb.verbProps.hasStandardCommand,
-                    projectileDef = newVerb.verbProps.projectileDef,
+                    defaultProjectile = newVerb.verbProps.defaultProjectile,
                     range = newVerb.verbProps.range,
                     muzzleFlashScale = newVerb.verbProps.muzzleFlashScale,
                     warmupTime = 0,
@@ -413,9 +413,9 @@ namespace CompDeflector
         /// <param name="absorbed"></param>
         public override void PostPreApplyDamage(DamageInfo dinfo, out bool absorbed)
         {
-            if (dinfo.WeaponGear != null)
+            if (dinfo.Weapon != null)
             {
-                if (!dinfo.WeaponGear.IsMeleeWeapon && dinfo.WeaponBodyPartGroup == null)
+                if (!dinfo.Weapon.IsMeleeWeapon && dinfo.WeaponBodyPartGroup == null)
                 {
 
                     if (this.HasCompActivatableEffect)

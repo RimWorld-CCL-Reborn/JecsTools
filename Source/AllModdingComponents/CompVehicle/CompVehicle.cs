@@ -211,7 +211,7 @@ namespace CompVehicle
                 newPawnKind = optionalDefs.RandomElementByWeight((PawnGenOption x) => x.selectionWeight).kind;
             }
 
-            PawnGenerationRequest request = new PawnGenerationRequest(newPawnKind, this.Pawn.Faction, PawnGenerationContext.NonPlayer, this.Pawn.Map.Tile, false, false, false, false, true, true, 1f, false, true, true, false, false, null, null, null, null, null, null);
+            PawnGenerationRequest request = new PawnGenerationRequest(newPawnKind, this.Pawn.Faction, PawnGenerationContext.NonPlayer, this.Pawn.Map.Tile, false, false, false, false, true, true, 1f, false, true, true, false, false, false, false, null, null, null, null);
             Pawn item = PawnGenerator.GeneratePawn(request);
             return item;
         }
@@ -294,7 +294,7 @@ namespace CompVehicle
                         Pawn toEject = group?.handlers?.InnerListForReading?.FirstOrDefault(x => !x.Spawned && x?.needs?.AllNeeds?.FirstOrDefault(y => y.CurLevelPercentage < this.Props.ejectIfBelowNeedPercent) != null);
                         if (toEject != null)
                         {
-                            Messages.Message("MessagePawnLeftVehicle".Translate(new object[] { toEject.Label, this.Pawn.Label, "low" }), this.Pawn, MessageSound.SeriousAlert);
+                            Messages.Message("MessagePawnLeftVehicle".Translate(new object[] { toEject.Label, this.Pawn.Label, "low" }), this.Pawn, MessageTypeDefOf.NegativeHealthEvent);
                             Pawn b;
                             Eject(toEject);
                         }

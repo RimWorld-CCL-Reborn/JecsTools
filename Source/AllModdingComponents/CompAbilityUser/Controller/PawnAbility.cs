@@ -157,12 +157,7 @@ namespace AbilityUser
             return true;
         }
 
-        public virtual bool ShouldShowGizmo()
-        {
-            return true;
-        }
-
-        public virtual Command_PawnAbility GetGizmo()
+        public Command_PawnAbility GetGizmo()
         {
 
             Command_PawnAbility command_CastPower = new Command_PawnAbility(this.abilityUser, this, this.CooldownTicksLeft)

@@ -8,6 +8,7 @@ using Verse;
 using UnityEngine;
 using Verse.AI;
 using Verse.Sound;
+
 namespace CompDeflector
 {
     public class StatWorker_DeflectionChance : StatWorker
@@ -101,7 +102,7 @@ namespace CompDeflector
             return 1.0f;
         }
 
-        public override string GetExplanation(StatRequest req, ToStringNumberSense numberSense)
+        public override string GetExplanationUnfinalized(StatRequest req, ToStringNumberSense numberSense)
         {
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.AppendLine("Stat is displayed in the following format:\nDeflection chance equals ( Base chance + ( Skill Level * % per Skill Level) / Manipulation Efficiency\n\n");

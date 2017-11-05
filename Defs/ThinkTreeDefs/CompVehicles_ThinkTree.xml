@@ -2,7 +2,7 @@
 
 <!-- ThinkTree by Jecrell and Swenzi -->
 
-<ThinkTrees>
+<Defs>
 
   <ThinkTreeDef>
     <defName>CompVehicle_Simple</defName>
@@ -13,7 +13,7 @@
         </li>
 
 		<!-- Vehicle can take direct orders when drafted -->
-        <li Class="ThinkNode_ConditionalColonyFaction">
+        <li Class="ThinkNode_ConditionalOfPlayerFaction">
 					<subNodes>
             <li Class="ThinkNode_Tagger">
               <tagToGive>DraftedOrder</tagToGive>
@@ -100,4 +100,4 @@
 		</thinkRoot>
 	</ThinkTreeDef>
 
-</ThinkTrees>
+</Defs>
