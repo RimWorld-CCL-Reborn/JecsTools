@@ -84,14 +84,14 @@ namespace CompVehicle
                         if (this.workLeft <= 0)
                         {
                             actor.records.Increment(RecordDefOf.ThingsConstructed);
-                            Spawner.Notify_Assembled(actor);
+                            this.Spawner.Notify_Assembled(actor);
                             actor.jobs.EndCurrentJob(JobCondition.Succeeded, true);
                         }
                     }
                 }
             };
             repair.FailOnCannotTouch(TargetIndex.A, PathEndMode.Touch);
-            repair.WithEffect(Spawner.Props.workEffect, TargetIndex.A);
+            repair.WithEffect(this.Spawner.Props.workEffect, TargetIndex.A);
             repair.WithProgressBar(TargetIndex.A, () => this.WorkDone / this.TotalNeededWork, false, -0.5f);
             repair.defaultCompleteMode = ToilCompleteMode.Never;
             yield return repair;

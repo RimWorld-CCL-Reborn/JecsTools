@@ -21,12 +21,12 @@ namespace CompVehicle
         {
             foreach (FloatMenuOption o in base.CompFloatMenuOptions(selPawn)) yield return o;
 
-            if ((!Spawner.DestroyedOrNull() && Spawner.Spawned) &&
+            if ((!this.Spawner.DestroyedOrNull() && this.Spawner.Spawned) &&
                 !selPawn.DestroyedOrNull() && selPawn.Spawned)
             {
-                yield return new FloatMenuOption(String.Format(Props.useVerb, Spawner.Label), delegate
+                yield return new FloatMenuOption(String.Format(this.Props.useVerb, this.Spawner.Label), delegate
                 {
-                    selPawn.jobs.TryTakeOrderedJob(new Verse.AI.Job(DefDatabase<JobDef>.GetNamed("CompVehicle_Assemble"), Spawner));
+                    selPawn.jobs.TryTakeOrderedJob(new Verse.AI.Job(DefDatabase<JobDef>.GetNamed("CompVehicle_Assemble"), this.Spawner));
                 });
             }
         }
@@ -34,8 +34,8 @@ namespace CompVehicle
         /// When assembled, be sure to spawn the vehicle and destroy this object.
         public void Notify_Assembled(Pawn assembler)
         {
-            Pawn pawn = (Pawn)GenSpawn.Spawn(PawnGenerator.GeneratePawn(Props.vehicleToSpawn, assembler.Faction), Spawner.PositionHeld, Spawner.MapHeld);
-            Spawner.Destroy(DestroyMode.KillFinalize);
+            Pawn pawn = (Pawn)GenSpawn.Spawn(PawnGenerator.GeneratePawn(this.Props.vehicleToSpawn, assembler.Faction), this.Spawner.PositionHeld, this.Spawner.MapHeld);
+            this.Spawner.Destroy(DestroyMode.KillFinalize);
         }
 
         

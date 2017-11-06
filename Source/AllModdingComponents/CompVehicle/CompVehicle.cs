@@ -71,7 +71,7 @@ namespace CompVehicle
         //------ Additions By Swenzi -------
 #endregion SwenzisCode
 
-        public bool CanManipulate => this.Props.manipulationHandling > HandlingType.HandlerRequired || ManipulationHandlerAvailable;
+        public bool CanManipulate => this.Props.manipulationHandling > HandlingType.HandlerRequired || this.ManipulationHandlerAvailable;
         public bool ManipulationHandlerAvailable
         {
             
@@ -97,7 +97,7 @@ namespace CompVehicle
                 return result;
             }
         }
-        public bool CanMove => this.Props.movementHandling > HandlingType.HandlerRequired || MovementHandlerAvailable;
+        public bool CanMove => this.Props.movementHandling > HandlingType.HandlerRequired || this.MovementHandlerAvailable;
         public bool MovementHandlerAvailable
         {
             get
@@ -122,7 +122,7 @@ namespace CompVehicle
                 return result;
             }
         }
-        public bool CanFireWeapons => this.Props.weaponHandling > HandlingType.HandlerRequired || WeaponHandlerAvailable;
+        public bool CanFireWeapons => this.Props.weaponHandling > HandlingType.HandlerRequired || this.WeaponHandlerAvailable;
         public bool WeaponHandlerAvailable
         {
             get
@@ -378,22 +378,22 @@ namespace CompVehicle
                 }
             }
 
-            if (MovementHandlerAvailable && this.movingStatus == MovingState.frozen)
+            if (this.MovementHandlerAvailable && this.movingStatus == MovingState.frozen)
                 this.movingStatus = MovingState.able;
 
-            if (WeaponHandlerAvailable && this.weaponStatus == WeaponState.frozen)
+            if (this.WeaponHandlerAvailable && this.weaponStatus == WeaponState.frozen)
                 this.weaponStatus = WeaponState.able;
 
-            if ((!MovementHandlerAvailable && this.movingStatus == MovingState.able) && 
-                Props.movementHandling != HandlingType.NoHandlerRequired)
+            if ((!this.MovementHandlerAvailable && this.movingStatus == MovingState.able) &&
+                this.Props.movementHandling != HandlingType.NoHandlerRequired)
                 this.movingStatus = MovingState.frozen;
 
-            if ((!WeaponHandlerAvailable && this.weaponStatus == WeaponState.able) && 
-                Props.weaponHandling != HandlingType.NoHandlerRequired)
+            if ((!this.WeaponHandlerAvailable && this.weaponStatus == WeaponState.able) &&
+                this.Props.weaponHandling != HandlingType.NoHandlerRequired)
                 this.weaponStatus = WeaponState.frozen;
 
-            if ((!ManipulationHandlerAvailable && this.manipulationStatus == ManipulationState.able) && 
-                Props.manipulationHandling != HandlingType.NoHandlerRequired)
+            if ((!this.ManipulationHandlerAvailable && this.manipulationStatus == ManipulationState.able) &&
+                this.Props.manipulationHandling != HandlingType.NoHandlerRequired)
                 this.manipulationStatus = ManipulationState.frozen;
 
             // ------ ADB Swenzi -------
@@ -561,7 +561,7 @@ namespace CompVehicle
         }
         public void EjectAll()
         {
-            List<Pawn> pawnsToEject = new List<Pawn>(AllOccupants);
+            List<Pawn> pawnsToEject = new List<Pawn>(this.AllOccupants);
             if (pawnsToEject != null && pawnsToEject.Count > 0)
             {
                 foreach (Pawn p in pawnsToEject)
@@ -631,13 +631,13 @@ namespace CompVehicle
 
         public void ResolveMovementSound()
         {
-            if (this.parent is Pawn p && Props.soundMoving != null)
+            if (this.parent is Pawn p && this.Props.soundMoving != null)
             {
                 var isMovingNow = p?.pather?.Moving ?? false;
-                if (isMovingNow && movingSustainer == null)
+                if (isMovingNow && this.movingSustainer == null)
                 {
                     SoundInfo info = SoundInfo.InMap(this.parent, MaintenanceType.None);
-                    this.movingSustainer = Props.soundMoving.TrySpawnSustainer(info);
+                    this.movingSustainer = this.Props.soundMoving.TrySpawnSustainer(info);
                     return;
                 }
                 else if (!isMovingNow && this.movingSustainer != null)

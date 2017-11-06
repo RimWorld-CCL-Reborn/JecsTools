@@ -9,3 +9,7 @@ J:\Modding\A17mods\JescTools-master\Source\AllModdingComponents\CompVehicle\bin\
 J:\Modding\A17mods\JescTools-master\Source\AllModdingComponents\CompVehicle\bin\Release\NVorbis.dll
 J:\Modding\A17mods\JescTools-master\Source\AllModdingComponents\CompVehicle\bin\Release\UnityEngine.UI.dll
 J:\Modding\A17mods\JescTools-master\Source\AllModdingComponents\CompVehicle\obj\Release\CompVehicle.dll
+J:\Modding\RimWorld\JTXErd\Source\AllModdingComponents\CompVehicle\bin\Release\CompVehicle.dll
+J:\Modding\RimWorld\JTXErd\Source\AllModdingComponents\CompVehicle\bin\Release\0Harmony.dll
+J:\Modding\RimWorld\JTXErd\Source\AllModdingComponents\CompVehicle\obj\Release\CompVehicle.csprojResolveAssemblyReference.cache
+J:\Modding\RimWorld\JTXErd\Source\AllModdingComponents\CompVehicle\obj\Release\CompVehicle.dll

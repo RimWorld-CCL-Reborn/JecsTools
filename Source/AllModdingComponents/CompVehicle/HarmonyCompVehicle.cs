@@ -24,16 +24,16 @@ namespace CompVehicle
         {
             HarmonyInstance harmony = HarmonyInstance.Create("rimworld.jecrell.comps.vehicle");
 
+            
             #region Functions
             ///
             /// VEHICLE FUNCTIONS
             /// Implements new systems to RimWorld when
             /// vehicles are present.
             ///
-
-            harmony.Patch(AccessTools.Method(typeof(Pawn_RotationTracker), "PawnRotatorTick"), new HarmonyMethod(typeof(HarmonyCompVehicle),
+            harmony.Patch(AccessTools.Method(typeof(Pawn_RotationTracker), "RotationTrackerTick"), new HarmonyMethod(typeof(HarmonyCompVehicle),
                 nameof(VehicleRotatorTick)), null);
-            harmony.Patch(AccessTools.Method(typeof(DamageWorker_AddInjury), "FinalizeAndAddInjury"), null, 
+            harmony.Patch(AccessTools.Method(typeof(DamageWorker_AddInjury), "FinalizeAndAddInjury", new Type[] { typeof(Pawn), typeof(Hediff_Injury), typeof(DamageInfo), AccessTools.TypeByName("DamageResult").MakeByRefType() }), null, 
                 new HarmonyMethod(typeof(HarmonyCompVehicle), 
                 nameof(TryInjureVehicleOccupants)));
             harmony.Patch(AccessTools.Method(typeof(HealthUtility), "GetGeneralConditionLabel"), 
@@ -61,7 +61,7 @@ namespace CompVehicle
                 new HarmonyMethod(typeof(HarmonyCompVehicle), 
                 nameof(FightActionTranspiler)));
             #endregion Functions
-
+            
             #region ErrorHandling
             ///
             /// VEHICLE ERROR HANDLING
@@ -71,60 +71,60 @@ namespace CompVehicle
 
             //harmony.Patch(AccessTools.)
             harmony.Patch(AccessTools.Method(typeof(PawnUtility), "IsTravelingInTransportPodWorldObject"), null, new HarmonyMethod(typeof(HarmonyCompVehicle),
-                nameof(PreventAssigningRandomFaction)));
+                nameof(PreventAssigningRandomFaction)));  
             harmony.Patch(AccessTools.Method(typeof(SocialCardUtility), "Recache"), new HarmonyMethod(typeof(HarmonyCompVehicle), 
-                nameof(SocialTabNullHandling)), null);
+                nameof(SocialTabNullHandling)), null);  
             harmony.Patch(AccessTools.Method(typeof(Pawn), "get_IsColonistPlayerControlled"), null, new HarmonyMethod(typeof(HarmonyCompVehicle), 
-                nameof(IncludeVehiclesInIsColonistPlayerControlled)));
-            harmony.Patch(AccessTools.Method(typeof(Pawn), "CurrentlyUsable"), null, new HarmonyMethod(typeof(HarmonyCompVehicle), 
-                nameof(CantUseMovingVehicles)));
+                nameof(IncludeVehiclesInIsColonistPlayerControlled)));  
+            harmony.Patch(AccessTools.Method(typeof(Pawn), "CurrentlyUsableForBills"), null, new HarmonyMethod(typeof(HarmonyCompVehicle), 
+                nameof(CantUseMovingVehicles)));  
             harmony.Patch(AccessTools.Method(typeof(Pawn_DraftController), "set_Drafted"), new HarmonyMethod(typeof(HarmonyCompVehicle), 
-                nameof(DraftedVehiclesCanMove)), null);
+                nameof(DraftedVehiclesCanMove)), null);  
             harmony.Patch(AccessTools.Method(typeof(Pawn_PathFollower), "StartPath"), new HarmonyMethod(typeof(HarmonyCompVehicle), 
-                nameof(CanVehicleMove)), null);
+                nameof(CanVehicleMove)), null);  
             harmony.Patch(AccessTools.Method(typeof(Verb_Shoot), "TryCastShot"), new HarmonyMethod(typeof(HarmonyCompVehicle), 
-                nameof(CanVehicleShoot)), null);
+                nameof(CanVehicleShoot)), null);  
             harmony.Patch(AccessTools.Method(typeof(GameEnder), "IsPlayerControlledWithFreeColonist"), null, new HarmonyMethod(typeof(HarmonyCompVehicle), 
-                nameof(CanEndGame)));
+                nameof(CanEndGame)));  
             harmony.Patch(typeof(RestUtility).GetMethods(BindingFlags.Public | BindingFlags.Static).First(mi => mi.Name == "FindBedFor" && mi.GetParameters().Count() > 1), null, new HarmonyMethod(typeof(HarmonyCompVehicle), 
-                nameof(DontRescueVehicles)), null);
+                nameof(DontRescueVehicles)), null);  
             harmony.Patch(AccessTools.Method(typeof(FloatMenuMakerMap), "AddHumanlikeOrders"), null, new HarmonyMethod(typeof(HarmonyCompVehicle), 
-                nameof(DontRescueVehiclesInFloatMenus)));
+                nameof(DontRescueVehiclesInFloatMenus)));  
 
             harmony.Patch(typeof(SymbolResolver_RandomMechanoidGroup).GetMethods(BindingFlags.NonPublic | BindingFlags.Static).First(mi => mi.HasAttribute<CompilerGeneratedAttribute>() && mi.ReturnType == typeof(bool) && mi.GetParameters().Count() == 1 && mi.GetParameters()[0].ParameterType == typeof(PawnKindDef)), null, new HarmonyMethod(typeof(HarmonyCompVehicle), 
-                nameof(MechanoidsFixerAncient)));
-            harmony.Patch(typeof(Building_CrashedShipPart).GetMethods(BindingFlags.NonPublic | BindingFlags.Instance).First(mi => mi.HasAttribute<CompilerGeneratedAttribute>() && mi.ReturnType == typeof(bool) && mi.GetParameters().Count() == 1 && mi.GetParameters()[0].ParameterType == typeof(PawnKindDef)), null, new HarmonyMethod(typeof(HarmonyCompVehicle), 
-                nameof(MechanoidsFixer)));
+                nameof(MechanoidsFixerAncient)));  
+            harmony.Patch(typeof(CompSpawnerMechanoidsOnDamaged).GetMethods(BindingFlags.NonPublic | BindingFlags.Instance).First(mi => mi.HasAttribute<CompilerGeneratedAttribute>() && mi.ReturnType == typeof(bool) && mi.GetParameters().Count() == 1 && mi.GetParameters()[0].ParameterType == typeof(PawnKindDef)), null, new HarmonyMethod(typeof(HarmonyCompVehicle), 
+                nameof(MechanoidsFixer)));  
             harmony.Patch(AccessTools.Method(typeof(JobDriver_Wait), "CheckForAutoAttack"), null, null, new HarmonyMethod(typeof(HarmonyCompVehicle), 
-                nameof(CheckForAutoAttackTranspiler)));
-            harmony.Patch(AccessTools.Method(typeof(VerbTracker).GetNestedTypes(BindingFlags.NonPublic | BindingFlags.Instance).First(), "MoveNext"), null, null, new HarmonyMethod(typeof(HarmonyCompVehicle), 
-                nameof(GetVerbsCommandsTranspiler)));
+                nameof(CheckForAutoAttackTranspiler)));  
+            harmony.Patch(AccessTools.Method(typeof(VerbTracker).GetNestedTypes(BindingFlags.NonPublic | BindingFlags.Instance).First(t => AccessTools.Method(t, "MoveNext") != null), "MoveNext"), null, null, new HarmonyMethod(typeof(HarmonyCompVehicle), 
+                nameof(GetVerbsCommandsTranspiler)));  
             harmony.Patch(AccessTools.Method(typeof(ThinkNode_ConditionalColonist), "Satisfied"), null, new HarmonyMethod(typeof(HarmonyCompVehicle), 
-                nameof(Satisfied_PostFix)), null);
+                nameof(Satisfied_PostFix)), null);  
             #endregion ErrorHandling
-
+            
             #region AIHandling
             /// AI HANDLING
             /// Handles various AI issues for vehicles to function
             /// properly.
 
             harmony.Patch(AccessTools.Method(typeof(JobGiver_Orders), "TryGiveJob"), null, new HarmonyMethod(typeof(HarmonyCompVehicle),
-                nameof(PreventWaitAttackError)));
+                nameof(PreventWaitAttackError)));  
             harmony.Patch(AccessTools.Method(typeof(LordToil_PrepareCaravan_GatherItems), "UpdateAllDuties"), new HarmonyMethod(typeof(HarmonyCompVehicle), 
-                nameof(GiveVehiclesLoadItemDuties)), null);
+                nameof(GiveVehiclesLoadItemDuties)), null);  
             harmony.Patch(AccessTools.Method(typeof(LordToil_PrepareCaravan_GatherAnimals), "UpdateAllDuties"), new HarmonyMethod(typeof(HarmonyCompVehicle), 
-                nameof(GiveVehiclesLoadAnimalDuties)), null);
+                nameof(GiveVehiclesLoadAnimalDuties)), null);  
             harmony.Patch(AccessTools.Method(typeof(LordToil_PrepareCaravan_GatherSlaves), "LordToilTick"), new HarmonyMethod(typeof(HarmonyCompVehicle), 
-                nameof(GiveVehiclesLoadSlaveDuties)), null);
+                nameof(GiveVehiclesLoadSlaveDuties)), null);  
             harmony.Patch(AccessTools.Method(typeof(LordToil_PrepareCaravan_GatherItems), "LordToilTick"), new HarmonyMethod(typeof(HarmonyCompVehicle), 
-                nameof(GiveVehiclesLoadItemToil)), null);
+                nameof(GiveVehiclesLoadItemToil)), null);  
             harmony.Patch(AccessTools.Method(typeof(RimWorld.Planet.CaravanPawnsNeedsUtility), "TrySatisfyPawnNeeds"), new HarmonyMethod(typeof(HarmonyCompVehicle), 
-                nameof(TrySatisfyFuelNeeds)), null);
+                nameof(TrySatisfyFuelNeeds)), null);  
             //Reminder to check this code....
             harmony.Patch(AccessTools.Method(typeof(JobGiver_PrepareCaravan_GatherItems), "TryGiveJob"), new HarmonyMethod(typeof(HarmonyCompVehicle), 
-                nameof(TryGiveItemJob_PreFix)), null);
+                nameof(TryGiveItemJob_PreFix)), null);  
             #endregion AIHandling
-
+            
             #region CaravanHandling
             ///
             /// CARAVAN HANDLING
@@ -160,7 +160,7 @@ namespace CompVehicle
             harmony.Patch(AccessTools.Method(typeof(RimWorld.Dialog_FormCaravan), "DoWindowContents"), new HarmonyMethod(typeof(HarmonyCompVehicle), 
                 nameof(DoWindowContents_PreFix)), null);
             #endregion CaravanHandling
-
+            
             #region Tests
             ///
             /// TESTS
@@ -175,6 +175,7 @@ namespace CompVehicle
             //harmony.Patch(AccessTools.Method(typeof(Pawn), "ExitMap"), new HarmonyMethod(typeof(HarmonyCompVehicle),
             //    nameof(ExitMap_Test)), null);
             #endregion
+
         }
 
         /// CODE LEGEND
