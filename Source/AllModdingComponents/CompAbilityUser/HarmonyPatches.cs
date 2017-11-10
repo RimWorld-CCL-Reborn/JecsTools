@@ -39,6 +39,7 @@ namespace AbilityUser
             harmony.Patch(AccessTools.Method(typeof(RimWorld.Pawn_ApparelTracker),"Notify_ApparelRemoved"),null,
                 new HarmonyMethod(typeof(HarmonyPatches).GetMethod("Notify_ApparelRemoved_PostFix")),null);
         }
+        
 
         public static void Notify_EquipmentAdded_PostFix(Verse.Pawn_EquipmentTracker __instance, ThingWithComps eq) {
 

@@ -36,13 +36,25 @@ namespace AbilityUserAI
         /// <returns>Targeting location or Pawn.</returns>
         public virtual LocalTargetInfo TargetAbilityFor(AbilityAIDef abilityDef, Pawn pawn)
         {
+
             if (abilityDef.usedOnCaster)
                 return pawn;
             else
-                if(abilityDef.canTargetAlly)
-                    return GenClosest.ClosestThingReachable(pawn.Position, pawn.Map, ThingRequest.ForGroup(ThingRequestGroup.Pawn), Verse.AI.PathEndMode.OnCell, TraverseParms.For(TraverseMode.NoPassClosedDoors), abilityDef.maxRange, thing => AbilityUtility.AreAllies(pawn, thing));
-                else
+                if (abilityDef.canTargetAlly)
+                return GenClosest.ClosestThingReachable(pawn.Position, pawn.Map, ThingRequest.ForGroup(ThingRequestGroup.Pawn), Verse.AI.PathEndMode.OnCell, TraverseParms.For(TraverseMode.NoPassClosedDoors), abilityDef.maxRange, thing => AbilityUtility.AreAllies(pawn, thing));
+            else
+                    if (pawn.mindState.enemyTarget != null && pawn.mindState.enemyTarget is Pawn targetPawn)
+            {
+                if (!targetPawn.Dead)
                     return pawn.mindState.enemyTarget;
+            }
+            else
+            {
+                if (pawn.mindState.enemyTarget != null && !(pawn.mindState.enemyTarget is Corpse))
+                    return pawn.mindState.enemyTarget;
+            }
+
+            return null;
         }
 
         /// <summary>
@@ -54,14 +66,14 @@ namespace AbilityUserAI
         /// <returns>True if we can use this Ability. False if not.</returns>
         public virtual bool CanPawnUseThisAbility(AbilityAIDef abilityDef, Pawn pawn, LocalTargetInfo target)
         {
-            if(target.HasThing)
+            if (target.HasThing)
             {
                 Pawn targetPawn = target.Thing as Pawn;
 
                 if (!abilityDef.canTargetAlly)
                     return !targetPawn.Downed;
             }
-            
+
 
             return true;
         }

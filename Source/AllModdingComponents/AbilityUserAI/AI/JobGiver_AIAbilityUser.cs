@@ -46,7 +46,7 @@ namespace AbilityUserAI
             {
                 //No Job to give. Yet.
                 //Go through all available Profiles in order to find a Ability to use.
-                foreach(AbilityUserAIProfileDef profile in profiles)
+                foreach (AbilityUserAIProfileDef profile in profiles)
                 {
                     if (profile != null)
                     {
@@ -127,7 +127,9 @@ namespace AbilityUserAI
                                 //Give job.
                                 if (useAbility.CanCastPowerCheck(AbilityContext.AI, out reason))
                                 {
-                                    return useAbility.UseAbility(AbilityContext.AI, useThisAbility.Worker.TargetAbilityFor(useThisAbility, pawn));
+                                    LocalTargetInfo target = useThisAbility.Worker.TargetAbilityFor(useThisAbility, pawn);
+                                    if (target.IsValid)
+                                        return useAbility.UseAbility(AbilityContext.AI, target);
                                 }
                             }
                         }

@@ -273,7 +273,7 @@ namespace AbilityUser
                 {
                     if (spawnables.kindDef == null) { Log.Error("Missing kinddef"); return; }
                     Pawn p = SpawnPawn(spawnables, factionToAssign);
-                    if (this?.Caster?.Faction is Faction f && Faction.OfPlayerSilentFail != f) p.SetFactionDirect(f);
+                    //if (this?.Caster?.Faction is Faction f && Faction.OfPlayerSilentFail != f) p.SetFactionDirect(f);
                 }
                 else
                 {
