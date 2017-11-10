@@ -59,6 +59,7 @@
     <Compile Include="AoEProperties.cs" />
     <Compile Include="ApplyHediffs.cs" />
     <Compile Include="ApplyMentalStates.cs" />
+    <Compile Include="PawnSummoned.cs" />
     <Compile Include="View\Command_PawnAbility.cs" />
     <Compile Include="CompAbilityItem.cs" />
     <Compile Include="Model\CompAbilityUser.cs" />

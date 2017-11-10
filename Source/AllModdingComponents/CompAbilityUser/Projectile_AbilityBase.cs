@@ -15,10 +15,20 @@ namespace AbilityUser
         public List<ApplyHediffs> localApplyHediffs = null;
         public List<ApplyMentalStates> localApplyMentalStates = null;
         public List<SpawnThings> localSpawnThings = null;
+        public AbilityDef localAbilityDef;
 
         public Vector3 targetVec;
-        public Pawn Caster;
+        public Pawn Caster => base.launcher as Pawn;
         public Thing selectedTarget;
+
+        public override void ExposeData()
+        {
+            base.ExposeData();
+            Scribe_Collections.Look<ExtraDamage>(ref this.extraDamages, "extraDamages", LookMode.Deep);
+            Scribe_Collections.Look<ApplyMentalStates>(ref this.localApplyMentalStates, "localApplyMentalStates", LookMode.Deep);
+            Scribe_Collections.Look<ApplyHediffs>(ref this.localApplyHediffs, "localApplyHediffs", LookMode.Deep);
+            Scribe_Defs.Look<AbilityDef>(ref this.localAbilityDef, "localAbilityDef");
+        }
 
         // Verse.Projectile
         public override void Tick()
@@ -146,12 +156,9 @@ namespace AbilityUser
                         {
                             bool success = false;
                             float checkValue = Rand.Value;
+                            string str = localAbilityDef.LabelCap + " (" + this.Caster.LabelShort + ")";
                             if (checkValue <= mentalStateGiver.applyChance)
                             {
-                                string str = "MentalStateByPsyker".Translate(new object[]
-                                 {
-                            victim.NameStringShort,
-                                 });
                                 if (mentalStateGiver.mentalStateDef == MentalStateDefOf.Berserk && victim.RaceProps.intelligence < Intelligence.Humanlike)
                                 {
                                     if (this.Caster == victim || CanOverpower(this.Caster, victim))
@@ -218,6 +225,7 @@ namespace AbilityUser
         public Faction ResolveFaction(SpawnThings spawnables)
         {
             FactionDef factionDefToAssign = FactionDefOf.PlayerColony;
+            if (this?.Caster?.Faction is Faction f && f.IsPlayer == false) return f;
             if (spawnables.factionDef != null) factionDefToAssign = spawnables.factionDef;
             if (spawnables.kindDef != null)
             {
@@ -227,9 +235,12 @@ namespace AbilityUser
             return FactionUtility.DefaultFactionFrom(factionDefToAssign);
         }
 
-        public void SpawnPawn(SpawnThings spawnables, Faction faction)
+        public PawnSummoned SpawnPawn(SpawnThings spawnables, Faction faction)
         {
-            Pawn newPawn = PawnGenerator.GeneratePawn(spawnables.kindDef, faction);
+            PawnSummoned newPawn = (PawnSummoned)PawnGenerator.GeneratePawn(spawnables.kindDef, faction);
+            newPawn.Spawner = this.Caster;
+            newPawn.Temporary = spawnables.temporary;
+            if (newPawn.Faction != Faction.OfPlayerSilentFail && this?.Caster?.Faction is Faction f) newPawn.SetFaction(f);
             GenSpawn.Spawn(newPawn, this.PositionHeld, Find.VisibleMap);
             if (faction != null && faction != Faction.OfPlayer)
             {
@@ -247,6 +258,7 @@ namespace AbilityUser
                 }
                 lord.AddPawn(newPawn);
             }
+            return newPawn;
         }
 
         public void SingleSpawnLoop(SpawnThings spawnables)
@@ -260,7 +272,8 @@ namespace AbilityUser
                 if (spawnables.def.race != null)
                 {
                     if (spawnables.kindDef == null) { Log.Error("Missing kinddef"); return; }
-                    SpawnPawn(spawnables, factionToAssign);
+                    Pawn p = SpawnPawn(spawnables, factionToAssign);
+                    if (this?.Caster?.Faction is Faction f && Faction.OfPlayerSilentFail != f) p.SetFactionDirect(f);
                 }
                 else
                 {
@@ -324,12 +337,13 @@ namespace AbilityUser
             ApplyHediffsAndMentalStates(this.Caster);
         }
         
-        public void Launch(Thing launcher, Vector3 origin, LocalTargetInfo targ, Thing equipment = null, List<ApplyHediffs> applyHediffs = null, List<ApplyMentalStates> applyMentalStates = null, List<SpawnThings> spawnThings = null)
+        public void Launch(Thing launcher, AbilityDef abilityDef, Vector3 origin, LocalTargetInfo targ, Thing equipment = null, List<ApplyHediffs> applyHediffs = null, List<ApplyMentalStates> applyMentalStates = null, List<SpawnThings> spawnThings = null)
         {
             //Log.Message("Projectile_AbilityBase");
             this.localApplyHediffs = applyHediffs;
             this.localApplyMentalStates = applyMentalStates;
             this.localSpawnThings = spawnThings;
+            this.localAbilityDef = abilityDef;
             base.Launch(launcher, origin, targ, equipment);
         }
 

@@ -197,7 +197,7 @@ namespace AbilityUser
                     {
                         projectile.InterceptWalls = true;
                     }
-                    projectile.Launch(this.caster, drawPos, shootLine.Dest, this.ownerEquipment, this.UseAbilityProps.hediffsToApply, this.UseAbilityProps.mentalStatesToApply, this.UseAbilityProps.thingsToSpawn);
+                    projectile.Launch(this.caster, Ability.Def, drawPos, shootLine.Dest, this.ownerEquipment, this.UseAbilityProps.hediffsToApply, this.UseAbilityProps.mentalStatesToApply, this.UseAbilityProps.thingsToSpawn);
                     return true;
                 }
                 if (Rand.Value > shotReport.ChanceToNotHitCover)
@@ -213,7 +213,7 @@ namespace AbilityUser
                         {
                             projectile.InterceptWalls = true;
                         }
-                        projectile.Launch(this.caster, drawPos, randomCoverToMissInto, this.ownerEquipment, this.UseAbilityProps.hediffsToApply, this.UseAbilityProps.mentalStatesToApply, this.UseAbilityProps.thingsToSpawn);
+                        projectile.Launch(this.caster, Ability.Def, drawPos, randomCoverToMissInto, this.ownerEquipment, this.UseAbilityProps.hediffsToApply, this.UseAbilityProps.mentalStatesToApply, this.UseAbilityProps.thingsToSpawn);
                         return true;
                     }
                 }
@@ -226,7 +226,7 @@ namespace AbilityUser
             {
                 projectile.InterceptWalls = (!launchTarget.HasThing || launchTarget.Thing.def.Fillage == FillCategory.Full);
             }
-            projectile.Launch(this.caster, drawPos, launchTarget, null, this.UseAbilityProps.hediffsToApply, this.UseAbilityProps.mentalStatesToApply, this.UseAbilityProps.thingsToSpawn);
+            projectile.Launch(this.caster, Ability.Def, drawPos, launchTarget, null, this.UseAbilityProps.hediffsToApply, this.UseAbilityProps.mentalStatesToApply, this.UseAbilityProps.thingsToSpawn);
             return true;
         }
 

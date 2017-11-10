@@ -128,12 +128,11 @@ namespace AbilityUser
 
         public bool TryCastAbility(AbilityContext context, LocalTargetInfo target)
         {
-            Log.Message("2");
             //Can our body cast?
             string reason = "";
             if (!CanCastPowerCheck(context, out reason))
             {
-                Log.Message("Failed");
+                //Log.Message("Failed");
                 // .Disable(reason.Translate(new object[]
                 //{
                 //    Verb.CasterPawn.NameStringShort
