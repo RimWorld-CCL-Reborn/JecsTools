@@ -177,6 +177,8 @@ namespace AbilityUser
 
         public virtual string PostAbilityVerbDesc() => "";
 
+        public virtual float GrappleModifier => 0f;
+
 
         #endregion virtual
 
