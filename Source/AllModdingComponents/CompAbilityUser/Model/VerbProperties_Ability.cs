@@ -7,6 +7,8 @@ namespace AbilityUser
     public class VerbProperties_Ability : VerbProperties
     {
         public bool isViolent = true;
+
+        public bool requiresLineOfSight = true;
         
         public AbilityDef abilityDef;
 

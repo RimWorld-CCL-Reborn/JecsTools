@@ -5,6 +5,9 @@
 	<ThingDef ParentName="SlottableTestBase">
 		<defName>MeleeWeapon_TestKnife</defName>
 		<label>slotted knife</label>
+		<tradeability>Never</tradeability>
+		<generateCommonality>0</generateCommonality>
+		<generateAllowChance>0</generateAllowChance>
 		<description>One of humankind's oldest tools, the knife is both an everyday tool and a deadly weapon.</description>
 		<tickerType>Normal</tickerType>
 		<comps>

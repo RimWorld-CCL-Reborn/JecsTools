@@ -25,9 +25,9 @@ namespace JecsTools
                 stringBuilder.Append(base.TipStringExtra);
                 if (this.def.comps.FirstOrDefault(x => x is HediffCompProperties_VerbGiver) is HediffCompProperties_VerbGiver props)
                 {
-                    for (int i = 0; i < props.verbs.Count(); i++)
+                    for (int i = 0; i < props.tools.Count(); i++)
                     {
-                        stringBuilder.AppendLine("Damage".Translate() + ": " + props.verbs[i].meleeDamageBaseAmount);
+                        stringBuilder.AppendLine("Damage".Translate() + ": " + props.tools[i].power);
                     }
                 }
                 return stringBuilder.ToString();

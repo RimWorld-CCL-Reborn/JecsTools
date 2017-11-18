@@ -118,7 +118,9 @@ namespace AbilityUser
         {
             for (int i = 0; i < this.AbilityData?.AllPowers.Count; i++)
             {
-                yield return this.AbilityData?.AllPowers[i].GetGizmo();
+                PawnAbility ability = this.AbilityData?.AllPowers[i];
+                if (ability.ShouldShowGizmo())
+                    yield return ability.GetGizmo();
             }
         }
 

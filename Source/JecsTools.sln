@@ -29,6 +29,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompDelayedSpawner", "AllMo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AbilityUserAI", "AllModdingComponents\AbilityUserAI\AbilityUserAI.csproj", "{4FC16277-5CB6-4A78-90FB-27F09888708A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompOverlays", "AllModdingComponents\CompOverlays\CompOverlays.csproj", "{947FF025-5DE9-4475-8779-4E9B02D06FB7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -87,6 +89,10 @@ Global
 		{4FC16277-5CB6-4A78-90FB-27F09888708A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4FC16277-5CB6-4A78-90FB-27F09888708A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4FC16277-5CB6-4A78-90FB-27F09888708A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{947FF025-5DE9-4475-8779-4E9B02D06FB7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{947FF025-5DE9-4475-8779-4E9B02D06FB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{947FF025-5DE9-4475-8779-4E9B02D06FB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{947FF025-5DE9-4475-8779-4E9B02D06FB7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

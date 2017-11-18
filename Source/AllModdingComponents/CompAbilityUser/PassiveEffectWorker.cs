@@ -11,11 +11,11 @@ namespace AbilityUser
 
         public virtual void DoEffect(CompAbilityUser abilityUser)
         {
-            if (Props?.hediffs is List<HediffWithComps> hList && !hList.NullOrEmpty())
+            if (Props?.hediffs is List<HediffDef> hList && !hList.NullOrEmpty())
             {
-                foreach (HediffWithComps h in hList)
+                foreach (HediffDef h in hList)
                 {
-                    HealthUtility.AdjustSeverity(abilityUser.AbilityUser, h.def, 1f);
+                    HealthUtility.AdjustSeverity(abilityUser.AbilityUser, h, 1f);
                 }
             }
         }

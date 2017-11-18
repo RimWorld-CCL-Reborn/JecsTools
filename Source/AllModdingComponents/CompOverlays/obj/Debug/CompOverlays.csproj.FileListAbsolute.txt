@@ -1,0 +1,2 @@
+D:\SteamLibrary\steamapps\common\RimWorld\Mods\JecsTools\Assemblies\CompOverlays.dll
+D:\SteamLibrary\steamapps\common\RimWorld\Mods\JecsTools\Source\AllModdingComponents\CompOverlays\obj\Debug\CompOverlays.dll

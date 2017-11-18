@@ -11,7 +11,7 @@ namespace AbilityUser
     {
         public TickerType tickerType = TickerType.Rare;
         public Type worker;
-        public List<HediffWithComps> hediffs;
+        public List<HediffDef> hediffs;
         public bool combatOnly = false;
         public bool awakeOnly = false;
         private PassiveEffectWorker passiveEffectWorkerInt = null;

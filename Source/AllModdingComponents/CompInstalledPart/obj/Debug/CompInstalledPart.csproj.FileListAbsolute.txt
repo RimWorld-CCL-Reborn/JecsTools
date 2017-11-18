@@ -7,4 +7,3 @@ D:/Games/Steam/steamapps/common/RimWorld/Mods/JecsTools/Source/AllModdingCompone
 /Users/iankuo/Documents/Rimworld Repos/JecsTools/Source/AllModdingComponents/CompInstalledPart/obj/Debug/CompInstalledPart.dll
 D:\SteamLibrary\steamapps\common\RimWorld\Mods\JecsTools\Assemblies\CompInstalledPart.dll
 D:\SteamLibrary\steamapps\common\RimWorld\Mods\JecsTools\Source\AllModdingComponents\CompInstalledPart\obj\Debug\CompInstalledPart.dll
-D:\SteamLibrary\steamapps\common\RimWorld\Mods\JecsTools\Source\AllModdingComponents\CompInstalledPart\obj\Debug\CompInstalledPart.csprojResolveAssemblyReference.cache

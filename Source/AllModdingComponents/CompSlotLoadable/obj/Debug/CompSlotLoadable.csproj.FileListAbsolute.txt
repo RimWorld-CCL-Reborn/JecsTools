@@ -1,3 +1,2 @@
 D:\SteamLibrary\steamapps\common\RimWorld\Mods\JecsTools\Assemblies\CompSlotLoadable.dll
-D:\SteamLibrary\steamapps\common\RimWorld\Mods\JecsTools\Source\AllModdingComponents\CompSlotLoadable\obj\Debug\CompSlotLoadable.csprojResolveAssemblyReference.cache
 D:\SteamLibrary\steamapps\common\RimWorld\Mods\JecsTools\Source\AllModdingComponents\CompSlotLoadable\obj\Debug\CompSlotLoadable.dll
