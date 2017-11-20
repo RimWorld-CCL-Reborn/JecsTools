@@ -19,9 +19,16 @@ namespace JecsTools
             if (ticksUntilDamage < 0)
             {
                 ticksUntilDamage = Props.cycleInTicks;
-                this.Pawn.TakeDamage(new DamageInfo(Props.cycleDamage, Props.cycleDamageAmt, -1, this.parent.pawn, this.parent.Part, null, DamageInfo.SourceCategory.ThingOrUnknown));
+                MakeDamage();
             }
             ticksUntilDamage--;
+        }
+
+        public DamageInfo GetDamageInfo() => new DamageInfo(Props.cycleDamage, Props.cycleDamageAmt, -1, this.parent.pawn, this.parent.Part, null, DamageInfo.SourceCategory.ThingOrUnknown);
+
+        public virtual void MakeDamage()
+        {
+            this.Pawn.TakeDamage(GetDamageInfo());
         }
 
         public override string CompDebugString()
