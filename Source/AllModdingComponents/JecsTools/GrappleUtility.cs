@@ -124,15 +124,21 @@ namespace JecsTools
         /// <returns></returns>
         public static bool CanGrappleNoContest(Pawn grappler, Pawn victim, bool throwText = true)
         {
+            if (!victim.Awake())
+            {
+                if (throwText) MoteMaker.ThrowText(grappler.DrawPos, grappler.Map, "JTGrapple_SleepingGrapple".Translate(), -1f);
+                return true;
+            }
+
             if (victim.Downed)
             {
-                if (throwText) MoteMaker.ThrowText(grappler.DrawPos, grappler.Map, "ROMV_DownedGrapple".Translate(), -1f);
+                if (throwText) MoteMaker.ThrowText(grappler.DrawPos, grappler.Map, "JTGrapple_DownedGrapple".Translate(), -1f);
                 return true;
             }
 
             if (victim.IsPrisonerOfColony && RestraintsUtility.InRestraints(victim))
             {
-                if (throwText) MoteMaker.ThrowText(grappler.DrawPos, grappler.Map, "ROMV_PrisonerGrapple".Translate(), -1f);
+                if (throwText) MoteMaker.ThrowText(grappler.DrawPos, grappler.Map, "JTGrapple_PrisonerGrapple".Translate(), -1f);
                 return true;
             }
             return false;
