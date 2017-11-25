@@ -1,3 +1,0 @@
-D:\SteamLibrary\steamapps\common\RimWorld\Mods\JecsTools\Assemblies\CompLumbering.dll
-D:\SteamLibrary\steamapps\common\RimWorld\Mods\JecsTools\Source\AllModdingComponents\CompLumbering\obj\Debug\CompLumbering.csprojResolveAssemblyReference.cache
-D:\SteamLibrary\steamapps\common\RimWorld\Mods\JecsTools\Source\AllModdingComponents\CompLumbering\obj\Debug\CompLumbering.dll

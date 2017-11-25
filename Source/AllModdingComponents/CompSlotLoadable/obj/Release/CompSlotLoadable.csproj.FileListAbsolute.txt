@@ -1,3 +1,0 @@
-J:\Modding\A17mods\JescTools-master\Source\AllModdingComponents\CompSlotLoadable\obj\Release\CompSlotLoadable.csprojResolveAssemblyReference.cache
-J:\Modding\A17mods\JescTools-master\Source\Assemblies\CompSlotLoadable.dll
-J:\Modding\A17mods\JescTools-master\Source\AllModdingComponents\CompSlotLoadable\obj\Release\CompSlotLoadable.dll

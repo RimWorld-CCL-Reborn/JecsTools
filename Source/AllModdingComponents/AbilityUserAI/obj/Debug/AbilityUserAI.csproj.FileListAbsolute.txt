@@ -1,7 +1,0 @@
-D:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\LotRDev\Assemblies\AbilityUserAI.dll
-D:\Programmering\C#\Rimworld\AbilityUserAI\AbilityUserAI\obj\Debug\AbilityUserAI.csprojResolveAssemblyReference.cache
-D:\Programmering\C#\Rimworld\AbilityUserAI\AbilityUserAI\obj\Debug\AbilityUserAI.dll
-D:\SteamLibrary\steamapps\common\RimWorld\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\LotRDev\Assemblies\AbilityUserAI.dll
-D:\SteamLibrary\steamapps\common\RimWorld\Mods\JecsTools\Source\AllModdingComponents\AbilityUserAI\obj\Debug\AbilityUserAI.csprojResolveAssemblyReference.cache
-D:\SteamLibrary\steamapps\common\RimWorld\Mods\JecsTools\Source\AllModdingComponents\AbilityUserAI\obj\Debug\AbilityUserAI.dll
-D:\SteamLibrary\steamapps\common\RimWorld\Mods\JecsTools\Assemblies\AbilityUserAI.dll
