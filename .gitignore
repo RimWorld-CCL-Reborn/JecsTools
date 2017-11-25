@@ -1,0 +1,72 @@
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+#folders we don't need
+[Oo]bj/
+
+# Windows Installer files
+*.cab
+*.msi
+*.msm
+*.msp
+
+# Windows shortcuts
+*.lnk
+
+# =========================
+# Operating System Files
+# =========================
+
+# OSX
+# =========================
+
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Thumbnails
+._*
+
+# Files that might appear in the root of a volume
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+
+
+
+Assemblies/Assembly-CSharp.dll
+Assemblies/UnityEngine.dll
+Source/AllModdingComponents/CompAbilityUser/obj
+Source/AllModdingComponents/CompAbilityUser/Properties
+Source/AllModdingComponents/CompActivatableEffect/obj
+Source/AllModdingComponents/CompActivatableEffect/Properties
+Source/AllModdingComponents/CompDeflector/obj
+Source/AllModdingComponents/CompDeflector/Properties
+Source/AllModdingComponents/CompExtraSounds/obj
+Source/AllModdingComponents/CompExtraSounds/Properties
+Source/AllModdingComponents/CompLumbering/obj
+Source/AllModdingComponents/CompLumbering/Properties
+Source/AllModdingComponents/CompOversizedWeapon/obj
+Source/AllModdingComponents/CompOversizedWeapon/Properties
+Source/AllModdingComponents/CompSlotLoadable/obj
+Source/AllModdingComponents/CompSlotLoadable/Properties
+Source/AllModdingComponents/CompVehicle/obj
+Source/AllModdingComponents/CompVehicle/Properties
