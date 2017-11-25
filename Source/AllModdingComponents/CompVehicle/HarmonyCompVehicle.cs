@@ -88,8 +88,8 @@ namespace CompVehicle
                 nameof(CanEndGame)));  
             harmony.Patch(typeof(RestUtility).GetMethods(BindingFlags.Public | BindingFlags.Static).First(mi => mi.Name == "FindBedFor" && mi.GetParameters().Count() > 1), null, new HarmonyMethod(typeof(HarmonyCompVehicle), 
                 nameof(DontRescueVehicles)), null);  
-            harmony.Patch(AccessTools.Method(typeof(FloatMenuMakerMap), "AddHumanlikeOrders"), null, new HarmonyMethod(typeof(HarmonyCompVehicle), 
-                nameof(DontRescueVehiclesInFloatMenus)));  
+            //harmony.Patch(AccessTools.Method(typeof(FloatMenuMakerMap), "AddHumanlikeOrders"), null, new HarmonyMethod(typeof(HarmonyCompVehicle), 
+               // nameof(DontRescueVehiclesInFloatMenus)));  
 
             harmony.Patch(typeof(SymbolResolver_RandomMechanoidGroup).GetMethods(BindingFlags.NonPublic | BindingFlags.Static).First(mi => mi.HasAttribute<CompilerGeneratedAttribute>() && mi.ReturnType == typeof(bool) && mi.GetParameters().Count() == 1 && mi.GetParameters()[0].ParameterType == typeof(PawnKindDef)), null, new HarmonyMethod(typeof(HarmonyCompVehicle), 
                 nameof(MechanoidsFixerAncient)));  
@@ -655,15 +655,16 @@ namespace CompVehicle
         public static void DontRescueVehiclesInFloatMenus(Vector3 clickPos, Pawn pawn, List<FloatMenuOption> opts)
         {
             IntVec3 c = IntVec3.FromVector3(clickPos);
-            foreach (Thing current in c.GetThingList(pawn.Map))
+            Pawn groundPawn = c.GetThingList(pawn.Map).FirstOrDefault(x => x is Pawn) as Pawn;
+            if (groundPawn != null)
             {
                 //Handler for things on the ground
-                if (current is Pawn groundPawn && groundPawn?.GetComp<CompVehicle>() is CompVehicle compVehicle)
+                if (groundPawn?.GetComp<CompVehicle>() is CompVehicle compVehicle)
                 {
                     //Remove "Equip" option from right click.
                     string toCheck = "Rescue".Translate(new object[]
                     {
-                        current.LabelCap
+                        groundPawn.LabelCap
                     });
                     var optToRemove = opts.FirstOrDefault((x) => x.Label.Contains(toCheck));
                     if (optToRemove != null) opts.Remove(optToRemove);

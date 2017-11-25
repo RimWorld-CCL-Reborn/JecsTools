@@ -79,6 +79,7 @@
     <Compile Include="HediffCompDamageOverTime.cs" />
     <Compile Include="HediffCompProperties_DamageOverTime.cs" />
     <Compile Include="Hediff_InjuryCustomLabel.cs" />
+    <Compile Include="_HumanlikeOrdersUtility.cs" />
     <Compile Include="JobGiver_AIFirelessTrashColonyClose.cs" />
     <Compile Include="JobGiver_AIFirelessTrashColonyDistant.cs" />
     <Compile Include="PlaceWorker_Outline.cs" />

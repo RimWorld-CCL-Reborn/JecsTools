@@ -18,7 +18,7 @@ namespace CompInstalledPart
         static HarmonyCompInstalledPart()
         {
             HarmonyInstance harmony = HarmonyInstance.Create("rimworld.jecrell.comps.installedpart");
-            harmony.Patch(AccessTools.Method(typeof(FloatMenuMakerMap), "AddHumanlikeOrders"), null, new HarmonyMethod(typeof(HarmonyCompInstalledPart), "AddHumanlikeOrders_PostFix"));
+            //harmony.Patch(AccessTools.Method(typeof(FloatMenuMakerMap), "AddHumanlikeOrders"), null, new HarmonyMethod(typeof(HarmonyCompInstalledPart), "AddHumanlikeOrders_PostFix"));
             harmony.Patch(AccessTools.Method(typeof(ITab_Pawn_Gear), "InterfaceDrop"), new HarmonyMethod(typeof(HarmonyCompInstalledPart).GetMethod("InterfaceDrop_PreFix")), null);
             harmony.Patch(AccessTools.Method(typeof(Pawn_EquipmentTracker), "TryDropEquipment"), new HarmonyMethod(typeof(HarmonyCompInstalledPart), "TryDropEquipment_PreFix"), null);
             harmony.Patch(typeof(PawnRenderer).GetMethod("DrawEquipmentAiming"), new HarmonyMethod(typeof(HarmonyCompInstalledPart).GetMethod("DrawEquipmentAiming_PreFix")), null);
@@ -84,110 +84,106 @@ namespace CompInstalledPart
         public static void AddHumanlikeOrders_PostFix(Vector3 clickPos, Pawn pawn, List<FloatMenuOption> opts)
         {
             IntVec3 c = IntVec3.FromVector3(clickPos);
-            foreach (Thing current in c.GetThingList(pawn.Map))
-            {
-                //Handler for things on the ground
-                if (current is ThingWithComps groundThing)
-                {
-                    if (groundThing != null && pawn != null && pawn != groundThing)
-                    {
-                        CompInstalledPart groundPart = groundThing.GetComp<CompInstalledPart>();
-                        if (groundPart != null)
-                        {
-                            if (pawn.equipment != null)
-                            {
-                                //Remove "Equip" option from right click.
-                                if (groundThing.GetComp<CompEquippable>() != null)
-                                {
-                                    var optToRemove = opts.FirstOrDefault((x) => x.Label.Contains(groundThing.Label));
-                                    if (optToRemove != null) opts.Remove(optToRemove);
-                                }
 
-                                string text = "CompInstalledPart_Install".Translate();
+            //Ground things with installed part components
+            ThingWithComps groundThing = c.GetThingList(pawn.Map).FirstOrDefault(x => x.TryGetComp<CompInstalledPart>() != null) as ThingWithComps;
+            if (groundThing != null && groundThing.GetComp<CompInstalledPart>() is CompInstalledPart groundPart)
+            {
+                if (pawn.equipment != null)
+                {
+                    //Remove "Equip" option from right click.
+                    if (groundThing.GetComp<CompEquippable>() != null)
+                    {
+                        var optToRemove = opts.FirstOrDefault((x) => x.Label.Contains(groundThing.Label));
+                        if (optToRemove != null) opts.Remove(optToRemove);
+                    }
+
+                    string text = "CompInstalledPart_Install".Translate();
+                    opts.Add(new FloatMenuOption(text, delegate
+                    {
+                        CompProperties_InstalledPart props = groundPart.Props;
+                        if (props != null)
+                        {
+                            if (props.allowedToInstallOn != null && props.allowedToInstallOn.Count > 0)
+                            {
+                                SoundDefOf.TickTiny.PlayOneShotOnCamera(null);
+                                Find.Targeter.BeginTargeting(new TargetingParameters
+                                {
+                                    canTargetPawns = true,
+                                    canTargetBuildings = true,
+                                    mapObjectTargetsMustBeAutoAttackable = false,
+                                    validator = delegate (TargetInfo targ)
+                                    {
+                                        if (!targ.HasThing)
+                                        {
+                                            return false;
+                                        }
+                                        return props.allowedToInstallOn.Contains(targ.Thing.def);
+                                    }
+                                }, delegate (LocalTargetInfo target)
+                                {
+                                    groundThing.SetForbidden(false);
+                                    groundPart.GiveInstallJob(pawn, target.Thing);
+                                }, null, null, null);
+                            }
+                            else
+                            {
+                                Log.ErrorOnce("CompInstalledPart :: allowedToInstallOn list needs to be defined in XML.", 3242);
+                            }
+                        }
+                    }, MenuOptionPriority.Default, null, null, 29f, null, null));
+                }
+
+            }
+
+            //Install to a thing
+            Pawn targetPawn = c.GetThingList(pawn.Map).FirstOrDefault(x => x is Pawn) as Pawn;
+            if (targetPawn != null)
+            {
+                if (targetPawn != null && pawn != null && pawn != targetPawn)
+                {
+                    //Handle installed weapons
+                    if (targetPawn.equipment != null)
+                    {
+                        if (targetPawn.equipment.Primary != null)
+                        {
+                            CompInstalledPart installedEq = targetPawn.equipment.Primary.GetComp<CompInstalledPart>();
+                            if (installedEq != null)
+                            {
+                                string text = "CompInstalledPart_Uninstall".Translate(targetPawn.equipment.Primary.LabelShort);
                                 opts.Add(new FloatMenuOption(text, delegate
                                 {
-                                    CompProperties_InstalledPart props = groundPart.Props;
-                                    if (props != null)
-                                    {
-                                        if (props.allowedToInstallOn != null && props.allowedToInstallOn.Count > 0)
-                                        {
-                                            SoundDefOf.TickTiny.PlayOneShotOnCamera(null);
-                                            Find.Targeter.BeginTargeting(new TargetingParameters
-                                            {
-                                                canTargetPawns = true,
-                                                canTargetBuildings = true,
-                                                mapObjectTargetsMustBeAutoAttackable = false,
-                                                validator = delegate (TargetInfo targ)
-                                                {
-                                                    if (!targ.HasThing)
-                                                    {
-                                                        return false;
-                                                    }
-                                                    return props.allowedToInstallOn.Contains(targ.Thing.def);
-                                                }
-                                            }, delegate (LocalTargetInfo target)
-                                            {
-                                                groundThing.SetForbidden(false);
-                                                groundPart.GiveInstallJob(pawn, target.Thing);
-                                            }, null, null, null);
-                                        }
-                                        else
-                                        {
-                                            Log.ErrorOnce("CompInstalledPart :: allowedToInstallOn list needs to be defined in XML.", 3242);
-                                        }
-                                    }
+                                    SoundDefOf.TickTiny.PlayOneShotOnCamera(null);
+                                    installedEq.GiveUninstallJob(pawn, targetPawn);
                                 }, MenuOptionPriority.Default, null, null, 29f, null, null));
                             }
                         }
                     }
+                }
 
-                    //Handler character with installed parts
-                    if (current is Pawn targetPawn)
+
+                //Handle installed apparel
+                if (targetPawn.apparel != null)
+                {
+                    if (targetPawn.apparel.WornApparel != null && targetPawn.apparel.WornApparelCount > 0)
                     {
-                        if (targetPawn != null && pawn != null && pawn != targetPawn)
+                        List<Apparel> installedApparel = targetPawn.apparel.WornApparel.FindAll((x) => x.GetComp<CompInstalledPart>() != null);
+                        if (installedApparel != null && installedApparel.Count > 0)
                         {
-                            //Handle installed weapons
-                            if (targetPawn.equipment != null)
+                            foreach (Apparel ap in installedApparel)
                             {
-                                if (targetPawn.equipment.Primary != null)
+                                string text = "CompInstalledPart_Uninstall".Translate(ap.LabelShort);
+                                opts.Add(new FloatMenuOption(text, delegate
                                 {
-                                    CompInstalledPart installedEq = targetPawn.equipment.Primary.GetComp<CompInstalledPart>();
-                                    if (installedEq != null)
-                                    {
-                                        string text = "CompInstalledPart_Uninstall".Translate(targetPawn.equipment.Primary.LabelShort);
-                                        opts.Add(new FloatMenuOption(text, delegate
-                                        {
-                                            SoundDefOf.TickTiny.PlayOneShotOnCamera(null);
-                                            installedEq.GiveUninstallJob(pawn, targetPawn);
-                                        }, MenuOptionPriority.Default, null, null, 29f, null, null));
-                                    }
-                                }
+                                    SoundDefOf.TickTiny.PlayOneShotOnCamera(null);
+                                    ap.GetComp<CompInstalledPart>().GiveUninstallJob(pawn, targetPawn);
+                                }, MenuOptionPriority.Default, null, null, 29f, null, null));
                             }
 
-                            //Handle installed apparel
-                            if (targetPawn.apparel != null)
-                            {
-                                if (targetPawn.apparel.WornApparel != null && targetPawn.apparel.WornApparelCount > 0)
-                                {
-                                    List<Apparel> installedApparel = targetPawn.apparel.WornApparel.FindAll((x) => x.GetComp<CompInstalledPart>() != null);
-                                    if (installedApparel != null && installedApparel.Count > 0)
-                                    {
-                                        foreach (Apparel ap in installedApparel)
-                                        {
-                                            string text = "CompInstalledPart_Uninstall".Translate(ap.LabelShort);
-                                            opts.Add(new FloatMenuOption(text, delegate
-                                            {
-                                                SoundDefOf.TickTiny.PlayOneShotOnCamera(null);
-                                                ap.GetComp<CompInstalledPart>().GiveUninstallJob(pawn, targetPawn);
-                                            }, MenuOptionPriority.Default, null, null, 29f, null, null));
-                                        }
-
-                                    }
-                                }
-                            }
                         }
                     }
                 }
+
             }
         }
 
