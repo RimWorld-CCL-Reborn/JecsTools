@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using RimWorld;
 using Verse;
+using Verse.AI;
 
 namespace JecsTools
 {
@@ -18,6 +19,7 @@ namespace JecsTools
             AnimalXAnimal,      //animal grapples animal
             None
         }
+
 
         public static bool TryGrapple(this Pawn grappler, Pawn victim)
         {
@@ -38,12 +40,21 @@ namespace JecsTools
             //---------------------------------------------------------
             if (CanGrappleNoContest(grappler, victim, true))
             {
+                TryMakeBattleLog(victim, grappler, grapplingPart);
                 return true;
             }
 
             //Resolve Grapple Rolls
             //---------------------------------------------------------
+            if (IsGrappleSuccessful(grappler, victim, grapplingPart))
+            {
+                return true;
+            }
+            return false;
+        }
 
+        public static bool IsGrappleSuccessful(Pawn grappler, Pawn victim, BodyPartRecord grapplingPart)
+        {
             //Setup rolls
             float rollGrappler = Rand.Range(1, 10); //Introduces some random chance into the grapple.
             float rollVictim = Rand.Range(1, 10);
@@ -53,19 +64,20 @@ namespace JecsTools
             float modifierVictim = victim.RaceProps.baseBodySize;
             ResolveModifiers(grappler, victim, ref modifierGrappler, ref modifierVictim);
 
+            //Throw a mental warning
+            if (victim?.mindState is Pawn_MindState mind)
+                mind.Notify_DamageTaken(new DamageInfo(DamageDefOf.Bite, -1, -1, grappler));
+
             //Determine success of grapples
             if (rollGrappler + modifierGrappler > rollVictim + modifierVictim)
             {
-                MoteMaker.ThrowText(grappler.DrawPos, grappler.Map, 
-                    rollGrappler + " + " + modifierGrappler + " = " + (rollGrappler + modifierGrappler) 
+                MoteMaker.ThrowText(grappler.DrawPos, grappler.Map,
+                    rollGrappler + " + " + modifierGrappler + " = " + (rollGrappler + modifierGrappler)
                     + " vs " +
                     rollVictim + " + " + modifierVictim + " = " + (rollVictim + modifierVictim)
                     + " : " + "JTGrapple_Success".Translate(), -1f);
 
-                Find.BattleLog.Add(
-                    new BattleLogEntry_StateTransition(victim,
-                    RulePackDef.Named("JT_GrappleSuccess"), grappler, null, grapplingPart.def)
-                );
+                TryMakeBattleLog(victim, grappler, grapplingPart);
                 return true;
             }
             MoteMaker.ThrowText(grappler.DrawPos, grappler.Map,
@@ -73,10 +85,6 @@ namespace JecsTools
                 + " vs " +
                 rollVictim + " + " + modifierVictim + " = " + (rollVictim + modifierVictim)
                 + " : " + "JTGrapple_Failed".Translate(), -1f);
-            Find.BattleLog.Add(
-                new BattleLogEntry_StateTransition(victim,
-                RulePackDef.Named("JT_GrappleFailed"), grappler, null, grapplingPart.def)
-            );
             return false;
         }
 
@@ -271,5 +279,31 @@ namespace JecsTools
 
             return grappleType;
         }
+
+        /// <summary>
+        /// Makes a battle log using the RulePackDef of JT_GrappleSuccess.
+        /// It's pretty cool, because we can see the character's grapple attempt in combat logs.
+        /// </summary>
+        /// <param name="victim"></param>
+        /// <param name="grappler"></param>
+        /// <param name="grapplingPart"></param>
+        /// <returns></returns>
+        public static bool TryMakeBattleLog(Pawn victim, Pawn grappler, BodyPartRecord grapplingPart)
+        {
+            try
+            {
+                Find.BattleLog.Add(
+                    new BattleLogEntry_StateTransition(victim,
+                    RulePackDef.Named("JT_GrappleSuccess"), grappler, null, grapplingPart.def)
+                );
+                return true;
+            }
+            catch (Exception e)
+            {
+                Log.Warning("TruMakeBattleLog Failed Due To :: " + e.ToString());
+            }
+            return false;
+        }
+
     }
 }

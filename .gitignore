@@ -49,6 +49,7 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
-PublishedFileId.txt
+[Oo]bj/
+About/PublishedFileId.txt
 Assemblies/Assembly-CSharp.dll
 Assemblies/UnityEngine.dll

@@ -20,8 +20,6 @@ namespace CompOversizedWeapon
             HarmonyInstance harmony = HarmonyInstance.Create("rimworld.jecrell.comps.oversized");
             harmony.Patch(typeof(PawnRenderer).GetMethod("DrawEquipmentAiming"), new HarmonyMethod(typeof(HarmonyCompOversizedWeapon).GetMethod("DrawEquipmentAimingPreFix")), null);
             harmony.Patch(AccessTools.Method(typeof(Thing), "get_DefaultGraphic"), null, new HarmonyMethod(typeof(HarmonyCompOversizedWeapon).GetMethod("get_Graphic_PostFix")));
-
-
         }
 
 

@@ -34,6 +34,11 @@
     <Reference Include="0Harmony">
       <HintPath>E:\Steam2\steamapps\common\RimWorld\Mods\HugsLib\Assemblies\0Harmony.dll</HintPath>
     </Reference>
+    <Reference Include="0JecsTools, Version=1.0.8.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Assemblies\0JecsTools.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Assembly-CSharp">
       <HintPath>..\..\..\..\..\RimWorldWin_Data\Managed\Assembly-CSharp.dll</HintPath>
       <Private>False</Private>
@@ -62,6 +67,7 @@
     <Compile Include="SlotBonusProps_VampiricEffect.cs" />
     <Compile Include="SlotLoadable.cs" />
     <Compile Include="SlotLoadableDef.cs" />
+    <Compile Include="SlotLoadableFloatMenuPatch.cs" />
     <Compile Include="StringOf.cs" />
   </ItemGroup>
   <ItemGroup>

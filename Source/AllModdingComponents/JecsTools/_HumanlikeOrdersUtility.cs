@@ -46,7 +46,7 @@ namespace JecsTools
             }
         }
 
-        private static bool debugMode = true;
+        private static bool debugMode = false;
         public static void DebugMessage(string s)
         {
             if (debugMode) Log.Message(s);
@@ -114,6 +114,7 @@ namespace JecsTools
             IntVec3 c = IntVec3.FromVector3(clickPos);
             optsID = "";
             optsID += pawn.ThingID;
+            optsID += c.ToString();
             for (int i = 0; i < (opts?.Count() ?? 0); i++)
             {
                 optsID += opts[i].Label;
