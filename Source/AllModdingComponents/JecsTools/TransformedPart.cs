@@ -13,19 +13,27 @@ namespace JecsTools
         {
             get
             {
+                if (this.TryGetComp<HediffComp_Disappears>() is HediffComp_Disappears hdc_Disappears)
+                {
+                    return hdc_Disappears.CompShouldRemove;
+                }
                 return false;
             }
         }
+
+        
 
         public override string TipStringExtra
         {
             get
             {
                 StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.Append(base.TipStringExtra);
-                if (this.def.comps.FirstOrDefault(x => x is HediffCompProperties_VerbGiver) is HediffCompProperties_VerbGiver props)
+                if (base.TipStringExtra is string baseString && baseString != "")
+                    stringBuilder.Append(baseString);
+                if (this.def.comps.FirstOrDefault(x => x is HediffCompProperties_VerbGiver) is HediffCompProperties_VerbGiver props &&
+                    props?.tools?.Count() > 0)
                 {
-                    for (int i = 0; i < props.tools.Count(); i++)
+                    for (int i = 0; i < props?.tools?.Count(); i++)
                     {
                         stringBuilder.AppendLine("Damage".Translate() + ": " + props.tools[i].power);
                     }

@@ -7,7 +7,7 @@
     </include>
     <rulePack>
       <rulesStrings>
-        <li>logentry->[initiator_nameShortDefinite] [grappled] [subject_definite] with [subject_possessive] [culpritHediff_originaltarget_label].</li>
+        <li>logentry->[initiator_nameShortDefinite] [grappled] [subject_definite].</li>
 
         <li>grappled->grappled</li>
         <li>grappled->seized</li>
@@ -23,7 +23,7 @@
     </include>
     <rulePack>
       <rulesStrings>
-        <li>logentry->[initiator_nameShortDefinite] [triedtograpple] [subject_definite] with [subject_possessive] [culpritHediff_originaltarget_label], [but] [failedmeta].</li>
+        <li>logentry->[initiator_nameShortDefinite] [triedtograpple] [subject_definite], [but] [failedmeta].</li>
 
 		<li>tried->tried</li>
 		<li>tried->attempted</li>
