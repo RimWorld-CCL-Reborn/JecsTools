@@ -16,8 +16,14 @@ namespace AbilityUser
         [Unsaved]
         public Texture2D uiIcon = BaseContent.BadTex;
 
+        public override int GetHashCode()
+        {
+            return Gen.HashCombineInt(this.defName.GetHashCode(), "AbilityDef".GetHashCode());
+        }
+
         public override void PostLoad()
         {
+
             base.PostLoad();
             LongEventHandler.ExecuteWhenFinished(delegate
             {

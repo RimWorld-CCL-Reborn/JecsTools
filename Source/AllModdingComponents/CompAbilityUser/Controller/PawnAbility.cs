@@ -10,7 +10,7 @@ using System.Linq;
 namespace AbilityUser
 {
     //public class PawnAbility : ThingWithComps
-    public class PawnAbility : IExposable
+    public class PawnAbility : IExposable, IEquatable<PawnAbility>
     {
         private int TicksUntilCasting = -1;
         private Pawn pawn;
@@ -64,14 +64,26 @@ namespace AbilityUser
             }
         }
 
-        public PawnAbility() {}
-        public PawnAbility(CompAbilityUser comp) { this.pawn = comp.AbilityUser; this.abilityUser = comp; }
-        public PawnAbility(AbilityData data) { this.pawn = data.Pawn; this.abilityUser = data.Pawn.AllComps.FirstOrDefault(x => x.GetType() == data.AbilityClass) as CompAbilityUser; }
+        public PawnAbility()
+        {
+            //Log.Message("PawnAbility Created: "  + this.Def.defName);
+        }
+        public PawnAbility(CompAbilityUser comp)
+        {
+            this.pawn = comp.AbilityUser; this.abilityUser = comp;
+            //Log.Message("PawnAbility Created: " + this.Def.defName);
+        }
+        public PawnAbility(AbilityData data)
+        {
+            this.pawn = data.Pawn; this.abilityUser = data.Pawn.AllComps.FirstOrDefault(x => x.GetType() == data.AbilityClass) as CompAbilityUser;
+            //Log.Message("PawnAbility Created: " + this.Def.defName);
+        }
         public PawnAbility(Pawn user, AbilityDef pdef)
         {
             this.pawn = user;
             this.powerdef = pdef;
             this.powerButton = pdef.uiIcon;
+            //Log.Message("PawnAbility Created: " + this.Def.defName);
         }
 
         public void Tick()
@@ -255,5 +267,38 @@ namespace AbilityUser
             Scribe_Defs.Look<AbilityDef>(ref this.powerdef, "powerdef");
         }
 
+
+        //Added on 12/3/17 to prevent hash errors.
+
+        public bool Equals(PawnAbility other)
+        {
+            if (other.GetUniqueLoadID() == this.GetUniqueLoadID()) return true;
+            return false;
+        }
+
+        public static string GenerateID(Pawn pawn, AbilityDef def)
+        {
+            return def.defName + "_" + pawn.GetUniqueLoadID();
+        }
+
+        public string GetUniqueLoadID()
+        {
+            return GenerateID(this.Pawn, this.Def);
+        }
+
+        public override int GetHashCode()
+        {
+            int num = 66;
+            num = Gen.HashCombineInt(num, (int)this.Def.shortHash);
+            if (this.Pawn != null)
+            {
+                num = Gen.HashCombineInt(num, this.Pawn.thingIDNumber);
+            }
+            if (this.Verb.AbilityProjectileDef != null)
+            {
+                num = Gen.HashCombineInt(num, (int)this.Verb.AbilityProjectileDef.shortHash);
+            }
+            return num;
+        }
     }
 }

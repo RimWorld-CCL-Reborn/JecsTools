@@ -50,11 +50,10 @@ namespace AbilityUser
 
         private void AddAbilityInternal(AbilityDef abilityDef, List<PawnAbility> thelist, bool activenow, float savedTicks)
         {
-            PawnAbility pa = (PawnAbility)Activator.CreateInstance(abilityDef.abilityClass);
-            //Log.Message(abilityDef.abilityClass.ToString());
-            pa.Pawn = this.AbilityUser;
-            pa.Def = abilityDef;
-            thelist.Add(pa);
+                PawnAbility pa = (PawnAbility)Activator.CreateInstance(abilityDef.abilityClass);
+                pa.Pawn = this.AbilityUser;
+                pa.Def = abilityDef;
+                thelist.Add(pa);
             this.UpdateAbilities();
         }
 

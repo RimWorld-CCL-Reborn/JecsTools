@@ -9,37 +9,60 @@ using System;
 
 namespace AbilityUser
 {
-    [StaticConstructorOnStartup]
-    static class HarmonyPatches
+    public class AbilityUserMod : Mod
     {
-        static HarmonyPatches()
+        public AbilityUserMod(ModContentPack content) : base(content)
         {
             HarmonyInstance harmony = HarmonyInstance.Create("rimworld.jecrell.abilityuser");
-            harmony.Patch(AccessTools.Method(typeof(Targeter), "TargeterUpdate"), null, new HarmonyMethod(typeof(HarmonyPatches).GetMethod("TargeterUpdate_PostFix")), null);
-            harmony.Patch(AccessTools.Method(typeof(Targeter), "ProcessInputEvents"), new HarmonyMethod(typeof(HarmonyPatches).GetMethod("ProcessInputEvents_PreFix")), null);
-            harmony.Patch(AccessTools.Method(typeof(Targeter), "ConfirmStillValid"), new HarmonyMethod(typeof(HarmonyPatches).GetMethod(nameof(ConfirmStillValid))), null);
+            harmony.Patch(AccessTools.Method(typeof(Targeter), "TargeterUpdate"), null, new HarmonyMethod(typeof(AbilityUserMod).GetMethod("TargeterUpdate_PostFix")), null);
+            harmony.Patch(AccessTools.Method(typeof(Targeter), "ProcessInputEvents"), new HarmonyMethod(typeof(AbilityUserMod).GetMethod("ProcessInputEvents_PreFix")), null);
+            harmony.Patch(AccessTools.Method(typeof(Targeter), "ConfirmStillValid"), new HarmonyMethod(typeof(AbilityUserMod).GetMethod(nameof(ConfirmStillValid))), null);
 
             // RimWorld.Targeter
             //private void ConfirmStillValid()
 
             // Initializes the AbilityUsers on Pawns
-            harmony.Patch(AccessTools.Method(typeof(ThingWithComps), "InitializeComps"), null, new HarmonyMethod(typeof(HarmonyPatches).GetMethod("InitializeComps_PostFix")), null);
+            harmony.Patch(AccessTools.Method(typeof(ThingWithComps), "InitializeComps"), null, new HarmonyMethod(typeof(AbilityUserMod).GetMethod("InitializeComps_PostFix")), null);
 
             // when the Pawn_EquipmentTracker is notified of a new item, see if that has CompAbilityItem.
-            harmony.Patch(AccessTools.Method(typeof(Verse.Pawn_EquipmentTracker),"Notify_EquipmentAdded"),null,
-                new HarmonyMethod(typeof(HarmonyPatches).GetMethod("Notify_EquipmentAdded_PostFix")),null);
+            harmony.Patch(AccessTools.Method(typeof(Verse.Pawn_EquipmentTracker), "Notify_EquipmentAdded"), null,
+                new HarmonyMethod(typeof(AbilityUserMod).GetMethod("Notify_EquipmentAdded_PostFix")), null);
             // when the Pawn_EquipmentTracker is notified of one less item, see if that has CompAbilityItem.
-            harmony.Patch(AccessTools.Method(typeof(Verse.Pawn_EquipmentTracker),"Notify_EquipmentRemoved"),null,
-                new HarmonyMethod(typeof(HarmonyPatches).GetMethod("Notify_EquipmentRemoved_PostFix")),null);
+            harmony.Patch(AccessTools.Method(typeof(Verse.Pawn_EquipmentTracker), "Notify_EquipmentRemoved"), null,
+                new HarmonyMethod(typeof(AbilityUserMod).GetMethod("Notify_EquipmentRemoved_PostFix")), null);
 
             // when the Pawn_ApparelTracker is notified of a new item, see if that has CompAbilityItem.
-            harmony.Patch(AccessTools.Method(typeof(RimWorld.Pawn_ApparelTracker),"Notify_ApparelAdded"),null,
-                new HarmonyMethod(typeof(HarmonyPatches).GetMethod("Notify_ApparelAdded_PostFix")),null);
+            harmony.Patch(AccessTools.Method(typeof(RimWorld.Pawn_ApparelTracker), "Notify_ApparelAdded"), null,
+                new HarmonyMethod(typeof(AbilityUserMod).GetMethod("Notify_ApparelAdded_PostFix")), null);
             // when the Pawn_ApparelTracker is notified of one less item, see if that has CompAbilityItem.
-            harmony.Patch(AccessTools.Method(typeof(RimWorld.Pawn_ApparelTracker),"Notify_ApparelRemoved"),null,
-                new HarmonyMethod(typeof(HarmonyPatches).GetMethod("Notify_ApparelRemoved_PostFix")),null);
+            harmony.Patch(AccessTools.Method(typeof(RimWorld.Pawn_ApparelTracker), "Notify_ApparelRemoved"), null,
+                new HarmonyMethod(typeof(AbilityUserMod).GetMethod("Notify_ApparelRemoved_PostFix")), null);
+
+            harmony.Patch(AccessTools.Method(typeof(ShortHashGiver), "GiveShortHash"),
+                new HarmonyMethod(typeof(AbilityUserMod), nameof(GiveShortHash_PrePatch)), null);
         }
-        
+
+        //static HarmonyPatches()
+        //{
+
+        //}
+
+        //Verse.ShortHashGiver
+        public static bool GiveShortHash_PrePatch(Def def, Type defType)
+        {
+            //Log.Message("Shorthash called");
+            if (def.shortHash != 0)
+            {
+                //Log.Message("SortHashError for " + def.defName + "_" + defType.ToString());
+                if (defType.IsAssignableFrom(typeof(AbilityDef)) || defType == typeof(AbilityDef) ||
+                def is AbilityDef)
+                {
+                    //Log.Message("GiveShortHash called for " + def.defName);
+                    return false;
+                }
+            }
+            return true;
+        }
 
         public static void Notify_EquipmentAdded_PostFix(Verse.Pawn_EquipmentTracker __instance, ThingWithComps eq) {
 
@@ -236,7 +259,7 @@ namespace AbilityUser
 
         public static void InitializeComps_PostFix(ThingWithComps __instance)
         {
-            if (__instance is Pawn p) HarmonyPatches.InternalAddInAbilityUsers(p);
+            if (__instance is Pawn p) AbilityUserMod.InternalAddInAbilityUsers(p);
         }
 
         //// Catches loading of Pawns

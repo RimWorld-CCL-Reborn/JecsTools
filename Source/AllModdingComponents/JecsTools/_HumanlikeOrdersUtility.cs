@@ -55,8 +55,8 @@ namespace JecsTools
         static _HumanlikeOrdersUtility()
         {
             DebugMessage("FMOL :: Initialized Constructor");
-            //floatMenuID = 0;
-            //lastSavedFloatMenuID = -1;
+            optsID = "";
+            lastOptsID = "1";
             foreach (Type current in typeof(FloatMenuPatch).AllSubclassesNonAbstract())
             {
 
@@ -125,6 +125,7 @@ namespace JecsTools
                 return;
             }
             DebugMessage("FMOL :: New list constructed");
+            DebugMessage(optsID);
             lastOptsID = optsID;
             savedList.Clear();
             if (c.GetThingList(pawn.Map) is List<Thing> things && !things.NullOrEmpty())
