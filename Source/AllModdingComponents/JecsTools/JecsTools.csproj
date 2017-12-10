@@ -76,9 +76,17 @@
     <Compile Include="DamageWorker_Cleave.cs" />
     <Compile Include="FirelessTrashUtility.cs" />
     <Compile Include="GrappleUtility.cs" />
+    <Compile Include="HarmonyPatches.cs" />
     <Compile Include="HediffCompDamageOverTime.cs" />
     <Compile Include="HediffCompProperties_DamageOverTime.cs" />
+    <Compile Include="HediffCompProperties_DamageSoak.cs" />
+    <Compile Include="HediffCompProperties_ExtraMeleeDamages.cs" />
+    <Compile Include="HediffCompProperties_Knockback.cs" />
+    <Compile Include="HediffComp_DamageSoak.cs" />
+    <Compile Include="HediffComp_ExtraMeleeDamages.cs" />
+    <Compile Include="HediffComp_Knockback.cs" />
     <Compile Include="Hediff_InjuryCustomLabel.cs" />
+    <Compile Include="PlaceWorker_OnTopOfWalls.cs" />
     <Compile Include="_HumanlikeOrdersUtility.cs" />
     <Compile Include="JobGiver_AIFirelessTrashColonyClose.cs" />
     <Compile Include="JobGiver_AIFirelessTrashColonyDistant.cs" />

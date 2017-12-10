@@ -1,6 +1,11 @@
 ﻿using RimWorld;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using UnityEngine;
 using Verse;
+
 namespace AbilityUser
 {
     /// <summary>
@@ -32,20 +37,38 @@ namespace AbilityUser
         }
 
 
-        protected IntVec3 DestinationCell => new IntVec3(this.destination);
+        protected IntVec3 DestinationCell
+        {
+            get
+            {
+                return new IntVec3(this.destination);
+            }
+        }
 
         public virtual Vector3 ExactPosition
         {
             get
             {
-                Vector3 b = (this.destination - this.origin) * (1f - this.ticksToImpact / (float)this.StartingTicksToImpact);
+                Vector3 b = (this.destination - this.origin) * (1f - (float)this.ticksToImpact / (float)this.StartingTicksToImpact);
                 return this.origin + b + Vector3.up * this.def.Altitude;
             }
         }
 
-        public virtual Quaternion ExactRotation => Quaternion.LookRotation(this.destination - this.origin);
+        public virtual Quaternion ExactRotation
+        {
+            get
+            {
+                return Quaternion.LookRotation(this.destination - this.origin);
+            }
+        }
 
-        public override Vector3 DrawPos => this.ExactPosition;
+        public override Vector3 DrawPos
+        {
+            get
+            {
+                return this.ExactPosition;
+            }
+        }
 
         public override void ExposeData()
         {
@@ -53,14 +76,23 @@ namespace AbilityUser
             Scribe_Values.Look<Vector3>(ref this.origin, "origin", default(Vector3), false);
             Scribe_Values.Look<Vector3>(ref this.destination, "destination", default(Vector3), false);
             Scribe_Values.Look<int>(ref this.ticksToImpact, "ticksToImpact", 0, false);
+            Scribe_Values.Look<int>(ref this.timesToDamage, "timesToDamage", 0, false);
+            Scribe_Values.Look<bool>(ref this.damageLaunched, "damageLaunched", true);
+            Scribe_Values.Look<bool>(ref this.explosion, "explosion", false);
             Scribe_References.Look<Thing>(ref this.assignedTarget, "assignedTarget", false);
             Scribe_References.Look<Thing>(ref this.launcher, "launcher", false);
             Scribe_References.Look<Thing>(ref this.flyingThing, "flyingThing");
         }
 
-        public void Launch(Thing launcher, LocalTargetInfo targ, Thing flyingThing, DamageInfo? impactDamage) => this.Launch(launcher, this.Position.ToVector3Shifted(), targ, flyingThing, impactDamage);
+        public void Launch(Thing launcher, LocalTargetInfo targ, Thing flyingThing, DamageInfo? impactDamage)
+        {
+            this.Launch(launcher, base.Position.ToVector3Shifted(), targ, flyingThing, impactDamage);
+        }
 
-        public void Launch(Thing launcher, LocalTargetInfo targ, Thing flyingThing) => this.Launch(launcher, this.Position.ToVector3Shifted(), targ, flyingThing);
+        public void Launch(Thing launcher, LocalTargetInfo targ, Thing flyingThing)
+        {
+            this.Launch(launcher, base.Position.ToVector3Shifted(), targ, flyingThing);
+        }
 
         public void Launch(Thing launcher, Vector3 origin, LocalTargetInfo targ, Thing flyingThing, DamageInfo? newDamageInfo = null)
         {
@@ -84,20 +116,20 @@ namespace AbilityUser
             base.Tick();
             Vector3 exactPosition = this.ExactPosition;
             this.ticksToImpact--;
-            if (!this.ExactPosition.InBounds(this.Map))
+            if (!this.ExactPosition.InBounds(base.Map))
             {
                 this.ticksToImpact++;
-                this.Position = this.ExactPosition.ToIntVec3();
+                base.Position = this.ExactPosition.ToIntVec3();
                 this.Destroy(DestroyMode.Vanish);
                 return;
             }
 
-            this.Position = this.ExactPosition.ToIntVec3();
+            base.Position = this.ExactPosition.ToIntVec3();
             if (this.ticksToImpact <= 0)
             {
-                if (this.DestinationCell.InBounds(this.Map))
+                if (this.DestinationCell.InBounds(base.Map))
                 {
-                    this.Position = this.DestinationCell;
+                    base.Position = this.DestinationCell;
                 }
                 this.ImpactSomething();
                 return;
@@ -107,13 +139,13 @@ namespace AbilityUser
 
         public override void Draw()
         {
-            if (this.flyingThing != null)
+            if (flyingThing != null)
             {
-                if (this.flyingThing is Pawn)
+                if (flyingThing is Pawn)
                 {
                     if (this.DrawPos == null) return;
                     if (!this.DrawPos.ToIntVec3().IsValid) return;
-                    Pawn pawn = this.flyingThing as Pawn;
+                    Pawn pawn = flyingThing as Pawn;
                     pawn.Drawer.DrawAt(this.DrawPos);
                     //Graphics.DrawMesh(MeshPool.plane10, this.DrawPos, this.ExactRotation, this.flyingThing.def.graphic.MatFront, 0);
                 }
@@ -129,7 +161,8 @@ namespace AbilityUser
         {
             if (this.assignedTarget != null)
             {
-                if (this.assignedTarget is Pawn pawn && pawn.GetPosture() != PawnPosture.Standing && (this.origin - this.destination).MagnitudeHorizontalSquared() >= 20.25f && Rand.Value > 0.2f)
+                Pawn pawn = this.assignedTarget as Pawn;
+                if (pawn != null && pawn.GetPosture() != PawnPosture.Standing && (this.origin - this.destination).MagnitudeHorizontalSquared() >= 20.25f && Rand.Value > 0.2f)
                 {
                     this.Impact(null);
                     return;
@@ -144,13 +177,36 @@ namespace AbilityUser
             }
         }
 
+        public bool damageLaunched = true;
+        public bool explosion = false;
+        public int timesToDamage = 3;
         protected virtual void Impact(Thing hitThing)
         {
-            GenSpawn.Spawn(this.flyingThing, this.Position, this.Map);
-            if (this.impactDamage != null)
+
+            if (hitThing == null)
             {
-                for (int i = 0; i < 3; i++) this.flyingThing.TakeDamage(this.impactDamage.Value);
+
+                if (this.Position.GetThingList(this.Map).FirstOrDefault(x => x == this.assignedTarget) is Pawn p)
+                {
+
+                    hitThing = p;
+                }
             }
+
+
+            if (impactDamage != null)
+            {
+
+                for (int i = 0; i < timesToDamage; i++)
+                    if (damageLaunched)
+                        flyingThing.TakeDamage(impactDamage.Value);
+                    else
+                        hitThing.TakeDamage(impactDamage.Value);
+                if (explosion)
+                    GenExplosion.DoExplosion(this.Position, this.Map, 0.9f, DamageDefOf.Stun, this);
+
+            }
+            GenSpawn.Spawn(flyingThing, this.Position, this.Map);
             this.Destroy(DestroyMode.Vanish);
         }
 

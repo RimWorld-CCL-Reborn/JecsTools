@@ -15,19 +15,19 @@ using System.Threading;
 namespace JecsTools
 {
     [StaticConstructorOnStartup]
-    static class HarmonyPatches
+    static class HarmonyCaravanPatches
     {
-        static HarmonyPatches()
+        static HarmonyCaravanPatches()
         {
             HarmonyInstance harmony = HarmonyInstance.Create("rimworld.jecrell.caravanjobs");
             harmony.Patch(AccessTools.Method(typeof(Caravan), "GetInspectString"), null,
-                new HarmonyMethod(typeof(HarmonyPatches), nameof(GetInspectString_Jobs)), null);
+                new HarmonyMethod(typeof(HarmonyCaravanPatches), nameof(GetInspectString_Jobs)), null);
             harmony.Patch(AccessTools.Method(typeof(WorldSelector), "AutoOrderToTileNow"), null,
-                new HarmonyMethod(typeof(HarmonyPatches), nameof(AutoOrderToTileNow_Jobs)), null);
+                new HarmonyMethod(typeof(HarmonyCaravanPatches), nameof(AutoOrderToTileNow_Jobs)), null);
             harmony.Patch(AccessTools.Method(typeof(Caravan), "GetGizmos"), null,
-                new HarmonyMethod(typeof(HarmonyPatches), nameof(GetGizmos_Jobs)), null);
+                new HarmonyMethod(typeof(HarmonyCaravanPatches), nameof(GetGizmos_Jobs)), null);
             harmony.Patch(AccessTools.Method(typeof(RimWorld.Planet.WorldSelector), "SelectableObjectsUnderMouse", new Type[] { typeof(bool).MakeByRefType(), typeof(bool).MakeByRefType() }),
-                null, new HarmonyMethod(typeof(HarmonyPatches),
+                null, new HarmonyMethod(typeof(HarmonyCaravanPatches),
                 nameof(SelectableObjectsUnderMouse_InvisHandler)), null);
         }
 
