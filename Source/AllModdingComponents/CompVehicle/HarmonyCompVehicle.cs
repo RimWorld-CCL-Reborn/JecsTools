@@ -55,13 +55,13 @@ namespace CompVehicle
                 new HarmonyMethod(typeof(HarmonyCompVehicle), 
                 nameof(VehicleShouldWiggle)), null);
             harmony.Patch(AccessTools.Method(typeof(FloatMenuUtility), nameof(FloatMenuUtility.GetRangedAttackAction)), null, null,
-                new HarmonyMethod(typeof(HarmonyCompVehicle), 
+                new HarmonyMethod(typeof(HarmonyCompVehicle),
                 nameof(FightActionTranspiler)));
             harmony.Patch(AccessTools.Method(typeof(FloatMenuUtility), nameof(FloatMenuUtility.GetMeleeAttackAction)), null, null,
-                new HarmonyMethod(typeof(HarmonyCompVehicle), 
+                new HarmonyMethod(typeof(HarmonyCompVehicle),
                 nameof(FightActionTranspiler)));
             #endregion Functions
-            
+
             #region ErrorHandling
             ///
             /// VEHICLE ERROR HANDLING
@@ -87,9 +87,9 @@ namespace CompVehicle
             harmony.Patch(AccessTools.Method(typeof(GameEnder), "IsPlayerControlledWithFreeColonist"), null, new HarmonyMethod(typeof(HarmonyCompVehicle), 
                 nameof(CanEndGame)));  
             harmony.Patch(typeof(RestUtility).GetMethods(BindingFlags.Public | BindingFlags.Static).First(mi => mi.Name == "FindBedFor" && mi.GetParameters().Count() > 1), null, new HarmonyMethod(typeof(HarmonyCompVehicle), 
-                nameof(DontRescueVehicles)), null);  
-            //harmony.Patch(AccessTools.Method(typeof(FloatMenuMakerMap), "AddHumanlikeOrders"), null, new HarmonyMethod(typeof(HarmonyCompVehicle), 
-               // nameof(DontRescueVehiclesInFloatMenus)));  
+                nameof(DontRescueVehicles)), null);
+            harmony.Patch(AccessTools.Method(typeof(FloatMenuMakerMap), "AddHumanlikeOrders"), null, new HarmonyMethod(typeof(HarmonyCompVehicle),
+                nameof(DontRescueVehiclesInFloatMenus)));
 
             harmony.Patch(typeof(SymbolResolver_RandomMechanoidGroup).GetMethods(BindingFlags.NonPublic | BindingFlags.Static).First(mi => mi.HasAttribute<CompilerGeneratedAttribute>() && mi.ReturnType == typeof(bool) && mi.GetParameters().Count() == 1 && mi.GetParameters()[0].ParameterType == typeof(PawnKindDef)), null, new HarmonyMethod(typeof(HarmonyCompVehicle), 
                 nameof(MechanoidsFixerAncient)));  
