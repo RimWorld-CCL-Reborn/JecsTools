@@ -21,7 +21,7 @@ namespace JecsTools
         }
 
 
-        public static bool TryGrapple(this Pawn grappler, Pawn victim)
+        public static bool TryGrapple(this Pawn grappler, Pawn victim, int grapplerBonusMod = 0, int victimBonusMod = 0)
         {
             //Null handling
             //---------------------------------------------------------
@@ -46,14 +46,14 @@ namespace JecsTools
 
             //Resolve Grapple Rolls
             //---------------------------------------------------------
-            if (IsGrappleSuccessful(grappler, victim, grapplingPart))
+            if (IsGrappleSuccessful(grappler, victim, grapplingPart, grapplerBonusMod, victimBonusMod))
             {
                 return true;
             }
             return false;
         }
 
-        public static bool IsGrappleSuccessful(Pawn grappler, Pawn victim, BodyPartRecord grapplingPart)
+        public static bool IsGrappleSuccessful(Pawn grappler, Pawn victim, BodyPartRecord grapplingPart, int grapplerBonusMod = 0, int victimBonusMod = 0)
         {
             //Setup rolls
             float rollGrappler = Rand.Range(1, 10); //Introduces some random chance into the grapple.
@@ -63,6 +63,10 @@ namespace JecsTools
             float modifierGrappler = grappler.RaceProps.baseBodySize; //Boosts the chance of success/failure for both parties.
             float modifierVictim = victim.RaceProps.baseBodySize;
             ResolveModifiers(grappler, victim, ref modifierGrappler, ref modifierVictim);
+
+            //Add bonus modiiers from parameters
+            modifierGrappler += grapplerBonusMod;
+            modifierVictim += victimBonusMod;
 
             //Throw a mental warning
             if (victim?.mindState is Pawn_MindState mind)

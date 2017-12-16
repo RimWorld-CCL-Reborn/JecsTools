@@ -161,6 +161,7 @@ namespace JecsTools
     public enum _ConditionType
     {
         IsType,
+        IsTypeStringMatch,
         ThingHasComp,
         HediffHasComp
     }
@@ -191,7 +192,21 @@ namespace JecsTools
             switch (Condition)
             {
                 case _ConditionType.IsType:
-                    if (toCheck.GetType() == Data.GetType() || toCheck.GetType() == Data)
+                    //Log.Message(toCheck.GetType().ToString());
+                    //Log.Message(Data.ToString());
+
+                    //////////////////////////
+                    ///PSYCHOLOGY SPECIAL CASE
+                    if (toCheck.GetType().ToString() == "Psychology.PsychologyPawn" && Data.ToString() == "Verse.Pawn")
+                    {
+                        return true;
+                    }
+                    //////////////////////////
+                    if (toCheck.GetType() == Data.GetType() || (toCheck.GetType() == Data || Data.GetType().IsAssignableFrom(toCheck.GetType())))
+                        return true;
+                    break;
+                case _ConditionType.IsTypeStringMatch:
+                    if (toCheck.GetType().ToString() == (string)toCheck)
                         return true;
                     break;
                 case _ConditionType.ThingHasComp:

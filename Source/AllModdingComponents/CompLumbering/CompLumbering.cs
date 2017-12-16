@@ -10,7 +10,7 @@ using Verse.AI;
 using Verse.Sound;
 namespace CompLumbering
 {
-    internal class CompLumbering : ThingComp
+    public class CompLumbering : ThingComp
     {
         public int ticksToCycle = -1;
         public bool cycled = false;
@@ -79,7 +79,7 @@ namespace CompLumbering
                             //Log.Message("1b");
                             ResolveBaseGraphic();
                         }
-                    this.Lumberer.stances.StaggerFor(GenTicks.SecondsToTicks(this.Props.secondsBetweenSteps));
+                    if (this.Props.staggerEffect) this.Lumberer.stances.StaggerFor(GenTicks.SecondsToTicks(this.Props.secondsBetweenSteps));
                 }
             }
         }
