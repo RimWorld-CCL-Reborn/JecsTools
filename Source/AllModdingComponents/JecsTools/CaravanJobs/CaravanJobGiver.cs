@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using RimWorld.Planet;
-using RimWorld;
 using Verse;
 
 namespace JecsTools
@@ -15,15 +12,12 @@ namespace JecsTools
 
         public CaravanJobGiver(World world) : base(world)
         {
-
         }
 
         public void NullHandler(Caravan caravan)
         {
             if (jobTrackers.FirstOrDefault(x => x.Caravan == caravan) == null)
-            {
                 jobTrackers.Add(new Caravan_JobTracker(caravan));
-            }
         }
 
         public Caravan_JobTracker Tracker(Caravan caravan)
@@ -46,11 +40,9 @@ namespace JecsTools
             if (jobTrackers != null && jobTrackers.Count > 0)
             {
                 Caravan_JobTracker toRemove = null;
-                foreach (Caravan_JobTracker t in jobTrackers)
-                {
+                foreach (var t in jobTrackers)
                     if (t.Caravan == null || !t.Caravan.Spawned) toRemove = t;
                     else t.JobTrackerTick();
-                }
                 if (toRemove != null) jobTrackers.Remove(toRemove);
             }
         }
@@ -60,7 +52,7 @@ namespace JecsTools
         public override void ExposeData()
         {
             base.ExposeData();
-            Scribe_Collections.Look<Caravan_JobTracker>(ref this.jobTrackers, "jobTrackers", LookMode.Deep, new object[0]);
+            Scribe_Collections.Look(ref jobTrackers, "jobTrackers", LookMode.Deep);
             //if (Scribe.mode == LoadSaveMode.Saving)
             //{
             //    jobTrackerSave.Clear();
@@ -86,6 +78,5 @@ namespace JecsTools
             //    }
             //}
         }
-
     }
 }

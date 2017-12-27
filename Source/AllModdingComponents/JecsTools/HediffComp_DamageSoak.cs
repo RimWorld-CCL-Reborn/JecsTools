@@ -1,31 +1,22 @@
-﻿using System;
-using RimWorld;
+﻿using System.Text;
 using Verse;
-using System.Text;
 
 namespace JecsTools
 {
     public class HediffComp_DamageSoak : HediffComp
     {
-
-        public HediffCompProperties_DamageSoak Props
-        {
-            get
-            {
-                return (HediffCompProperties_DamageSoak)this.props;
-            }
-        }
+        public HediffCompProperties_DamageSoak Props => (HediffCompProperties_DamageSoak) props;
 
         public override string CompTipStringExtra
         {
             get
             {
-                StringBuilder s = new StringBuilder();
+                var s = new StringBuilder();
 
-                string b = base.CompTipStringExtra;
+                var b = base.CompTipStringExtra;
                 if (b != "")
                     s.Append(b);
-                s.AppendLine("JT_HI_DamageSoaked".Translate(Props.damageToSoak));
+                s.AppendLine("JT_HI_DamageSoaked".Translate((Props.damageType != null) ? Props.damageToSoak.ToString() + " (" +Props.damageType.LabelCap + ") " : Props.damageToSoak.ToString() + " (" +"AllDays".Translate() + ")"));
                 return s.ToString().TrimEndNewlines();
             }
         }

@@ -1,13 +1,6 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Diagnostics;
-using System.Collections.Generic;
-using RimWorld;
+﻿using System.Collections.Generic;
 using Verse;
-using UnityEngine;
-using Verse.AI;
-using Verse.Sound;
+
 namespace CompSlotLoadable
 {
     public class CompProperties_SlotLoadable : CompProperties
@@ -16,6 +9,9 @@ namespace CompSlotLoadable
 
         public List<SlotLoadableDef> slots = new List<SlotLoadableDef>();
 
-        public CompProperties_SlotLoadable() => this.compClass = typeof(CompSlotLoadable);
+        public CompProperties_SlotLoadable()
+        {
+            compClass = typeof(CompSlotLoadable);
+        }
     }
 }

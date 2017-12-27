@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using AbilityUser;
 using RimWorld;
 using Verse;
 using Verse.AI;
@@ -10,13 +10,12 @@ namespace JecsTools
 {
     public static class GrappleUtility
     {
-
         public enum GrappleType
         {
-            Humanoid,           //human grapples a human
-            HumanoidXAnimal,    //human grapples animal
-            AnimalXHumanoid,    //animal grapples human
-            AnimalXAnimal,      //animal grapples animal
+            Humanoid, //human grapples a human
+            HumanoidXAnimal, //human grapples animal
+            AnimalXHumanoid, //animal grapples human
+            AnimalXAnimal, //animal grapples animal
             None
         }
 
@@ -26,15 +25,11 @@ namespace JecsTools
             //Null handling
             //---------------------------------------------------------
             if (!CanGrapple(grappler, victim))
-            {
                 return false;
-            }
 
             BodyPartRecord grapplingPart;
             if (!TryGetGrapplingPart(grappler, out grapplingPart))
-            {
                 return false;
-            }
 
             //Special Case Handling
             //---------------------------------------------------------
@@ -47,21 +42,21 @@ namespace JecsTools
             //Resolve Grapple Rolls
             //---------------------------------------------------------
             if (IsGrappleSuccessful(grappler, victim, grapplingPart, grapplerBonusMod, victimBonusMod))
-            {
                 return true;
-            }
             return false;
         }
 
-        public static bool IsGrappleSuccessful(Pawn grappler, Pawn victim, BodyPartRecord grapplingPart, int grapplerBonusMod = 0, int victimBonusMod = 0)
+        public static bool IsGrappleSuccessful(Pawn grappler, Pawn victim, BodyPartRecord grapplingPart,
+            int grapplerBonusMod = 0, int victimBonusMod = 0)
         {
             //Setup rolls
             float rollGrappler = Rand.Range(1, 10); //Introduces some random chance into the grapple.
             float rollVictim = Rand.Range(1, 10);
 
             //Setup modifiers
-            float modifierGrappler = grappler.RaceProps.baseBodySize; //Boosts the chance of success/failure for both parties.
-            float modifierVictim = victim.RaceProps.baseBodySize;
+            var modifierGrappler =
+                grappler.RaceProps.baseBodySize; //Boosts the chance of success/failure for both parties.
+            var modifierVictim = victim.RaceProps.baseBodySize;
             ResolveModifiers(grappler, victim, ref modifierGrappler, ref modifierVictim);
 
             //Add bonus modiiers from parameters
@@ -93,7 +88,7 @@ namespace JecsTools
         }
 
         /// <summary>
-        /// Stuns the target for time
+        ///     Stuns the target for time
         /// </summary>
         /// <param name="grappler"></param>
         /// <param name="victim"></param>
@@ -105,7 +100,7 @@ namespace JecsTools
         }
 
         /// <summary>
-        /// Null Handling to weed out bad calls to grapple
+        ///     Null Handling to weed out bad calls to grapple
         /// </summary>
         /// <param name="grappler"></param>
         /// <param name="victim"></param>
@@ -127,8 +122,8 @@ namespace JecsTools
         }
 
         /// <summary>
-        /// Checks for special cases where grappling can occur instantly without contest.
-        /// E.g. grappling downed characters.
+        ///     Checks for special cases where grappling can occur instantly without contest.
+        ///     E.g. grappling downed characters.
         /// </summary>
         /// <param name="grappler"></param>
         /// <param name="victim"></param>
@@ -138,26 +133,29 @@ namespace JecsTools
         {
             if (!victim.Awake())
             {
-                if (throwText) MoteMaker.ThrowText(grappler.DrawPos, grappler.Map, "JTGrapple_SleepingGrapple".Translate(), -1f);
+                if (throwText)
+                    MoteMaker.ThrowText(grappler.DrawPos, grappler.Map, "JTGrapple_SleepingGrapple".Translate(), -1f);
                 return true;
             }
 
             if (victim.Downed)
             {
-                if (throwText) MoteMaker.ThrowText(grappler.DrawPos, grappler.Map, "JTGrapple_DownedGrapple".Translate(), -1f);
+                if (throwText)
+                    MoteMaker.ThrowText(grappler.DrawPos, grappler.Map, "JTGrapple_DownedGrapple".Translate(), -1f);
                 return true;
             }
 
             if (victim.IsPrisonerOfColony && RestraintsUtility.InRestraints(victim))
             {
-                if (throwText) MoteMaker.ThrowText(grappler.DrawPos, grappler.Map, "JTGrapple_PrisonerGrapple".Translate(), -1f);
+                if (throwText)
+                    MoteMaker.ThrowText(grappler.DrawPos, grappler.Map, "JTGrapple_PrisonerGrapple".Translate(), -1f);
                 return true;
             }
             return false;
         }
 
         /// <summary>
-        /// Returns any part that is not missing and capable of manipulation.
+        ///     Returns any part that is not missing and capable of manipulation.
         /// </summary>
         /// <param name="grappler"></param>
         /// <param name="bodyPartRec"></param>
@@ -165,43 +163,45 @@ namespace JecsTools
         public static bool TryGetGrapplingPart(Pawn grappler, out BodyPartRecord bodyPartRec)
         {
             BodyPartRecord result = null;
-            if (grappler.health.hediffSet.GetNotMissingParts().ToList().FindAll(x => x.def.tags.Contains("ManipulationLimbSegment") || x.def.tags.Contains("ManipulationLimbCore")) is List<BodyPartRecord> recs && !recs.NullOrEmpty())
-            {
+            if (grappler.health.hediffSet.GetNotMissingParts().ToList().FindAll(x =>
+                        x.def.tags.Contains("ManipulationLimbSegment") ||
+                        x.def.tags.Contains("ManipulationLimbCore")) is
+                    List<BodyPartRecord> recs && !recs.NullOrEmpty())
                 result = recs.RandomElement();
-            }
             bodyPartRec = result;
             return bodyPartRec != null;
         }
 
         /// <summary>
-        /// Sets up modifiers for grapple checks, similar to tabletop RPGs.
-        /// If the characters are humanoid, use their melee skill in the check.
+        ///     Sets up modifiers for grapple checks, similar to tabletop RPGs.
+        ///     If the characters are humanoid, use their melee skill in the check.
         /// </summary>
         /// <param name="grappler"></param>
         /// <param name="victim"></param>
         /// <param name="modifierGrappler"></param>
         /// <param name="modifierVictim"></param>
-        public static void ResolveModifiers(Pawn grappler, Pawn victim, ref float modifierGrappler, ref float modifierVictim)
+        public static void ResolveModifiers(Pawn grappler, Pawn victim, ref float modifierGrappler,
+            ref float modifierVictim)
         {
-            GrappleType grappleType = ResolveGrappleType(grappler, victim);
+            var grappleType = ResolveGrappleType(grappler, victim);
             switch (grappleType)
             {
                 case GrappleType.Humanoid:
                     modifierGrappler
                         += grappler.skills.GetSkill(SkillDefOf.Melee).Level
-                         + ResolveToolModifier(grappler)
-                         + ResolveAdditionalModifiers(grappler);
+                           + ResolveToolModifier(grappler)
+                           + ResolveAdditionalModifiers(grappler);
                     modifierVictim
                         += victim.skills.GetSkill(SkillDefOf.Melee).Level
-                         + ResolveToolModifier(victim)
-                         + ResolveAdditionalModifiers(victim);
+                           + ResolveToolModifier(victim)
+                           + ResolveAdditionalModifiers(victim);
                     break;
                 case GrappleType.HumanoidXAnimal:
                     modifierGrappler
                         += grappler.skills.GetSkill(SkillDefOf.Melee).Level
-                         + ResolveToolModifier(grappler)
-                         + ResolveAdditionalModifiers(grappler);
-                    modifierVictim 
+                           + ResolveToolModifier(grappler)
+                           + ResolveAdditionalModifiers(grappler);
+                    modifierVictim
                         += ResolveToolModifier(victim);
                     break;
                 case GrappleType.AnimalXHumanoid:
@@ -209,8 +209,8 @@ namespace JecsTools
                         += ResolveToolModifier(grappler);
                     modifierVictim
                         += victim.skills.GetSkill(SkillDefOf.Melee).Level
-                         + ResolveToolModifier(victim)
-                         + ResolveAdditionalModifiers(victim);
+                           + ResolveToolModifier(victim)
+                           + ResolveAdditionalModifiers(victim);
                     break;
                 case GrappleType.AnimalXAnimal:
                     modifierGrappler
@@ -220,9 +220,9 @@ namespace JecsTools
                     break;
             }
         }
-        
+
         /// <summary>
-        /// Checks a character for melee tools to use in grapple calculations.
+        ///     Checks a character for melee tools to use in grapple calculations.
         /// </summary>
         /// <param name="pawn"></param>
         /// <returns></returns>
@@ -232,50 +232,49 @@ namespace JecsTools
         }
 
         /// <summary>
-        /// Checks humanoid characters for ability user components and their modifiers.
+        ///     Checks humanoid characters for ability user components and their modifiers.
         /// </summary>
         /// <param name="pawn"></param>
         /// <param name="modifier"></param>
         public static float ResolveAdditionalModifiers(Pawn pawn)
         {
-            float result = 0f;
+            var result = 0f;
             try
             {
-                ((Action)(() =>
+                ((Action) (() =>
                 {
-                    IEnumerable<AbilityUser.CompAbilityUser> abilityUsers = pawn.GetComps<AbilityUser.CompAbilityUser>();
-                    foreach (AbilityUser.CompAbilityUser a in abilityUsers)
-                    {
+                    var abilityUsers = pawn.GetComps<CompAbilityUser>();
+                    foreach (var a in abilityUsers)
                         result += a.GrappleModifier;
-                    }
                 })).Invoke();
-
             }
-            catch (TypeLoadException) { }
+            catch (TypeLoadException)
+            {
+            }
 
             return result;
         }
 
         /// <summary>
-        /// Determines what kind of grapple is taking place.
+        ///     Determines what kind of grapple is taking place.
         /// </summary>
         /// <param name="grappler"></param>
         /// <param name="victim"></param>
         /// <returns></returns>
         public static GrappleType ResolveGrappleType(Pawn grappler, Pawn victim)
         {
-            GrappleType grappleType = GrappleType.None;
+            var grappleType = GrappleType.None;
 
             if (grappler.RaceProps.Humanlike &&
-                  victim.RaceProps.Humanlike)
+                victim.RaceProps.Humanlike)
                 grappleType = GrappleType.Humanoid;
 
             else if (grappler.RaceProps.Humanlike &&
-                       victim.RaceProps.Animal)
+                     victim.RaceProps.Animal)
                 grappleType = GrappleType.HumanoidXAnimal;
 
             else if (grappler.RaceProps.Animal &&
-                       victim.RaceProps.Humanlike)
+                     victim.RaceProps.Humanlike)
                 grappleType = GrappleType.AnimalXHumanoid;
 
             else
@@ -285,8 +284,8 @@ namespace JecsTools
         }
 
         /// <summary>
-        /// Makes a battle log using the RulePackDef of JT_GrappleSuccess.
-        /// It's pretty cool, because we can see the character's grapple attempt in combat logs.
+        ///     Makes a battle log using the RulePackDef of JT_GrappleSuccess.
+        ///     It's pretty cool, because we can see the character's grapple attempt in combat logs.
         /// </summary>
         /// <param name="victim"></param>
         /// <param name="grappler"></param>
@@ -298,16 +297,15 @@ namespace JecsTools
             {
                 Find.BattleLog.Add(
                     new BattleLogEntry_StateTransition(victim,
-                    RulePackDef.Named("JT_GrappleSuccess"), grappler, null, grapplingPart.def)
+                        RulePackDef.Named("JT_GrappleSuccess"), grappler, null, grapplingPart.def)
                 );
                 return true;
             }
             catch (Exception e)
             {
-                Log.Warning("TruMakeBattleLog Failed Due To :: " + e.ToString());
+                Log.Warning("TruMakeBattleLog Failed Due To :: " + e);
             }
             return false;
         }
-
     }
 }

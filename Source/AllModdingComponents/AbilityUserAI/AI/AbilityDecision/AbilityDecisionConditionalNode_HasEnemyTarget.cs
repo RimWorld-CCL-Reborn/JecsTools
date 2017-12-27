@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Verse;
+﻿using Verse;
 
 /* 
  * Author: ChJees
@@ -12,13 +8,13 @@ using Verse;
 namespace AbilityUserAI
 {
     /// <summary>
-    /// Do our caster have a enemy target?
+    ///     Do our caster have a enemy target?
     /// </summary>
     public class AbilityDecisionConditionalNode_HasEnemyTarget : AbilityDecisionNode
     {
         public override bool CanContinueTraversing(Pawn caster)
         {
-            bool result = caster.mindState.enemyTarget != null;
+            var result = caster.mindState.enemyTarget != null;
 
             if (invert)
                 return !result;

@@ -1,5 +1,4 @@
-﻿using RimWorld;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Verse;
 
 namespace JecsTools
@@ -10,7 +9,7 @@ namespace JecsTools
 
         public HediffCompProperties_ExtraMeleeDamages()
         {
-            this.compClass = typeof(HediffComp_ExtraMeleeDamages);
+            compClass = typeof(HediffComp_ExtraMeleeDamages);
         }
     }
 }

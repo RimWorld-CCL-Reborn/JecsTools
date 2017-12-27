@@ -15,6 +15,5 @@
         public static string NoLoadOptions = "No load options available.";
         public static string DefensiveHealChance = "When attacked, {1} chance to heal {0} wounds";
         public static string VampiricChance = "When attacking, {1} chance to vampiricly heal {0} wounds";
-
     }
 }

@@ -1,13 +1,6 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Diagnostics;
-using System.Collections.Generic;
-using RimWorld;
+﻿using RimWorld;
 using Verse;
-using UnityEngine;
-using Verse.AI;
-using Verse.Sound;
+
 namespace CompDeflector
 {
     public class Verb_Deflected : Verb_Shoot
@@ -16,137 +9,105 @@ namespace CompDeflector
 
         public override bool CanHitTargetFrom(IntVec3 root, LocalTargetInfo targ)
         {
-            if (this.lastShotReflected) return true;
+            if (lastShotReflected) return true;
             return base.CanHitTargetFrom(root, targ);
         }
 
         //A16 TryCastShot Code
-        protected override bool TryCastShot() => TryCastShot_A16Vanilla_Modified();
+        protected override bool TryCastShot()
+        {
+            return TryCastShot_A16Vanilla_Modified();
+        }
 
         public bool TryCastShot_A16Vanilla_Modified()
         {
-            if (this.currentTarget.HasThing && this.currentTarget.Thing.Map != this.caster.Map)
-            {
+            if (currentTarget.HasThing && currentTarget.Thing.Map != caster.Map)
                 return false;
-            }
-            bool flag = base.TryFindShootLineFromTo(this.caster.Position, this.currentTarget, out ShootLine shootLine);
-            if (this.verbProps.stopBurstWithoutLos && !flag)
-            {
+            var flag = TryFindShootLineFromTo(caster.Position, currentTarget, out var shootLine);
+            if (verbProps.stopBurstWithoutLos && !flag)
                 return false;
-            }
-            Vector3 drawPos = this.caster.DrawPos;
-            Projectile projectile = (Projectile)GenSpawn.Spawn(this.verbProps.defaultProjectile, shootLine.Source, this.caster.Map);
+            var drawPos = caster.DrawPos;
+            var projectile = (Projectile) GenSpawn.Spawn(verbProps.defaultProjectile, shootLine.Source, caster.Map);
 
             ///MODIFIED SECTION
             ////////////////////////////////////////////
 
-            if (this.lastShotReflected)
+            if (lastShotReflected)
             {
                 ////Log.Message("lastShotReflected Called");
-                projectile.Launch(this.caster, drawPos, this.currentTarget, this.ownerEquipment);
+                projectile.Launch(caster, drawPos, currentTarget, ownerEquipment);
                 return true;
             }
 
             ////////////////////////////////////////////
             //
 
-            projectile.FreeIntercept = (this.canFreeInterceptNow && !projectile.def.projectile.flyOverhead);
-            if (this.verbProps.forcedMissRadius > 0.5f)
+            projectile.FreeIntercept = canFreeInterceptNow && !projectile.def.projectile.flyOverhead;
+            if (verbProps.forcedMissRadius > 0.5f)
             {
-                float lengthHorizontalSquared = (this.currentTarget.Cell - this.caster.Position).LengthHorizontalSquared;
+                float lengthHorizontalSquared = (currentTarget.Cell - caster.Position).LengthHorizontalSquared;
                 float num;
                 if (lengthHorizontalSquared < 9f)
-                {
                     num = 0f;
-                }
                 else if (lengthHorizontalSquared < 25f)
-                {
-                    num = this.verbProps.forcedMissRadius * 0.5f;
-                }
+                    num = verbProps.forcedMissRadius * 0.5f;
                 else if (lengthHorizontalSquared < 49f)
-                {
-                    num = this.verbProps.forcedMissRadius * 0.8f;
-                }
+                    num = verbProps.forcedMissRadius * 0.8f;
                 else
-                {
-                    num = this.verbProps.forcedMissRadius * 1f;
-                }
+                    num = verbProps.forcedMissRadius * 1f;
                 if (num > 0.5f)
                 {
-                    int max = GenRadial.NumCellsInRadius(this.verbProps.forcedMissRadius);
-                    int num2 = Rand.Range(0, max);
+                    var max = GenRadial.NumCellsInRadius(verbProps.forcedMissRadius);
+                    var num2 = Rand.Range(0, max);
                     if (num2 > 0)
                     {
                         if (DebugViewSettings.drawShooting)
-                        {
-                            MoteMaker.ThrowText(this.caster.DrawPos, this.caster.Map, "ToForRad", -1f);
-                        }
-                        IntVec3 c = this.currentTarget.Cell + GenRadial.RadialPattern[num2];
-                        if (this.currentTarget.HasThing)
-                        {
-                            projectile.ThingToNeverIntercept = this.currentTarget.Thing;
-                        }
+                            MoteMaker.ThrowText(caster.DrawPos, caster.Map, "ToForRad", -1f);
+                        var c = currentTarget.Cell + GenRadial.RadialPattern[num2];
+                        if (currentTarget.HasThing)
+                            projectile.ThingToNeverIntercept = currentTarget.Thing;
                         if (!projectile.def.projectile.flyOverhead)
-                        {
                             projectile.InterceptWalls = true;
-                        }
-                        projectile.Launch(this.caster, drawPos, c, this.ownerEquipment);
+                        projectile.Launch(caster, drawPos, c, ownerEquipment);
                         return true;
                     }
                 }
             }
-            ShotReport shotReport = ShotReport.HitReportFor(this.caster, this, this.currentTarget);
+            var shotReport = ShotReport.HitReportFor(caster, this, currentTarget);
             if (Rand.Value > shotReport.ChanceToNotGoWild_IgnoringPosture)
             {
                 if (DebugViewSettings.drawShooting)
-                {
-                    MoteMaker.ThrowText(this.caster.DrawPos, this.caster.Map, "ToWild", -1f);
-                }
+                    MoteMaker.ThrowText(caster.DrawPos, caster.Map, "ToWild", -1f);
                 shootLine.ChangeDestToMissWild();
-                if (this.currentTarget.HasThing)
-                {
-                    projectile.ThingToNeverIntercept = this.currentTarget.Thing;
-                }
+                if (currentTarget.HasThing)
+                    projectile.ThingToNeverIntercept = currentTarget.Thing;
                 if (!projectile.def.projectile.flyOverhead)
-                {
                     projectile.InterceptWalls = true;
-                }
-                projectile.Launch(this.caster, drawPos, shootLine.Dest, this.ownerEquipment);
+                projectile.Launch(caster, drawPos, shootLine.Dest, ownerEquipment);
                 return true;
             }
             if (Rand.Value > shotReport.ChanceToNotHitCover)
             {
                 if (DebugViewSettings.drawShooting)
+                    MoteMaker.ThrowText(caster.DrawPos, caster.Map, "ToCover", -1f);
+                if (currentTarget.Thing != null && currentTarget.Thing.def.category == ThingCategory.Pawn)
                 {
-                    MoteMaker.ThrowText(this.caster.DrawPos, this.caster.Map, "ToCover", -1f);
-                }
-                if (this.currentTarget.Thing != null && this.currentTarget.Thing.def.category == ThingCategory.Pawn)
-                {
-                    Thing randomCoverToMissInto = shotReport.GetRandomCoverToMissInto();
+                    var randomCoverToMissInto = shotReport.GetRandomCoverToMissInto();
                     if (!projectile.def.projectile.flyOverhead)
-                    {
                         projectile.InterceptWalls = true;
-                    }
-                    projectile.Launch(this.caster, drawPos, randomCoverToMissInto, this.ownerEquipment);
+                    projectile.Launch(caster, drawPos, randomCoverToMissInto, ownerEquipment);
                     return true;
                 }
             }
             if (DebugViewSettings.drawShooting)
-            {
-                MoteMaker.ThrowText(this.caster.DrawPos, this.caster.Map, "ToHit", -1f);
-            }
+                MoteMaker.ThrowText(caster.DrawPos, caster.Map, "ToHit", -1f);
             if (!projectile.def.projectile.flyOverhead)
-            {
-                projectile.InterceptWalls = (!this.currentTarget.HasThing || this.currentTarget.Thing.def.Fillage == FillCategory.Full);
-            }
-            if (this.currentTarget.Thing != null)
-            {
-                projectile.Launch(this.caster, drawPos, this.currentTarget, this.ownerEquipment);
-            }
+                projectile.InterceptWalls =
+                    !currentTarget.HasThing || currentTarget.Thing.def.Fillage == FillCategory.Full;
+            if (currentTarget.Thing != null)
+                projectile.Launch(caster, drawPos, currentTarget, ownerEquipment);
             else
-            {
-                projectile.Launch(this.caster, drawPos, shootLine.Dest, this.ownerEquipment);
-            }
+                projectile.Launch(caster, drawPos, shootLine.Dest, ownerEquipment);
             return true;
         }
     }

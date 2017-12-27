@@ -1,31 +1,58 @@
-﻿using RimWorld.Planet;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using RimWorld.Planet;
 using Verse;
 
 namespace CompVehicle
 {
     public class VehicleHandlerTemp : IExposable, ILoadReferenceable
     {
-        public int uniqueID = -1;
-        public Pawn vehicle = null;
-        public VehicleRole role = null;
         //public ThingOwner<Pawn> handlers;
         public List<Pawn> handlers = new List<Pawn>();
-        public List<BodyPartRecord> occupiedParts = null;
+
+        public List<BodyPartRecord> occupiedParts;
+        public VehicleRole role;
+
+        //private List<Thing> tmpThings = new List<Thing>();
+        private List<Pawn> tmpSavedPawns = new List<Pawn>();
+
+        public int uniqueID = -1;
+        public Pawn vehicle;
+
+        public VehicleHandlerTemp()
+        {
+            if (handlers == null)
+                handlers = new List<Pawn>(); // ThingOwner<Pawn>(this, false, LookMode.Reference);
+        }
+
+        public VehicleHandlerTemp(VehicleHandlerGroup originHandler)
+        {
+            uniqueID = Find.UniqueIDsManager.GetNextThingID();
+            vehicle = originHandler.vehicle;
+            role = originHandler.role;
+            if (handlers == null)
+                handlers = new List<Pawn>(); // ThingOwner<Pawn>(this, false, LookMode.Reference);
+            if ((originHandler.handlers?.Count ?? 0) > 0)
+                foreach (var p in originHandler.handlers)
+                {
+                    if (p.Spawned) p.DeSpawn();
+                    if (p.holdingOwner != null) p.holdingOwner = null;
+                    if (!p.IsWorldPawn()) Find.WorldPawns.PassToWorld(p, PawnDiscardDecideMode.Decide);
+                }
+            handlers.AddRange(originHandler.handlers);
+            //this.handlers = newHandlers;
+        }
+
         public List<BodyPartRecord> OccupiedParts
         {
             get
             {
-                if (this.occupiedParts == null)
-                {
-                    this.occupiedParts = new List<BodyPartRecord>(this.vehicle.health.hediffSet.GetNotMissingParts(
+                if (occupiedParts == null)
+                    occupiedParts = new List<BodyPartRecord>(vehicle.health.hediffSet.GetNotMissingParts(
                         BodyPartHeight.Undefined,
                         BodyPartDepth.Undefined
-                        ).ToList<BodyPartRecord>().FindAll(((BodyPartRecord x) => x.def.tags.Contains(this.role.slotTag))));
-                }
-                return this.occupiedParts;
+                    ).ToList().FindAll(x => x.def.tags.Contains(role.slotTag)));
+                return occupiedParts;
             }
         }
 
@@ -33,61 +60,27 @@ namespace CompVehicle
         {
             get
             {
-                bool result = true;
-                if (this.role != null)
-                {
-                    if ((this?.handlers?.Count ?? 0) >= this.role.slots)
-                    {
+                var result = true;
+                if (role != null)
+                    if ((this?.handlers?.Count ?? 0) >= role.slots)
                         result = false;
-                    }
-                }
                 return result;
             }
         }
 
-        public IThingHolder ParentHolder => this.vehicle;
+        public IThingHolder ParentHolder => vehicle;
 
-        public VehicleHandlerTemp()
-        {
-            if (this.handlers == null)
-            {
-                this.handlers = new List<Pawn>(); // ThingOwner<Pawn>(this, false, LookMode.Reference);
-            }
-        }
-        
-        public VehicleHandlerTemp(VehicleHandlerGroup originHandler)
-        {
-            this.uniqueID = Find.UniqueIDsManager.GetNextThingID();
-            this.vehicle = originHandler.vehicle;
-            this.role = originHandler.role;
-            if (this.handlers == null)
-            {
-                this.handlers = new List<Pawn>(); // ThingOwner<Pawn>(this, false, LookMode.Reference);
-            }
-            if ((originHandler.handlers?.Count ?? 0) > 0)
-            {
-                foreach (Pawn p in originHandler.handlers)
-                {
-                    if (p.Spawned) p.DeSpawn();
-                    if (p.holdingOwner != null) p.holdingOwner = null;
-                    if (!p.IsWorldPawn()) Find.WorldPawns.PassToWorld(p, PawnDiscardDecideMode.Decide);
-                }
-            }
-            this.handlers.AddRange(originHandler.handlers);
-            //this.handlers = newHandlers;
-        }
-
-        //private List<Thing> tmpThings = new List<Thing>();
-        private List<Pawn> tmpSavedPawns = new List<Pawn>();
         public void ExposeData()
         {
-            Scribe_Values.Look<int>(ref this.uniqueID, "uniqueID", -1);
-            Scribe_References.Look<Pawn>(ref this.vehicle, "vehicle");
-            Scribe_Deep.Look<VehicleRole>(ref this.role, "role", new object[0]);
-            Scribe_Collections.Look<Pawn>(ref this.handlers, "handlers", LookMode.Reference, new object[0]);
+            Scribe_Values.Look(ref uniqueID, "uniqueID", -1);
+            Scribe_References.Look(ref vehicle, "vehicle");
+            Scribe_Deep.Look(ref role, "role");
+            Scribe_Collections.Look(ref handlers, "handlers", LookMode.Reference);
         }
 
-        public string GetUniqueLoadID() => "VehicleHandlerGroup_" + this.uniqueID;
-        
+        public string GetUniqueLoadID()
+        {
+            return "VehicleHandlerGroup_" + uniqueID;
+        }
     }
 }

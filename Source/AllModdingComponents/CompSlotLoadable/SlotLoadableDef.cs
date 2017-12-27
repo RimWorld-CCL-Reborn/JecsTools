@@ -1,29 +1,24 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-using RimWorld;
+﻿using System.Collections.Generic;
 using Verse;
-using UnityEngine;
-using Verse.AI;
-using Verse.Sound;
 
 namespace CompSlotLoadable
 {
     public class SlotLoadableDef : ThingDef
     {
-        //These can be loaded into the slot.
-        public List<ThingDef> slottableThingDefs;
+        public ColorInt colorToChangeTo;
 
         //Does the slot change the thing's color?
         public bool doesChangeColor = false;
-        public ColorInt colorToChangeTo;
-        
+
         //Or change the second color?
         public bool doesChangeSecondColor = false;
-        public ColorInt secondColorToChangeTo;
 
         //Does it change the stats?
         public bool doesChangeStats = false;
+
+        public ColorInt secondColorToChangeTo;
+
+        //These can be loaded into the slot.
+        public List<ThingDef> slottableThingDefs;
     }
 }

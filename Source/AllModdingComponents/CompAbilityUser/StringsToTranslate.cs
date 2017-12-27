@@ -1,8 +1,10 @@
 ﻿namespace AbilityUser
 {
     public static class StringsToTranslate
-    { //
+    {
+//
         public static readonly string AU_AoEProperties = "Area of Effect Properties";
+
         public static readonly string AU_TargetClass = "Targets: ";
         public static readonly string AU_AoECharacters = "Characters";
         public static readonly string AU_AoEFriendlyFire = "Friendly Fire: ";

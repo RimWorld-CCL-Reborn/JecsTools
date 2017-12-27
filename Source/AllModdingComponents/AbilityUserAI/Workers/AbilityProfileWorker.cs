@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Verse;
+﻿using Verse;
 
 /* 
  * Author: ChJees
@@ -12,12 +8,13 @@ using Verse;
 namespace AbilityUserAI
 {
     /// <summary>
-    /// Helps the JobGiver_AIAbilityUser pick out a eligible AbilityUserAIProfileDef to use.
+    ///     Helps the JobGiver_AIAbilityUser pick out a eligible AbilityUserAIProfileDef to use.
     /// </summary>
     public class AbilityProfileWorker
     {
         /// <summary>
-        /// Checks whether this Profile is valid for the Pawn or not. Returns true if it eligible for use. Default implementation only cares about checking for matching Traits.
+        ///     Checks whether this Profile is valid for the Pawn or not. Returns true if it eligible for use. Default
+        ///     implementation only cares about checking for matching Traits.
         /// </summary>
         /// <param name="profileDef">Profile Def to check for.</param>
         /// <param name="pawn">Pawn to check for.</param>
@@ -25,11 +22,12 @@ namespace AbilityUserAI
         public virtual bool ValidProfileFor(AbilityUserAIProfileDef profileDef, Pawn pawn)
         {
             //Default implementation only cares about checking for matching Traits.
-            return profileDef.matchingTraits.Count <= 0 || (profileDef.matchingTraits.Count > 0 && profileDef.matchingTraits.Any(traitDef => pawn.story.traits.HasTrait(traitDef)));
+            return profileDef.matchingTraits.Count <= 0 || profileDef.matchingTraits.Count > 0 &&
+                   profileDef.matchingTraits.Any(traitDef => pawn.story.traits.HasTrait(traitDef));
         }
 
         /// <summary>
-        /// First check on whether a Ability can be used or not. Default implementation have no special criterias.
+        ///     First check on whether a Ability can be used or not. Default implementation have no special criterias.
         /// </summary>
         /// <param name="profileDef">Profile Def to check for.</param>
         /// <param name="pawn">Pawn to check for.</param>

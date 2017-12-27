@@ -1,29 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using RimWorld;
+﻿using RimWorld;
 using Verse;
-using UnityEngine;
-using Verse.AI;
-using Verse.Sound;
+
 namespace AbilityUser
 {
     public class SpawnThings : IExposable
     {
-        public ThingDef def = null;
-        public PawnKindDef kindDef = null;
-        public FactionDef factionDef = null;
+        public ThingDef def;
+        public FactionDef factionDef;
+        public PawnKindDef kindDef;
         public int spawnCount = 1;
-        public bool temporary = false;
-
-        public SpawnThings() { }
+        public bool temporary;
 
         public void ExposeData()
         {
-            Scribe_Defs.Look<ThingDef>(ref this.def, "def");
-            Scribe_Defs.Look<PawnKindDef>(ref this.kindDef, "kindDef");
-            Scribe_Defs.Look<FactionDef>(ref this.factionDef, "factionDef");
-            Scribe_Values.Look<int>(ref this.spawnCount, "spawnCount", 1);
-            Scribe_Values.Look<bool>(ref this.temporary, "temporary", false);
+            Scribe_Defs.Look(ref def, "def");
+            Scribe_Defs.Look(ref kindDef, "kindDef");
+            Scribe_Defs.Look(ref factionDef, "factionDef");
+            Scribe_Values.Look(ref spawnCount, "spawnCount", 1);
+            Scribe_Values.Look(ref temporary, "temporary", false);
         }
     }
 }

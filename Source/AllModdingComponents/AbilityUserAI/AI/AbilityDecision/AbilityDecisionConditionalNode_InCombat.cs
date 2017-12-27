@@ -1,9 +1,4 @@
-﻿using RimWorld;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Verse;
+﻿using Verse;
 
 /* 
  * Author: ChJees
@@ -13,15 +8,15 @@ using Verse;
 namespace AbilityUserAI
 {
     /// <summary>
-    /// Is the pawn in combat or near hostiles?
+    ///     Is the pawn in combat or near hostiles?
     /// </summary>
     public class AbilityDecisionConditionalNode_InCombat : AbilityDecisionNode
     {
         public override bool CanContinueTraversing(Pawn caster)
         {
-            bool result = caster.mindState.anyCloseHostilesRecently;
+            var result = caster.mindState.anyCloseHostilesRecently;
 
-            if(invert)
+            if (invert)
                 return !result;
 
             return result;

@@ -1,8 +1,5 @@
-﻿using System;
-using System.Linq;
+﻿using System.Collections.Generic;
 using Verse;
-using RimWorld;
-using System.Collections.Generic;
 
 namespace JecsTools
 {
@@ -13,11 +10,9 @@ namespace JecsTools
             //RoomGroup roomGroup = center.GetRoomGroup(base.Map);
             //if (roomGroup != null && !roomGroup.UsesOutdoorTemperature)
             //{
-            List<IntVec3> drawFieldCells = new List<IntVec3>();
-            foreach (IntVec3 c in GenAdj.CellsOccupiedBy(center, rot, def.size))
-            {
+            var drawFieldCells = new List<IntVec3>();
+            foreach (var c in GenAdj.CellsOccupiedBy(center, rot, def.size))
                 drawFieldCells.Add(c);
-            }
             GenDraw.DrawFieldEdges(drawFieldCells);
             drawFieldCells = null;
             //}

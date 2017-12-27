@@ -1,5 +1,4 @@
-﻿using System;
-using Verse;
+﻿using Verse;
 using Verse.AI;
 
 namespace JecsTools
@@ -22,8 +21,8 @@ namespace JecsTools
 
         public void ExposeData()
         {
-            Scribe_Deep.Look<CaravanJob>(ref this.job, "job", new object[0]);
-            Scribe_Values.Look<JobTag?>(ref this.tag, "tag", null, false);
+            Scribe_Deep.Look(ref job, "job");
+            Scribe_Values.Look(ref tag, "tag", null, false);
         }
     }
 }

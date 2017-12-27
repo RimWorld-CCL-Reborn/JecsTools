@@ -1,23 +1,18 @@
-﻿using RimWorld;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using RimWorld;
 using Verse;
 
 namespace AbilityUser
 {
     public class PassiveEffectWorker
     {
-        private PassiveEffectProperties props;
-        public PassiveEffectProperties Props { get => props; set => props = value; }
+        public PassiveEffectProperties Props { get; set; }
 
         public virtual void DoEffect(CompAbilityUser abilityUser)
         {
             if (Props?.hediffs is List<HediffDef> hList && !hList.NullOrEmpty())
-            {
-                foreach (HediffDef h in hList)
-                {
+                foreach (var h in hList)
                     HealthUtility.AdjustSeverity(abilityUser.AbilityUser, h, 1f);
-                }
-            }
         }
 
         public virtual bool TryDoEffect(CompAbilityUser abilityUser)
@@ -29,36 +24,24 @@ namespace AbilityUser
         public virtual bool CanDoEffect(CompAbilityUser abilityUser)
         {
             if (abilityUser == null)
-            {
                 return false;
-            }
-            Pawn pawn = abilityUser.AbilityUser;
+            var pawn = abilityUser.AbilityUser;
             if (pawn == null)
-            {
                 return false;
-            }
             if (pawn.jobs == null)
-            {
                 return false;
-            }
             if (Props.awakeOnly && pawn?.CurJob?.def == JobDefOf.LayDown || pawn.Downed)
-            {
                 return false;
-            }
             if (pawn.mindState == null)
-            {
                 return false;
-            }
             if (Props.combatOnly && Props.combatOnly && !pawn.mindState.anyCloseHostilesRecently)
-            {
                 return false;
-            }
             return true;
         }
 
         public virtual void Tick(CompAbilityUser abilityUser)
         {
-            int rate = -1;
+            var rate = -1;
             switch (Props.tickerType)
             {
                 case TickerType.Rare:
@@ -72,10 +55,8 @@ namespace AbilityUser
                     break;
             }
             if (rate != -1)
-            {
                 if (Find.TickManager.TicksGame % rate == 0 && CanDoEffect(abilityUser))
                     TryDoEffect(abilityUser);
-            }
         }
     }
 }

@@ -1,8 +1,5 @@
-﻿using AbilityUser;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
+using AbilityUser;
 using Verse;
 using Verse.AI;
 
@@ -14,13 +11,13 @@ using Verse.AI;
 namespace AbilityUserAI
 {
     /// <summary>
-    /// Give jobs to cast abilities
+    ///     Give jobs to cast abilities
     /// </summary>
     public class JobGiver_AIAbilityUser : ThinkNode_JobGiver
     {
         public override float GetPriority(Pawn pawn)
         {
-            CompAbilityUser abilityUser = pawn.Abilities();
+            var abilityUser = pawn.Abilities();
 
             if (abilityUser == null)
                 return -100f;
@@ -31,7 +28,7 @@ namespace AbilityUserAI
         protected override Job TryGiveJob(Pawn pawn)
         {
             //Do we have at least one elegible profile?
-            IEnumerable<AbilityUserAIProfileDef> profiles = pawn.EligibleAIProfiles();
+            var profiles = pawn.EligibleAIProfiles();
 
             /*StringBuilder builder = new StringBuilder("profiles = ");
 
@@ -43,11 +40,7 @@ namespace AbilityUserAI
             Log.Message(builder.ToString());*/
 
             if (profiles != null && profiles.Count() > 0)
-            {
-                //No Job to give. Yet.
-                //Go through all available Profiles in order to find a Ability to use.
-                foreach (AbilityUserAIProfileDef profile in profiles)
-                {
+                foreach (var profile in profiles)
                     if (profile != null)
                     {
                         //Traverse the decision tree.
@@ -115,27 +108,27 @@ namespace AbilityUserAI
                                 "lastNode.parent=" + lastNode?.parent?.GetType()?.Name);*/
 
                             //Get CompAbilityUser
-                            ThingComp thingComp = pawn.AllComps.First(comp => comp.GetType() == profile.compAbilityUserClass);
-                            CompAbilityUser compAbilityUser = thingComp as CompAbilityUser;
+                            var thingComp = pawn.AllComps.First(comp => comp.GetType() == profile.compAbilityUserClass);
+                            var compAbilityUser = thingComp as CompAbilityUser;
 
                             if (compAbilityUser != null)
                             {
                                 //Get Ability from Pawn.
-                                PawnAbility useAbility = compAbilityUser.AbilityData.AllPowers.First(ability => ability.Def == useThisAbility.ability);
+                                var useAbility =
+                                    compAbilityUser.AbilityData.AllPowers.First(ability =>
+                                        ability.Def == useThisAbility.ability);
 
-                                string reason = "";
+                                var reason = "";
                                 //Give job.
                                 if (useAbility.CanCastPowerCheck(AbilityContext.AI, out reason))
                                 {
-                                    LocalTargetInfo target = useThisAbility.Worker.TargetAbilityFor(useThisAbility, pawn);
+                                    var target = useThisAbility.Worker.TargetAbilityFor(useThisAbility, pawn);
                                     if (target.IsValid)
                                         return useAbility.UseAbility(AbilityContext.AI, target);
                                 }
                             }
                         }
                     }
-                }
-            }
 
             //No Job to give.
             //Report.

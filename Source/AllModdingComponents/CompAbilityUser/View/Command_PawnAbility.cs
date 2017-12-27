@@ -1,6 +1,6 @@
-﻿using Harmony;
+﻿using System;
+using Harmony;
 using RimWorld;
-using System;
 using UnityEngine;
 using Verse;
 using Verse.Sound;
@@ -16,20 +16,22 @@ namespace AbilityUser
 
     public class Command_PawnAbility : Command_Target
     {
-        public CompAbilityUser compAbilityUser = null;
-        public Verb_UseAbility verb = null;
-        public PawnAbility pawnAbility = null;
+        public CompAbilityUser compAbilityUser;
         public int curTicks = -1;
+        public PawnAbility pawnAbility;
+        public Verb_UseAbility verb = null;
 
         public Command_PawnAbility(CompAbilityUser compAbilityUser, PawnAbility ability, int ticks)
         {
             this.compAbilityUser = compAbilityUser;
-            this.pawnAbility = ability;
-            this.curTicks = ticks;
+            pawnAbility = ability;
+            curTicks = ticks;
         }
 
         // RimWorld.Targeter
-        public void BeginTargetingWithVerb(Verb_UseAbility verbToAdd, TargetingParameters targetParams, Action<LocalTargetInfo> action, Pawn caster = null, Action actionWhenFinished = null, Texture2D mouseAttachment = null)
+        public void BeginTargetingWithVerb(Verb_UseAbility verbToAdd, TargetingParameters targetParams,
+            Action<LocalTargetInfo> action, Pawn caster = null, Action actionWhenFinished = null,
+            Texture2D mouseAttachment = null)
         {
             verbToAdd.timeSavingActionVariable = this.action;
             Find.Targeter.targetingVerb = verbToAdd;
@@ -45,18 +47,15 @@ namespace AbilityUser
         public override void ProcessInput(Event ev)
         {
             SoundDefOf.TickTiny.PlayOneShotOnCamera();
-            
+
             Find.Targeter.StopTargeting();
-            BeginTargetingWithVerb(verb, this.verb.verbProps.targetParams, delegate (LocalTargetInfo info) {
+            BeginTargetingWithVerb(verb, verb.verbProps.targetParams, delegate(LocalTargetInfo info)
+            {
                 action.Invoke(info.Thing);
-                if (this.CurActivateSound != null)
-                {
-                    this.CurActivateSound.PlayOneShotOnCamera();
-                }
-
-            }, this.compAbilityUser.AbilityUser, null, null);
-             //(info.Thing ?? null);
-
+                if (CurActivateSound != null)
+                    CurActivateSound.PlayOneShotOnCamera();
+            }, compAbilityUser.AbilityUser, null, null);
+            //(info.Thing ?? null);
         }
 
         //public override bool GroupsWith(Gizmo other)
@@ -68,43 +67,43 @@ namespace AbilityUser
 
         public override GizmoResult GizmoOnGUI(Vector2 topLeft)
         {
-            Rect rect = new Rect(topLeft.x, topLeft.y, this.Width, 75f);
-            bool isMouseOver = false;
+            var rect = new Rect(topLeft.x, topLeft.y, Width, 75f);
+            var isMouseOver = false;
             if (Mouse.IsOver(rect))
             {
                 isMouseOver = true;
                 GUI.color = GenUI.MouseoverColor;
             }
-            Texture2D badTex = this.icon;
+            var badTex = icon;
             if (badTex == null) badTex = BaseContent.BadTex;
 
-            GUI.DrawTexture(rect, Command.BGTex);
+            GUI.DrawTexture(rect, BGTex);
             MouseoverSounds.DoRegion(rect, SoundDefOf.MouseoverCommand);
-            GUI.color = this.IconDrawColor;
-            Widgets.DrawTextureFitted(new Rect(rect), badTex, this.iconDrawScale * 0.85f, this.iconProportions, this.iconTexCoords);
+            GUI.color = IconDrawColor;
+            Widgets.DrawTextureFitted(new Rect(rect), badTex, iconDrawScale * 0.85f, iconProportions, iconTexCoords);
             GUI.color = Color.white;
-            bool isUsed = false;
+            var isUsed = false;
             //Rect rectFil = new Rect(topLeft.x, topLeft.y, this.Width, this.Width);
 
-            KeyCode keyCode = (this.hotKey != null) ? this.hotKey.MainKey : KeyCode.None;
+            var keyCode = hotKey != null ? hotKey.MainKey : KeyCode.None;
             if (keyCode != KeyCode.None && !GizmoGridDrawer.drawnHotKeys.Contains(keyCode))
             {
-                Rect rect2 = new Rect(rect.x + 5f, rect.y + 5f, rect.width - 10f, 18f);
+                var rect2 = new Rect(rect.x + 5f, rect.y + 5f, rect.width - 10f, 18f);
                 Widgets.Label(rect2, keyCode.ToStringReadable());
                 GizmoGridDrawer.drawnHotKeys.Add(keyCode);
-                if (this.hotKey.KeyDownEvent)
+                if (hotKey.KeyDownEvent)
                 {
                     isUsed = true;
                     Event.current.Use();
                 }
             }
             if (Widgets.ButtonInvisible(rect, false)) isUsed = true;
-            string labelCap = this.LabelCap;
+            var labelCap = LabelCap;
             if (!labelCap.NullOrEmpty())
             {
-                float num = Text.CalcHeight(labelCap, rect.width);
+                var num = Text.CalcHeight(labelCap, rect.width);
                 num -= 2f;
-                Rect rect3 = new Rect(rect.x, rect.yMax - num + 12f, rect.width, num);
+                var rect3 = new Rect(rect.x, rect.yMax - num + 12f, rect.width, num);
                 GUI.DrawTexture(rect3, TexUI.GrayTextBG);
                 GUI.color = Color.white;
                 Text.Anchor = TextAnchor.UpperCenter;
@@ -113,47 +112,37 @@ namespace AbilityUser
                 GUI.color = Color.white;
             }
             GUI.color = Color.white;
-            if (this.DoTooltip)
+            if (DoTooltip)
             {
-                TipSignal tip = this.Desc;
-                if (this.disabled && !this.disabledReason.NullOrEmpty())
-                {
-                    tip.text = tip.text + "\n" + StringsToTranslate.AU_DISABLED + ": " + this.disabledReason;
-                }
+                TipSignal tip = Desc;
+                if (disabled && !disabledReason.NullOrEmpty())
+                    tip.text = tip.text + "\n" + StringsToTranslate.AU_DISABLED + ": " + disabledReason;
                 TooltipHandler.TipRegion(rect, tip);
             }
-            if (this.pawnAbility.CooldownTicksLeft != -1 && this.pawnAbility.CooldownTicksLeft < this.pawnAbility.MaxCastingTicks)
+            if (pawnAbility.CooldownTicksLeft != -1 && pawnAbility.CooldownTicksLeft < pawnAbility.MaxCastingTicks)
             {
-                float math = (float)this.curTicks / (float)this.pawnAbility.MaxCastingTicks;
+                var math = curTicks / (float) pawnAbility.MaxCastingTicks;
                 Widgets.FillableBar(rect, math, AbilityButtons.FullTex, AbilityButtons.EmptyTex, false);
             }
-            if (!this.HighlightTag.NullOrEmpty() && (Find.WindowStack.FloatMenu == null || !Find.WindowStack.FloatMenu.windowRect.Overlaps(rect)))
-            {
-                UIHighlighter.HighlightOpportunity(rect, this.HighlightTag);
-            }
+            if (!HighlightTag.NullOrEmpty() && (Find.WindowStack.FloatMenu == null ||
+                                                !Find.WindowStack.FloatMenu.windowRect.Overlaps(rect)))
+                UIHighlighter.HighlightOpportunity(rect, HighlightTag);
             if (isUsed)
             {
-                if (this.disabled)
+                if (disabled)
                 {
-                    if (!this.disabledReason.NullOrEmpty())
-                    {
-                        Messages.Message(this.disabledReason, MessageTypeDefOf.RejectInput);
-                    }
+                    if (!disabledReason.NullOrEmpty())
+                        Messages.Message(disabledReason, MessageTypeDefOf.RejectInput);
                     return new GizmoResult(GizmoState.Mouseover, null);
                 }
-                if (!TutorSystem.AllowAction(this.TutorTagSelect))
-                {
+                if (!TutorSystem.AllowAction(TutorTagSelect))
                     return new GizmoResult(GizmoState.Mouseover, null);
-                }
-                GizmoResult result = new GizmoResult(GizmoState.Interacted, Event.current);
-                TutorSystem.Notify_Event(this.TutorTagSelect);
+                var result = new GizmoResult(GizmoState.Interacted, Event.current);
+                TutorSystem.Notify_Event(TutorTagSelect);
                 return result;
             }
-            else
-            {
-                if (isMouseOver) return new GizmoResult(GizmoState.Mouseover, null);
-                return new GizmoResult(GizmoState.Clear, null);
-            }
+            if (isMouseOver) return new GizmoResult(GizmoState.Mouseover, null);
+            return new GizmoResult(GizmoState.Clear, null);
         }
 
         public void FillableBarBottom(Rect rect, float fillPercent, Texture2D fillTex, Texture2D bgTex, bool doBorder)
@@ -164,9 +153,7 @@ namespace AbilityUser
                 rect = rect.ContractedBy(3f);
             }
             if (fillTex != null)
-            {
                 GUI.DrawTexture(rect, fillTex);
-            }
             rect.height *= fillPercent;
             GUI.DrawTexture(rect, bgTex);
         }

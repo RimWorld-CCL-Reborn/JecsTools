@@ -1,7 +1,7 @@
-﻿using RimWorld;
-using RimWorld.Planet;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using RimWorld;
+using RimWorld.Planet;
 using UnityEngine;
 using Verse;
 using Verse.AI;
@@ -10,192 +10,124 @@ namespace JecsTools
 {
     public abstract class CaravanJobDriver : ICaravanJobEndable, IExposable
     {
+        public bool asleep;
         public Caravan caravan;
 
-        private List<CaravanToil> toils = new List<CaravanToil>();
+        private ToilCompleteMode curToilCompleteMode;
+
+        private int curToilIndex = -1;
+
+        public int debugTicksSpentThisToil;
+
+        public bool ended;
 
         public List<Func<JobCondition>> globalFailConditions = new List<Func<JobCondition>>();
 
         public List<Action> globalFinishActions = new List<Action>();
 
-        public bool ended;
-
-        private int curToilIndex = -1;
-
-        private ToilCompleteMode curToilCompleteMode;
-
-        public int ticksLeftThisToil = 99999;
-
-        private bool wantBeginNextToil;
-
-        public int startTick = -1;
+        public LayingDownState layingDown;
 
         public TargetIndex rotateToFace = TargetIndex.A;
 
-        public LayingDownState layingDown;
+        public int startTick = -1;
 
-        public bool asleep;
+        public int ticksLeftThisToil = 99999;
+
+        private readonly List<CaravanToil> toils = new List<CaravanToil>();
 
         public float uninstallWorkLeft;
 
-        public int debugTicksSpentThisToil;
+        private bool wantBeginNextToil;
 
         public CaravanToil CurToil
         {
             get
             {
-                if (this.curToilIndex < 0)
+                if (curToilIndex < 0)
+                    return null;
+                if (curToilIndex >= toils.Count)
                 {
+                    Log.Error(string.Concat(caravan, " with job ", CurJob, " tried to get CurToil with curToilIndex=",
+                        curToilIndex, " but only has ", toils.Count, " toils."));
                     return null;
                 }
-                if (this.curToilIndex >= this.toils.Count)
-                {
-                    Log.Error(string.Concat(new object[]
-                    {
-                        this.caravan,
-                        " with job ",
-                        CurJob,
-                        " tried to get CurToil with curToilIndex=",
-                        this.curToilIndex,
-                        " but only has ",
-                        this.toils.Count,
-                        " toils."
-                    }));
-                    return null;
-                }
-                return this.toils[this.curToilIndex];
+                return toils[curToilIndex];
             }
         }
 
-        public bool HaveCurToil
-        {
-            get
-            {
-                return this.curToilIndex >= 0 && this.curToilIndex < this.toils.Count;
-            }
-        }
+        public bool HaveCurToil => curToilIndex >= 0 && curToilIndex < toils.Count;
 
         private bool CanStartNextToilInBusyStance
         {
             get
             {
-                int num = this.curToilIndex + 1;
-                return num < this.toils.Count && this.toils[num].atomicWithPrevious;
+                var num = curToilIndex + 1;
+                return num < toils.Count && toils[num].atomicWithPrevious;
             }
         }
 
-        public virtual PawnPosture Posture
-        {
-            get
-            {
-                return (this.layingDown == LayingDownState.NotLaying) ? PawnPosture.Standing : PawnPosture.LayingAny;
-            }
-        }
+        public virtual PawnPosture Posture =>
+            layingDown == LayingDownState.NotLaying ? PawnPosture.Standing : PawnPosture.LayingAny;
 
-        public int CurToilIndex
-        {
-            get
-            {
-                return this.curToilIndex;
-            }
-        }
+        public int CurToilIndex => curToilIndex;
 
-        public bool HandlingFacing
-        {
-            get
-            {
-                return this.CurToil != null && this.CurToil.handlingFacing;
-            }
-        }
+        public bool HandlingFacing => CurToil != null && CurToil.handlingFacing;
 
-        public CaravanJob CurJob
-        {
-            get
-            {
-                return (Find.World.GetComponent<CaravanJobGiver>().CurJob(this.caravan));
-            }
-        }
+        public CaravanJob CurJob => Find.World.GetComponent<CaravanJobGiver>().CurJob(caravan);
 
-        public GlobalTargetInfo TargetA
-        {
-            get
-            {
-                return CurJob.targetA;
-            }
-        }
+        public GlobalTargetInfo TargetA => CurJob.targetA;
 
-        public GlobalTargetInfo TargetB
-        {
-            get
-            {
-                return CurJob.targetB;
-            }
-        }
+        public GlobalTargetInfo TargetB => CurJob.targetB;
 
-        public GlobalTargetInfo TargetC
-        {
-            get
-            {
-                return CurJob.targetC;
-            }
-        }
+        public GlobalTargetInfo TargetC => CurJob.targetC;
 
         public Thing TargetThingA
         {
-            get
-            {
-                return CurJob.targetA.Thing;
-            }
-            set
-            {
-                CurJob.targetA = value;
-            }
+            get => CurJob.targetA.Thing;
+            set => CurJob.targetA = value;
         }
 
         public Thing TargetThingB
         {
-            get
-            {
-                return CurJob.targetB.Thing;
-            }
-            set
-            {
-                CurJob.targetB = value;
-            }
+            get => CurJob.targetB.Thing;
+            set => CurJob.targetB = value;
         }
 
-        public IntVec3 TargetLocA
+        public IntVec3 TargetLocA => CurJob.targetA.Cell;
+
+        public int TargetTileA => CurJob.targetA.Tile;
+
+
+        public int TargetTileB => CurJob.targetB.Tile;
+
+
+        public int TargetTileC => CurJob.targetC.Tile;
+
+        public Caravan GetActor()
         {
-            get
-            {
-                return CurJob.targetA.Cell;
-            }
+            return caravan;
         }
 
-        public int TargetTileA
+        public void AddEndCondition(Func<JobCondition> newEndCondition)
         {
-            get
-            {
-                return CurJob.targetA.Tile;
-            }
+            globalFailConditions.Add(newEndCondition);
         }
 
-
-        public int TargetTileB
+        public virtual void ExposeData()
         {
-            get
-            {
-                return CurJob.targetB.Tile;
-            }
-        }
-
-
-        public int TargetTileC
-        {
-            get
-            {
-                return CurJob.targetC.Tile;
-            }
+            Scribe_References.Look(ref caravan, "caravan");
+            Scribe_Values.Look(ref ended, "ended", false, false);
+            Scribe_Values.Look(ref curToilIndex, "curToilIndex", 0, true);
+            Scribe_Values.Look(ref ticksLeftThisToil, "ticksLeftThisToil", 0, false);
+            Scribe_Values.Look(ref wantBeginNextToil, "wantBeginNextToil", false, false);
+            Scribe_Values.Look(ref curToilCompleteMode, "curToilCompleteMode", ToilCompleteMode.Undefined, false);
+            Scribe_Values.Look(ref startTick, "startTick", 0, false);
+            Scribe_Values.Look(ref rotateToFace, "rotateToFace", TargetIndex.A, false);
+            Scribe_Values.Look(ref layingDown, "layingDown", LayingDownState.NotLaying, false);
+            Scribe_Values.Look(ref asleep, "asleep", false, false);
+            Scribe_Values.Look(ref uninstallWorkLeft, "uninstallWorkLeft", 0f, false);
+            if (Scribe.mode == LoadSaveMode.PostLoadInit)
+                SetupToils();
         }
 
         //public Map Map
@@ -208,116 +140,66 @@ namespace JecsTools
 
         public virtual string GetReport()
         {
-            return this.ReportStringProcessed(this.CurJob.def.reportString);
+            return ReportStringProcessed(CurJob.def.reportString);
         }
 
         public string ReportStringProcessed(string str)
         {
-            CaravanJob curJob = this.CurJob;
+            var curJob = CurJob;
             if (curJob.targetA.HasThing)
-            {
                 str = str.Replace("TargetA", curJob.targetA.Thing.LabelShort);
-            }
             else
-            {
                 str = str.Replace("TargetA", "AreaLower".Translate());
-            }
             if (curJob.targetB.HasThing)
-            {
                 str = str.Replace("TargetB", curJob.targetB.Thing.LabelShort);
-            }
             else
-            {
                 str = str.Replace("TargetB", "AreaLower".Translate());
-            }
             if (curJob.targetC.HasThing)
-            {
                 str = str.Replace("TargetC", curJob.targetC.Thing.LabelShort);
-            }
             else
-            {
                 str = str.Replace("TargetC", "AreaLower".Translate());
-            }
             return str;
         }
 
         public abstract IEnumerable<CaravanToil> MakeNewToils();
 
-        public virtual void ExposeData()
-        {
-            Scribe_References.Look<Caravan>(ref this.caravan, "caravan");
-            Scribe_Values.Look<bool>(ref this.ended, "ended", false, false);
-            Scribe_Values.Look<int>(ref this.curToilIndex, "curToilIndex", 0, true);
-            Scribe_Values.Look<int>(ref this.ticksLeftThisToil, "ticksLeftThisToil", 0, false);
-            Scribe_Values.Look<bool>(ref this.wantBeginNextToil, "wantBeginNextToil", false, false);
-            Scribe_Values.Look<ToilCompleteMode>(ref this.curToilCompleteMode, "curToilCompleteMode", ToilCompleteMode.Undefined, false);
-            Scribe_Values.Look<int>(ref this.startTick, "startTick", 0, false);
-            Scribe_Values.Look<TargetIndex>(ref this.rotateToFace, "rotateToFace", TargetIndex.A, false);
-            Scribe_Values.Look<LayingDownState>(ref this.layingDown, "layingDown", LayingDownState.NotLaying, false);
-            Scribe_Values.Look<bool>(ref this.asleep, "asleep", false, false);
-            Scribe_Values.Look<float>(ref this.uninstallWorkLeft, "uninstallWorkLeft", 0f, false);
-            if (Scribe.mode == LoadSaveMode.PostLoadInit)
-            {
-                this.SetupToils();
-            }
-        }
-
         public void Cleanup(JobCondition condition)
         {
-            for (int i = 0; i < this.globalFinishActions.Count; i++)
-            {
+            for (var i = 0; i < globalFinishActions.Count; i++)
                 try
                 {
-                    this.globalFinishActions[i]();
+                    globalFinishActions[i]();
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(string.Concat(new object[]
-                    {
-                        "Pawn ",
-                        this.caravan,
-                        " threw exception while executing a global finish action (",
-                        i,
-                        "), jobDriver=",
-                        base.GetType(),
-                        ": ",
-                        ex
-                    }));
+                    Log.Error(string.Concat("Pawn ", caravan,
+                        " threw exception while executing a global finish action (", i, "), jobDriver=", GetType(),
+                        ": ", ex));
                 }
-            }
-            if (this.HaveCurToil)
-            {
-                this.CurToil.Cleanup();
-            }
+            if (HaveCurToil)
+                CurToil.Cleanup();
         }
 
         internal void SetupToils()
         {
             try
             {
-                this.toils.Clear();
-                foreach (CaravanToil current in this.MakeNewToils())
+                toils.Clear();
+                foreach (var current in MakeNewToils())
                 {
                     if (current.defaultCompleteMode == ToilCompleteMode.Undefined)
                     {
                         Log.Error("Toil has undefined complete mode.");
                         current.defaultCompleteMode = ToilCompleteMode.Instant;
                     }
-                    current.actor = this.caravan;
-                    this.toils.Add(current);
+                    current.actor = caravan;
+                    toils.Add(current);
                 }
             }
             catch (Exception ex)
             {
-                Find.World.GetComponent<CaravanJobGiver>().Tracker(caravan).StartErrorRecoverJob(string.Concat(new object[]
-                {
-                    "Exception in SetupToils (pawn=",
-                    this.caravan,
-                    ", job=",
-                    this.CurJob,
-                    "): ",
-                    ex
-                }));
+                Find.World.GetComponent<CaravanJobGiver>().Tracker(caravan).StartErrorRecoverJob(
+                    string.Concat("Exception in SetupToils (pawn=", caravan, ", job=", CurJob, "): ", ex));
             }
         }
 
@@ -325,154 +207,117 @@ namespace JecsTools
         {
             try
             {
-                this.ticksLeftThisToil--;
-                this.debugTicksSpentThisToil++;
-                if (this.CurToil == null)
+                ticksLeftThisToil--;
+                debugTicksSpentThisToil++;
+                if (CurToil == null)
                 {
                     //if (!this.caravan.stances.FullBodyBusy || this.CanStartNextToilInBusyStance)
                     //{
-                        this.ReadyForNextToil();
+                    ReadyForNextToil();
                     //}
                 }
-                else if (!this.CheckCurrentToilEndOrFail())
+                else if (!CheckCurrentToilEndOrFail())
                 {
-                    if (this.curToilCompleteMode == ToilCompleteMode.Delay)
+                    if (curToilCompleteMode == ToilCompleteMode.Delay)
                     {
-                        if (this.ticksLeftThisToil <= 0)
+                        if (ticksLeftThisToil <= 0)
                         {
-                            this.ReadyForNextToil();
+                            ReadyForNextToil();
                             return;
                         }
                     }
-                    else if (this.curToilCompleteMode == ToilCompleteMode.FinishedBusy) //&& !this.caravan.stances.FullBodyBusy)
+                    else if (curToilCompleteMode == ToilCompleteMode.FinishedBusy
+                    ) //&& !this.caravan.stances.FullBodyBusy)
                     {
-                        this.ReadyForNextToil();
+                        ReadyForNextToil();
                         return;
                     }
-                    if (this.wantBeginNextToil)
+                    if (wantBeginNextToil)
                     {
-                        this.TryActuallyStartNextToil();
+                        TryActuallyStartNextToil();
                     }
-                    else if (this.curToilCompleteMode == ToilCompleteMode.Instant && this.debugTicksSpentThisToil > 300)
+                    else if (curToilCompleteMode == ToilCompleteMode.Instant && debugTicksSpentThisToil > 300)
                     {
-                        Log.Error(string.Concat(new object[]
-                        {
-                            this.caravan,
-                            " had to be broken from frozen state. He was doing job ",
-                            this.CurJob,
-                            ", toilindex=",
-                            this.curToilIndex
-                        }));
-                        this.ReadyForNextToil();
+                        Log.Error(string.Concat(caravan, " had to be broken from frozen state. He was doing job ",
+                            CurJob, ", toilindex=", curToilIndex));
+                        ReadyForNextToil();
                     }
                     else
                     {
-                        CaravanJob curJob = this.CurJob;
-                        if (this.CurToil.preTickActions != null)
+                        var curJob = CurJob;
+                        if (CurToil.preTickActions != null)
                         {
-                            CaravanToil curToil = this.CurToil;
-                            for (int i = 0; i < curToil.preTickActions.Count; i++)
+                            var curToil = CurToil;
+                            for (var i = 0; i < curToil.preTickActions.Count; i++)
                             {
                                 curToil.preTickActions[i]();
-                                if (this.CurJob != curJob)
-                                {
+                                if (CurJob != curJob)
                                     return;
-                                }
-                                if (this.CurToil != curToil || this.wantBeginNextToil)
-                                {
+                                if (CurToil != curToil || wantBeginNextToil)
                                     return;
-                                }
                             }
                         }
-                        if (this.CurToil.tickAction != null)
-                        {
-                            this.CurToil.tickAction();
-                        }
+                        if (CurToil.tickAction != null)
+                            CurToil.tickAction();
                     }
                 }
             }
             catch (Exception ex)
             {
-                Find.World.GetComponent<CaravanJobGiver>().Tracker(caravan).StartErrorRecoverJob(string.Concat(new object[]
-                {
-                    "Exception in Tick (pawn=",
-                    this.caravan,
-                    ", job=",
-                    this.CurJob,
-                    ", CurToil=",
-                    this.curToilIndex,
-                    "): ",
-                    ex
-                }));
+                Find.World.GetComponent<CaravanJobGiver>().Tracker(caravan).StartErrorRecoverJob(
+                    string.Concat("Exception in Tick (pawn=", caravan, ", job=", CurJob, ", CurToil=", curToilIndex,
+                        "): ", ex));
             }
         }
 
         public void ReadyForNextToil()
         {
-            this.wantBeginNextToil = true;
-            this.TryActuallyStartNextToil();
+            wantBeginNextToil = true;
+            TryActuallyStartNextToil();
         }
 
         private void TryActuallyStartNextToil()
         {
-            if (!this.caravan.Spawned)
+            if (!caravan.Spawned)
+                return;
+            if (HaveCurToil)
+                CurToil.Cleanup();
+            curToilIndex++;
+            wantBeginNextToil = false;
+            if (!HaveCurToil)
             {
+                EndJobWith(JobCondition.Succeeded);
                 return;
             }
-            if (this.HaveCurToil)
+            debugTicksSpentThisToil = 0;
+            ticksLeftThisToil = CurToil.defaultDuration;
+            curToilCompleteMode = CurToil.defaultCompleteMode;
+            if (!CheckCurrentToilEndOrFail())
             {
-                this.CurToil.Cleanup();
-            }
-            this.curToilIndex++;
-            this.wantBeginNextToil = false;
-            if (!this.HaveCurToil)
-            {
-                this.EndJobWith(JobCondition.Succeeded);
-                return;
-            }
-            this.debugTicksSpentThisToil = 0;
-            this.ticksLeftThisToil = this.CurToil.defaultDuration;
-            this.curToilCompleteMode = this.CurToil.defaultCompleteMode;
-            if (!this.CheckCurrentToilEndOrFail())
-            {
-                int num = this.CurToilIndex;
-                if (this.CurToil.preInitActions != null)
-                {
-                    for (int i = 0; i < this.CurToil.preInitActions.Count; i++)
+                var num = CurToilIndex;
+                if (CurToil.preInitActions != null)
+                    for (var i = 0; i < CurToil.preInitActions.Count; i++)
                     {
-                        this.CurToil.preInitActions[i]();
-                        if (this.CurToilIndex != num)
-                        {
+                        CurToil.preInitActions[i]();
+                        if (CurToilIndex != num)
                             break;
-                        }
                     }
-                }
-                if (this.CurToilIndex == num)
+                if (CurToilIndex == num)
                 {
-                    if (this.CurToil.initAction != null)
-                    {
+                    if (CurToil.initAction != null)
                         try
                         {
-                            this.CurToil.initAction();
+                            CurToil.initAction();
                         }
                         catch (Exception ex)
                         {
-                            Find.World.GetComponent<CaravanJobGiver>().Tracker(caravan).StartErrorRecoverJob(string.Concat(new object[]
-                            {
-                                "JobDriver threw exception in initAction. Pawn=",
-                                this.caravan,
-                                ", Job=",
-                                this.CurJob,
-                                ", Exception: ",
-                                ex
-                            }));
+                            Find.World.GetComponent<CaravanJobGiver>().Tracker(caravan)
+                                .StartErrorRecoverJob(string.Concat("JobDriver threw exception in initAction. Pawn=",
+                                    caravan, ", Job=", CurJob, ", Exception: ", ex));
                             return;
                         }
-                    }
-                    if (this.CurToilIndex == num && !this.ended && this.curToilCompleteMode == ToilCompleteMode.Instant)
-                    {
-                        this.ReadyForNextToil();
-                    }
+                    if (CurToilIndex == num && !ended && curToilCompleteMode == ToilCompleteMode.Instant)
+                        ReadyForNextToil();
                 }
             }
         }
@@ -480,59 +325,51 @@ namespace JecsTools
         public void EndJobWith(JobCondition condition)
         {
             if (condition == JobCondition.Ongoing)
-            {
                 Log.Warning("Ending a job with Ongoing as the condition. This makes no sense.");
-            }
-            if (this.caravan.Spawned)
-            {
+            if (caravan.Spawned)
                 Find.World.GetComponent<CaravanJobGiver>().Tracker(caravan).EndCurrentJob(condition, true);
-            }
         }
 
         private bool CheckCurrentToilEndOrFail()
         {
-            CaravanToil curToil = this.CurToil;
-            if (this.globalFailConditions != null)
-            {
-                for (int i = 0; i < this.globalFailConditions.Count; i++)
+            var curToil = CurToil;
+            if (globalFailConditions != null)
+                for (var i = 0; i < globalFailConditions.Count; i++)
                 {
-                    JobCondition jobCondition = this.globalFailConditions[i]();
+                    var jobCondition = globalFailConditions[i]();
                     if (jobCondition != JobCondition.Ongoing)
                     {
-                        this.EndJobWith(jobCondition);
+                        EndJobWith(jobCondition);
                         return true;
                     }
                 }
-            }
             if (curToil != null && curToil.endConditions != null)
-            {
-                for (int j = 0; j < curToil.endConditions.Count; j++)
+                for (var j = 0; j < curToil.endConditions.Count; j++)
                 {
-                    JobCondition jobCondition2 = curToil.endConditions[j]();
+                    var jobCondition2 = curToil.endConditions[j]();
                     if (jobCondition2 != JobCondition.Ongoing)
                     {
-                        this.EndJobWith(jobCondition2);
+                        EndJobWith(jobCondition2);
                         return true;
                     }
                 }
-            }
             return false;
         }
 
         private void SetNextToil(CaravanToil to)
         {
-            this.curToilIndex = this.toils.IndexOf(to) - 1;
+            curToilIndex = toils.IndexOf(to) - 1;
         }
 
         public void JumpToToil(CaravanToil to)
         {
-            this.SetNextToil(to);
-            this.ReadyForNextToil();
+            SetNextToil(to);
+            ReadyForNextToil();
         }
 
         public virtual void Notify_Starting()
         {
-            this.startTick = Find.TickManager.TicksGame;
+            startTick = Find.TickManager.TicksGame;
         }
 
         public virtual void Notify_LastPosture(PawnPosture posture, LayingDownState layingDown)
@@ -541,46 +378,32 @@ namespace JecsTools
 
         public virtual void Notify_PatherArrived()
         {
-            if (this.curToilCompleteMode == ToilCompleteMode.PatherArrival)
-            {
-                this.ReadyForNextToil();
-            }
+            if (curToilCompleteMode == ToilCompleteMode.PatherArrival)
+                ReadyForNextToil();
         }
 
         public virtual void Notify_PatherFailed()
         {
-            this.EndJobWith(JobCondition.ErroredPather);
+            EndJobWith(JobCondition.ErroredPather);
         }
 
         public virtual void Notify_StanceChanged()
         {
         }
 
-        public Caravan GetActor()
-        {
-            return this.caravan;
-        }
-
-        public void AddEndCondition(Func<JobCondition> newEndCondition)
-        {
-            this.globalFailConditions.Add(newEndCondition);
-        }
-
         public void AddFailCondition(Func<bool> newFailCondition)
         {
-            this.globalFailConditions.Add(delegate
+            globalFailConditions.Add(delegate
             {
                 if (newFailCondition())
-                {
                     return JobCondition.Incompletable;
-                }
                 return JobCondition.Ongoing;
             });
         }
 
         public void AddFinishAction(Action newAct)
         {
-            this.globalFinishActions.Add(newAct);
+            globalFinishActions.Add(newAct);
         }
 
         public virtual bool ModifyCarriedThingDrawPos(ref Vector3 drawPos, ref bool behind, ref bool flip)
@@ -590,10 +413,8 @@ namespace JecsTools
 
         public virtual RandomSocialMode DesiredSocialMode()
         {
-            if (this.CurToil != null)
-            {
-                return this.CurToil.socialMode;
-            }
+            if (CurToil != null)
+                return CurToil.socialMode;
             return RandomSocialMode.Normal;
         }
 

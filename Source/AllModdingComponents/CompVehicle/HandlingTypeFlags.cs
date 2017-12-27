@@ -1,5 +1,4 @@
 ﻿using System;
-using RimWorld;
 
 namespace CompVehicle
 {
@@ -9,6 +8,6 @@ namespace CompVehicle
         None = 0,
         Movement = 1,
         Manipulation = 2,
-        Weapons = 4,
+        Weapons = 4
     }
 }

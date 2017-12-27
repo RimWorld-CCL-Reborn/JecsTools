@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Linq;
-using System.Text;
 using System.Collections.Generic;
+using System.Linq;
 using RimWorld;
 using Verse;
-using UnityEngine;
-using Verse.AI;
-using Verse.Sound;
 
 namespace AbilityUser
 {
@@ -27,97 +23,110 @@ namespace AbilityUser
         //public Verb_UseAbility curVerb;
         //public Rot4 curRotation;
 
-        private AbilityData abilityData = null;
+        private AbilityData abilityData;
+
+        public Pawn abilityUserSave;
+
+        public bool IsInitialized;
+
         public virtual AbilityData AbilityData
         {
             get
             {
                 if (abilityData == null)
-                {
                     abilityData = new AbilityData(this);
-                }
                 return abilityData;
             }
         }
 
-        public bool IsInitialized = false;
-
-        //public List<Verb_UseAbility> AbilityVerbs = new List<Verb_UseAbility>();
-
-        public void AddPawnAbility(AbilityDef abilityDef, bool activenow = true, float savedTicks = -1) => this.AddAbilityInternal(abilityDef, this.AbilityData.Powers, activenow, savedTicks);
-        public void AddWeaponAbility(AbilityDef abilityDef, bool activenow = true, float savedTicks = -1) => this.AddAbilityInternal(abilityDef, this.AbilityData.TemporaryWeaponPowers, activenow, savedTicks);
-        public void AddApparelAbility(AbilityDef abilityDef, bool activenow = true, float savedTicks = -1) => this.AddAbilityInternal(abilityDef, this.AbilityData.TemporaryApparelPowers, activenow, savedTicks);
-
-        private void AddAbilityInternal(AbilityDef abilityDef, List<PawnAbility> thelist, bool activenow, float savedTicks)
-        {
-                PawnAbility pa = (PawnAbility)Activator.CreateInstance(abilityDef.abilityClass);
-                pa.Pawn = this.AbilityUser;
-                pa.Def = abilityDef;
-                thelist.Add(pa);
-            this.UpdateAbilities();
-        }
-
-        public void RemovePawnAbility(AbilityDef abilityDef) => this.RemoveAbilityInternal(abilityDef, this.AbilityData.Powers);
-        public void RemoveWeaponAbility(AbilityDef abilityDef) => this.RemoveAbilityInternal(abilityDef, this.AbilityData.TemporaryWeaponPowers);
-        public void RemoveApparelAbility(AbilityDef abilityDef) => this.RemoveAbilityInternal(abilityDef, this.AbilityData.TemporaryApparelPowers);
-
-        private void RemoveAbilityInternal(AbilityDef abilityDef, List<PawnAbility> thelist)
-        {
-            PawnAbility abilityToRemove = thelist.FirstOrDefault(x => x.Def == abilityDef);
-            if (abilityToRemove != null)
-            {
-                thelist.Remove(abilityToRemove);
-            }
-            abilityToRemove = this.AbilityData.Powers.FirstOrDefault(x => x.Def == abilityDef);
-            if (abilityToRemove != null)
-            {
-                this.AbilityData.Powers.Remove(abilityToRemove);
-            }
-            this.UpdateAbilities();
-        }
-
-        public Pawn abilityUserSave = null;
         public Pawn Pawn => AbilityUser;
+
         public Pawn AbilityUser
         {
             get
             {
-                if (this.abilityUserSave == null)
-                {
-                    this.abilityUserSave = this.parent as Pawn;
-                }
-                return this.abilityUserSave;
+                if (abilityUserSave == null)
+                    abilityUserSave = parent as Pawn;
+                return abilityUserSave;
             }
         }
-        public CompProperties_AbilityUser Props => (CompProperties_AbilityUser)this.props;
 
-        public override void PostSpawnSetup(bool respawningAfterLoad) => base.PostSpawnSetup(respawningAfterLoad);
+        public CompProperties_AbilityUser Props => (CompProperties_AbilityUser) props;
+
+        //public List<Verb_UseAbility> AbilityVerbs = new List<Verb_UseAbility>();
+
+        public void AddPawnAbility(AbilityDef abilityDef, bool activenow = true, float savedTicks = -1)
+        {
+            AddAbilityInternal(abilityDef, AbilityData.Powers, activenow, savedTicks);
+        }
+
+        public void AddWeaponAbility(AbilityDef abilityDef, bool activenow = true, float savedTicks = -1)
+        {
+            AddAbilityInternal(abilityDef, AbilityData.TemporaryWeaponPowers, activenow, savedTicks);
+        }
+
+        public void AddApparelAbility(AbilityDef abilityDef, bool activenow = true, float savedTicks = -1)
+        {
+            AddAbilityInternal(abilityDef, AbilityData.TemporaryApparelPowers, activenow, savedTicks);
+        }
+
+        private void AddAbilityInternal(AbilityDef abilityDef, List<PawnAbility> thelist, bool activenow,
+            float savedTicks)
+        {
+            var pa = (PawnAbility) Activator.CreateInstance(abilityDef.abilityClass);
+            pa.Pawn = AbilityUser;
+            pa.Def = abilityDef;
+            thelist.Add(pa);
+            UpdateAbilities();
+        }
+
+        public void RemovePawnAbility(AbilityDef abilityDef)
+        {
+            RemoveAbilityInternal(abilityDef, AbilityData.Powers);
+        }
+
+        public void RemoveWeaponAbility(AbilityDef abilityDef)
+        {
+            RemoveAbilityInternal(abilityDef, AbilityData.TemporaryWeaponPowers);
+        }
+
+        public void RemoveApparelAbility(AbilityDef abilityDef)
+        {
+            RemoveAbilityInternal(abilityDef, AbilityData.TemporaryApparelPowers);
+        }
+
+        private void RemoveAbilityInternal(AbilityDef abilityDef, List<PawnAbility> thelist)
+        {
+            var abilityToRemove = thelist.FirstOrDefault(x => x.Def == abilityDef);
+            if (abilityToRemove != null)
+                thelist.Remove(abilityToRemove);
+            abilityToRemove = AbilityData.Powers.FirstOrDefault(x => x.Def == abilityDef);
+            if (abilityToRemove != null)
+                AbilityData.Powers.Remove(abilityToRemove);
+            UpdateAbilities();
+        }
+
+        public override void PostSpawnSetup(bool respawningAfterLoad)
+        {
+            base.PostSpawnSetup(respawningAfterLoad);
+        }
 
         public override void CompTick()
         {
             base.CompTick();
-            if (!this.IsInitialized && TryTransformPawn())
-            {
+            if (!IsInitialized && TryTransformPawn())
                 Initialize();
-            }
-            if (this.IsInitialized)
-            {
-                ///Ticks for each ability
-                if (this.AbilityData?.AllPowers != null && this.AbilityData?.AllPowers.Count > 0)
-                {
-                    foreach (PawnAbility power in this.AbilityData.AllPowers)
-                    {
+            if (IsInitialized)
+                if (AbilityData?.AllPowers != null && AbilityData?.AllPowers.Count > 0)
+                    foreach (var power in AbilityData.AllPowers)
                         power.Tick();
-                    }
-                }
-            }
         }
 
         public override IEnumerable<Gizmo> CompGetGizmosExtra()
         {
-            for (int i = 0; i < this.AbilityData?.AllPowers.Count; i++)
+            for (var i = 0; i < AbilityData?.AllPowers.Count; i++)
             {
-                PawnAbility ability = this.AbilityData?.AllPowers[i];
+                var ability = AbilityData?.AllPowers[i];
                 if (ability.ShouldShowGizmo())
                     yield return ability.GetGizmo();
             }
@@ -125,44 +134,64 @@ namespace AbilityUser
 
         public override void PostExposeData()
         {
-            Scribe_Values.Look<bool>(ref this.IsInitialized, "IsInitialized", false);
-            Scribe_Deep.Look<AbilityData>(ref this.abilityData, "abilityData", new object[]
-            {
-                this
-            });
+            Scribe_Values.Look(ref IsInitialized, "IsInitialized", false);
+            Scribe_Deep.Look(ref abilityData, "abilityData", this);
 
             if (Scribe.mode == LoadSaveMode.PostLoadInit)
             {
-                List<PawnAbility> tempAbilities = new List<PawnAbility>(this.AbilityData.Powers);
+                var tempAbilities = new List<PawnAbility>(AbilityData.Powers);
                 if (!tempAbilities.NullOrEmpty())
-                {
-                    foreach (PawnAbility pa in tempAbilities)
-                    {
+                    foreach (var pa in tempAbilities)
                         if (pa.Def.abilityClass != pa.GetType())
                         {
                             RemovePawnAbility(pa.Def);
                             AddPawnAbility(pa.Def);
                         }
-                    }
-                }
             }
+        }
+
+        public void UpdateAbilities()
+        {
+            if (IsInitialized)
+            {
+                //this.AbilityVerbs.Clear();
+                var abList = new List<PawnAbility>();
+                if (!AbilityData.Powers.NullOrEmpty()) abList.AddRange(AbilityData.Powers);
+                if (!AbilityData.TemporaryWeaponPowers.NullOrEmpty())
+                    abList.AddRange(AbilityData.TemporaryWeaponPowers);
+                if (!AbilityData.TemporaryApparelPowers.NullOrEmpty())
+                    abList.AddRange(AbilityData.TemporaryApparelPowers);
+
+                AbilityData.AllPowers = abList;
+            }
+        }
+
+
+        // override this in your children. this is used to determine if this pawn
+        // should be instantiated with this type of CompAbilityUser. By default,
+        // returns true.
+        public virtual bool TryTransformPawn()
+        {
+            return false;
         }
 
         #region virtual
 
-        public virtual void PostInitialize() { }
+        public virtual void PostInitialize()
+        {
+        }
 
         public virtual void Initialize()
         {
             //            Log.Warning(" CompAbilityUser.Initialize ");
-            this.IsInitialized = true;
+            IsInitialized = true;
             //this.abilityPowerManager = new AbilityPowerManager(this);
             PostInitialize();
         }
 
         public virtual List<HediffDef> IgnoredHediffs()
         {
-            List<HediffDef> result = new List<HediffDef>();
+            var result = new List<HediffDef>();
             return result;
         }
 
@@ -173,45 +202,29 @@ namespace AbilityUser
             return true;
         }
 
-        public virtual string PostAbilityVerbCompDesc(VerbProperties_Ability verbDef) => "";
+        public virtual string PostAbilityVerbCompDesc(VerbProperties_Ability verbDef)
+        {
+            return "";
+        }
 
 
-        public virtual string PostAbilityVerbDesc() => "";
+        public virtual string PostAbilityVerbDesc()
+        {
+            return "";
+        }
 
         public virtual float GrappleModifier => 0f;
 
-
         #endregion virtual
-
-        public void UpdateAbilities()
-        {
-            if (this.IsInitialized)
-            {
-                //this.AbilityVerbs.Clear();
-                List<PawnAbility> abList = new List<PawnAbility>();
-                if (!this.AbilityData.Powers.NullOrEmpty()) abList.AddRange(this.AbilityData.Powers);
-                if (!this.AbilityData.TemporaryWeaponPowers.NullOrEmpty()) abList.AddRange(this.AbilityData.TemporaryWeaponPowers);
-                if (!this.AbilityData.TemporaryApparelPowers.NullOrEmpty()) abList.AddRange(this.AbilityData.TemporaryApparelPowers);
-
-                this.AbilityData.AllPowers = abList;
-                
-            }
-        }
-
-        
-        // override this in your children. this is used to determine if this pawn
-        // should be instantiated with this type of CompAbilityUser. By default,
-        // returns true.
-        public virtual bool TryTransformPawn() => false;
-
-
     }
 
     // Exists for items to add powers to as it will always be on every Pawn
     // and initiated.
     public class GenericCompAbilityUser : CompAbilityUser
     {
-        public override bool TryTransformPawn() => true;
+        public override bool TryTransformPawn()
+        {
+            return true;
+        }
     }
-
 }

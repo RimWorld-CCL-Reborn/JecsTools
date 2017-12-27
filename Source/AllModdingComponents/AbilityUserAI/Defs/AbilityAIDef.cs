@@ -1,10 +1,7 @@
-﻿using AbilityUser;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using AbilityUser;
 using Verse;
-using Verse.AI;
 
 /* 
  * Author: ChJees
@@ -14,27 +11,82 @@ using Verse.AI;
 namespace AbilityUserAI
 {
     /// <summary>
-    /// Defines how the AI can interact with a ability.
+    ///     Defines how the AI can interact with a ability.
     /// </summary>
     public class AbilityAIDef : Def
     {
         /// <summary>
-        /// Ability to interact with.
+        ///     Ability to interact with.
         /// </summary>
         public AbilityDef ability;
 
         /// <summary>
-        /// Worker class for this profile. Will use default implementation if nothing else is specified.
+        ///     Ability radius for Area of Effect and beam-like abilities.
         /// </summary>
-        public Type workerClass = typeof(AbilityWorker);
+        public float abilityRadius = 1f;
 
         /// <summary>
-        /// Internal worker class implementation.
+        ///     Abilities with radius need to be able to "see" their targets from the epicenter in order to be used well.
+        /// </summary>
+        public bool abilityRadiusNeedSight = true;
+
+        /// <summary>
+        ///     Won't cast this ability if the pawn already got one of these applied on themselves.
+        /// </summary>
+        public List<HediffDef> appliedHediffs = new List<HediffDef>();
+
+        /// <summary>
+        ///     Can this ability target a ally?
+        /// </summary>
+        public bool canTargetAlly = false;
+
+        /// <summary>
+        ///     Internal worker class implementation.
         /// </summary>
         private AbilityWorker intWorkerClass;
 
         /// <summary>
-        /// Worker object for this Ability. Default implementation is only taking in account for single target abilities.
+        ///     Maximum allowed range to use this ability in.
+        /// </summary>
+        public float maxRange = 9999.0f;
+
+        /// <summary>
+        ///     Minimum allowed range to use this ability in.
+        /// </summary>
+        public float minRange = 0.0f;
+
+        /// <summary>
+        ///     Do this ability need a target at all to be used?
+        /// </summary>
+        public bool needEnemyTarget = true;
+
+        /// <summary>
+        ///     Do this ability need to see the target to be used?
+        /// </summary>
+        public bool needSeeingTarget = true;
+
+        /// <summary>
+        ///     Relative power this ability got in comparison to other.
+        /// </summary>
+        public float power = 1.0f;
+
+        /// <summary>
+        ///     Tags to use in the AIAbilityWorker to do decision making.
+        /// </summary>
+        public List<string> tags = new List<string>();
+
+        /// <summary>
+        ///     Is this ability used on the caster?
+        /// </summary>
+        public bool usedOnCaster = false;
+
+        /// <summary>
+        ///     Worker class for this profile. Will use default implementation if nothing else is specified.
+        /// </summary>
+        public Type workerClass = typeof(AbilityWorker);
+
+        /// <summary>
+        ///     Worker object for this Ability. Default implementation is only taking in account for single target abilities.
         /// </summary>
         public AbilityWorker Worker
         {
@@ -42,71 +94,14 @@ namespace AbilityUserAI
             {
                 //Instantiate if null.
                 if (intWorkerClass == null)
-                {
-                    intWorkerClass = (AbilityWorker)Activator.CreateInstance(workerClass);
-                }
+                    intWorkerClass = (AbilityWorker) Activator.CreateInstance(workerClass);
 
                 return intWorkerClass;
             }
         }
 
         /// <summary>
-        /// Tags to use in the AIAbilityWorker to do decision making.
-        /// </summary>
-        public List<string> tags = new List<string>();
-
-        /// <summary>
-        /// Won't cast this ability if the pawn already got one of these applied on themselves.
-        /// </summary>
-        public List<HediffDef> appliedHediffs = new List<HediffDef>();
-
-        /// <summary>
-        /// Relative power this ability got in comparison to other.
-        /// </summary>
-        public float power = 1.0f;
-
-        /// <summary>
-        /// Do this ability need a target at all to be used?
-        /// </summary>
-        public bool needEnemyTarget = true;
-
-        /// <summary>
-        /// Do this ability need to see the target to be used?
-        /// </summary>
-        public bool needSeeingTarget = true;
-
-        /// <summary>
-        /// Is this ability used on the caster?
-        /// </summary>
-        public bool usedOnCaster = false;
-
-        /// <summary>
-        /// Can this ability target a ally?
-        /// </summary>
-        public bool canTargetAlly = false;
-
-        /// <summary>
-        /// Minimum allowed range to use this ability in.
-        /// </summary>
-        public float minRange = 0.0f;
-
-        /// <summary>
-        /// Maximum allowed range to use this ability in.
-        /// </summary>
-        public float maxRange = 9999.0f;
-
-        /// <summary>
-        /// Ability radius for Area of Effect and beam-like abilities.
-        /// </summary>
-        public float abilityRadius = 1f;
-
-        /// <summary>
-        /// Abilities with radius need to be able to "see" their targets from the epicenter in order to be used well.
-        /// </summary>
-        public bool abilityRadiusNeedSight = true;
-
-        /// <summary>
-        /// Can the caster use this ability at all?
+        ///     Can the caster use this ability at all?
         /// </summary>
         /// <param name="caster">Caster wanting to use ability.</param>
         /// <param name="target">Target if any to use ability on.</param>
@@ -116,7 +111,8 @@ namespace AbilityUserAI
             //if (!appliedHediffs.NullOrEmpty())
             //    return false;
 
-            if (appliedHediffs.Count > 0 && !appliedHediffs.Any(hediffDef => caster.health.hediffSet.HasHediff(hediffDef)))
+            if (appliedHediffs.Count > 0 &&
+                !appliedHediffs.Any(hediffDef => caster.health.hediffSet.HasHediff(hediffDef)))
                 return false;
 
             if (!Worker.CanPawnUseThisAbility(this, caster, target))
@@ -127,10 +123,10 @@ namespace AbilityUserAI
 
             if (!usedOnCaster && target.IsValid)
             {
-                float distance = Math.Abs(caster.Position.DistanceTo(target.Cell));
+                var distance = Math.Abs(caster.Position.DistanceTo(target.Cell));
                 //Log.Message("CanPawnUseThisAbility.distance=" + distance);
 
-                if(distance < minRange || distance > maxRange)
+                if (distance < minRange || distance > maxRange)
                     return false;
 
                 //if (needSeeingTarget && !GenSight.LineOfSight(caster.Position, target.Cell, caster.Map))

@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Verse;
-using RimWorld;
+﻿using System.Collections.Generic;
 using UnityEngine;
+using Verse;
 
 namespace CompOverlays
 {
@@ -16,13 +12,12 @@ namespace CompOverlays
 
     public class CompProperties_Overlays : CompProperties
     {
-        public List<GraphicOverlay> overlays = new List<GraphicOverlay>();
-
         public bool fuelRequired = false;
+        public List<GraphicOverlay> overlays = new List<GraphicOverlay>();
 
         public CompProperties_Overlays()
         {
-            this.compClass = typeof(CompOverlays);
+            compClass = typeof(CompOverlays);
         }
     }
 }

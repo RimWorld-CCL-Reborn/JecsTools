@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Xml;
+﻿using System.Xml;
 using Verse;
 
 /* 
@@ -13,17 +9,17 @@ using Verse;
 namespace AbilityUserAI
 {
     /// <summary>
-    /// Represents the weight of a tag.
+    ///     Represents the weight of a tag.
     /// </summary>
     public class TagWeight
     {
         /// <summary>
-        /// Tag name.
+        ///     Tag name.
         /// </summary>
         public string tag;
 
         /// <summary>
-        /// Tag weight.
+        ///     Tag weight.
         /// </summary>
         public float weight;
 
@@ -47,25 +43,18 @@ namespace AbilityUserAI
                 return;
             }
 
-            this.tag = xmlRoot.Name;
-            this.weight = (float)ParseHelper.FromString(xmlRoot.FirstChild.Value, typeof(float));
+            tag = xmlRoot.Name;
+            weight = (float) ParseHelper.FromString(xmlRoot.FirstChild.Value, typeof(float));
         }
 
         public override string ToString()
         {
-            return string.Concat(new object[]
-            {
-                "(",
-                this.weight,
-                "x ",
-                (this.tag == null) ? "null" : this.tag,
-                ")"
-            });
+            return string.Concat("(", weight, "x ", tag == null ? "null" : tag, ")");
         }
 
         public override int GetHashCode()
         {
-            return (int)this.tag.GetHashCode() + (int)this.weight << 16;
+            return (tag.GetHashCode() + (int) weight) << 16;
         }
     }
 }

@@ -1,37 +1,36 @@
-﻿using RimWorld;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using RimWorld;
 using Verse;
 
 namespace AbilityUser
 {
     public class VerbProperties_Ability : VerbProperties
     {
-        public bool isViolent = true;
-
-        public bool requiresLineOfSight = true;
-        
         public AbilityDef abilityDef;
 
-        public List<SpawnThings> thingsToSpawn = null;
+        public AbilityTargetCategory AbilityTargetCategory = AbilityTargetCategory.TargetThing;
+
+        public bool AlwaysHits = true;
+
+        public List<ExtraDamage> extraDamages = null;
 
         public List<ApplyHediffs> hediffsToApply = null;
+        public bool isViolent = true;
 
         public List<ApplyMentalStates> mentalStatesToApply = null;
 
-        public bool AlwaysHits = true;
-        
+        public bool requiresLineOfSight = true;
+
         public float SecondsToRecharge = 10.0f;
-        
-        public AbilityTargetCategory AbilityTargetCategory = AbilityTargetCategory.TargetThing;
+
+        public List<StatModifier> statModifiers = null;
         public TargetAoEProperties TargetAoEProperties = null;
 
-        public bool tooltipShowProjectileDamage = true;
+        public List<SpawnThings> thingsToSpawn = null;
         public bool tooltipShowExtraDamages = true;
         public bool tooltipShowHediffsToApply = true;
         public bool tooltipShowMentalStatesToApply = true;
-        
-        public List<StatModifier> statModifiers = null;
 
-        public List<ExtraDamage> extraDamages = null;
+        public bool tooltipShowProjectileDamage = true;
     }
 }

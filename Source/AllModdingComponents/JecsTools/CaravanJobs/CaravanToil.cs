@@ -1,7 +1,7 @@
-﻿using RimWorld;
-using RimWorld.Planet;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using RimWorld;
+using RimWorld.Planet;
 using Verse;
 using Verse.AI;
 
@@ -19,103 +19,83 @@ namespace JecsTools
     {
         public Caravan actor;
 
-        public Action initAction;
-
-        public Action tickAction;
-
-        public List<Func<JobCondition>> endConditions = new List<Func<JobCondition>>();
-
-        public List<Action> preInitActions;
-
-        public List<Action> preTickActions;
-
-        public List<Action> finishActions;
-
         public bool atomicWithPrevious;
-
-        public RandomSocialMode socialMode = RandomSocialMode.Normal;
 
         public ToilCompleteMode defaultCompleteMode = ToilCompleteMode.Instant;
 
         public int defaultDuration;
 
+        public List<Func<JobCondition>> endConditions = new List<Func<JobCondition>>();
+
+        public List<Action> finishActions;
+
         public bool handlingFacing;
 
-        public void Cleanup()
-        {
-            if (this.finishActions != null)
-            {
-                for (int i = 0; i < this.finishActions.Count; i++)
-                {
-                    try
-                    {
-                        this.finishActions[i]();
-                    }
-                    catch (Exception ex)
-                    {
-                        Log.Error(string.Concat(new object[]
-                        {
-                            "Pawn ",
-                            this.actor,
-                            " threw exception while executing toil's finish action (",
-                            i,
-                            "), curJob=",
-                            Find.World.GetComponent<CaravanJobGiver>().CurJob(actor),
-                            ": ",
-                            ex
-                        }));
-                    }
-                }
-            }
-        }
+        public Action initAction;
+
+        public List<Action> preInitActions;
+
+        public List<Action> preTickActions;
+
+        public RandomSocialMode socialMode = RandomSocialMode.Normal;
+
+        public Action tickAction;
 
         public Caravan GetActor()
         {
-            return this.actor;
-        }
-
-        public void AddFailCondition(Func<bool> newFailCondition)
-        {
-            this.endConditions.Add(delegate
-            {
-                if (newFailCondition())
-                {
-                    return JobCondition.Incompletable;
-                }
-                return JobCondition.Ongoing;
-            });
+            return actor;
         }
 
         public void AddEndCondition(Func<JobCondition> newEndCondition)
         {
-            this.endConditions.Add(newEndCondition);
+            endConditions.Add(newEndCondition);
+        }
+
+        public void Cleanup()
+        {
+            if (finishActions != null)
+                for (var i = 0; i < finishActions.Count; i++)
+                    try
+                    {
+                        finishActions[i]();
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error(string.Concat("Pawn ", actor,
+                            " threw exception while executing toil's finish action (", i, "), curJob=",
+                            Find.World.GetComponent<CaravanJobGiver>().CurJob(actor), ": ", ex));
+                    }
+        }
+
+        public void AddFailCondition(Func<bool> newFailCondition)
+        {
+            endConditions.Add(delegate
+            {
+                if (newFailCondition())
+                    return JobCondition.Incompletable;
+                return JobCondition.Ongoing;
+            });
         }
 
         public void AddPreInitAction(Action newAct)
         {
-            if (this.preInitActions == null)
-            {
-                this.preInitActions = new List<Action>();
-            }
-            this.preInitActions.Add(newAct);
+            if (preInitActions == null)
+                preInitActions = new List<Action>();
+            preInitActions.Add(newAct);
         }
 
         public void AddPreTickAction(Action newAct)
         {
-            if (this.preTickActions == null)
-            {
-                this.preTickActions = new List<Action>();
-            }
-            this.preTickActions.Add(newAct);
+            if (preTickActions == null)
+                preTickActions = new List<Action>();
+            preTickActions.Add(newAct);
         }
 
         public void AddFinishAction(Action newAct)
         {
-            if (this.finishActions == null)
-            {
-                this.finishActions = new List<Action>();
-            }
-            this.finishActions.Add(newAct);
+            if (finishActions == null)
+                finishActions = new List<Action>();
+            finishActions.Add(newAct);
         }
     }
 }

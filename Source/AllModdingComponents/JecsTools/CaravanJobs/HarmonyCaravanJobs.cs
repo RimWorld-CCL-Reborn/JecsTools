@@ -1,48 +1,42 @@
-﻿using Harmony;
-using RimWorld;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using Verse;
-using Verse.AI;
-using System.Reflection;
-using UnityEngine;
+using Harmony;
+using RimWorld;
 using RimWorld.Planet;
-using System.Diagnostics;
-using System.Threading;
+using Verse;
 
 namespace JecsTools
 {
     [StaticConstructorOnStartup]
-    static class HarmonyCaravanPatches
+    internal static class HarmonyCaravanPatches
     {
         static HarmonyCaravanPatches()
         {
-            HarmonyInstance harmony = HarmonyInstance.Create("rimworld.jecrell.caravanjobs");
+            var harmony = HarmonyInstance.Create("rimworld.jecrell.caravanjobs");
             harmony.Patch(AccessTools.Method(typeof(Caravan), "GetInspectString"), null,
                 new HarmonyMethod(typeof(HarmonyCaravanPatches), nameof(GetInspectString_Jobs)), null);
             harmony.Patch(AccessTools.Method(typeof(WorldSelector), "AutoOrderToTileNow"), null,
                 new HarmonyMethod(typeof(HarmonyCaravanPatches), nameof(AutoOrderToTileNow_Jobs)), null);
             harmony.Patch(AccessTools.Method(typeof(Caravan), "GetGizmos"), null,
                 new HarmonyMethod(typeof(HarmonyCaravanPatches), nameof(GetGizmos_Jobs)), null);
-            harmony.Patch(AccessTools.Method(typeof(RimWorld.Planet.WorldSelector), "SelectableObjectsUnderMouse", new Type[] { typeof(bool).MakeByRefType(), typeof(bool).MakeByRefType() }),
+            harmony.Patch(
+                AccessTools.Method(typeof(WorldSelector), "SelectableObjectsUnderMouse",
+                    new[] {typeof(bool).MakeByRefType(), typeof(bool).MakeByRefType()}),
                 null, new HarmonyMethod(typeof(HarmonyCaravanPatches),
-                nameof(SelectableObjectsUnderMouse_InvisHandler)), null);
+                    nameof(SelectableObjectsUnderMouse_InvisHandler)), null);
         }
 
         // RimWorld.Planet.WorldSelector
-        public static void SelectableObjectsUnderMouse_InvisHandler(ref bool clickedDirectlyOnCaravan, ref bool usedColonistBar, ref IEnumerable<WorldObject> __result)
+        public static void SelectableObjectsUnderMouse_InvisHandler(ref bool clickedDirectlyOnCaravan,
+            ref bool usedColonistBar, ref IEnumerable<WorldObject> __result)
         {
-            List<WorldObject> objects = new List<WorldObject>(__result);
+            var objects = new List<WorldObject>(__result);
             if (!objects.NullOrEmpty())
             {
-                HashSet<WorldObject> temp = new HashSet<WorldObject>(objects);
-                foreach (WorldObject o in temp)
-                {
+                var temp = new HashSet<WorldObject>(objects);
+                foreach (var o in temp)
                     if (!o.SelectableNow)
                         objects.Remove(o);
-                }
             }
             __result = objects;
         }
@@ -54,20 +48,21 @@ namespace JecsTools
         {
             if (__instance.IsPlayerControlled)
             {
-                Tile curTile = Find.WorldGrid[__instance.Tile];
+                var curTile = Find.WorldGrid[__instance.Tile];
                 if (Find.World.GetComponent<CaravanJobGiver>().CurJob(__instance) != null)
-                {
-                    __result = __result.Concat(new[] {new Command_Action()
+                    __result = __result.Concat(new[]
                     {
-                        defaultLabel = "CommandCancelConstructionLabel".Translate(),
-                        defaultDesc = "CommandClearPrioritizedWorkDesc".Translate(),
-                        icon = TexCommand.ClearPrioritizedWork,
-                        action = delegate
+                        new Command_Action
                         {
-                            Find.World.GetComponent<CaravanJobGiver>().Tracker(__instance).StopAll();
-                        } }
+                            defaultLabel = "CommandCancelConstructionLabel".Translate(),
+                            defaultDesc = "CommandClearPrioritizedWorkDesc".Translate(),
+                            icon = TexCommand.ClearPrioritizedWork,
+                            action = delegate
+                            {
+                                Find.World.GetComponent<CaravanJobGiver>().Tracker(__instance).StopAll();
+                            }
+                        }
                     });
-                }
             }
         }
 
@@ -81,11 +76,9 @@ namespace JecsTools
 
         public static void GetInspectString_Jobs(Caravan __instance, ref string __result)
         {
-            if (Find.World.GetComponent<CaravanJobGiver>()?.Tracker(__instance)?.curDriver?.GetReport() is string s && __result.Contains("CaravanWaiting".Translate()))
-            {
+            if (Find.World.GetComponent<CaravanJobGiver>()?.Tracker(__instance)?.curDriver?.GetReport() is string s &&
+                __result.Contains("CaravanWaiting".Translate()))
                 __result = __result.Replace("CaravanWaiting".Translate(), s.CapitalizeFirst());
-            }
         }
-
     }
 }

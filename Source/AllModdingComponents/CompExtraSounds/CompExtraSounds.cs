@@ -1,17 +1,9 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Diagnostics;
-using System.Collections.Generic;
-using RimWorld;
-using Verse;
-using UnityEngine;
-using Verse.AI;
-using Verse.Sound;
+﻿using Verse;
+
 namespace CompExtraSounds
 {
     internal class CompExtraSounds : ThingComp
     {
-        public CompProperties_ExtraSounds Props => (CompProperties_ExtraSounds)this.props;
+        public CompProperties_ExtraSounds Props => (CompProperties_ExtraSounds) props;
     }
 }

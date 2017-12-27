@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Verse;
-using RimWorld;
 
 namespace AbilityUser
 {
@@ -9,13 +8,12 @@ namespace AbilityUser
     {
         public List<AbilityDef> Abilities = new List<AbilityDef>();
 
-        public Type AbilityUserClass= null;
+        public Type AbilityUserClass;
 
         public CompProperties_AbilityItem()
         {
-            this.compClass = typeof(CompAbilityItem);
-            this.AbilityUserClass = typeof(AbilityUser.GenericCompAbilityUser); // default
+            compClass = typeof(CompAbilityItem);
+            AbilityUserClass = typeof(GenericCompAbilityUser); // default
         }
-
     }
 }

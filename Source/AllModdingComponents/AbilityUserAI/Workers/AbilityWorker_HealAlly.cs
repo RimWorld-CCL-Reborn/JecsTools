@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using Verse;
+using Verse.AI;
 
 /* 
  * Author: ChJees
@@ -12,13 +10,13 @@ using Verse;
 namespace AbilityUserAI
 {
     /// <summary>
-    /// Helps calculating the final Ability power and optimal ally to heal.
+    ///     Helps calculating the final Ability power and optimal ally to heal.
     /// </summary>
     public class AbilityWorker_HealAlly : AbilityWorker
     {
         public override LocalTargetInfo TargetAbilityFor(AbilityAIDef abilityDef, Pawn pawn)
         {
-            Pawn bestPawn = PickBestClosestPawn(abilityDef, pawn);
+            var bestPawn = PickBestClosestPawn(abilityDef, pawn);
 
             if (bestPawn == null)
                 return base.TargetAbilityFor(abilityDef, pawn);
@@ -29,7 +27,7 @@ namespace AbilityUserAI
         public override bool CanPawnUseThisAbility(AbilityAIDef abilityDef, Pawn pawn, LocalTargetInfo target)
         {
             //If no best pawn was found, then we should not bother using ability.
-            Pawn bestPawn = PickBestClosestPawn(abilityDef, pawn);
+            var bestPawn = PickBestClosestPawn(abilityDef, pawn);
 
             if (bestPawn == null)
                 return false;
@@ -38,7 +36,7 @@ namespace AbilityUserAI
         }
 
         /// <summary>
-        /// Picks the best candidate Pawn out of up to 10 other.
+        ///     Picks the best candidate Pawn out of up to 10 other.
         /// </summary>
         /// <param name="abilityDef">Ability Def to optionally take in account.</param>
         /// <param name="pawn">Pawn using the Ability.</param>
@@ -46,14 +44,17 @@ namespace AbilityUserAI
         public virtual Pawn PickBestClosestPawn(AbilityAIDef abilityDef, Pawn pawn)
         {
             Pawn bestPawn = null;
-            float bestHealth = 1f;
+            var bestHealth = 1f;
 
-            List<Thing> checkedThings = new List<Thing>();
+            var checkedThings = new List<Thing>();
 
             //Check 10 closest for optimal target.
-            for (int i = 0; i < 10; i++)
+            for (var i = 0; i < 10; i++)
             {
-                Thing foundThing = GenClosest.ClosestThingReachable(pawn.Position, pawn.Map, ThingRequest.ForGroup(ThingRequestGroup.Pawn), Verse.AI.PathEndMode.OnCell, TraverseParms.For(TraverseMode.NoPassClosedDoors), abilityDef.maxRange, thing => pawn != thing && !checkedThings.Contains(thing) && AbilityUtility.AreAllies(pawn, thing));
+                var foundThing = GenClosest.ClosestThingReachable(pawn.Position, pawn.Map,
+                    ThingRequest.ForGroup(ThingRequestGroup.Pawn), PathEndMode.OnCell,
+                    TraverseParms.For(TraverseMode.NoPassClosedDoors), abilityDef.maxRange,
+                    thing => pawn != thing && !checkedThings.Contains(thing) && AbilityUtility.AreAllies(pawn, thing));
 
                 //Found no valid candidate.
                 if (foundThing == null)
@@ -61,16 +62,14 @@ namespace AbilityUserAI
 
                 checkedThings.Add(foundThing);
 
-                Pawn foundPawn = foundThing as Pawn;
+                var foundPawn = foundThing as Pawn;
 
                 if (foundPawn != null)
-                {
                     if (foundPawn.health.summaryHealth.SummaryHealthPercent < bestHealth)
                     {
                         bestPawn = foundPawn;
                         bestHealth = foundPawn.health.summaryHealth.SummaryHealthPercent;
                     }
-                }
             }
 
             return bestPawn;

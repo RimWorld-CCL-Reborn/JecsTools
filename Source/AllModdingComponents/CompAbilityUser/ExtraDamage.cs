@@ -1,21 +1,18 @@
-﻿using System;
-using RimWorld;
-using Verse;
+﻿using Verse;
+
 namespace AbilityUser
 {
     public class ExtraDamage : IExposable
     {
+        public float chance;
         public int damage;
         public DamageDef damageDef;
-        public float chance;
-
-        public ExtraDamage() { }
 
         public void ExposeData()
         {
-            Scribe_Values.Look<int>(ref this.damage, "damage", -1);
-            Scribe_Defs.Look<DamageDef>(ref this.damageDef, "damageDef");
-            Scribe_Values.Look<float>(ref this.chance, "chance", -1f);
+            Scribe_Values.Look(ref damage, "damage", -1);
+            Scribe_Defs.Look(ref damageDef, "damageDef");
+            Scribe_Values.Look(ref chance, "chance", -1f);
         }
     }
 }

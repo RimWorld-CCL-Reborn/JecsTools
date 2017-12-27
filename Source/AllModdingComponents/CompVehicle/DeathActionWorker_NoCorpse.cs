@@ -1,38 +1,34 @@
 ﻿using Verse;
+
 namespace CompVehicle
 {
     public class DeathActionWorker_NoCorpse : DeathActionWorker
-	{
+    {
+        private Map map;
 
-		Map map;
-
-		public override void PawnDied(Corpse corpse)
-		{
-			//Corpse NullCheck
-			if (corpse == null)
-				return;
+        public override void PawnDied(Corpse corpse)
+        {
+            //Corpse NullCheck
+            if (corpse == null)
+                return;
             //Get Corpse Properties
-            this.map = corpse.Map;
-			IntVec3 pos = corpse.Position;
-            Pawn pawn = corpse.InnerPawn;
+            map = corpse.Map;
+            var pos = corpse.Position;
+            var pawn = corpse.InnerPawn;
 
-			//Destroy Corpse
-			corpse.Destroy();
-			//Read through killedLeavings of the pawn
-			ThingOwner<Thing> thingOwner = new ThingOwner<Thing>();
-            for (int i = 0; i < pawn.def.killedLeavings.Count; i++){
-                Thing thing = ThingMaker.MakeThing(pawn.def.killedLeavings[i].thingDef, null);
+            //Destroy Corpse
+            corpse.Destroy();
+            //Read through killedLeavings of the pawn
+            var thingOwner = new ThingOwner<Thing>();
+            for (var i = 0; i < pawn.def.killedLeavings.Count; i++)
+            {
+                var thing = ThingMaker.MakeThing(pawn.def.killedLeavings[i].thingDef, null);
                 thing.stackCount = pawn.def.killedLeavings[i].count;
-                thingOwner.TryAdd(thing,true);  
+                thingOwner.TryAdd(thing, true);
             }
-			//Generate items/amount in list
-			for (int i = 0; i < thingOwner.Count; i++)
-			{
-				GenPlace.TryPlaceThing(thingOwner[i], pos, this.map, ThingPlaceMode.Near, null);
-
-			}
-
-		}
-	}
+            //Generate items/amount in list
+            for (var i = 0; i < thingOwner.Count; i++)
+                GenPlace.TryPlaceThing(thingOwner[i], pos, map, ThingPlaceMode.Near, null);
+        }
+    }
 }
-

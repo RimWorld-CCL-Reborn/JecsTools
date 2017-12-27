@@ -1,16 +1,75 @@
-﻿using RimWorld;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using Verse.AI.Group;
-using Verse;
+using RimWorld;
 using RimWorld.Planet;
+using Verse;
 using Verse.AI;
+using Verse.AI.Group;
 
 namespace JecsTools
 {
     public class CaravanJob : IExposable
     {
+        public bool attackDoorIfTargetLost;
+
+        public Bill bill;
+
+        public bool canBash;
+
+        public bool checkOverrideOnExpire;
+
+        public bool collideWithCaravans;
+
+        public ICommunicable commTarget;
+
+        public int count = -1;
+
+        public List<int> countQueue;
         public CaravanJobDef def;
+
+        public bool exitMapOnArrival;
+
+        public bool expireRequiresEnemiesNearby;
+
+        public int expiryInterval = -1;
+
+        public bool failIfCantJoinOrCreateCaravan;
+
+        public bool haulDroppedApparel;
+
+        public HaulMode haulMode;
+
+        public bool haulOpportunisticDuplicates;
+
+        public bool ignoreDesignations;
+
+        public bool ignoreForbidden;
+
+        public bool ignoreJoyTimeAssignment;
+
+        public bool killIncappedTarget;
+
+        public LocomotionUrgency locomotionUrgency = LocomotionUrgency.Jog;
+
+        public Lord lord;
+
+        public int maxNumMeleeAttacks = 2147483647;
+
+        public int maxNumStaticAttacks = 2147483647;
+
+        public bool overeat;
+
+        public List<ThingStackPartClass> placedThings;
+
+        public ThingDef plantDefToSow;
+
+        public bool playerForced;
+
+        public bool restUntilHealed;
+
+        public int startTick = -1;
+
+        public int takeExtraIngestibles;
 
         public GlobalTargetInfo targetA = GlobalTargetInfo.Invalid;
 
@@ -22,75 +81,7 @@ namespace JecsTools
 
         public List<GlobalTargetInfo> targetQueueB;
 
-        public int count = -1;
-
-        public List<int> countQueue;
-
-        public int startTick = -1;
-
-        public int expiryInterval = -1;
-
-        public bool checkOverrideOnExpire;
-
-        public bool playerForced;
-
-        public List<ThingStackPartClass> placedThings;
-
-        public int maxNumMeleeAttacks = 2147483647;
-
-        public int maxNumStaticAttacks = 2147483647;
-
-        public LocomotionUrgency locomotionUrgency = LocomotionUrgency.Jog;
-
-        public HaulMode haulMode;
-
-        public Bill bill;
-
-        public ICommunicable commTarget;
-
-        public ThingDef plantDefToSow;
-
         public Verb verbToUse;
-
-        public bool haulOpportunisticDuplicates;
-
-        public bool exitMapOnArrival;
-
-        public bool failIfCantJoinOrCreateCaravan;
-
-        public bool killIncappedTarget;
-
-        public bool ignoreForbidden;
-
-        public bool ignoreDesignations;
-
-        public bool canBash;
-
-        public bool haulDroppedApparel;
-
-        public bool restUntilHealed;
-
-        public bool ignoreJoyTimeAssignment;
-
-        public bool overeat;
-
-        public bool attackDoorIfTargetLost;
-
-        public int takeExtraIngestibles;
-
-        public bool expireRequiresEnemiesNearby;
-
-        public Lord lord;
-
-        public bool collideWithCaravans;
-
-        public RecipeDef RecipeDef
-        {
-            get
-            {
-                return this.bill.recipe;
-            }
-        }
 
         public CaravanJob()
         {
@@ -111,7 +102,8 @@ namespace JecsTools
             this.targetB = targetB;
         }
 
-        public CaravanJob(CaravanJobDef def, GlobalTargetInfo targetA, GlobalTargetInfo targetB, GlobalTargetInfo targetC)
+        public CaravanJob(CaravanJobDef def, GlobalTargetInfo targetA, GlobalTargetInfo targetB,
+            GlobalTargetInfo targetC)
         {
             this.def = def;
             this.targetA = targetA;
@@ -119,19 +111,64 @@ namespace JecsTools
             this.targetC = targetC;
         }
 
-        public CaravanJob(CaravanJobDef def, GlobalTargetInfo targetA, int expiryInterval, bool checkOverrideOnExpiry = false)
+        public CaravanJob(CaravanJobDef def, GlobalTargetInfo targetA, int expiryInterval,
+            bool checkOverrideOnExpiry = false)
         {
             this.def = def;
             this.targetA = targetA;
             this.expiryInterval = expiryInterval;
-            this.checkOverrideOnExpire = checkOverrideOnExpiry;
+            checkOverrideOnExpire = checkOverrideOnExpiry;
         }
 
         public CaravanJob(CaravanJobDef def, int expiryInterval, bool checkOverrideOnExpiry = false)
         {
             this.def = def;
             this.expiryInterval = expiryInterval;
-            this.checkOverrideOnExpire = checkOverrideOnExpiry;
+            checkOverrideOnExpire = checkOverrideOnExpiry;
+        }
+
+        public RecipeDef RecipeDef => bill.recipe;
+
+        public void ExposeData()
+        {
+            var loadReferenceable = (ILoadReferenceable) commTarget;
+            Scribe_References.Look(ref loadReferenceable, "commTarget", false);
+            commTarget = (ICommunicable) loadReferenceable;
+            Scribe_References.Look(ref verbToUse, "verbToUse", false);
+            Scribe_References.Look(ref bill, "bill", false);
+            Scribe_References.Look(ref lord, "lord", false);
+            Scribe_Defs.Look(ref def, "def");
+            Scribe_TargetInfo.Look(ref targetA, "targetA");
+            Scribe_TargetInfo.Look(ref targetB, "targetB");
+            Scribe_TargetInfo.Look(ref targetC, "targetC");
+            Scribe_Collections.Look(ref targetQueueA, "targetQueueA", LookMode.Undefined);
+            Scribe_Collections.Look(ref targetQueueB, "targetQueueB", LookMode.Undefined);
+            Scribe_Values.Look(ref count, "count", -1, false);
+            Scribe_Collections.Look(ref countQueue, "countQueue", LookMode.Undefined);
+            Scribe_Values.Look(ref startTick, "startTick", -1, false);
+            Scribe_Values.Look(ref expiryInterval, "expiryInterval", -1, false);
+            Scribe_Values.Look(ref checkOverrideOnExpire, "checkOverrideOnExpire", false, false);
+            Scribe_Values.Look(ref playerForced, "playerForced", false, false);
+            Scribe_Collections.Look(ref placedThings, "placedThings", LookMode.Undefined);
+            Scribe_Values.Look(ref maxNumMeleeAttacks, "maxNumMeleeAttacks", 2147483647, false);
+            Scribe_Values.Look(ref maxNumStaticAttacks, "maxNumStaticAttacks", 2147483647, false);
+            Scribe_Values.Look(ref exitMapOnArrival, "exitMapOnArrival", false, false);
+            Scribe_Values.Look(ref failIfCantJoinOrCreateCaravan, "failIfCantJoinOrCreateCaravan", false, false);
+            Scribe_Values.Look(ref killIncappedTarget, "killIncappedTarget", false, false);
+            Scribe_Values.Look(ref haulOpportunisticDuplicates, "haulOpportunisticDuplicates", false, false);
+            Scribe_Values.Look(ref haulMode, "haulMode", HaulMode.Undefined, false);
+            Scribe_Defs.Look(ref plantDefToSow, "plantDefToSow");
+            Scribe_Values.Look(ref locomotionUrgency, "locomotionUrgency", LocomotionUrgency.Jog, false);
+            Scribe_Values.Look(ref ignoreDesignations, "ignoreDesignations", false, false);
+            Scribe_Values.Look(ref canBash, "canBash", false, false);
+            Scribe_Values.Look(ref haulDroppedApparel, "haulDroppedApparel", false, false);
+            Scribe_Values.Look(ref restUntilHealed, "restUntilHealed", false, false);
+            Scribe_Values.Look(ref ignoreJoyTimeAssignment, "ignoreJoyTimeAssignment", false, false);
+            Scribe_Values.Look(ref overeat, "overeat", false, false);
+            Scribe_Values.Look(ref attackDoorIfTargetLost, "attackDoorIfTargetLost", false, false);
+            Scribe_Values.Look(ref takeExtraIngestibles, "takeExtraIngestibles", 0, false);
+            Scribe_Values.Look(ref expireRequiresEnemiesNearby, "expireRequiresEnemiesNearby", false, false);
+            Scribe_Values.Look(ref collideWithCaravans, "collideWithCaravans", false, false);
         }
 
         public GlobalTargetInfo GetTarget(TargetIndex ind)
@@ -139,11 +176,11 @@ namespace JecsTools
             switch (ind)
             {
                 case TargetIndex.A:
-                    return this.targetA;
+                    return targetA;
                 case TargetIndex.B:
-                    return this.targetB;
+                    return targetB;
                 case TargetIndex.C:
-                    return this.targetC;
+                    return targetC;
                 default:
                     throw new ArgumentException();
             }
@@ -153,21 +190,15 @@ namespace JecsTools
         {
             if (ind == TargetIndex.A)
             {
-                if (this.targetQueueA == null)
-                {
-                    this.targetQueueA = new List<GlobalTargetInfo>();
-                }
-                return this.targetQueueA;
+                if (targetQueueA == null)
+                    targetQueueA = new List<GlobalTargetInfo>();
+                return targetQueueA;
             }
             if (ind != TargetIndex.B)
-            {
                 throw new ArgumentException();
-            }
-            if (this.targetQueueB == null)
-            {
-                this.targetQueueB = new List<GlobalTargetInfo>();
-            }
-            return this.targetQueueB;
+            if (targetQueueB == null)
+                targetQueueB = new List<GlobalTargetInfo>();
+            return targetQueueB;
         }
 
         public void SetTarget(TargetIndex ind, GlobalTargetInfo pack)
@@ -175,13 +206,13 @@ namespace JecsTools
             switch (ind)
             {
                 case TargetIndex.A:
-                    this.targetA = pack;
+                    targetA = pack;
                     return;
                 case TargetIndex.B:
-                    this.targetB = pack;
+                    targetB = pack;
                     return;
                 case TargetIndex.C:
-                    this.targetC = pack;
+                    targetC = pack;
                     return;
                 default:
                     throw new ArgumentException();
@@ -190,56 +221,14 @@ namespace JecsTools
 
         public void AddQueuedTarget(TargetIndex ind, GlobalTargetInfo target)
         {
-            this.GetTargetQueue(ind).Add(target);
-        }
-
-        public void ExposeData()
-        {
-            ILoadReferenceable loadReferenceable = (ILoadReferenceable)this.commTarget;
-            Scribe_References.Look<ILoadReferenceable>(ref loadReferenceable, "commTarget", false);
-            this.commTarget = (ICommunicable)loadReferenceable;
-            Scribe_References.Look<Verb>(ref this.verbToUse, "verbToUse", false);
-            Scribe_References.Look<Bill>(ref this.bill, "bill", false);
-            Scribe_References.Look<Lord>(ref this.lord, "lord", false);
-            Scribe_Defs.Look<CaravanJobDef>(ref this.def, "def");
-            Scribe_TargetInfo.Look(ref this.targetA, "targetA");
-            Scribe_TargetInfo.Look(ref this.targetB, "targetB");
-            Scribe_TargetInfo.Look(ref this.targetC, "targetC");
-            Scribe_Collections.Look<GlobalTargetInfo>(ref this.targetQueueA, "targetQueueA", LookMode.Undefined, new object[0]);
-            Scribe_Collections.Look<GlobalTargetInfo>(ref this.targetQueueB, "targetQueueB", LookMode.Undefined, new object[0]);
-            Scribe_Values.Look<int>(ref this.count, "count", -1, false);
-            Scribe_Collections.Look<int>(ref this.countQueue, "countQueue", LookMode.Undefined, new object[0]);
-            Scribe_Values.Look<int>(ref this.startTick, "startTick", -1, false);
-            Scribe_Values.Look<int>(ref this.expiryInterval, "expiryInterval", -1, false);
-            Scribe_Values.Look<bool>(ref this.checkOverrideOnExpire, "checkOverrideOnExpire", false, false);
-            Scribe_Values.Look<bool>(ref this.playerForced, "playerForced", false, false);
-            Scribe_Collections.Look<ThingStackPartClass>(ref this.placedThings, "placedThings", LookMode.Undefined, new object[0]);
-            Scribe_Values.Look<int>(ref this.maxNumMeleeAttacks, "maxNumMeleeAttacks", 2147483647, false);
-            Scribe_Values.Look<int>(ref this.maxNumStaticAttacks, "maxNumStaticAttacks", 2147483647, false);
-            Scribe_Values.Look<bool>(ref this.exitMapOnArrival, "exitMapOnArrival", false, false);
-            Scribe_Values.Look<bool>(ref this.failIfCantJoinOrCreateCaravan, "failIfCantJoinOrCreateCaravan", false, false);
-            Scribe_Values.Look<bool>(ref this.killIncappedTarget, "killIncappedTarget", false, false);
-            Scribe_Values.Look<bool>(ref this.haulOpportunisticDuplicates, "haulOpportunisticDuplicates", false, false);
-            Scribe_Values.Look<HaulMode>(ref this.haulMode, "haulMode", HaulMode.Undefined, false);
-            Scribe_Defs.Look<ThingDef>(ref this.plantDefToSow, "plantDefToSow");
-            Scribe_Values.Look<LocomotionUrgency>(ref this.locomotionUrgency, "locomotionUrgency", LocomotionUrgency.Jog, false);
-            Scribe_Values.Look<bool>(ref this.ignoreDesignations, "ignoreDesignations", false, false);
-            Scribe_Values.Look<bool>(ref this.canBash, "canBash", false, false);
-            Scribe_Values.Look<bool>(ref this.haulDroppedApparel, "haulDroppedApparel", false, false);
-            Scribe_Values.Look<bool>(ref this.restUntilHealed, "restUntilHealed", false, false);
-            Scribe_Values.Look<bool>(ref this.ignoreJoyTimeAssignment, "ignoreJoyTimeAssignment", false, false);
-            Scribe_Values.Look<bool>(ref this.overeat, "overeat", false, false);
-            Scribe_Values.Look<bool>(ref this.attackDoorIfTargetLost, "attackDoorIfTargetLost", false, false);
-            Scribe_Values.Look<int>(ref this.takeExtraIngestibles, "takeExtraIngestibles", 0, false);
-            Scribe_Values.Look<bool>(ref this.expireRequiresEnemiesNearby, "expireRequiresEnemiesNearby", false, false);
-            Scribe_Values.Look<bool>(ref this.collideWithCaravans, "collideWithCaravans", false, false);
+            GetTargetQueue(ind).Add(target);
         }
 
         public CaravanJobDriver MakeDriver(Caravan driverCaravan)
         {
-            CaravanJobDriver jobDriver = (CaravanJobDriver)Activator.CreateInstance(this.def.driverClass);
+            var jobDriver = (CaravanJobDriver) Activator.CreateInstance(def.driverClass);
             jobDriver.caravan = driverCaravan;
-            Log.Message("JecsTools :: MakeDriver Called :: " + this.def.driverClass.ToString());
+            Log.Message("JecsTools :: MakeDriver Called :: " + def.driverClass);
             return jobDriver;
         }
 
@@ -250,29 +239,27 @@ namespace JecsTools
 
         public bool JobIsSameAs(CaravanJob other)
         {
-            return other != null && this.def == other.def && !(this.targetA != other.targetA) && !(this.targetB != other.targetB) && this.verbToUse == other.verbToUse && !(this.targetC != other.targetC) && this.commTarget == other.commTarget && this.bill == other.bill;
+            return other != null && def == other.def && !(targetA != other.targetA) && !(targetB != other.targetB) &&
+                   verbToUse == other.verbToUse && !(targetC != other.targetC) && commTarget == other.commTarget &&
+                   bill == other.bill;
         }
 
         public bool AnyTargetIs(GlobalTargetInfo target)
         {
-            return target.IsValid && (this.targetA == target || this.targetB == target || this.targetC == target || (this.targetQueueA != null && this.targetQueueA.Contains(target)) || (this.targetQueueB != null && this.targetQueueB.Contains(target)));
+            return target.IsValid && (targetA == target || targetB == target || targetC == target ||
+                                      targetQueueA != null && targetQueueA.Contains(target) ||
+                                      targetQueueB != null && targetQueueB.Contains(target));
         }
 
         public override string ToString()
         {
-            string text = this.def.ToString();
-            if (this.targetA.IsValid)
-            {
-                text = text + " A=" + this.targetA.ToString();
-            }
-            if (this.targetB.IsValid)
-            {
-                text = text + " B=" + this.targetB.ToString();
-            }
-            if (this.targetC.IsValid)
-            {
-                text = text + " C=" + this.targetC.ToString();
-            }
+            var text = def.ToString();
+            if (targetA.IsValid)
+                text = text + " A=" + targetA;
+            if (targetB.IsValid)
+                text = text + " B=" + targetB;
+            if (targetC.IsValid)
+                text = text + " C=" + targetC;
             return text;
         }
     }

@@ -1,19 +1,16 @@
-﻿using System;
-using Verse;
+﻿using Verse;
 
 namespace AbilityUser
 {
     public class ApplyMentalStates : IExposable
     {
-        public MentalStateDef mentalStateDef;
         public float applyChance = 1.0f;
-
-        public ApplyMentalStates() { }
+        public MentalStateDef mentalStateDef;
 
         public void ExposeData()
         {
-            Scribe_Defs.Look<MentalStateDef>(ref this.mentalStateDef, "mentalStateDef");
-            Scribe_Values.Look<float>(ref this.applyChance, "applyChance", 1.0f);
+            Scribe_Defs.Look(ref mentalStateDef, "mentalStateDef");
+            Scribe_Values.Look(ref applyChance, "applyChance", 1.0f);
         }
     }
 }

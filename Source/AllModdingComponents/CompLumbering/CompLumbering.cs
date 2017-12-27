@@ -1,95 +1,80 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Diagnostics;
-using System.Collections.Generic;
-using RimWorld;
+﻿using UnityEngine;
 using Verse;
-using UnityEngine;
-using Verse.AI;
 using Verse.Sound;
+
 namespace CompLumbering
 {
     public class CompLumbering : ThingComp
     {
+        public bool cycled;
         public int ticksToCycle = -1;
-        public bool cycled = false;
 
-        public Pawn Lumberer => this.parent as Pawn;
+        public Pawn Lumberer => parent as Pawn;
 
-        public CompProperties_Lumbering Props => (CompProperties_Lumbering)this.props;
+        public CompProperties_Lumbering Props => (CompProperties_Lumbering) props;
 
         public void ResolveCycledGraphic()
         {
-            if (this.Props.cycledGraphic != null &&
+            if (Props.cycledGraphic != null &&
                 Lumberer.Drawer?.renderer?.graphics is PawnGraphicSet pawnGraphicSet)
             {
                 pawnGraphicSet.ClearCache();
-                pawnGraphicSet.nakedGraphic = this.Props.cycledGraphic.Graphic;
+                pawnGraphicSet.nakedGraphic = Props.cycledGraphic.Graphic;
             }
         }
 
         public void ResolveBaseGraphic()
         {
-            if (this.Props.cycledGraphic != null &&
+            if (Props.cycledGraphic != null &&
                 Lumberer.Drawer?.renderer?.graphics is PawnGraphicSet pawnGraphicSet)
             {
                 pawnGraphicSet.ClearCache();
 
                 //Duplicated code from -> Verse.PawnGrapic -> ResolveAllGraphics
-                PawnKindLifeStage curKindLifeStage = this.Lumberer.ageTracker.CurKindLifeStage;
-                if (this.Lumberer.gender != Gender.Female || curKindLifeStage.femaleGraphicData == null)
-                {
+                var curKindLifeStage = Lumberer.ageTracker.CurKindLifeStage;
+                if (Lumberer.gender != Gender.Female || curKindLifeStage.femaleGraphicData == null)
                     pawnGraphicSet.nakedGraphic = curKindLifeStage.bodyGraphicData.Graphic;
-                }
                 else
-                {
                     pawnGraphicSet.nakedGraphic = curKindLifeStage.femaleGraphicData.Graphic;
-                }
-                pawnGraphicSet.rottingGraphic = pawnGraphicSet.nakedGraphic.GetColoredVersion(ShaderDatabase.CutoutSkin, PawnGraphicSet.RottingColor, PawnGraphicSet.RottingColor);
-                if (this.Lumberer.RaceProps.packAnimal)
-                {
-                    pawnGraphicSet.packGraphic = GraphicDatabase.Get<Graphic_Multi>(pawnGraphicSet.nakedGraphic.path + "Pack", ShaderDatabase.Cutout, pawnGraphicSet.nakedGraphic.drawSize, Color.white);
-                }
+                pawnGraphicSet.rottingGraphic = pawnGraphicSet.nakedGraphic.GetColoredVersion(ShaderDatabase.CutoutSkin,
+                    PawnGraphicSet.RottingColor, PawnGraphicSet.RottingColor);
+                if (Lumberer.RaceProps.packAnimal)
+                    pawnGraphicSet.packGraphic = GraphicDatabase.Get<Graphic_Multi>(
+                        pawnGraphicSet.nakedGraphic.path + "Pack", ShaderDatabase.Cutout,
+                        pawnGraphicSet.nakedGraphic.drawSize, Color.white);
                 if (curKindLifeStage.dessicatedBodyGraphicData != null)
-                {
-                    pawnGraphicSet.dessicatedGraphic = curKindLifeStage.dessicatedBodyGraphicData.GraphicColoredFor(this.Lumberer);
-                }
+                    pawnGraphicSet.dessicatedGraphic =
+                        curKindLifeStage.dessicatedBodyGraphicData.GraphicColoredFor(Lumberer);
             }
         }
 
         public override void CompTick()
         {
-            if (this.Props.secondsBetweenSteps <= 0.0f) Log.ErrorOnce("CompLumbering :: CompProperties_Lumbering secondsBetweenSteps needs to be more than 0", 132);
-            if (this.Props.secondsPerStep <= 0.0f) Log.ErrorOnce("CompLumbering :: CompProperties_Lumbering secondsPerStep needs to be more than 0", 133);
+            if (Props.secondsBetweenSteps <= 0.0f)
+                Log.ErrorOnce("CompLumbering :: CompProperties_Lumbering secondsBetweenSteps needs to be more than 0",
+                    132);
+            if (Props.secondsPerStep <= 0.0f)
+                Log.ErrorOnce("CompLumbering :: CompProperties_Lumbering secondsPerStep needs to be more than 0", 133);
 
-            if (this.Lumberer != null && this.Props.secondsPerStep > 0.0f && Find.TickManager.TicksGame > this.ticksToCycle)
-            {
-                if (this.Lumberer?.pather?.MovingNow ?? false)
+            if (Lumberer != null && Props.secondsPerStep > 0.0f && Find.TickManager.TicksGame > ticksToCycle)
+                if (Lumberer?.pather?.MovingNow ?? false)
                 {
-                    this.cycled = !this.cycled;
-                    this.ticksToCycle = Find.TickManager.TicksGame + GenTicks.SecondsToTicks(this.Props.secondsPerStep);
-                        if (this.Props.sound != null) this.Props.sound.PlayOneShot(SoundInfo.InMap(this.Lumberer));
-                        if (this.cycled)
-                        {
-                            ResolveCycledGraphic();
-                        }
-                        else
-                        {
-                            //Log.Message("1b");
-                            ResolveBaseGraphic();
-                        }
-                    if (this.Props.staggerEffect) this.Lumberer.stances.StaggerFor(GenTicks.SecondsToTicks(this.Props.secondsBetweenSteps));
+                    cycled = !cycled;
+                    ticksToCycle = Find.TickManager.TicksGame + Props.secondsPerStep.SecondsToTicks();
+                    if (Props.sound != null) Props.sound.PlayOneShot(SoundInfo.InMap(Lumberer));
+                    if (cycled)
+                        ResolveCycledGraphic();
+                    else
+                        ResolveBaseGraphic();
+                    if (Props.staggerEffect) Lumberer.stances.StaggerFor(Props.secondsBetweenSteps.SecondsToTicks());
                 }
-            }
         }
 
         public override void PostExposeData()
         {
             base.PostExposeData();
-            Scribe_Values.Look<bool>(ref this.cycled, "cycled", false);
-            Scribe_Values.Look<int>(ref this.ticksToCycle, "ticksToCycle", -1);
+            Scribe_Values.Look(ref cycled, "cycled", false);
+            Scribe_Values.Look(ref ticksToCycle, "ticksToCycle", -1);
         }
-
     }
 }

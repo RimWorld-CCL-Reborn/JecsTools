@@ -1,9 +1,5 @@
-﻿using AbilityUser;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Verse;
+﻿using Verse;
+using Verse.AI;
 
 /* 
  * Author: ChJees
@@ -13,12 +9,13 @@ using Verse;
 namespace AbilityUserAI
 {
     /// <summary>
-    /// Helps to calculate the final 'power score' of the Ability and do targeting when used.
+    ///     Helps to calculate the final 'power score' of the Ability and do targeting when used.
     /// </summary>
     public class AbilityWorker
     {
         /// <summary>
-        /// Calculates the final power score for this Ability taking the condition of the Pawn in account. Default implementation just returns the power score.
+        ///     Calculates the final power score for this Ability taking the condition of the Pawn in account. Default
+        ///     implementation just returns the power score.
         /// </summary>
         /// <param name="abilityDef">Ability Def for the AI.</param>
         /// <param name="pawn">Pawn to take in account.</param>
@@ -29,21 +26,24 @@ namespace AbilityUserAI
         }
 
         /// <summary>
-        /// Figures out the best location to use this Ability at. Default implementation returns the enemy target, closest ally or the caster.
+        ///     Figures out the best location to use this Ability at. Default implementation returns the enemy target, closest ally
+        ///     or the caster.
         /// </summary>
         /// <param name="abilityDef">Ability Def for the AI.</param>
         /// <param name="pawn">Pawn to take in account.</param>
         /// <returns>Targeting location or Pawn.</returns>
         public virtual LocalTargetInfo TargetAbilityFor(AbilityAIDef abilityDef, Pawn pawn)
         {
-
             if (abilityDef.usedOnCaster)
                 return pawn;
-            else
-                if (abilityDef.canTargetAlly)
-                return GenClosest.ClosestThingReachable(pawn.Position, pawn.Map, ThingRequest.ForGroup(ThingRequestGroup.Pawn), Verse.AI.PathEndMode.OnCell, TraverseParms.For(TraverseMode.NoPassClosedDoors), abilityDef.maxRange, thing => AbilityUtility.AreAllies(pawn, thing));
-            else
-                    if (pawn.mindState.enemyTarget != null && pawn.mindState.enemyTarget is Pawn targetPawn)
+            if (abilityDef.canTargetAlly)
+            {
+                return GenClosest.ClosestThingReachable(pawn.Position, pawn.Map,
+                    ThingRequest.ForGroup(ThingRequestGroup.Pawn), PathEndMode.OnCell,
+                    TraverseParms.For(TraverseMode.NoPassClosedDoors), abilityDef.maxRange,
+                    thing => AbilityUtility.AreAllies(pawn, thing));
+            }
+            if (pawn.mindState.enemyTarget != null && pawn.mindState.enemyTarget is Pawn targetPawn)
             {
                 if (!targetPawn.Dead)
                     return pawn.mindState.enemyTarget;
@@ -58,7 +58,8 @@ namespace AbilityUserAI
         }
 
         /// <summary>
-        /// Final check to say whether the Pawn can use this Ability on the target or self. Default implementation returns true for co-ordinates and true if the enemy is NOT Downed.
+        ///     Final check to say whether the Pawn can use this Ability on the target or self. Default implementation returns true
+        ///     for co-ordinates and true if the enemy is NOT Downed.
         /// </summary>
         /// <param name="abilityDef">Ability Def for the AI.</param>
         /// <param name="pawn">Pawn to take in account.</param>
@@ -68,7 +69,7 @@ namespace AbilityUserAI
         {
             if (target.HasThing)
             {
-                Pawn targetPawn = target.Thing as Pawn;
+                var targetPawn = target.Thing as Pawn;
 
                 if (!abilityDef.canTargetAlly)
                     return !targetPawn.Downed;

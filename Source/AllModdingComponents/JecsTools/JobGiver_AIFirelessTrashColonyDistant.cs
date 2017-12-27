@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Verse;
+﻿using Verse;
 using Verse.AI;
 
 namespace JecsTools
@@ -11,20 +7,16 @@ namespace JecsTools
     {
         protected override Job TryGiveJob(Pawn pawn)
         {
-            List<Building> allBuildingsColonist = pawn.Map.listerBuildings.allBuildingsColonist;
-            int count = allBuildingsColonist.Count;
+            var allBuildingsColonist = pawn.Map.listerBuildings.allBuildingsColonist;
+            var count = allBuildingsColonist.Count;
             if (count == 0)
-            {
                 return null;
-            }
-            for (int i = 0; i < 75; i++)
+            for (var i = 0; i < 75; i++)
             {
-                int index = Rand.Range(0, count);
-                Building building = allBuildingsColonist[index];
+                var index = Rand.Range(0, count);
+                var building = allBuildingsColonist[index];
                 if (FirelessTrashUtility.ShouldTrashBuilding(pawn, building))
-                {
                     return FirelessTrashUtility.TrashJob(pawn, building);
-                }
             }
             return null;
         }

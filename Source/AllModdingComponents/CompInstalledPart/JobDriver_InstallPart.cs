@@ -1,20 +1,16 @@
-﻿using System;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
-using System.Collections.Generic;
 using RimWorld;
-using Verse;
 using UnityEngine;
+using Verse;
 using Verse.AI;
-using Verse.Sound;
 
 namespace CompInstalledPart
 {
     /// <summary>
-    /// Target A = Part to install
-    /// Target B = Thing to install onto
-    /// Target C = spot to drop 
+    ///     Target A = Part to install
+    ///     Target B = Thing to install onto
+    ///     Target C = spot to drop
     /// </summary>
     public class JobDriver_InstallPart : JobDriver
     {
@@ -22,36 +18,30 @@ namespace CompInstalledPart
 
         private const float TicksBetweenRepairs = 20f;
 
-        protected float workLeft;
-
         protected float ticksToNextRepair;
 
-        protected CompInstalledPart InstallComp => this.PartToInstall.GetComp<CompInstalledPart>();
+        protected float workLeft;
 
-        protected ThingWithComps PartToInstall => (ThingWithComps)this.job.targetA.Thing;
+        protected CompInstalledPart InstallComp => PartToInstall.GetComp<CompInstalledPart>();
 
-        protected Thing InstallTarget => this.job.targetB.Thing;
+        protected ThingWithComps PartToInstall => (ThingWithComps) job.targetA.Thing;
 
-        public override bool TryMakePreToilReservations()
-        {
-            return true;
-        }
+        protected Thing InstallTarget => job.targetB.Thing;
 
-        protected int WorkDone
-        {
-            get
-            {
-                return this.TotalNeededWork - (int)this.workLeft;
-            }
-        }
+        protected int WorkDone => TotalNeededWork - (int) workLeft;
 
         protected int TotalNeededWork
         {
             get
             {
-                int value = this.InstallComp.Props.workToInstall;
+                var value = InstallComp.Props.workToInstall;
                 return Mathf.Clamp(value, 20, 3000);
             }
+        }
+
+        public override bool TryMakePreToilReservations()
+        {
+            return true;
         }
 
         [DebuggerHidden]
@@ -59,41 +49,42 @@ namespace CompInstalledPart
         {
             this.FailOnDestroyedOrNull(TargetIndex.A);
             yield return Toils_Reserve.Reserve(TargetIndex.A);
-            yield return Toils_Goto.GotoThing(TargetIndex.A, PathEndMode.OnCell).FailOnDestroyedNullOrForbidden(TargetIndex.A);
+            yield return Toils_Goto.GotoThing(TargetIndex.A, PathEndMode.OnCell)
+                .FailOnDestroyedNullOrForbidden(TargetIndex.A);
             yield return Toils_Haul.StartCarryThing(TargetIndex.A, false, false);
             yield return Toils_Goto.GotoThing(TargetIndex.B, PathEndMode.ClosestTouch);
             yield return Toils_Haul.PlaceHauledThingInCell(TargetIndex.B, null, false);
-            Toil repair = new Toil()
+            var repair = new Toil
             {
                 initAction = delegate
                 {
-                    this.ticksToNextRepair = 80f;
-                    this.workLeft = this.TotalNeededWork;
+                    ticksToNextRepair = 80f;
+                    workLeft = TotalNeededWork;
                 },
                 tickAction = delegate
                 {
                     if (InstallTarget is Pawn pawnTarget) pawnTarget.pather.StopDead();
-                    this.pawn.rotationTracker.FaceCell(this.TargetB.Cell);
-                    Pawn actor = this.pawn;
+                    pawn.rotationTracker.FaceCell(TargetB.Cell);
+                    var actor = pawn;
                     actor.skills.Learn(SkillDefOf.Construction, 0.275f, false);
-                    float statValue = actor.GetStatValue(StatDefOf.ConstructionSpeed, true);
-                    this.ticksToNextRepair -= statValue;
-                    if (this.ticksToNextRepair <= 0f)
+                    var statValue = actor.GetStatValue(StatDefOf.ConstructionSpeed, true);
+                    ticksToNextRepair -= statValue;
+                    if (ticksToNextRepair <= 0f)
                     {
-                        this.ticksToNextRepair += 20f;
-                        this.workLeft -= 20 + actor.GetStatValue(StatDefOf.ConstructionSpeed, true);
-                        if (this.workLeft <= 0)
+                        ticksToNextRepair += 20f;
+                        workLeft -= 20 + actor.GetStatValue(StatDefOf.ConstructionSpeed, true);
+                        if (workLeft <= 0)
                         {
                             actor.records.Increment(RecordDefOf.ThingsInstalled);
-                            this.InstallComp.Notify_Installed(actor, this.InstallTarget);
+                            InstallComp.Notify_Installed(actor, InstallTarget);
                             actor.jobs.EndCurrentJob(JobCondition.Succeeded, true);
                         }
                     }
                 }
             };
             repair.FailOnCannotTouch(TargetIndex.B, PathEndMode.Touch);
-            repair.WithEffect(this.InstallComp.Props.workEffect, TargetIndex.B);
-            repair.WithProgressBar(TargetIndex.B, () => this.WorkDone / this.TotalNeededWork, false, -0.5f);
+            repair.WithEffect(InstallComp.Props.workEffect, TargetIndex.B);
+            repair.WithProgressBar(TargetIndex.B, () => WorkDone / TotalNeededWork, false, -0.5f);
             repair.defaultCompleteMode = ToilCompleteMode.Never;
             yield return repair;
         }
@@ -101,7 +92,7 @@ namespace CompInstalledPart
         public override void ExposeData()
         {
             base.ExposeData();
-            Scribe_Values.Look<float>(ref this.workLeft, "workLeft", -1);
+            Scribe_Values.Look(ref workLeft, "workLeft", -1);
         }
     }
 }

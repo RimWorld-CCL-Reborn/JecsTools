@@ -1,6 +1,4 @@
-﻿using RimWorld;
-using RimWorld.Planet;
-using System;
+﻿using RimWorld.Planet;
 using Verse;
 using Verse.AI;
 
@@ -20,13 +18,13 @@ namespace JecsTools
 
         public static CaravanToil Goto(TargetIndex ind, CaravanArrivalAction arrivalAction = null)
         {
-            return CaravanToils_Goto.GotoTile(ind, arrivalAction);
+            return GotoTile(ind, arrivalAction);
         }
 
         public static CaravanToil GotoObject(TargetIndex ind, CaravanArrivalAction arrivalAction = null)
         {
-            int tileInt = -1;
-            CaravanToil toil = new CaravanToil();
+            var tileInt = -1;
+            var toil = new CaravanToil();
             toil.initAction = delegate
             {
                 //Log.Message("GoToObject1");
@@ -39,10 +37,7 @@ namespace JecsTools
             {
                 if (tileInt < 0) tileInt = CurJob(toil.actor).GetTarget(ind).WorldObject.Tile;
                 if (toil.actor.Tile == tileInt)
-                {
-                    //Log.Message("GoToObject4a");
                     CurTracker(toil.actor).curDriver.Notify_PatherArrived();
-                }
             };
             toil.defaultCompleteMode = ToilCompleteMode.PatherArrival;
             //toil.FailOnDespawnedOrNull(ind);
@@ -51,16 +46,16 @@ namespace JecsTools
 
         public static CaravanToil GotoTile(TargetIndex ind, CaravanArrivalAction arrivalAction = null)
         {
-            CaravanToil toil = new CaravanToil();
+            var toil = new CaravanToil();
             toil.initAction = delegate
             {
-                Caravan actor = toil.actor;
-                actor.pather.StartPath(Find.World.GetComponent<CaravanJobGiver>().CurJob(actor).GetTarget(ind).Tile, arrivalAction);
+                var actor = toil.actor;
+                actor.pather.StartPath(Find.World.GetComponent<CaravanJobGiver>().CurJob(actor).GetTarget(ind).Tile,
+                    arrivalAction);
             };
             toil.defaultCompleteMode = ToilCompleteMode.PatherArrival;
             //toil.FailOnDespawnedOrNull(ind);
             return toil;
         }
-        
     }
 }

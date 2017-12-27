@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Verse;
+﻿using Verse;
 
 /* 
  * Author: ChJees
@@ -12,13 +8,13 @@ using Verse;
 namespace AbilityUserAI
 {
     /// <summary>
-    /// Checks whether the caster is equipped with a ranged weapon or not.
+    ///     Checks whether the caster is equipped with a ranged weapon or not.
     /// </summary>
     public class AbilityDecisionConditionalNode_UsingRangedWeapon : AbilityDecisionNode
     {
         public override bool CanContinueTraversing(Pawn caster)
         {
-            bool result = caster?.equipment.Primary != null && caster.equipment.Primary.def.IsRangedWeapon;
+            var result = caster?.equipment.Primary != null && caster.equipment.Primary.def.IsRangedWeapon;
 
             if (invert)
                 return !result;

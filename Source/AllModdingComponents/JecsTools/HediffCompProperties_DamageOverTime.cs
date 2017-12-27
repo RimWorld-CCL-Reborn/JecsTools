@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using RimWorld;
+﻿using RimWorld;
 using Verse;
 
 namespace JecsTools
@@ -16,7 +12,7 @@ namespace JecsTools
 
         public HediffCompProperties_DamageOverTime()
         {
-            this.compClass = typeof(HediffCompDamageOverTime);
+            compClass = typeof(HediffCompDamageOverTime);
         }
     }
 }

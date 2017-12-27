@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Verse;
+﻿using Verse;
 
 /* 
  * Author: ChJees
@@ -12,7 +8,7 @@ using Verse;
 namespace AbilityUserAI
 {
     /// <summary>
-    /// Checks whether the caster is equipped with a melee weapon or not.
+    ///     Checks whether the caster is equipped with a melee weapon or not.
     /// </summary>
     public class AbilityDecisionConditionalNode_UsingMeleeWeapon : AbilityDecisionNode
     {
@@ -20,14 +16,15 @@ namespace AbilityUserAI
 
         public override bool CanContinueTraversing(Pawn caster)
         {
-            bool result = false;
+            var result = false;
 
             if (countUnarmed)
-                result = caster?.equipment.Primary == null || caster?.equipment.Primary != null && !caster.equipment.Primary.def.IsRangedWeapon;
+                result = caster?.equipment.Primary == null ||
+                         caster?.equipment.Primary != null && !caster.equipment.Primary.def.IsRangedWeapon;
             else
                 result = caster?.equipment.Primary != null && !caster.equipment.Primary.def.IsRangedWeapon;
 
-                if (invert)
+            if (invert)
                 return !result;
 
             return result;

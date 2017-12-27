@@ -1,9 +1,4 @@
 ﻿using RimWorld;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Verse;
 
 /* 
  * Author: ChJees
@@ -13,7 +8,7 @@ using Verse;
 namespace AbilityUserAI
 {
     /// <summary>
-    /// Convenience class for getting Defs for AI.
+    ///     Convenience class for getting Defs for AI.
     /// </summary>
     [DefOf]
     public static class AIDefOf

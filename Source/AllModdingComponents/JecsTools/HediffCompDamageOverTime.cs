@@ -1,17 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using RimWorld;
+﻿using System.Text;
 using Verse;
 
 namespace JecsTools
 {
     public class HediffCompDamageOverTime : HediffComp
     {
-        public HediffCompProperties_DamageOverTime Props => this.props as HediffCompProperties_DamageOverTime;
-
         private int ticksUntilDamage = -1;
+        public HediffCompProperties_DamageOverTime Props => props as HediffCompProperties_DamageOverTime;
 
         public override void CompPostTick(ref float severityAdjustment)
         {
@@ -24,16 +19,20 @@ namespace JecsTools
             ticksUntilDamage--;
         }
 
-        public DamageInfo GetDamageInfo() => new DamageInfo(Props.cycleDamage, Props.cycleDamageAmt, -1, this.parent.pawn, this.parent.Part, null, DamageInfo.SourceCategory.ThingOrUnknown);
+        public DamageInfo GetDamageInfo()
+        {
+            return new DamageInfo(Props.cycleDamage, Props.cycleDamageAmt, -1, parent.pawn, parent.Part, null,
+                DamageInfo.SourceCategory.ThingOrUnknown);
+        }
 
         public virtual void MakeDamage()
         {
-            this.Pawn.TakeDamage(GetDamageInfo());
+            Pawn.TakeDamage(GetDamageInfo());
         }
 
         public override string CompDebugString()
         {
-            StringBuilder s = new StringBuilder();
+            var s = new StringBuilder();
             s.AppendLine(base.CompDebugString());
             s.AppendLine(ticksUntilDamage.ToString());
             return s.ToString().TrimEndNewlines();
@@ -42,7 +41,7 @@ namespace JecsTools
         public override void CompExposeData()
         {
             base.CompExposeData();
-            Scribe_Values.Look<int>(ref this.ticksUntilDamage, "ticksUntilDamage", -1);
+            Scribe_Values.Look(ref ticksUntilDamage, "ticksUntilDamage", -1);
         }
     }
 }

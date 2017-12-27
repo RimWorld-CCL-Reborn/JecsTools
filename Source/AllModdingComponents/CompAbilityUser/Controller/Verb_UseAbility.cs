@@ -1,121 +1,116 @@
 ﻿using System;
-using System.Linq;
-using System.Text;
 using System.Collections.Generic;
+using System.Linq;
 using RimWorld;
 using Verse;
-using UnityEngine;
-using Verse.AI;
 using Verse.Sound;
 
 namespace AbilityUser
 {
     public class Verb_UseAbility : Verb_LaunchProjectile
     {
-        private PawnAbility ability = null;
+        public List<LocalTargetInfo> TargetsAoE = new List<LocalTargetInfo>();
         public Action<Thing> timeSavingActionVariable = null;
 
-        public PawnAbility Ability { get => ability; set => ability = value; }
-        public List<LocalTargetInfo> TargetsAoE = new List<LocalTargetInfo>();
+        public PawnAbility Ability { get; set; } = null;
 
-        public VerbProperties_Ability UseAbilityProps => (VerbProperties_Ability)this.verbProps;
-        public ProjectileDef_Ability AbilityProjectileDef => this.UseAbilityProps.defaultProjectile as ProjectileDef_Ability;
-        public CompAbilityUser AbilityUserComp => this.CasterPawn.TryGetComp<CompAbilityUser>();
+        public VerbProperties_Ability UseAbilityProps => (VerbProperties_Ability) verbProps;
+        public ProjectileDef_Ability AbilityProjectileDef => UseAbilityProps.defaultProjectile as ProjectileDef_Ability;
+        public CompAbilityUser AbilityUserComp => CasterPawn.TryGetComp<CompAbilityUser>();
+
+        protected override int ShotsPerBurst => verbProps.burstShotCount;
 
         public override float HighlightFieldRadiusAroundTarget(out bool needLOSToCenter)
         {
             needLOSToCenter = true;
-            float result =  this.verbProps.defaultProjectile.projectile.explosionRadius;
-            if (this.UseAbilityProps.abilityDef.MainVerb.TargetAoEProperties != null)
-            {
-                if (this.UseAbilityProps.abilityDef.MainVerb.TargetAoEProperties.showRangeOnSelect)
-                {
-                    result = this.UseAbilityProps.abilityDef.MainVerb.TargetAoEProperties.range;
-                }
-            }
+            var result = verbProps.defaultProjectile.projectile.explosionRadius;
+            if (UseAbilityProps.abilityDef.MainVerb.TargetAoEProperties != null)
+                if (UseAbilityProps.abilityDef.MainVerb.TargetAoEProperties.showRangeOnSelect)
+                    result = UseAbilityProps.abilityDef.MainVerb.TargetAoEProperties.range;
             return result;
         }
 
         protected virtual void UpdateTargets()
         {
-            this.TargetsAoE.Clear();
-            if (this.UseAbilityProps.AbilityTargetCategory == AbilityTargetCategory.TargetAoE)
+            TargetsAoE.Clear();
+            if (UseAbilityProps.AbilityTargetCategory == AbilityTargetCategory.TargetAoE)
             {
                 //Log.Message("AoE Called");
-                if (this.UseAbilityProps.TargetAoEProperties == null)
-                {
+                if (UseAbilityProps.TargetAoEProperties == null)
                     Log.Error("Tried to Cast AoE-Ability without defining a target class");
-                }
 
-                List<Thing> targets = new List<Thing>();
+                var targets = new List<Thing>();
 
                 //Handle TargetAoE start location.
-                IntVec3 aoeStartPosition = this.caster.PositionHeld;
-                if (!this.UseAbilityProps.TargetAoEProperties.startsFromCaster)
-                {
-                    aoeStartPosition = this.currentTarget.Cell;
-                }
-                
+                var aoeStartPosition = caster.PositionHeld;
+                if (!UseAbilityProps.TargetAoEProperties.startsFromCaster)
+                    aoeStartPosition = currentTarget.Cell;
+
                 //Handle friendly fire targets.
-                if (!this.UseAbilityProps.TargetAoEProperties.friendlyFire)
+                if (!UseAbilityProps.TargetAoEProperties.friendlyFire)
                 {
-                    targets = this.caster.Map.listerThings.AllThings.Where(x => (x.Position.InHorDistOf(aoeStartPosition, this.UseAbilityProps.TargetAoEProperties.range)) && (this.UseAbilityProps.TargetAoEProperties.targetClass.IsAssignableFrom(x.GetType())) && !x.Faction.HostileTo(Faction.OfPlayer)).ToList<Thing>();
+                    targets = caster.Map.listerThings.AllThings.Where(x =>
+                        x.Position.InHorDistOf(aoeStartPosition, UseAbilityProps.TargetAoEProperties.range) &&
+                        UseAbilityProps.TargetAoEProperties.targetClass.IsAssignableFrom(x.GetType()) &&
+                        !x.Faction.HostileTo(Faction.OfPlayer)).ToList();
                 }
-                else if ((this.UseAbilityProps.TargetAoEProperties.targetClass == typeof(Plant)) || (this.UseAbilityProps.TargetAoEProperties.targetClass == typeof(Building)))
+                else if (UseAbilityProps.TargetAoEProperties.targetClass == typeof(Plant) ||
+                         UseAbilityProps.TargetAoEProperties.targetClass == typeof(Building))
                 {
-                    targets = this.caster.Map.listerThings.AllThings.Where(x => (x.Position.InHorDistOf(aoeStartPosition, this.UseAbilityProps.TargetAoEProperties.range)) && (this.UseAbilityProps.TargetAoEProperties.targetClass.IsAssignableFrom(x.GetType()))).ToList<Thing>();
-                    foreach (Thing targ in targets)
+                    targets = caster.Map.listerThings.AllThings.Where(x =>
+                        x.Position.InHorDistOf(aoeStartPosition, UseAbilityProps.TargetAoEProperties.range) &&
+                        UseAbilityProps.TargetAoEProperties.targetClass.IsAssignableFrom(x.GetType())).ToList();
+                    foreach (var targ in targets)
                     {
-                        LocalTargetInfo tinfo = new LocalTargetInfo(targ);
-                        this.TargetsAoE.Add(tinfo);
+                        var tinfo = new LocalTargetInfo(targ);
+                        TargetsAoE.Add(tinfo);
                     }
                     return;
                 }
                 else
                 {
                     targets.Clear();
-                    targets = this.caster.Map.listerThings.AllThings.Where(x =>
-                        (x.Position.InHorDistOf(aoeStartPosition, this.UseAbilityProps.TargetAoEProperties.range)) &&
-                        (this.UseAbilityProps.TargetAoEProperties.targetClass.IsAssignableFrom(x.GetType())) &&
-                        (x.HostileTo(Faction.OfPlayer) || this.UseAbilityProps.TargetAoEProperties.friendlyFire)).ToList<Thing>();
+                    targets = caster.Map.listerThings.AllThings.Where(x =>
+                        x.Position.InHorDistOf(aoeStartPosition, UseAbilityProps.TargetAoEProperties.range) &&
+                        UseAbilityProps.TargetAoEProperties.targetClass.IsAssignableFrom(x.GetType()) &&
+                        (x.HostileTo(Faction.OfPlayer) || UseAbilityProps.TargetAoEProperties.friendlyFire)).ToList();
                 }
 
-                int maxTargets = this.UseAbilityProps.abilityDef.MainVerb.TargetAoEProperties.maxTargets;
-                List<Thing> randTargets = new List<Thing>(targets.InRandomOrder<Thing>());
-                for (int i = 0; i < maxTargets && i < randTargets.Count(); i++)
+                var maxTargets = UseAbilityProps.abilityDef.MainVerb.TargetAoEProperties.maxTargets;
+                var randTargets = new List<Thing>(targets.InRandomOrder());
+                for (var i = 0; i < maxTargets && i < randTargets.Count(); i++)
                 {
-                    TargetInfo tinfo = new TargetInfo(randTargets[i]);
-                    if (this.UseAbilityProps.targetParams.CanTarget(tinfo))
-                    {
-                        this.TargetsAoE.Add(new LocalTargetInfo(randTargets[i]));
-                    }
+                    var tinfo = new TargetInfo(randTargets[i]);
+                    if (UseAbilityProps.targetParams.CanTarget(tinfo))
+                        TargetsAoE.Add(new LocalTargetInfo(randTargets[i]));
                 }
             }
             else
             {
-                this.TargetsAoE.Clear();
-                this.TargetsAoE.Add(this.currentTarget);
+                TargetsAoE.Clear();
+                TargetsAoE.Add(currentTarget);
             }
         }
 
-        public virtual void PostCastShot(bool inResult, out bool outResult) => outResult = inResult;
+        public virtual void PostCastShot(bool inResult, out bool outResult)
+        {
+            outResult = inResult;
+        }
 
         protected override bool TryCastShot()
         {
             //Log.Message("Cast");
-            bool result = false;
-            this.TargetsAoE.Clear();
+            var result = false;
+            TargetsAoE.Clear();
             UpdateTargets();
-            int burstShots = this.ShotsPerBurst;
-            if (this.UseAbilityProps.AbilityTargetCategory != AbilityTargetCategory.TargetAoE && this.TargetsAoE.Count > 1)
-            {
-                this.TargetsAoE.RemoveRange(0, this.TargetsAoE.Count - 1);
-            }
-            for (int i = 0; i < this.TargetsAoE.Count; i++)
+            var burstShots = ShotsPerBurst;
+            if (UseAbilityProps.AbilityTargetCategory != AbilityTargetCategory.TargetAoE && TargetsAoE.Count > 1)
+                TargetsAoE.RemoveRange(0, TargetsAoE.Count - 1);
+            for (var i = 0; i < TargetsAoE.Count; i++)
             {
                 //                for (int j = 0; j < burstshots; j++)
                 //                {
-                bool? attempt = TryLaunchProjectile(this.verbProps.defaultProjectile, this.TargetsAoE[i]);
+                var attempt = TryLaunchProjectile(verbProps.defaultProjectile, TargetsAoE[i]);
                 ////Log.Message(TargetsAoE[i].ToString());
                 if (attempt != null)
                 {
@@ -161,82 +156,66 @@ namespace AbilityUser
 
         protected bool? TryLaunchProjectile(ThingDef projectileDef, LocalTargetInfo launchTarget)
         {
-            bool flag = base.TryFindShootLineFromTo(this.caster.Position, launchTarget, out ShootLine shootLine);
-            if (this.verbProps.stopBurstWithoutLos && !flag)
-            {
+            var flag = TryFindShootLineFromTo(caster.Position, launchTarget, out var shootLine);
+            if (verbProps.stopBurstWithoutLos && !flag)
                 return false;
-            }
-            Vector3 drawPos = this.caster.DrawPos;
-            Projectile_AbilityBase projectile = (Projectile_AbilityBase)GenSpawn.Spawn(projectileDef, shootLine.Source, this.caster.Map);
-            projectile.extraDamages = this.UseAbilityProps.extraDamages;
-            projectile.localSpawnThings = this.UseAbilityProps.thingsToSpawn;
-            projectile.FreeIntercept = (this.canFreeInterceptNow && !projectile.def.projectile.flyOverhead);
-            ShotReport shotReport = ShotReport.HitReportFor(this.caster, this, launchTarget);
-            if (this.verbProps.soundCast != null)
-             {
-                this.verbProps.soundCast.PlayOneShot(new TargetInfo(this.caster.Position, this.caster.Map, false));
-            }
-            if (this.verbProps.soundCastTail != null)
-            {
-                this.verbProps.soundCastTail.PlayOneShotOnCamera();
-            }
-            if (!this.UseAbilityProps.AlwaysHits)
+            var drawPos = caster.DrawPos;
+            var projectile = (Projectile_AbilityBase) GenSpawn.Spawn(projectileDef, shootLine.Source, caster.Map);
+            projectile.extraDamages = UseAbilityProps.extraDamages;
+            projectile.localSpawnThings = UseAbilityProps.thingsToSpawn;
+            projectile.FreeIntercept = canFreeInterceptNow && !projectile.def.projectile.flyOverhead;
+            var shotReport = ShotReport.HitReportFor(caster, this, launchTarget);
+            if (verbProps.soundCast != null)
+                verbProps.soundCast.PlayOneShot(new TargetInfo(caster.Position, caster.Map, false));
+            if (verbProps.soundCastTail != null)
+                verbProps.soundCastTail.PlayOneShotOnCamera();
+            if (!UseAbilityProps.AlwaysHits)
             {
                 if (Rand.Value > shotReport.ChanceToNotGoWild_IgnoringPosture)
                 {
                     if (DebugViewSettings.drawShooting)
-                    {
-                        MoteMaker.ThrowText(this.caster.DrawPos, this.caster.Map, "ToWild", -1f);
-                    }
+                        MoteMaker.ThrowText(caster.DrawPos, caster.Map, "ToWild", -1f);
                     shootLine.ChangeDestToMissWild();
                     if (launchTarget.HasThing)
-                    {
                         projectile.ThingToNeverIntercept = launchTarget.Thing;
-                    }
                     if (!projectile.def.projectile.flyOverhead)
-                    {
                         projectile.InterceptWalls = true;
-                    }
-                    projectile.Launch(this.caster, Ability.Def, drawPos, shootLine.Dest, this.ownerEquipment, this.UseAbilityProps.hediffsToApply, this.UseAbilityProps.mentalStatesToApply, this.UseAbilityProps.thingsToSpawn);
+                    projectile.Launch(caster, Ability.Def, drawPos, shootLine.Dest, ownerEquipment,
+                        UseAbilityProps.hediffsToApply, UseAbilityProps.mentalStatesToApply,
+                        UseAbilityProps.thingsToSpawn);
                     return true;
                 }
                 if (Rand.Value > shotReport.ChanceToNotHitCover)
                 {
                     if (DebugViewSettings.drawShooting)
-                    {
-                        MoteMaker.ThrowText(this.caster.DrawPos, this.caster.Map, "ToCover", -1f);
-                    }
+                        MoteMaker.ThrowText(caster.DrawPos, caster.Map, "ToCover", -1f);
                     if (launchTarget.Thing != null && launchTarget.Thing.def.category == ThingCategory.Pawn)
                     {
-                        Thing randomCoverToMissInto = shotReport.GetRandomCoverToMissInto();
+                        var randomCoverToMissInto = shotReport.GetRandomCoverToMissInto();
                         if (!projectile.def.projectile.flyOverhead)
-                        {
                             projectile.InterceptWalls = true;
-                        }
-                        projectile.Launch(this.caster, Ability.Def, drawPos, randomCoverToMissInto, this.ownerEquipment, this.UseAbilityProps.hediffsToApply, this.UseAbilityProps.mentalStatesToApply, this.UseAbilityProps.thingsToSpawn);
+                        projectile.Launch(caster, Ability.Def, drawPos, randomCoverToMissInto, ownerEquipment,
+                            UseAbilityProps.hediffsToApply, UseAbilityProps.mentalStatesToApply,
+                            UseAbilityProps.thingsToSpawn);
                         return true;
                     }
                 }
             }
             if (DebugViewSettings.drawShooting)
-            {
-                MoteMaker.ThrowText(this.caster.DrawPos, this.caster.Map, "ToHit", -1f);
-            }
+                MoteMaker.ThrowText(caster.DrawPos, caster.Map, "ToHit", -1f);
             if (!projectile.def.projectile.flyOverhead)
-            {
-                projectile.InterceptWalls = (!launchTarget.HasThing || launchTarget.Thing.def.Fillage == FillCategory.Full);
-            }
-            projectile.Launch(this.caster, Ability.Def, drawPos, launchTarget, null, this.UseAbilityProps.hediffsToApply, this.UseAbilityProps.mentalStatesToApply, this.UseAbilityProps.thingsToSpawn);
+                projectile.InterceptWalls =
+                    !launchTarget.HasThing || launchTarget.Thing.def.Fillage == FillCategory.Full;
+            projectile.Launch(caster, Ability.Def, drawPos, launchTarget, null, UseAbilityProps.hediffsToApply,
+                UseAbilityProps.mentalStatesToApply, UseAbilityProps.thingsToSpawn);
             return true;
         }
 
-        protected override int ShotsPerBurst => this.verbProps.burstShotCount;
-
         public override void WarmupComplete()
         {
-            this.burstShotsLeft = this.ShotsPerBurst;
-            this.state = VerbState.Bursting;
-            this.TryCastNextBurstShot();
+            burstShotsLeft = ShotsPerBurst;
+            state = VerbState.Bursting;
+            TryCastNextBurstShot();
         }
     }
 }

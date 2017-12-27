@@ -41,48 +41,49 @@ namespace CompToggleDef
         public static bool isfirst = true;
 
         // RimWorld.CharacterCardUtility
-        public static void DrawCard(Rect rect, ThingWithComps selectedThing )
+        public static void DrawCard(Rect rect, ThingWithComps selectedThing)
         {
             GUI.BeginGroup(rect);
 
-            CompToggleDef compToggleDef = selectedThing.GetComp<CompToggleDef>();
+            var compToggleDef = selectedThing.GetComp<CompToggleDef>();
 
             if (compToggleDef != null)
             {
-                float ts = Text.CalcSize(selectedThing.LabelCap).x;
-                float y = rect.y;
-                Rect rect2 = new Rect(((rect.width / 2) - ts) + SpacingOffset, y, rect.width, HeaderSize);
-                y += (float) rect2.height;
+                var ts = Text.CalcSize(selectedThing.LabelCap).x;
+                var y = rect.y;
+                var rect2 = new Rect(rect.width / 2 - ts + SpacingOffset, y, rect.width, HeaderSize);
+                y += rect2.height;
                 Text.Font = GameFont.Medium;
                 Widgets.Label(rect2, selectedThing.LabelCap);
                 Text.Font = GameFont.Small;
-                Widgets.ListSeparator(ref y, rect2.width,"Select one of the following:");
+                Widgets.ListSeparator(ref y, rect2.width, "Select one of the following:");
 
                 // add all the buttons for the toggle defs
-                foreach (ThingDef td in compToggleDef.toggleDefs)  {
-                    Rect rect3 = new Rect(0f,y, rect.width, 20f);
-                    bool isactive = false;
-                    if ( selectedThing.def == td ) isactive = true;
-                    if ( Widgets.RadioButtonLabeled(rect3, td.LabelCap, isactive) ) {
+                foreach (var td in compToggleDef.toggleDefs)
+                {
+                    var rect3 = new Rect(0f, y, rect.width, 20f);
+                    var isactive = false;
+                    if (selectedThing.def == td) isactive = true;
+                    if (Widgets.RadioButtonLabeled(rect3, td.LabelCap, isactive))
+                    {
                         //Log.Message(".. change location to "+td.LabelCap);
 
                         // CHange def then give it a new id. Hopefully nothing index on the id
-                        Map map = selectedThing.Map;
-                        IntVec3 loc = selectedThing.Position;
-                        Rot4 rot = selectedThing.Rotation;
+                        var map = selectedThing.Map;
+                        var loc = selectedThing.Position;
+                        var rot = selectedThing.Rotation;
                         selectedThing.DeSpawn();
                         selectedThing.def = td;
                         selectedThing.thingIDNumber = -1;
                         ThingIDMaker.GiveIDTo(selectedThing); // necessary
-                        GenSpawn.Spawn(selectedThing,loc,map,rot);
+                        GenSpawn.Spawn(selectedThing, loc, map, rot);
                         break;
                     }
-                    y+= 25f;
+                    y += 25f;
                 }
             }
 
             GUI.EndGroup();
         }
-
     }
 }

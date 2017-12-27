@@ -1,6 +1,4 @@
-﻿using RimWorld;
-using Verse;
-using UnityEngine;
+﻿using Verse;
 using Verse.Sound;
 
 namespace AbilityUser
@@ -9,33 +7,25 @@ namespace AbilityUser
     {
         protected override void Impact(Thing hitThing)
         {
-            if (this.flyingThing != null)
+            if (flyingThing != null)
             {
-                GenSpawn.Spawn(this.flyingThing, this.Position, this.Map);
-                if (this.launcher != null)
-                {
-                    if (this.launcher is Pawn equipper)
-                    {
+                GenSpawn.Spawn(flyingThing, Position, Map);
+                if (launcher != null)
+                    if (launcher is Pawn equipper)
                         if (equipper.equipment != null)
-                        {
-                            if (this.flyingThing is ThingWithComps flyingThingWithComps)
-                            {
+                            if (flyingThing is ThingWithComps flyingThingWithComps)
                                 Equip(equipper, flyingThingWithComps);
-                            }
-                        }
-                    }
-                }
             }
-            this.Destroy(DestroyMode.Vanish);
+            Destroy(DestroyMode.Vanish);
         }
 
         public void Equip(Pawn equipper, ThingWithComps thingWithComps)
         {
-            bool flag = false;
+            var flag = false;
             ThingWithComps thingWithComps2;
             if (thingWithComps.def.stackLimit > 1 && thingWithComps.stackCount > 1)
             {
-                thingWithComps2 = (ThingWithComps)thingWithComps.SplitOff(1);
+                thingWithComps2 = (ThingWithComps) thingWithComps.SplitOff(1);
             }
             else
             {
@@ -45,13 +35,9 @@ namespace AbilityUser
             equipper.equipment.MakeRoomFor(thingWithComps2);
             equipper.equipment.AddEquipment(thingWithComps2);
             if (thingWithComps.def.soundInteract != null)
-            {
                 thingWithComps.def.soundInteract.PlayOneShot(new TargetInfo(equipper.Position, equipper.Map, false));
-            }
             if (flag)
-            {
                 thingWithComps.DeSpawn();
-            }
         }
     }
 }
