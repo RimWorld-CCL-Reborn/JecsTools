@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using AbilityUser;
 using Harmony;
 using RimWorld;
@@ -21,108 +23,146 @@ namespace JecsTools
                 new HarmonyMethod(typeof(HarmonyPatches), nameof(PreApplyDamage_PrePatch)), null);
         }
 
+        
+        
         public static bool PreApplyDamage_PrePatch(Pawn_HealthTracker __instance, DamageInfo dinfo, out bool absorbed)
         {
             var pawn = (Pawn) AccessTools.Field(typeof(Pawn_HealthTracker), "pawn").GetValue(__instance);
             if (pawn != null && !StopPreApplyDamageCheck)
-                if (pawn.health.hediffSet.hediffs != null && pawn.health.hediffSet.hediffs.Count > 0)
+                if (pawn?.health?.hediffSet?.hediffs != null && pawn?.health?.hediffSet?.hediffs?.Count > 0)
                 {
                     //A list will stack.
                     var fortitudeHediffs =
-                        pawn.health.hediffSet.hediffs.FindAll(x => x.TryGetComp<HediffComp_DamageSoak>() != null);
+                        pawn?.health?.hediffSet?.hediffs?.FindAll(x => x.TryGetComp<HediffComp_DamageSoak>() != null);
                     if (!fortitudeHediffs.NullOrEmpty())
                     {
-                        var soakedDamage = 0;
-                        foreach (var fortitudeHediff in fortitudeHediffs)
+                        try
                         {
-                            var soaker = fortitudeHediff.TryGetComp<HediffComp_DamageSoak>();
-                            if (soaker != null && soaker.Props != null && (soaker?.Props?.damageType == null || soaker?.Props?.damageType == dinfo.Def))
-                            {
-                                if (!soaker.Props.damageTypesToExclude.NullOrEmpty() &&
-                                    soaker.Props.damageTypesToExclude.Contains(dinfo.Def))
-                                    continue;
-                                var dmgAmount = Mathf.Max(dinfo.Amount - soaker.Props.damageToSoak, 0);
-                                dinfo.SetAmount(dmgAmount);
-                                soakedDamage += dmgAmount;
-                                if (dinfo.Amount > 0) continue;
-                                absorbed = true;
+                            if (PreApplyDamage_ApplyDamageSoakers(dinfo, out absorbed, fortitudeHediffs, pawn))
                                 return true;
-                            }
                         }
-                        if (soakedDamage != 0 && pawn.Spawned && pawn.MapHeld != null && pawn.DrawPos.InBounds(pawn.MapHeld))
-                            MoteMaker.ThrowText(pawn.DrawPos, pawn.MapHeld,
-                                "JT_DamageSoaked".Translate(soakedDamage), -1f);
+                        catch (NullReferenceException e)
+                        {
+                            
+                        }
                     }
                     if (dinfo.Weapon is ThingDef weaponDef && !weaponDef.IsRangedWeapon)
                         if (dinfo.Instigator is Pawn instigator)
                         {
-                            var extraDamagesHediff =
-                                instigator.health.hediffSet.hediffs.FirstOrDefault(y =>
-                                    y.TryGetComp<HediffComp_ExtraMeleeDamages>() != null);
-                            if (extraDamagesHediff != null)
+                            try
                             {
-                                var damages = extraDamagesHediff.TryGetComp<HediffComp_ExtraMeleeDamages>();
-                                if (damages != null)
-                                {
-                                    StopPreApplyDamageCheck = true;
-                                    for (var i = 0; i < damages.Props.extraDamages.Count; i++)
-                                    {
-                                        var dmg = damages.Props.extraDamages[i];
-                                        if (pawn == null || !pawn.Spawned || pawn.Dead)
-                                        {
-                                            absorbed = false;
-                                            StopPreApplyDamageCheck = false;
-                                            return true;
-                                        }
-                                        pawn.TakeDamage(new DamageInfo(dmg.def, dmg.amount, -1, instigator));
-                                    }
-                                    StopPreApplyDamageCheck = false;
-                                }
+                                if (PreApplyDamage_ApplyExtraDamages(out absorbed, instigator, pawn)) return true;
+                            }
+                            catch (NullReferenceException e)
+                            {
+                                
                             }
 
-                            var knockbackHediff =
-                                instigator.health.hediffSet.hediffs.FirstOrDefault(y =>
-                                    y.TryGetComp<HediffComp_Knockback>() != null);
-                            if (knockbackHediff != null)
+                            try
                             {
-                                var knocker = knockbackHediff.TryGetComp<HediffComp_Knockback>();
-                                if (knocker != null)
-                                    if (knocker.Props.knockbackChance >= Rand.Value)
-                                    {
-                                        if (knocker.Props.explosiveKnockback)
-                                        {
-                                            var explosion = (Explosion) GenSpawn.Spawn(ThingDefOf.Explosion,
-                                                instigator.PositionHeld, instigator.MapHeld);
-                                            explosion.radius = knocker.Props.explosionSize;
-                                            explosion.damType = knocker.Props.explosionDmg;
-                                            explosion.instigator = instigator;
-                                            explosion.damAmount = 0;
-                                            explosion.weapon = null;
-                                            explosion.projectile = null;
-                                            explosion.preExplosionSpawnThingDef = null;
-                                            explosion.preExplosionSpawnChance = 0f;
-                                            explosion.preExplosionSpawnThingCount = 1;
-                                            explosion.postExplosionSpawnThingDef = null;
-                                            explosion.postExplosionSpawnChance = 0f;
-                                            explosion.postExplosionSpawnThingCount = 1;
-                                            explosion.applyDamageToExplosionCellsNeighbors = false;
-                                            explosion.chanceToStartFire = 0f;
-                                            explosion.dealMoreDamageAtCenter = false;
-                                            explosion.StartExplosion(null);
-                                        }
-                                        if (pawn != instigator && !pawn.Dead && !pawn.Downed && !pawn.Spawned)
-                                        {
-                                            if (knocker.Props.stunChance > -1 && knocker.Props.stunChance >= Rand.Value)
-                                                pawn.stances.stunner.StunFor(knocker.Props.stunTicks);
-                                            PushEffect(instigator, pawn, knocker.Props.knockDistance.RandomInRange,
-                                                true);
-                                        }
-                                    }
+                                PreApplyDamage_ApplyKnockback(instigator, pawn);
+                            }
+                            catch (NullReferenceException e)
+                            {
+                                
                             }
                         }
                 }
             absorbed = false;
             return true;
+        }
+
+        private static void PreApplyDamage_ApplyKnockback(Pawn instigator, Pawn pawn)
+        {
+            var knockbackHediff =
+                instigator?.health?.hediffSet?.hediffs.FirstOrDefault(y =>
+                    y.TryGetComp<HediffComp_Knockback>() != null);
+            var knocker = knockbackHediff?.TryGetComp<HediffComp_Knockback>();
+            if (knocker != null)
+                if (knocker?.Props?.knockbackChance >= Rand.Value)
+                {
+                    if (knocker.Props.explosiveKnockback)
+                    {
+                        var explosion = (Explosion) GenSpawn.Spawn(ThingDefOf.Explosion,
+                            instigator.PositionHeld, instigator.MapHeld);
+                        explosion.radius = knocker.Props.explosionSize;
+                        explosion.damType = knocker.Props.explosionDmg;
+                        explosion.instigator = instigator;
+                        explosion.damAmount = 0;
+                        explosion.weapon = null;
+                        explosion.projectile = null;
+                        explosion.preExplosionSpawnThingDef = null;
+                        explosion.preExplosionSpawnChance = 0f;
+                        explosion.preExplosionSpawnThingCount = 1;
+                        explosion.postExplosionSpawnThingDef = null;
+                        explosion.postExplosionSpawnChance = 0f;
+                        explosion.postExplosionSpawnThingCount = 1;
+                        explosion.applyDamageToExplosionCellsNeighbors = false;
+                        explosion.chanceToStartFire = 0f;
+                        explosion.dealMoreDamageAtCenter = false;
+                        explosion.StartExplosion(null);
+                    }
+                    if (pawn != instigator && !pawn.Dead && !pawn.Downed && pawn.Spawned)
+                    {
+                        if (knocker.Props.stunChance > -1 && knocker.Props.stunChance >= Rand.Value)
+                            pawn.stances.stunner.StunFor(knocker.Props.stunTicks);
+                        PushEffect(instigator, pawn, knocker.Props.knockDistance.RandomInRange,
+                            true);
+                    }
+                }
+        }
+
+        private static bool PreApplyDamage_ApplyExtraDamages(out bool absorbed, Pawn instigator, Pawn pawn)
+        {
+            var extraDamagesHediff =
+                instigator.health.hediffSet.hediffs.FirstOrDefault(y =>
+                    y.TryGetComp<HediffComp_ExtraMeleeDamages>() != null);
+            var damages = extraDamagesHediff?.TryGetComp<HediffComp_ExtraMeleeDamages>();
+            if (damages?.Props != null && !damages.Props.extraDamages.NullOrEmpty())
+            {
+                StopPreApplyDamageCheck = true;
+                foreach (var dmg in damages.Props.extraDamages)
+                {
+                    if (pawn == null || !pawn.Spawned || pawn.Dead)
+                    {
+                        absorbed = false;
+                        StopPreApplyDamageCheck = false;
+                        return true;
+                    }
+                    pawn.TakeDamage(new DamageInfo(dmg.def, dmg.amount, -1, instigator));
+                }
+                StopPreApplyDamageCheck = false;
+            }
+            absorbed = false;
+            return false;
+        }
+
+        private static bool PreApplyDamage_ApplyDamageSoakers(DamageInfo dinfo, out bool absorbed, List<Hediff> fortitudeHediffs,
+            Pawn pawn)
+        {
+            var soakedDamage = 0;
+            foreach (var fortitudeHediff in fortitudeHediffs)
+            {
+                var soaker = fortitudeHediff.TryGetComp<HediffComp_DamageSoak>();
+                if (soaker?.Props != null && (soaker?.Props?.damageType == null || soaker?.Props?.damageType == dinfo.Def))
+                {
+                    if (!soaker.Props.damageTypesToExclude.NullOrEmpty() &&
+                        soaker.Props.damageTypesToExclude.Contains(dinfo.Def))
+                        continue;
+                    var dmgAmount = Mathf.Max(dinfo.Amount - soaker.Props.damageToSoak, 0);
+                    dinfo.SetAmount(dmgAmount);
+                    soakedDamage += dmgAmount;
+                    if (dinfo.Amount > 0) continue;
+                    absorbed = true;
+                    return true;
+                }
+            }
+            if (soakedDamage != 0 && pawn.Spawned && pawn.MapHeld != null && pawn.DrawPos is Vector3 drawVec &&
+                drawVec.InBounds(pawn.MapHeld))
+                MoteMaker.ThrowText(drawVec, pawn.MapHeld,
+                    "JT_DamageSoaked".Translate(soakedDamage), -1f);
+            absorbed = false;
+            return false;
         }
 
         public static Vector3 PushResult(Thing Caster, Thing thingToPush, int pushDist, out bool collision)
@@ -159,13 +199,13 @@ namespace JecsTools
         {
             LongEventHandler.QueueLongEvent(delegate
             {
-                if (target != null && target is Pawn p && p?.MapHeld != null)
+                if (target != null && target is Pawn p && p.Spawned && !p.Downed && !p.Dead && p?.MapHeld != null)
                 {
                     bool applyDamage;
                     var loc = PushResult(Caster, target, distance, out applyDamage);
                     //if (((Pawn)target).RaceProps.Humanlike) ((Pawn)target).needs.mood.thoughts.memories.TryGainMemory(ThoughtDef.Named("PJ_ThoughtPush"), null);
-                    var flyingObject = (FlyingObject) GenSpawn.Spawn(ThingDef.Named("JT_FlyingObject"), target.Position,
-                        target.Map);
+                    var flyingObject = (FlyingObject) GenSpawn.Spawn(ThingDef.Named("JT_FlyingObject"), p.PositionHeld,
+                        p.MapHeld);
                     if (applyDamage && damageOnCollision)
                         flyingObject.Launch(Caster, new LocalTargetInfo(loc.ToIntVec3()), target,
                             new DamageInfo(DamageDefOf.Blunt, Rand.Range(8, 10)));
