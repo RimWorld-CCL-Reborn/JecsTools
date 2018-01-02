@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using RimWorld;
-using Verse;
+﻿using Verse;
+using Verse.AI;
 
 namespace CompVehicle
 {
@@ -12,7 +8,9 @@ namespace CompVehicle
         //If anyone is inside the cockpit, allow this action to take place.
         protected override bool Satisfied(Pawn pawn)
         {
-            if (pawn?.GetComp<CompVehicle>() is CompVehicle compVehicle && ((compVehicle?.AllOccupants?.Count ?? 0) > 0 || compVehicle.manipulationStatus == ManipulationState.able )) return true;
+            if (pawn?.GetComp<CompVehicle>() is CompVehicle compVehicle &&
+                ((compVehicle?.AllOccupants?.Count ?? 0) > 0 ||
+                 compVehicle.manipulationStatus == ManipulationState.able)) return true;
             return false;
         }
     }

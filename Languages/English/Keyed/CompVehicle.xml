@@ -1,7 +1,17 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <LanguageData>
-  <MessageCaravanRunOutOfFuel>{0} has run out of fuel ({1}). {0} will now move at a quarter of normal speed.</MessageCaravanRunOutOfFuel>
 
+ <!-- Addition 7/28/17 -->
+ <CompVehicle_CannotSplitWhileInVehicles>Cannot split caravan while colonists are in vehicles.</CompVehicle_CannotSplitWhileInVehicles>
+
+ <!-- Addition 7/18/17 -->
+
+  <CompVehicle_CannotMove>{0} is currently incapable of movement.</CompVehicle_CannotMove>
+
+ <!-- Previous -->
+
+  <CompVehicle_LowFuel>Low Fuel</CompVehicle_LowFuel>
+  <MessageCaravanRunOutOfFuel>{0} has run out of fuel ({1}). {0} will now move at a quarter of normal speed.</MessageCaravanRunOutOfFuel>
   <MessagePawnLeftVehicle>{0} has left the vehicle ({1}) due to {2} needs.</MessagePawnLeftVehicle>
   <DaysWorthOfFuelInfo>Carrying {0} days worth of fuel</DaysWorthOfFuelInfo>
 <InfiniteDaysWorthOfFuelInfo>Will never run out of fuel</InfiniteDaysWorthOfFuelInfo>

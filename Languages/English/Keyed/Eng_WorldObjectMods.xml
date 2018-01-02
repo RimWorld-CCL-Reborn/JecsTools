@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>
+
+<JecsTools_WorldObjectConst_AbandonReason>because no caravan is available at this location</JecsTools_WorldObjectConst_AbandonReason>
+<JecsTools_WorldObjectConst_ResourcesNeeded>Resources: {0}</JecsTools_WorldObjectConst_ResourcesNeeded>
+<JecsTools_WorldObjectConst_NotEnoughStuff>Failed. {1} of {0} materials required.</JecsTools_WorldObjectConst_NotEnoughStuff>
+
+</LanguageData>

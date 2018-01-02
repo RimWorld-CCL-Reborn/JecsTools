@@ -6,15 +6,14 @@ namespace AbilityUser
 {
     public class CompAbilityItem : ThingComp
     {
+        public List<PawnAbility> Abilities = new List<PawnAbility>()
+            ; // should these exist or only in CompAbilityUser.temporaryWeaponPowers?
 
         public CompAbilityUser AbilityUserTarget = null;
-        
+
         private Graphic Overlay;
 
-        public CompProperties_AbilityItem Props => (CompProperties_AbilityItem)this.props;
-
-
-        public List<PawnAbility> Abilities = new List<PawnAbility>(); // should these exist or only in CompAbilityUser.temporaryWeaponPowers?
+        public CompProperties_AbilityItem Props => (CompProperties_AbilityItem) props;
 
         public void GetOverlayGraphic()
         {
@@ -25,46 +24,47 @@ namespace AbilityUser
 
         public override void PostSpawnSetup(bool respawningAfterLoad)
         {
-
-            if (this.parent.def.tickerType == TickerType.Never)
-            {
-                this.parent.def.tickerType = TickerType.Rare;
-            }
+            if (parent.def.tickerType == TickerType.Never)
+                parent.def.tickerType = TickerType.Rare;
             base.PostSpawnSetup(respawningAfterLoad);
 
             GetOverlayGraphic();
-            Find.TickManager.RegisterAllTickabilityFor(this.parent);
+            Find.TickManager.RegisterAllTickabilityFor(parent);
         }
 
         public override void PostDrawExtraSelectionOverlays()
         {
-            if (this.Overlay == null) Log.Message("NoOverlay");
-            if (this.Overlay != null)
+            if (Overlay == null) Log.Message("NoOverlay");
+            if (Overlay != null)
             {
-                Vector3 drawPos = this.parent.DrawPos;
+                var drawPos = parent.DrawPos;
                 drawPos.y = Altitudes.AltitudeFor(AltitudeLayer.MoteOverhead);
-                Vector3 s = new Vector3(2.0f, 2.0f, 2.0f);
-                Matrix4x4 matrix = default(Matrix4x4);
+                var s = new Vector3(2.0f, 2.0f, 2.0f);
+                var matrix = default(Matrix4x4);
                 matrix.SetTRS(drawPos, Quaternion.AngleAxis(0, Vector3.up), s);
-                Graphics.DrawMesh(MeshPool.plane10, matrix, this.Overlay.MatSingle, 0);
+                Graphics.DrawMesh(MeshPool.plane10, matrix, Overlay.MatSingle, 0);
             }
         }
 
         //        public override void CompTick() { }
         //        public override void CompTickRare() { }
 
-        public override void PostExposeData() => base.PostExposeData();
+        public override void PostExposeData()
+        {
+            base.PostExposeData();
+        }
 
         public override string GetDescriptionPart()
         {
-            string str = string.Empty;
+            var str = string.Empty;
 
-            if ( this.Props.Abilities.Count == 1 )
-            str += "Item Ability:";
-            else if ( this.Props.Abilities.Count > 1 )
-            str += "Item Abilities:";
+            if (Props.Abilities.Count == 1)
+                str += "Item Ability:";
+            else if (Props.Abilities.Count > 1)
+                str += "Item Abilities:";
 
-            foreach ( AbilityDef pa in this.Props.Abilities ) {
+            foreach (var pa in Props.Abilities)
+            {
                 str += "\n\n";
                 str += pa.label.CapitalizeFirst() + " - ";
                 str += pa.GetDescription();

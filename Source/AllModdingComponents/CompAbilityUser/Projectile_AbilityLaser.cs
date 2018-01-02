@@ -1,79 +1,76 @@
-﻿using System;
-using System.Collections.Generic;
-using RimWorld;
-using Verse;
+﻿using RimWorld;
 using UnityEngine;
-using Verse.AI;
+using Verse;
 using Verse.Sound;
 
 namespace AbilityUser
 {
     public class Projectile_AbilityLaser : Projectile_AbilityBase
     {
-        // Variables.
-        public int tickCounter = 0;
-        public Thing hitThing = null;
+        public bool canStartFire;
+        public float drawingIntensity;
+        public Matrix4x4 drawingMatrix = default(Matrix4x4);
+        public Vector3 drawingPosition;
+        public Vector3 drawingScale;
+        public Material drawingTexture;
+        public Thing hitThing;
+        public int postFiringDuration;
+        public float postFiringFinalIntensity;
+        public float postFiringInitialIntensity;
+        public Material postFiringTexture;
+        public int preFiringDuration;
+        public float preFiringFinalIntensity;
+
+        // Custom XML variables.
+        public float preFiringInitialIntensity;
 
         // Draw variables.
         public Material preFiringTexture;
-        public Material postFiringTexture;
-        public Matrix4x4 drawingMatrix = default(Matrix4x4);
-        public Vector3 drawingScale;
-        public Vector3 drawingPosition;
-        public float drawingIntensity = 0f;
-        public Material drawingTexture;
 
-        // Custom XML variables.
-        public float preFiringInitialIntensity = 0f;
-        public float preFiringFinalIntensity = 0f;
-        public float postFiringInitialIntensity = 0f;
-        public float postFiringFinalIntensity = 0f;
-        public int preFiringDuration = 0;
-        public int postFiringDuration = 0;
-        public float startFireChance = 0;
-        public bool canStartFire = false;
+        public float startFireChance;
+
+        // Variables.
+        public int tickCounter;
 
         public override void SpawnSetup(Map map, bool respawningAfterLoad)
         {
             base.SpawnSetup(map, respawningAfterLoad);
-            this.drawingTexture = this.def.DrawMatSingle;
+            drawingTexture = def.DrawMatSingle;
         }
 
         /// <summary>
-        /// Get parameters from XML.
+        ///     Get parameters from XML.
         /// </summary>
         public void GetParametersFromXml()
         {
-            ProjectileDef_AbilityLaser additionalParameters = this.def as ProjectileDef_AbilityLaser;
+            var additionalParameters = def as ProjectileDef_AbilityLaser;
 
-            this.preFiringDuration = additionalParameters.preFiringDuration;
-            this.postFiringDuration = additionalParameters.postFiringDuration;
+            preFiringDuration = additionalParameters.preFiringDuration;
+            postFiringDuration = additionalParameters.postFiringDuration;
 
             // Draw.
-            this.preFiringInitialIntensity = additionalParameters.preFiringInitialIntensity;
-            this.preFiringFinalIntensity = additionalParameters.preFiringFinalIntensity;
-            this.postFiringInitialIntensity = additionalParameters.postFiringInitialIntensity;
-            this.postFiringFinalIntensity = additionalParameters.postFiringFinalIntensity;
-            this.startFireChance = additionalParameters.StartFireChance;
-            this.canStartFire = additionalParameters.CanStartFire;
+            preFiringInitialIntensity = additionalParameters.preFiringInitialIntensity;
+            preFiringFinalIntensity = additionalParameters.preFiringFinalIntensity;
+            postFiringInitialIntensity = additionalParameters.postFiringInitialIntensity;
+            postFiringFinalIntensity = additionalParameters.postFiringFinalIntensity;
+            startFireChance = additionalParameters.StartFireChance;
+            canStartFire = additionalParameters.CanStartFire;
         }
 
         /// <summary>
-        /// Save/load data from a savegame file (apparently not used for projectile for now).
+        ///     Save/load data from a savegame file (apparently not used for projectile for now).
         /// </summary>
         public override void ExposeData()
         {
             base.ExposeData();
-            Scribe_Values.Look<int>(ref this.tickCounter, "tickCounter", 0);
+            Scribe_Values.Look(ref tickCounter, "tickCounter", 0);
 
             if (Scribe.mode == LoadSaveMode.PostLoadInit)
-            {
                 GetParametersFromXml();
-            }
         }
 
         /// <summary>
-        /// Main projectile sequence.
+        ///     Main projectile sequence.
         /// </summary>
         public override void Tick()
         {
@@ -82,20 +79,19 @@ namespace AbilityUser
             //((ThingWithComponents)this).Tick(); // Does not work...
             try
             {
-
-                if (this.tickCounter == 0)
+                if (tickCounter == 0)
                 {
                     GetParametersFromXml();
                     PerformPreFiringTreatment();
                 }
 
                 // Pre firing.
-                if (this.tickCounter < this.preFiringDuration)
+                if (tickCounter < preFiringDuration)
                 {
                     GetPreFiringDrawingParameters();
                 }
                 // Firing.
-                else if (this.tickCounter == this.preFiringDuration)
+                else if (tickCounter == preFiringDuration)
                 {
                     Fire();
                     GetPostFiringDrawingParameters();
@@ -105,114 +101,105 @@ namespace AbilityUser
                 {
                     GetPostFiringDrawingParameters();
                 }
-                if (this.tickCounter == (this.preFiringDuration + this.postFiringDuration) && !this.Destroyed)
-                {
-                    this.Destroy(DestroyMode.Vanish);
-                }
-                if (this.launcher != null)
-                {
-                    if (this.launcher is Pawn)
+                if (tickCounter == preFiringDuration + postFiringDuration && !Destroyed)
+                    Destroy(DestroyMode.Vanish);
+                if (launcher != null)
+                    if (launcher is Pawn)
                     {
-                        Pawn launcherPawn = this.launcher as Pawn;
-                        if ((((launcherPawn.Dead) == true) && !this.Destroyed))
-                        {
-                            this.Destroy(DestroyMode.Vanish);
-                        }
+                        var launcherPawn = launcher as Pawn;
+                        if (launcherPawn.Dead && !Destroyed)
+                            Destroy(DestroyMode.Vanish);
                     }
-                }
-                this.tickCounter++;
+                tickCounter++;
             }
             catch
             {
-                if (!this.Destroyed) this.Destroy(DestroyMode.Vanish);
+                if (!Destroyed) Destroy(DestroyMode.Vanish);
             }
-
         }
 
         /// <summary>
-        /// Performs prefiring treatment: data initalization.
+        ///     Performs prefiring treatment: data initalization.
         /// </summary>
         public virtual void PerformPreFiringTreatment()
         {
             DetermineImpactExactPosition();
-            Vector3 cannonMouthOffset = ((this.destination - this.origin).normalized * 0.9f);
-            this.drawingScale = new Vector3(1f, 1f, (this.destination - this.origin).magnitude - cannonMouthOffset.magnitude);
-            this.drawingPosition = this.origin + (cannonMouthOffset / 2) + ((this.destination - this.origin) / 2) + Vector3.up * this.def.Altitude;
-            this.drawingMatrix.SetTRS(this.drawingPosition, this.ExactRotation, this.drawingScale);
+            var cannonMouthOffset = (destination - origin).normalized * 0.9f;
+            drawingScale = new Vector3(1f, 1f, (destination - origin).magnitude - cannonMouthOffset.magnitude);
+            drawingPosition = origin + cannonMouthOffset / 2 + (destination - origin) / 2 + Vector3.up * def.Altitude;
+            drawingMatrix.SetTRS(drawingPosition, ExactRotation, drawingScale);
         }
 
         /// <summary>
-        /// Gets the prefiring drawing parameters.
+        ///     Gets the prefiring drawing parameters.
         /// </summary>
         public virtual void GetPreFiringDrawingParameters()
         {
-            if (this.preFiringDuration != 0)
-            {
-                this.drawingIntensity = this.preFiringInitialIntensity + (this.preFiringFinalIntensity - this.preFiringInitialIntensity) * this.tickCounter / this.preFiringDuration;
-            }
+            if (preFiringDuration != 0)
+                drawingIntensity = preFiringInitialIntensity + (preFiringFinalIntensity - preFiringInitialIntensity) *
+                                   tickCounter / preFiringDuration;
         }
 
         /// <summary>
-        /// Gets the postfiring drawing parameters.
+        ///     Gets the postfiring drawing parameters.
         /// </summary>
         public virtual void GetPostFiringDrawingParameters()
         {
-            if (this.postFiringDuration != 0)
-            {
-                this.drawingIntensity = this.postFiringInitialIntensity + (this.postFiringFinalIntensity - this.postFiringInitialIntensity) * ((this.tickCounter - (float)this.preFiringDuration) / this.postFiringDuration);
-            }
+            if (postFiringDuration != 0)
+                drawingIntensity = postFiringInitialIntensity +
+                                   (postFiringFinalIntensity - postFiringInitialIntensity) *
+                                   ((tickCounter - (float) preFiringDuration) / postFiringDuration);
         }
 
         /// <summary>
-        /// Checks for colateral targets (cover, neutral animal, pawn) along the trajectory.
+        ///     Checks for colateral targets (cover, neutral animal, pawn) along the trajectory.
         /// </summary>
         protected void DetermineImpactExactPosition()
         {
             // We split the trajectory into small segments of approximatively 1 cell size.
-            Vector3 trajectory = (this.destination - this.origin);
-            int numberOfSegments = (int)trajectory.magnitude;
-            Vector3 trajectorySegment = (trajectory / trajectory.magnitude);
+            var trajectory = destination - origin;
+            var numberOfSegments = (int) trajectory.magnitude;
+            var trajectorySegment = trajectory / trajectory.magnitude;
 
-            Vector3 temporaryDestination = this.origin; // Last valid tested position in case of an out of boundaries shot.
-            Vector3 exactTestedPosition = this.origin;
-            IntVec3 testedPosition = exactTestedPosition.ToIntVec3();
+            var temporaryDestination = origin; // Last valid tested position in case of an out of boundaries shot.
+            var exactTestedPosition = origin;
+            var testedPosition = exactTestedPosition.ToIntVec3();
 
-            for (int segmentIndex = 1; segmentIndex <= numberOfSegments; segmentIndex++)
+            for (var segmentIndex = 1; segmentIndex <= numberOfSegments; segmentIndex++)
             {
                 exactTestedPosition += trajectorySegment;
                 testedPosition = exactTestedPosition.ToIntVec3();
 
-                if (!exactTestedPosition.InBounds(this.Map))
+                if (!exactTestedPosition.InBounds(Map))
                 {
-                    this.destination = temporaryDestination;
+                    destination = temporaryDestination;
                     break;
                 }
 
-                if (!this.def.projectile.flyOverhead && segmentIndex >= 5)
+                if (!def.projectile.flyOverhead && segmentIndex >= 5)
                 {
-                    List<Thing> list = this.Map.thingGrid.ThingsListAt(this.Position);
-                    for (int i = 0; i < list.Count; i++)
+                    var list = Map.thingGrid.ThingsListAt(Position);
+                    for (var i = 0; i < list.Count; i++)
                     {
-                        Thing current = list[i];
+                        var current = list[i];
 
                         // Check impact on a wall.
                         if (current.def.Fillage == FillCategory.Full)
                         {
-                            this.destination = testedPosition.ToVector3Shifted() + new Vector3(Rand.Range(-0.3f, 0.3f), 0f, Rand.Range(-0.3f, 0.3f));
-                            this.hitThing = current;
+                            destination = testedPosition.ToVector3Shifted() +
+                                          new Vector3(Rand.Range(-0.3f, 0.3f), 0f, Rand.Range(-0.3f, 0.3f));
+                            hitThing = current;
                             break;
                         }
 
                         // Check impact on a pawn.
                         if (current.def.category == ThingCategory.Pawn)
                         {
-                            Pawn pawn = current as Pawn;
-                            float chanceToHitCollateralTarget = 0.45f;
+                            var pawn = current as Pawn;
+                            var chanceToHitCollateralTarget = 0.45f;
                             if (pawn.Downed)
-                            {
                                 chanceToHitCollateralTarget *= 0.1f;
-                            }
-                            float targetDistanceFromShooter = (this.ExactPosition - this.origin).MagnitudeHorizontal();
+                            var targetDistanceFromShooter = (ExactPosition - origin).MagnitudeHorizontal();
                             if (targetDistanceFromShooter < 4f)
                             {
                                 chanceToHitCollateralTarget *= 0f;
@@ -226,17 +213,16 @@ namespace AbilityUser
                                 else
                                 {
                                     if (targetDistanceFromShooter < 10f)
-                                    {
                                         chanceToHitCollateralTarget *= 0.75f;
-                                    }
                                 }
                             }
                             chanceToHitCollateralTarget *= pawn.RaceProps.baseBodySize;
 
                             if (Rand.Value < chanceToHitCollateralTarget)
                             {
-                                this.destination = testedPosition.ToVector3Shifted() + new Vector3(Rand.Range(-0.3f, 0.3f), 0f, Rand.Range(-0.3f, 0.3f));
-                                this.hitThing = pawn;
+                                destination = testedPosition.ToVector3Shifted() +
+                                              new Vector3(Rand.Range(-0.3f, 0.3f), 0f, Rand.Range(-0.3f, 0.3f));
+                                hitThing = pawn;
                                 break;
                             }
                         }
@@ -248,61 +234,62 @@ namespace AbilityUser
         }
 
         /// <summary>
-        /// Manages the projectile damage application.
+        ///     Manages the projectile damage application.
         /// </summary>
-        public virtual void Fire() => ApplyDamage(this.hitThing);
+        public virtual void Fire()
+        {
+            ApplyDamage(hitThing);
+        }
 
 
         /// <summary>
-        /// Impacts a pawn/object or the ground.
+        ///     Impacts a pawn/object or the ground.
         /// </summary>
         public override void Impact_Override(Thing hitThing)
         {
-
             base.Impact_Override(hitThing);
             if (hitThing != null)
             {
-                int damageAmountBase = this.def.projectile.damageAmountBase;
-                DamageInfo dinfo = new DamageInfo(this.def.projectile.damageDef, damageAmountBase, this.ExactRotation.eulerAngles.y, this.launcher, null, this.equipmentDef);
+                var damageAmountBase = def.projectile.damageAmountBase;
+                var dinfo = new DamageInfo(def.projectile.damageDef, damageAmountBase, ExactRotation.eulerAngles.y,
+                    launcher, null, equipmentDef);
                 hitThing.TakeDamage(dinfo);
                 //hitThing.TakeDamage(dinfo);
-                if (this.canStartFire && Rand.Range(0f, 1f) > this.startFireChance)
-                {
+                if (canStartFire && Rand.Range(0f, 1f) > startFireChance)
                     hitThing.TryAttachFire(0.05f);
-                }
                 if (hitThing is Pawn pawn)
                 {
-                    PostImpactEffects(this.launcher as Pawn, pawn);
-                    MoteMaker.ThrowMicroSparks(this.destination, this.Map);
-                    MoteMaker.MakeStaticMote(this.destination, this.Map, ThingDefOf.Mote_ShotHit_Dirt, 1f);
+                    PostImpactEffects(launcher as Pawn, pawn);
+                    MoteMaker.ThrowMicroSparks(destination, Map);
+                    MoteMaker.MakeStaticMote(destination, Map, ThingDefOf.Mote_ShotHit_Dirt, 1f);
                 }
             }
             else
             {
-                SoundInfo info = SoundInfo.InMap(new TargetInfo(this.Position, this.Map, false), MaintenanceType.None);
+                var info = SoundInfo.InMap(new TargetInfo(Position, Map, false), MaintenanceType.None);
                 SoundDefOf.BulletImpactGround.PlayOneShot(info);
-                MoteMaker.MakeStaticMote(this.ExactPosition, this.Map, ThingDefOf.Mote_ShotHit_Dirt, 1f);
-                MoteMaker.ThrowMicroSparks(this.ExactPosition, this.Map);
+                MoteMaker.MakeStaticMote(ExactPosition, Map, ThingDefOf.Mote_ShotHit_Dirt, 1f);
+                MoteMaker.ThrowMicroSparks(ExactPosition, Map);
             }
         }
 
         /// <summary>
-        /// JECRELL:: Added this to make derived classes work easily.
+        ///     JECRELL:: Added this to make derived classes work easily.
         /// </summary>
         /// <param name="launcher"></param>
         /// <param name="hitTarget"></param>
         public virtual void PostImpactEffects(Pawn launcher, Pawn hitTarget)
         {
-
         }
 
         /// <summary>
-        /// Draws the laser ray.
+        ///     Draws the laser ray.
         /// </summary>
         public override void Draw()
         {
-            this.Comps_PostDraw();
-            UnityEngine.Graphics.DrawMesh(MeshPool.plane10, this.drawingMatrix, FadedMaterialPool.FadedVersionOf(this.drawingTexture, this.drawingIntensity), 0);
+            Comps_PostDraw();
+            Graphics.DrawMesh(MeshPool.plane10, drawingMatrix,
+                FadedMaterialPool.FadedVersionOf(drawingTexture, drawingIntensity), 0);
         }
     }
 }

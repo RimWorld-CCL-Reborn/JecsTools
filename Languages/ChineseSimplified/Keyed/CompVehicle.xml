@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+
+  <!-- Addition 7/28/17 -->
+  <CompVehicle_CannotSplitWhileInVehicles>殖民者在载具中无法和商队交易。</CompVehicle_CannotSplitWhileInVehicles>
+
+  <!-- Addition 7/18/17 -->
+
+  <CompVehicle_CannotMove>{0}{0}当前无法移动。</CompVehicle_CannotMove>
+
+  <!-- Previous -->
+
+  <CompVehicle_LowFuel>燃料告急</CompVehicle_LowFuel>
+  <MessageCaravanRunOutOfFuel>{0}的燃料（{1}）即将耗尽。{0}的行进速度将降低四分之三。</MessageCaravanRunOutOfFuel>
+  <MessagePawnLeftVehicle>{0}由于需要{2}而离开了载具（{1}）。</MessagePawnLeftVehicle>
+  <DaysWorthOfFuelInfo>携带了可用{0}天的燃料</DaysWorthOfFuelInfo>
+  <InfiniteDaysWorthOfFuelInfo>完全不用担心燃料耗尽</InfiniteDaysWorthOfFuelInfo>
+  <DaysWorthOfFuelTooltip>燃料消耗预计\n\n一个考虑到所有商队载具的燃料消耗和最坏情况影响的预算天数，这意味着超过预计天数之后你的商队将出现载具燃料紧张的情况。</DaysWorthOfFuelTooltip>
+  <DaysWorthOfFuelWarningDialog_NoFuel>你的商队没有携带任何燃料，行进速度将大大降低。\n\n你确定要组织这次行商？</DaysWorthOfFuelWarningDialog_NoFuel>
+  <DaysWorthOfFuelWarningDialog>你的商队只携带了可用{0}天的燃料，可能不足以支撑这次的消耗。\n\n你确定要组织这次行商？</DaysWorthOfFuelWarningDialog>
+  <CaravanOutOfFuel>燃料耗尽</CaravanOutOfFuel>
+  <CaravanVehicleNoFuelWarningDialog>商队载具必须装满油。</CaravanVehicleNoFuelWarningDialog>
+
+  <CompVehicle_VehicleSection>载具</CompVehicle_VehicleSection>
+  <CompVehicle_LoadUnload>搭载/卸载{0}</CompVehicle_LoadUnload>
+  <CompVehicle_Unload>卸载{0}</CompVehicle_Unload>
+  <CompVehicle_Load>搭载{0}</CompVehicle_Load>
+  <CompVehicle_LoadUnloadDesc>搭载或强行卸载{0}。</CompVehicle_LoadUnloadDesc>
+  <CompVehicle_LoadDesc>搭载一名{0}</CompVehicle_LoadDesc>
+  <CompVehicle_UnloadDesc>卸载一名{{0}</CompVehicle_UnloadDesc>
+  <CompVehicle_DisabledDesc>载具由于被禁用，被摧毁，或损伤严重而无法装载。</CompVehicle_DisabledDesc>
+
+</LanguageData>

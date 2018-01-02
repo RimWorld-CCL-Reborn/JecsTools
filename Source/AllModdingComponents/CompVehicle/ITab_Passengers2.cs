@@ -1,81 +1,76 @@
-﻿using System;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Collections.Generic;
 using RimWorld;
+using RimWorld.Planet;
+using UnityEngine;
 using Verse;
 using Verse.Sound;
-using RimWorld.Planet;
 
 namespace CompVehicle
 {
     public class ITab_Passengers : ITab
     {
+        private static readonly List<Need> tmpNeeds = new List<Need>();
+
+        private bool doNeeds;
         private Vector2 scrollPosition;
 
         private float scrollViewHeight;
-
-        private static List<Need> tmpNeeds = new List<Need>();
 
         private Pawn specificNeedsTabForPawn;
 
         private Vector2 thoughtScrollPosition;
 
-        private bool doNeeds;
+        public ITab_Passengers()
+        {
+            labelKey = "Contents";
+        }
 
         private float SpecificNeedsTabWidth
         {
             get
             {
-                if (this.specificNeedsTabForPawn == null || this.specificNeedsTabForPawn.Destroyed)
-                {
+                if (specificNeedsTabForPawn == null || specificNeedsTabForPawn.Destroyed)
                     return 0f;
-                }
-                return NeedsCardUtility.GetSize(this.specificNeedsTabForPawn).x;
+                return NeedsCardUtility.GetSize(specificNeedsTabForPawn).x;
             }
-        }
-
-        public ITab_Passengers()
-        {
-            this.labelKey = "Contents";
         }
 
         protected override void FillTab()
         {
-            DoRows(this.size, base.SelPawn?.GetComp<CompVehicle>(), ref this.scrollPosition, ref this.scrollViewHeight, false, ref this.specificNeedsTabForPawn, this.doNeeds);
+            DoRows(size, SelPawn?.GetComp<CompVehicle>(), ref scrollPosition, ref scrollViewHeight, false,
+                ref specificNeedsTabForPawn, doNeeds);
         }
 
-        private static void DoRow(ref float curY, Rect viewRect, Rect scrollOutRect, Vector2 scrollPosition, Thing thing, CompVehicle vehicle, ref Pawn specificNeedsTabForPawn, bool doNeeds)
+        private static void DoRow(ref float curY, Rect viewRect, Rect scrollOutRect, Vector2 scrollPosition,
+            Thing thing, CompVehicle vehicle, ref Pawn specificNeedsTabForPawn, bool doNeeds)
         {
-            float num = (!(thing is Pawn)) ? 30f : 50f;
-            float num2 = scrollPosition.y - num;
-            float num3 = scrollPosition.y + scrollOutRect.height;
+            var num = !(thing is Pawn) ? 30f : 50f;
+            var num2 = scrollPosition.y - num;
+            var num3 = scrollPosition.y + scrollOutRect.height;
             if (curY > num2 && curY < num3)
-            {
                 DoRow(new Rect(0f, curY, viewRect.width, num), thing, vehicle, ref specificNeedsTabForPawn, doNeeds);
-            }
             curY += num;
         }
 
         private static void GetNeedsToDisplay(Pawn p, List<Need> outNeeds)
         {
             outNeeds.Clear();
-            List<Need> allNeeds = p.needs.AllNeeds;
-            for (int i = 0; i < allNeeds.Count; i++)
+            var allNeeds = p.needs.AllNeeds;
+            for (var i = 0; i < allNeeds.Count; i++)
             {
-                Need need = allNeeds[i];
+                var need = allNeeds[i];
                 if (need.def.showForCaravanMembers)
-                {
                     outNeeds.Add(need);
-                }
             }
             PawnNeedsUIUtility.SortInDisplayOrder(outNeeds);
         }
-        
-        private static void DoRow(Rect rect, Thing thing, CompVehicle vehicle, ref Pawn specificNeedsTabForPawn, bool doNeeds)
+
+        private static void DoRow(Rect rect, Thing thing, CompVehicle vehicle, ref Pawn specificNeedsTabForPawn,
+            bool doNeeds)
         {
             GUI.BeginGroup(rect);
-            Rect rect2 = rect.AtZero();
-            Pawn pawn = thing as Pawn;
+            var rect2 = rect.AtZero();
+            var pawn = thing as Pawn;
             //if (listingUsesAbandonSpecificCountButtons)
             //{
             //    if (thing.stackCount != 1)
@@ -95,32 +90,32 @@ namespace CompVehicle
             }
             if (pawn == null)
             {
-                Rect rect3 = rect2;
+                var rect3 = rect2;
                 rect3.xMin = rect3.xMax - 60f;
                 CaravanPeopleAndItemsTabUtility.TryDrawMass(thing, rect3);
                 rect2.width -= 60f;
             }
             if (Mouse.IsOver(rect2))
-            {
                 Widgets.DrawHighlight(rect2);
-            }
-            Rect rect4 = new Rect(4f, (rect.height - 27f) / 2f, 27f, 27f);
+            var rect4 = new Rect(4f, (rect.height - 27f) / 2f, 27f, 27f);
             Widgets.ThingIcon(rect4, thing, 1f);
             if (pawn != null)
             {
-                Rect bgRect = new Rect(rect4.xMax + 4f, 16f, 100f, 18f);
+                var bgRect = new Rect(rect4.xMax + 4f, 16f, 100f, 18f);
                 GenMapUI.DrawPawnLabel(pawn, bgRect, 1f, 100f, null, GameFont.Small, false, false);
                 if (doNeeds)
                 {
                     GetNeedsToDisplay(pawn, tmpNeeds);
-                    float xMax = bgRect.xMax;
-                    for (int i = 0; i < tmpNeeds.Count; i++)
+                    var xMax = bgRect.xMax;
+                    for (var i = 0; i < tmpNeeds.Count; i++)
                     {
-                        Need need = tmpNeeds[i];
-                        int maxThresholdMarkers = 0;
-                        bool doTooltip = true;
-                        Rect rect5 = new Rect(xMax, 0f, 100f, 50f);
-                        Need_Mood mood = need as Need_Mood;
+                        var need = tmpNeeds[i];
+                        var maxThresholdMarkers = 0;
+                        var doTooltip = true;
+                        var rect5 = new Rect(xMax, 0f, 100f, 50f);
+#pragma warning disable IDE0019 // Use pattern matching
+                        var mood = need as Need_Mood;
+#pragma warning restore IDE0019 // Use pattern matching
                         if (mood != null)
                         {
                             maxThresholdMarkers = 1;
@@ -140,7 +135,7 @@ namespace CompVehicle
             }
             else
             {
-                Rect rect6 = new Rect(rect4.xMax + 4f, 0f, 300f, 30f);
+                var rect6 = new Rect(rect4.xMax + 4f, 0f, 300f, 30f);
                 Text.Anchor = TextAnchor.MiddleLeft;
                 Text.WordWrap = false;
                 Widgets.Label(rect6, thing.LabelCap);
@@ -152,44 +147,41 @@ namespace CompVehicle
 
         private static bool AnyItemOrEmpty(List<Thing> things)
         {
-            return things.Any((Thing x) => !(x is Pawn)) || !things.Any<Thing>();
+            return things.Any(x => !(x is Pawn)) || !things.Any();
         }
 
-        public static void DoRows(Vector2 size, CompVehicle vehicle, ref Vector2 scrollPosition, ref float scrollViewHeight, bool alwaysShowItemsSection, ref Pawn specificNeedsTabForPawn, bool doNeeds = true)
+        public static void DoRows(Vector2 size, CompVehicle vehicle, ref Vector2 scrollPosition,
+            ref float scrollViewHeight, bool alwaysShowItemsSection, ref Pawn specificNeedsTabForPawn,
+            bool doNeeds = true)
         {
             //if (specificNeedsTabForPawn != null && (!thing.Contains(specificNeedsTabForPawn) || specificNeedsTabForPawn.Dead))
             //{
             //    specificNeedsTabForPawn = null;
             //}
             Text.Font = GameFont.Small;
-            Rect rect = new Rect(0f, 0f, size.x, size.y).ContractedBy(10f);
-            Rect viewRect = new Rect(0f, 0f, rect.width - 16f, scrollViewHeight);
+            var rect = new Rect(0f, 0f, size.x, size.y).ContractedBy(10f);
+            var viewRect = new Rect(0f, 0f, rect.width - 16f, scrollViewHeight);
             //bool listingUsesAbandonSpecificCountButtons = AnyItemOrEmpty(things);
             Widgets.BeginScrollView(rect, ref scrollPosition, viewRect, true);
-            float num = 0f;
-            
+            var num = 0f;
+
             if (!vehicle.handlers.NullOrEmpty())
-            {
-                foreach (VehicleHandlerGroup group in vehicle.handlers)
-                {
+                foreach (var group in vehicle.handlers)
                     if ((group?.handlers?.Count ?? 0) > 0)
                     {
-
                         var flag = false;
-                        for (int i = 0; i < group.handlers.Count; i++)
+                        for (var i = 0; i < group.handlers.Count; i++)
                         {
-                            Pawn pawn = group.handlers[i] as Pawn;
+                            var pawn = group.handlers[i];
                             if (!flag)
                             {
                                 Widgets.ListSeparator(ref num, viewRect.width, group.role.label.CapitalizeFirst());
                                 flag = true;
                             }
-                            DoRow(ref num, viewRect, rect, scrollPosition, pawn, vehicle, ref specificNeedsTabForPawn, doNeeds);
+                            DoRow(ref num, viewRect, rect, scrollPosition, pawn, vehicle, ref specificNeedsTabForPawn,
+                                doNeeds);
                         }
                     }
-
-                }
-            }
             //bool flag2 = false;
             //for (int j = 0; j < things.Count; j++)
             //{
@@ -206,9 +198,7 @@ namespace CompVehicle
             //}
             //bool flag3 = false;
             if (alwaysShowItemsSection)
-            {
                 Widgets.ListSeparator(ref num, viewRect.width, "CaravanItems".Translate());
-            }
 
             //for (int k = 0; k < vehicle.Pawn.inventory.innerContainer.Count; k++)
             //{
@@ -235,19 +225,19 @@ namespace CompVehicle
             //    GUI.color = Color.white;
             //}
             if (Event.current.type == EventType.Layout)
-            {
                 scrollViewHeight = num + 30f;
-            }
             Widgets.EndScrollView();
         }
 
         // RimWorld.Planet.CaravanPeopleAndItemsTabUtility
         private static int MaxNeedsCount(List<Thing> things)
         {
-            int num = 0;
-            for (int i = 0; i < things.Count; i++)
+            var num = 0;
+            for (var i = 0; i < things.Count; i++)
             {
-                Pawn pawn = things[i] as Pawn;
+#pragma warning disable IDE0019 // Use pattern matching
+                var pawn = things[i] as Pawn;
+#pragma warning restore IDE0019 // Use pattern matching
                 if (pawn != null)
                 {
                     GetNeedsToDisplay(pawn, tmpNeeds);
@@ -261,25 +251,21 @@ namespace CompVehicle
         // RimWorld.Planet.CaravanPeopleAndItemsTabUtility
         public static Vector2 GetSize(List<Pawn> pawns, float paneTopY, bool doNeeds = true)
         {
-            float num = 0f;
-            
-            //Being super lazy...
-            List<Thing> things = new List<Thing>();
-            if (!pawns.NullOrEmpty())
-            {
-                foreach (Pawn p in pawns) things.Add(p as Thing);
-            }
+            var num = 0f;
 
-            if (things.Any((Thing x) => x is Pawn))
-            { 
+            //Being super lazy...
+            var things = new List<Thing>();
+            if (!pawns.NullOrEmpty())
+                foreach (var p in pawns) things.Add(p);
+
+            if (things.Any(x => x is Pawn))
+            {
                 num = 100f;
                 if (doNeeds)
-                {
-                    num += (float)MaxNeedsCount(things) * 100f;
-                }
+                    num += MaxNeedsCount(things) * 100f;
                 num += 24f;
             }
-            float num2 = 0f;
+            var num2 = 0f;
             if (AnyItemOrEmpty(things))
             {
                 num2 = 300f;
@@ -296,43 +282,41 @@ namespace CompVehicle
         protected override void UpdateSize()
         {
             base.UpdateSize();
-            this.size = GetSize(base.SelPawn?.GetComp<CompVehicle>()?.AllOccupants, this.PaneTopY, true);
-            if (this.size.x + this.SpecificNeedsTabWidth > (float)UI.screenWidth)
+            size = GetSize(SelPawn?.GetComp<CompVehicle>()?.AllOccupants, PaneTopY, true);
+            if (size.x + SpecificNeedsTabWidth > UI.screenWidth)
             {
-                this.doNeeds = false;
-                this.size = GetSize(base.SelPawn?.GetComp<CompVehicle>().AllOccupants, this.PaneTopY, false);
+                doNeeds = false;
+                size = GetSize(SelPawn?.GetComp<CompVehicle>().AllOccupants, PaneTopY, false);
             }
             else
             {
-                this.doNeeds = true;
+                doNeeds = true;
             }
-            this.size.y = Mathf.Max(this.size.y, NeedsCardUtility.FullSize.y);
+            size.y = Mathf.Max(size.y, NeedsCardUtility.FullSize.y);
         }
 
         protected override void ExtraOnGUI()
         {
             base.ExtraOnGUI();
-            Pawn localSpecificNeedsTabForPawn = this.specificNeedsTabForPawn;
+            var localSpecificNeedsTabForPawn = specificNeedsTabForPawn;
             if (localSpecificNeedsTabForPawn != null)
             {
-                Rect tabRect = base.TabRect;
-                float specificNeedsTabWidth = this.SpecificNeedsTabWidth;
-                Rect rect = new Rect(tabRect.xMax - 1f, tabRect.yMin, specificNeedsTabWidth, tabRect.height);
+                var tabRect = TabRect;
+                var specificNeedsTabWidth = SpecificNeedsTabWidth;
+                var rect = new Rect(tabRect.xMax - 1f, tabRect.yMin, specificNeedsTabWidth, tabRect.height);
                 Find.WindowStack.ImmediateWindow(1439870015, rect, WindowLayer.GameUI, delegate
                 {
                     if (localSpecificNeedsTabForPawn.DestroyedOrNull())
-                    {
                         return;
-                    }
-                    NeedsCardUtility.DoNeedsMoodAndThoughts(rect.AtZero(), localSpecificNeedsTabForPawn, ref this.thoughtScrollPosition);
+                    NeedsCardUtility.DoNeedsMoodAndThoughts(rect.AtZero(), localSpecificNeedsTabForPawn,
+                        ref thoughtScrollPosition);
                     if (Widgets.CloseButtonFor(rect.AtZero()))
                     {
-                        this.specificNeedsTabForPawn = null;
+                        specificNeedsTabForPawn = null;
                         SoundDefOf.TabClose.PlayOneShotOnCamera(null);
                     }
                 }, true, false, 1f);
             }
         }
-        
     }
 }

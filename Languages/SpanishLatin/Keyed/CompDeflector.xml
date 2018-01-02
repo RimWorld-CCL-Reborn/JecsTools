@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+
+  <DeflectChance>Chance de desvío</DeflectChance>
+  <DeflectChanceEx>Determina que tan seguido esta arma devuelve los proyectiles a los atacantes.</DeflectChanceEx>
+  
+  <MaxDeflectChance>Chance de desvío máximo</MaxDeflectChance>
+  <MaxDeflectChanceEx>Por cada punto en {0}, el usuario recibe un {1} de chance de desviar el proyectil devuelta al objetivo. {2} es la chance máxima posible de desviar.
+  </MaxDeflectChanceEx>
+
+  <DeflectChancePerLevel>Desvío en % por {0} de habilidad</DeflectChancePerLevel>
+  <DeflectChancePerLevelEx>Por cada nivel en {0}, el usuario recibe esta cantidad en % de chance para desviar un proyectil.</DeflectChancePerLevelEx>
+
+  <BaseDeflectChance>Chance base para desviar</BaseDeflectChance>
+
+  <StatsReport_DeflectionExplanation>Puntaje esta mostrado con el siguiente formato:\nEl Resultado de la Chance de Desvío es( Chance Base + ( Nivel de Habilidad * % por Nivel de Habilidad) / Eficiencia de Manipulación\n\n</StatsReport_DeflectionExplanation>
+
+  <StatsReport_DeflectChance>Chance para desviar</StatsReport_DeflectChance>
+
+  <StatsReport_BaseDeflectChance>Chance base para desviar</StatsReport_BaseDeflectChance>
+
+  <StatsReport_SkillLevel>Nivel de habilidad</StatsReport_SkillLevel>
+
+  <StatsReport_DeflectPerSkillLevel>Desvío en % por nivel de habilidad</StatsReport_DeflectPerSkillLevel>
+
+  <StatsReport_ManipulationModifier>Modificador de Manipulación</StatsReport_ManipulationModifier>
+
+</LanguageData>

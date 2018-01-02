@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+
+  <!-- Addition 7/28/17 -->
+  <CompVehicle_CannotSplitWhileInVehicles>No se pueden dividir las caravanas mientras los colonistas están en los vehículos.</CompVehicle_CannotSplitWhileInVehicles>
+
+  <!-- Addition 7/18/17 -->
+
+  <CompVehicle_CannotMove>{0} es incapaz de moverse.</CompVehicle_CannotMove>
+
+  <!-- Previous -->
+
+  <CompVehicle_LowFuel>Poco Combustible</CompVehicle_LowFuel>
+  <MessageCaravanRunOutOfFuel>{0} se le acabo el combustible ({1}). {0} ahora se moverá a un cuarto de la velocidad normal.</MessageCaravanRunOutOfFuel>
+  <MessagePawnLeftVehicle>{0} se fue del vehículo ({1}) debido a que necesita {2}.</MessagePawnLeftVehicle>
+  <DaysWorthOfFuelInfo>Lleva {0} cantidades de días en combustible</DaysWorthOfFuelInfo>
+  <InfiniteDaysWorthOfFuelInfo>Nunca se le acabara el combustible</InfiniteDaysWorthOfFuelInfo>
+  <DaysWorthOfFuelTooltip>Un numero cercano de días antes de que se acabe el combustible.\n\nEsto toma en cuenta todos los vehículos en la caravana y muestra lo peor que pueda suceder. Esto significa que después de esta cantidad de días, por lo menos uno de los vehículos se le acabará el combustible.</DaysWorthOfFuelTooltip>
+  <DaysWorthOfFuelWarningDialog_NoFuel>Tu caravana no lleva combustible y será incapaz de viajar a velocidad máxima.\n\n¿Estas seguro que quieres formar esta caravana?</DaysWorthOfFuelWarningDialog_NoFuel>
+  <DaysWorthOfFuelWarningDialog>Tu caravana solo lleva {0} días de uso de combustible y se le acabará muy rápido.\n\n¿Estas seguro que quieres formar esta caravana?</DaysWorthOfFuelWarningDialog>
+  <CaravanOutOfFuel>Sin combustible.</CaravanOutOfFuel>
+  <CaravanVehicleNoFuelWarningDialog>Falta de combustible en los vehículos de la caravana.</CaravanVehicleNoFuelWarningDialog>
+
+  <CompVehicle_VehicleSection>Vehículos</CompVehicle_VehicleSection>
+  <CompVehicle_LoadUnload>Cargar/Descargar {0}</CompVehicle_LoadUnload>
+  <CompVehicle_Unload>Descargar {0}</CompVehicle_Unload>
+  <CompVehicle_Load>Cargar {0}</CompVehicle_Load>
+  <CompVehicle_LoadUnloadDesc>Cargar o expulsar uno {0}.</CompVehicle_LoadUnloadDesc>
+  <CompVehicle_LoadDesc>Cargar uno {0}</CompVehicle_LoadDesc>
+  <CompVehicle_UnloadDesc>Descargar uno {0}</CompVehicle_UnloadDesc>
+  <CompVehicle_DisabledDesc>El vehículo esta deshabitado, destruido, o simplemente muy dañado y no puede ser cargado.</CompVehicle_DisabledDesc>
+
+</LanguageData>

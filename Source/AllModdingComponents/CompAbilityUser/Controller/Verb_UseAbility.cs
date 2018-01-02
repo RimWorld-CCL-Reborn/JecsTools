@@ -1,0 +1,221 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using RimWorld;
+using Verse;
+using Verse.Sound;
+
+namespace AbilityUser
+{
+    public class Verb_UseAbility : Verb_LaunchProjectile
+    {
+        public List<LocalTargetInfo> TargetsAoE = new List<LocalTargetInfo>();
+        public Action<Thing> timeSavingActionVariable = null;
+
+        public PawnAbility Ability { get; set; } = null;
+
+        public VerbProperties_Ability UseAbilityProps => (VerbProperties_Ability) verbProps;
+        public ProjectileDef_Ability AbilityProjectileDef => UseAbilityProps.defaultProjectile as ProjectileDef_Ability;
+        public CompAbilityUser AbilityUserComp => CasterPawn.TryGetComp<CompAbilityUser>();
+
+        protected override int ShotsPerBurst => verbProps.burstShotCount;
+
+        public override float HighlightFieldRadiusAroundTarget(out bool needLOSToCenter)
+        {
+            needLOSToCenter = true;
+            var result = verbProps.defaultProjectile.projectile.explosionRadius;
+            if (UseAbilityProps.abilityDef.MainVerb.TargetAoEProperties != null)
+                if (UseAbilityProps.abilityDef.MainVerb.TargetAoEProperties.showRangeOnSelect)
+                    result = UseAbilityProps.abilityDef.MainVerb.TargetAoEProperties.range;
+            return result;
+        }
+
+        protected virtual void UpdateTargets()
+        {
+            TargetsAoE.Clear();
+            if (UseAbilityProps.AbilityTargetCategory == AbilityTargetCategory.TargetAoE)
+            {
+                //Log.Message("AoE Called");
+                if (UseAbilityProps.TargetAoEProperties == null)
+                    Log.Error("Tried to Cast AoE-Ability without defining a target class");
+
+                var targets = new List<Thing>();
+
+                //Handle TargetAoE start location.
+                var aoeStartPosition = caster.PositionHeld;
+                if (!UseAbilityProps.TargetAoEProperties.startsFromCaster)
+                    aoeStartPosition = currentTarget.Cell;
+
+                //Handle friendly fire targets.
+                if (!UseAbilityProps.TargetAoEProperties.friendlyFire)
+                {
+                    targets = caster.Map.listerThings.AllThings.Where(x =>
+                        x.Position.InHorDistOf(aoeStartPosition, UseAbilityProps.TargetAoEProperties.range) &&
+                        UseAbilityProps.TargetAoEProperties.targetClass.IsAssignableFrom(x.GetType()) &&
+                        !x.Faction.HostileTo(Faction.OfPlayer)).ToList();
+                }
+                else if (UseAbilityProps.TargetAoEProperties.targetClass == typeof(Plant) ||
+                         UseAbilityProps.TargetAoEProperties.targetClass == typeof(Building))
+                {
+                    targets = caster.Map.listerThings.AllThings.Where(x =>
+                        x.Position.InHorDistOf(aoeStartPosition, UseAbilityProps.TargetAoEProperties.range) &&
+                        UseAbilityProps.TargetAoEProperties.targetClass.IsAssignableFrom(x.GetType())).ToList();
+                    foreach (var targ in targets)
+                    {
+                        var tinfo = new LocalTargetInfo(targ);
+                        TargetsAoE.Add(tinfo);
+                    }
+                    return;
+                }
+                else
+                {
+                    targets.Clear();
+                    targets = caster.Map.listerThings.AllThings.Where(x =>
+                        x.Position.InHorDistOf(aoeStartPosition, UseAbilityProps.TargetAoEProperties.range) &&
+                        UseAbilityProps.TargetAoEProperties.targetClass.IsAssignableFrom(x.GetType()) &&
+                        (x.HostileTo(Faction.OfPlayer) || UseAbilityProps.TargetAoEProperties.friendlyFire)).ToList();
+                }
+
+                var maxTargets = UseAbilityProps.abilityDef.MainVerb.TargetAoEProperties.maxTargets;
+                var randTargets = new List<Thing>(targets.InRandomOrder());
+                for (var i = 0; i < maxTargets && i < randTargets.Count(); i++)
+                {
+                    var tinfo = new TargetInfo(randTargets[i]);
+                    if (UseAbilityProps.targetParams.CanTarget(tinfo))
+                        TargetsAoE.Add(new LocalTargetInfo(randTargets[i]));
+                }
+            }
+            else
+            {
+                TargetsAoE.Clear();
+                TargetsAoE.Add(currentTarget);
+            }
+        }
+
+        public virtual void PostCastShot(bool inResult, out bool outResult)
+        {
+            outResult = inResult;
+        }
+
+        protected override bool TryCastShot()
+        {
+            //Log.Message("Cast");
+            var result = false;
+            TargetsAoE.Clear();
+            UpdateTargets();
+            var burstShots = ShotsPerBurst;
+            if (UseAbilityProps.AbilityTargetCategory != AbilityTargetCategory.TargetAoE && TargetsAoE.Count > 1)
+                TargetsAoE.RemoveRange(0, TargetsAoE.Count - 1);
+            for (var i = 0; i < TargetsAoE.Count; i++)
+            {
+                //                for (int j = 0; j < burstshots; j++)
+                //                {
+                var attempt = TryLaunchProjectile(verbProps.defaultProjectile, TargetsAoE[i]);
+                ////Log.Message(TargetsAoE[i].ToString());
+                if (attempt != null)
+                {
+                    if (attempt == true) result = true;
+                    if (attempt == false) result = false;
+                }
+                //                }
+            }
+
+            // here, might want to have this set each time so people don't force stop on last burst and not hit the cooldown?
+            //this.burstShotsLeft = 0;
+            //if (this.burstShotsLeft == 0)
+            //{
+            //}
+            PostCastShot(result, out result);
+            return result;
+            //bool result = false;
+            //this.TargetsAoE.Clear();
+            //UpdateTargets();
+            //int burstshots = this.ShotsPerBurst;
+            //if (this.UseAbilityProps.AbilityTargetCategory != AbilityTargetCategory.TargetAoE && this.TargetsAoE.Count > 1)
+            //{
+            //    this.TargetsAoE.RemoveRange(0, this.TargetsAoE.Count - 1);
+            //}
+            //for (int i = 0; i < this.TargetsAoE.Count; i++)
+            //{
+            //    for (int j = 0; j < burstshots; j++)
+            //    {
+            //        bool? attempt = TryLaunchProjectile(this.verbProps.projectileDef, this.TargetsAoE[i]);
+            //        if (attempt != null)
+            //        {
+            //            if (attempt == true)
+            //                result = true;
+            //            if (attempt == false)
+            //                result = false;
+            //        }
+            //    }
+            //}
+            //this.burstShotsLeft = 0;
+            //PostCastShot(result, out result);
+            //return result;
+        }
+
+        protected bool? TryLaunchProjectile(ThingDef projectileDef, LocalTargetInfo launchTarget)
+        {
+            var flag = TryFindShootLineFromTo(caster.Position, launchTarget, out var shootLine);
+            if (verbProps.stopBurstWithoutLos && !flag)
+                return false;
+            var drawPos = caster.DrawPos;
+            var projectile = (Projectile_AbilityBase) GenSpawn.Spawn(projectileDef, shootLine.Source, caster.Map);
+            projectile.extraDamages = UseAbilityProps.extraDamages;
+            projectile.localSpawnThings = UseAbilityProps.thingsToSpawn;
+            projectile.FreeIntercept = canFreeInterceptNow && !projectile.def.projectile.flyOverhead;
+            var shotReport = ShotReport.HitReportFor(caster, this, launchTarget);
+            if (verbProps.soundCast != null)
+                verbProps.soundCast.PlayOneShot(new TargetInfo(caster.Position, caster.Map, false));
+            if (verbProps.soundCastTail != null)
+                verbProps.soundCastTail.PlayOneShotOnCamera();
+            if (!UseAbilityProps.AlwaysHits)
+            {
+                if (Rand.Value > shotReport.ChanceToNotGoWild_IgnoringPosture)
+                {
+                    if (DebugViewSettings.drawShooting)
+                        MoteMaker.ThrowText(caster.DrawPos, caster.Map, "ToWild", -1f);
+                    shootLine.ChangeDestToMissWild();
+                    if (launchTarget.HasThing)
+                        projectile.ThingToNeverIntercept = launchTarget.Thing;
+                    if (!projectile.def.projectile.flyOverhead)
+                        projectile.InterceptWalls = true;
+                    projectile.Launch(caster, Ability.Def, drawPos, shootLine.Dest, ownerEquipment,
+                        UseAbilityProps.hediffsToApply, UseAbilityProps.mentalStatesToApply,
+                        UseAbilityProps.thingsToSpawn);
+                    return true;
+                }
+                if (Rand.Value > shotReport.ChanceToNotHitCover)
+                {
+                    if (DebugViewSettings.drawShooting)
+                        MoteMaker.ThrowText(caster.DrawPos, caster.Map, "ToCover", -1f);
+                    if (launchTarget.Thing != null && launchTarget.Thing.def.category == ThingCategory.Pawn)
+                    {
+                        var randomCoverToMissInto = shotReport.GetRandomCoverToMissInto();
+                        if (!projectile.def.projectile.flyOverhead)
+                            projectile.InterceptWalls = true;
+                        projectile.Launch(caster, Ability.Def, drawPos, randomCoverToMissInto, ownerEquipment,
+                            UseAbilityProps.hediffsToApply, UseAbilityProps.mentalStatesToApply,
+                            UseAbilityProps.thingsToSpawn);
+                        return true;
+                    }
+                }
+            }
+            if (DebugViewSettings.drawShooting)
+                MoteMaker.ThrowText(caster.DrawPos, caster.Map, "ToHit", -1f);
+            if (!projectile.def.projectile.flyOverhead)
+                projectile.InterceptWalls =
+                    !launchTarget.HasThing || launchTarget.Thing.def.Fillage == FillCategory.Full;
+            projectile.Launch(caster, Ability.Def, drawPos, launchTarget, null, UseAbilityProps.hediffsToApply,
+                UseAbilityProps.mentalStatesToApply, UseAbilityProps.thingsToSpawn);
+            return true;
+        }
+
+        public override void WarmupComplete()
+        {
+            burstShotsLeft = ShotsPerBurst;
+            state = VerbState.Bursting;
+            TryCastNextBurstShot();
+        }
+    }
+}

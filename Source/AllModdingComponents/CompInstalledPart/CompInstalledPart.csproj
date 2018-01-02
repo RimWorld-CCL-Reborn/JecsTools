@@ -31,9 +31,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="0Harmony, Version=1.0.9.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="0Harmony">
+      <HintPath>E:\Steam2\steamapps\common\RimWorld\Mods\HugsLib\Assemblies\0Harmony.dll</HintPath>
+    </Reference>
+    <Reference Include="0JecsTools, Version=1.0.8.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Harmony1091\0Harmony.dll</HintPath>
+      <HintPath>..\..\..\Assemblies\0JecsTools.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Assembly-CSharp">
       <HintPath>..\..\..\..\..\RimWorldWin_Data\Managed\Assembly-CSharp.dll</HintPath>
@@ -54,6 +58,7 @@
     <Compile Include="CompInstalledPart.cs" />
     <Compile Include="CompProperties_InstalledPart.cs" />
     <Compile Include="HarmonyCompInstalledPart.cs" />
+    <Compile Include="InstalledPartFloatMenuPatch.cs" />
     <Compile Include="JobDriver_InstallPart.cs" />
     <Compile Include="JobDriver_UninstallPart.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

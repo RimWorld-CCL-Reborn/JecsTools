@@ -7,7 +7,6 @@ namespace AbilityUser
     public static class AbilityDefOf
     {
         public static JobDef CastAbilitySelf;
-
         public static JobDef CastAbilityVerb;
     }
 }

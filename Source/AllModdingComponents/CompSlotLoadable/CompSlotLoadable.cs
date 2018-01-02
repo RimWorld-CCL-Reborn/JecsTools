@@ -1,56 +1,50 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Diagnostics;
-using System.Collections.Generic;
 using RimWorld;
-using Verse;
 using UnityEngine;
+using Verse;
 using Verse.AI;
-using Verse.Sound;
 
 namespace CompSlotLoadable
 {
     public class CompSlotLoadable : ThingComp
     {
+        private SlotLoadable colorChangingSlot;
         public bool GizmosOnEquip = true;
 
+        private bool isGathering;
+
+        private bool isInitialized;
+
+
+        private SlotLoadable secondColorChangingSlot;
+
         private List<SlotLoadable> slots = new List<SlotLoadable>();
-        public List<SlotLoadable> Slots => this.slots;
-        private SlotLoadable colorChangingSlot = null;
+        public List<SlotLoadable> Slots => slots;
+
         public SlotLoadable ColorChangingSlot
         {
             get
             {
-                if (this.colorChangingSlot != null) return this.colorChangingSlot;
-                if (this.Slots != null)
-                {
-                    if (this.Slots.Count > 0)
-                    {
-                        this.colorChangingSlot = this.Slots.FirstOrDefault((SlotLoadable x) => ((SlotLoadableDef)(x.def)).doesChangeColor);
-                    }
-                }
-                return this.colorChangingSlot;
-
+                if (colorChangingSlot != null) return colorChangingSlot;
+                if (Slots != null)
+                    if (Slots.Count > 0)
+                        colorChangingSlot = Slots.FirstOrDefault(x => ((SlotLoadableDef) x.def).doesChangeColor);
+                return colorChangingSlot;
             }
         }
 
-
-        private SlotLoadable secondColorChangingSlot = null;
         public SlotLoadable SecondColorChangingSlot
         {
             get
             {
-                if (this.secondColorChangingSlot != null) return this.secondColorChangingSlot;
-                if (this.Slots != null)
-                {
-                    if (this.Slots.Count > 0)
-                    {
-                        this.secondColorChangingSlot = this.Slots.FirstOrDefault((SlotLoadable x) => ((SlotLoadableDef)(x.def)).doesChangeSecondColor);
-                    }
-                }
-                return this.colorChangingSlot;
-
+                if (secondColorChangingSlot != null) return secondColorChangingSlot;
+                if (Slots != null)
+                    if (Slots.Count > 0)
+                        secondColorChangingSlot =
+                            Slots.FirstOrDefault(x => ((SlotLoadableDef) x.def).doesChangeSecondColor);
+                return colorChangingSlot;
             }
         }
 
@@ -58,293 +52,227 @@ namespace CompSlotLoadable
         {
             get
             {
-                List<SlotLoadableDef> result = new List<SlotLoadableDef>();
-                if (this.slots != null)
-                {
-                    if (this.slots.Count > 0)
-                    {
-                        foreach (SlotLoadable slot in this.slots)
-                        {
+                var result = new List<SlotLoadableDef>();
+                if (slots != null)
+                    if (slots.Count > 0)
+                        foreach (var slot in slots)
                             result.Add(slot.def as SlotLoadableDef);
-                        }
-                    }
-                }
                 return result;
             }
         }
-
-        private bool isInitialized = false;
-
-        private bool isGathering = false;
 
         public Map GetMap
         {
             get
             {
-                Map map = this.parent.Map;
+                var map = parent.Map;
                 if (map == null)
-                {
-                    if (this.GetPawn != null) map = this.GetPawn.Map;
-                }
+                    if (GetPawn != null) map = GetPawn.Map;
                 return map;
             }
         }
 
-        public CompEquippable GetEquippable => this.parent.GetComp<CompEquippable>();
+        public CompEquippable GetEquippable => parent.GetComp<CompEquippable>();
 
-        public Pawn GetPawn => this.GetEquippable.verbTracker.PrimaryVerb.CasterPawn;
+        public Pawn GetPawn => GetEquippable.verbTracker.PrimaryVerb.CasterPawn;
+
+
+        public CompProperties_SlotLoadable Props => (CompProperties_SlotLoadable) props;
 
         public void Initialize()
         {
             //Log.Message("1");
-            if (!this.isInitialized)
+            if (!isInitialized)
             {
-
                 //Log.Message("2");
-                this.isInitialized = true;
-                if (this.Props != null)
-                {
-
-                    //Log.Message("3");
-                    if (this.Props.slots != null)
-                    {
-
-                        //Log.Message("4");
-                        if (this.Props.slots.Count > 0)
-                        {
-
-                            //Log.Message("5");
-                            foreach (SlotLoadableDef slot in this.Props.slots)
+                isInitialized = true;
+                if (Props != null)
+                    if (Props.slots != null)
+                        if (Props.slots.Count > 0)
+                            foreach (var slot in Props.slots)
                             {
-                                SlotLoadable newSlot = new SlotLoadable(slot, this.parent);
+                                var newSlot = new SlotLoadable(slot, parent);
                                 //Log.Message("Added Slot");
-                                this.slots.Add(newSlot);
+                                slots.Add(newSlot);
                             }
-                        }
-                    }
-                }
             }
         }
 
         public override void CompTick()
         {
             base.CompTick();
-            if (!this.isInitialized) Initialize();
+            if (!isInitialized) Initialize();
         }
 
         private void TryCancel(string reason = "")
         {
-            Pawn pawn = this.GetPawn;
+            var pawn = GetPawn;
             if (pawn != null)
             {
                 if (pawn.CurJob.def == CompSlotLoadableDefOf.GatherSlotItem)
-                {
                     pawn.jobs.StopAll();
-                }
-                this.isGathering = false;
+                isGathering = false;
                 //Messages.Message("Cancelling sacrifice. " + reason, MessageSound.Negative);
             }
         }
 
         private void TryGiveLoadSlotJob(Thing itemToLoad)
         {
-            if (this.GetPawn != null)
-            {
-                if (!this.GetPawn.Drafted)
+            if (GetPawn != null)
+                if (!GetPawn.Drafted)
                 {
-                    this.isGathering = true;
+                    isGathering = true;
 
-                    Job job = new Job(CompSlotLoadableDefOf.GatherSlotItem, itemToLoad)
+                    var job = new Job(CompSlotLoadableDefOf.GatherSlotItem, itemToLoad)
                     {
                         count = 1
                     };
-                    this.GetPawn.jobs.TryTakeOrderedJob(job);
+                    GetPawn.jobs.TryTakeOrderedJob(job);
                     //GetPawn.jobs.jobQueue.EnqueueFirst(job);
                     //GetPawn.jobs.EndCurrentJob(JobCondition.InterruptForced);
                 }
-                else Messages.Message(string.Format(StringOf.IsDrafted, new object[]
+                else
+                {
+                    Messages.Message(string.Format(StringOf.IsDrafted, new object[]
                     {
-                        this.GetPawn.Label
-                    }), MessageSound.RejectInput);
-            }
+                        GetPawn.Label
+                    }), MessageTypeDefOf.RejectInput);
+                }
         }
 
         public bool TryLoadSlot(Thing thing)
         {
             //Log.Message("TryLoadSlot Called");
-            this.isGathering = false;
-            if (this.slots != null)
-            {
-                if (this.slots.Count > 0)
+            isGathering = false;
+            if (slots != null)
+                if (slots.Count > 0)
                 {
-                    SlotLoadable loadSlot = this.slots.FirstOrDefault((SlotLoadable x) => x.IsEmpty() && x.CanLoad(thing.def));
-                    if (loadSlot == null) loadSlot = this.slots.FirstOrDefault((SlotLoadable y) => y.CanLoad(thing.def));
+                    var loadSlot = slots.FirstOrDefault(x => x.IsEmpty() && x.CanLoad(thing.def));
+                    if (loadSlot == null) loadSlot = slots.FirstOrDefault(y => y.CanLoad(thing.def));
                     if (loadSlot != null)
-                    {
                         if (loadSlot.TryLoadSlot(thing, true))
-                        {
                             return true;
-                        }
-                    }
                 }
-            }
             return false;
         }
 
         public void ProcessInput(SlotLoadable slot)
         {
-            List<ThingDef> loadTypes = new List<ThingDef>();
-            List<FloatMenuOption> floatList = new List<FloatMenuOption>();
-            if (!this.isGathering)
+            var loadTypes = new List<ThingDef>();
+            var floatList = new List<FloatMenuOption>();
+            if (!isGathering)
             {
-                Map map = this.GetMap;
+                var map = GetMap;
                 loadTypes = slot.SlottableTypes;
                 if (slot.SlotOccupant == null)
-                {
                     if (loadTypes != null)
-                    {
                         if (loadTypes.Count != 0)
-                        {
-                            foreach (ThingDef current in loadTypes)
+                            foreach (var current in loadTypes)
                             {
-                                List<Thing> thingsWithDef = new List<Thing>(map.listerThings.AllThings.FindAll((Thing x) => x.def == current));
+                                var thingsWithDef =
+                                    new List<Thing>(map.listerThings.AllThings.FindAll(x => x.def == current));
                                 if (thingsWithDef != null)
-                                {
                                     if (thingsWithDef.Count > 0)
                                     {
-                                        Thing thingToLoad = thingsWithDef.FirstOrDefault((Thing x) => map.reservationManager.CanReserve(this.GetPawn, x));
+                                        var thingToLoad = thingsWithDef.FirstOrDefault(x =>
+                                            map.reservationManager.CanReserve(GetPawn, x));
                                         if (thingToLoad != null)
                                         {
-                                            string text = "Load".Translate() + " " + thingToLoad.def.label;
+                                            var text = "Load".Translate() + " " + thingToLoad.def.label;
                                             //Func<Rect, bool> extraPartOnGUI = (Rect rect) => Widgets.InfoCardButton(rect.x + 5f, rect.y + (rect.height - 24f) / 2f, current);
-                                            floatList.Add(new FloatMenuOption(text, delegate
-                                            {
-                                                this.TryGiveLoadSlotJob(thingToLoad);
-                                            }, MenuOptionPriority.Default, null, null, 29f, null, null));
+                                            floatList.Add(new FloatMenuOption(text,
+                                                delegate { TryGiveLoadSlotJob(thingToLoad); },
+                                                MenuOptionPriority.Default, null, null, 29f, null, null));
                                         }
                                         else
                                         {
-                                            floatList.Add(new FloatMenuOption(string.Format(StringOf.Unavailable, new object[] { current.label }), delegate
-                                            {
-                                            }, MenuOptionPriority.Default));
+                                            floatList.Add(new FloatMenuOption(
+                                                string.Format(StringOf.Unavailable, new object[] {current.label}),
+                                                delegate { }, MenuOptionPriority.Default));
                                         }
                                     }
                                     else
                                     {
-                                        floatList.Add(new FloatMenuOption(string.Format(StringOf.Unavailable, new object[] { current.label }), delegate
-                                        {
-                                        }, MenuOptionPriority.Default));
+                                        floatList.Add(new FloatMenuOption(
+                                            string.Format(StringOf.Unavailable, new object[] {current.label}),
+                                            delegate { }, MenuOptionPriority.Default));
                                     }
-                                }
                                 else
-                                {
-                                    floatList.Add(new FloatMenuOption(string.Format(StringOf.Unavailable, new object[] { current.label }), delegate
-                                    {
-                                    }, MenuOptionPriority.Default));
-                                }
+                                    floatList.Add(new FloatMenuOption(
+                                        string.Format(StringOf.Unavailable, new object[] {current.label}), delegate { },
+                                        MenuOptionPriority.Default));
                             }
-                        }
                         else
-                        {
-                            floatList.Add(new FloatMenuOption(StringOf.NoLoadOptions, delegate
-                            {
-                            }, MenuOptionPriority.Default));
-                        }
-                    }
-                }
-            }
-            else
-            {
-                //TryCancel();
+                            floatList.Add(new FloatMenuOption(StringOf.NoLoadOptions, delegate { },
+                                MenuOptionPriority.Default));
             }
             if (!slot.IsEmpty())
             {
-                string text = string.Format(StringOf.Unload, new object[] { slot.SlotOccupant.Label });
+                var text = string.Format(StringOf.Unload, new object[] {slot.SlotOccupant.Label});
                 //Func<Rect, bool> extraPartOnGUI = (Rect rect) => Widgets.InfoCardButton(rect.x + 5f, rect.y + (rect.height - 24f) / 2f, current);
-                floatList.Add(new FloatMenuOption(text, delegate
-                {
-                    TryEmptySlot(slot);
-                }, MenuOptionPriority.Default, null, null, 29f, null, null));
+                floatList.Add(new FloatMenuOption(text, delegate { TryEmptySlot(slot); }, MenuOptionPriority.Default,
+                    null, null, 29f, null, null));
             }
             Find.WindowStack.Add(new FloatMenu(floatList));
         }
 
-        public virtual void TryEmptySlot(SlotLoadable slot) => slot.TryEmptySlot();
+        public virtual void TryEmptySlot(SlotLoadable slot)
+        {
+            slot.TryEmptySlot();
+        }
 
         public virtual IEnumerable<Gizmo> EquippedGizmos()
         {
-            if (this.slots != null)
-            {
-                if (this.slots.Count > 0)
+            if (slots != null)
+                if (slots.Count > 0)
                 {
-                    if (this.isGathering)
-                    {
+                    if (isGathering)
                         yield return new Command_Action
                         {
                             defaultLabel = "DesignatorCancel".Translate(),
                             defaultDesc = "DesignatorCancelDesc".Translate(),
                             icon = ContentFinder<Texture2D>.Get("UI/Designators/Cancel", true),
-                            action = delegate
-                            {
-                                this.TryCancel();
-                            }
+                            action = delegate { TryCancel(); }
                         };
-                    }
-                    foreach (SlotLoadable slot in this.slots)
-                    {
+                    foreach (var slot in slots)
                         if (slot.IsEmpty())
-                        {
                             yield return new Command_Action
                             {
                                 defaultLabel = slot.Label,
                                 icon = Command.BGTex,
                                 defaultDesc = SlotDesc(slot),
-                                action = delegate
-                                {
-                                    this.ProcessInput(slot);
-                                }
+                                action = delegate { ProcessInput(slot); }
                             };
-                        }
                         else
-                        {
                             yield return new Command_Action
                             {
                                 defaultLabel = slot.Label,
                                 icon = slot.SlotIcon(),
                                 defaultDesc = SlotDesc(slot),
                                 defaultIconColor = slot.SlotColor(),
-                                action = delegate
-                                {
-                                    this.ProcessInput(slot);
-                                }
+                                action = delegate { ProcessInput(slot); }
                             };
-                        }
-                    }
                 }
-
-            }
-            yield break;
         }
 
         public virtual string SlotDesc(SlotLoadable slot)
         {
-            StringBuilder s = new StringBuilder();
+            var s = new StringBuilder();
             s.AppendLine(slot.GetDescription());
             if (!slot.IsEmpty())
             {
                 s.AppendLine();
-                s.AppendLine(string.Format(StringOf.CurrentlyLoaded, new object[] { slot.SlotOccupant.LabelCap }));
-                if (((SlotLoadableDef)slot.def).doesChangeColor)
+                s.AppendLine(string.Format(StringOf.CurrentlyLoaded, new object[] {slot.SlotOccupant.LabelCap}));
+                if (((SlotLoadableDef) slot.def).doesChangeColor)
                 {
                     s.AppendLine();
                     s.AppendLine(StringOf.Effects);
                     s.AppendLine("  " + StringOf.ChangesPrimaryColor);
                 }
-                if (((SlotLoadableDef)slot.def).doesChangeStats)
+                if (((SlotLoadableDef) slot.def).doesChangeStats)
                 {
-                    CompSlottedBonus slotBonus = slot.SlotOccupant.TryGetComp<CompSlottedBonus>();
+                    var slotBonus = slot.SlotOccupant.TryGetComp<CompSlottedBonus>();
                     if (slotBonus != null)
-                    {
                         if (slotBonus.Props != null)
                         {
                             if (slotBonus.Props.statModifiers != null && slotBonus.Props.statModifiers.Count > 0)
@@ -352,11 +280,11 @@ namespace CompSlotLoadable
                                 s.AppendLine();
                                 s.AppendLine(StringOf.StatModifiers);
 
-                                foreach (StatModifier mod in slotBonus.Props.statModifiers)
+                                foreach (var mod in slotBonus.Props.statModifiers)
                                 {
-                                    float v = DetermineSlottableStatAugment(slot.SlotOccupant,mod.stat);
-                                    string modstring = 	mod.stat.ValueToString(v, ToStringNumberSense.Offset);
-//                                    Log.Message("Determined slot stat augment "+v+" and made string "+modstring);
+                                    var v = DetermineSlottableStatAugment(slot.SlotOccupant, mod.stat);
+                                    var modstring = mod.stat.ValueToString(v, ToStringNumberSense.Offset);
+                                    //Log.Message("Determined slot stat augment "+v+" and made string "+modstring);
                                     s.AppendLine("  " + mod.stat.LabelCap + " " + modstring);
                                     //s.AppendLine("\t" + mod.stat.LabelCap + " " + mod.ToStringAsOffset);
                                 }
@@ -376,37 +304,35 @@ namespace CompSlotLoadable
                                 }
                                 */
                             }
-                            DamageDef damageDef = slotBonus.Props.damageDef;
+                            var damageDef = slotBonus.Props.damageDef;
                             if (damageDef != null)
                             {
                                 s.AppendLine();
-                                s.AppendLine(string.Format(StringOf.DamageType, new object[] { damageDef.LabelCap }));
+                                s.AppendLine(string.Format(StringOf.DamageType, new object[] {damageDef.LabelCap}));
                             }
-                            SlotBonusProps_DefensiveHealChance defHealChance = slotBonus.Props.defensiveHealChance;
+                            var defHealChance = slotBonus.Props.defensiveHealChance;
                             if (defHealChance != null)
                             {
-                                string healText = StringOf.all;
+                                var healText = StringOf.all;
                                 if (defHealChance.woundLimit != 0) healText = defHealChance.woundLimit.ToString();
                                 s.AppendLine("  " + string.Format(StringOf.DefensiveHealChance, new object[]
-                                    {
-                                        healText,
-                                        defHealChance.chance.ToStringPercent()
-                                    }));
+                                {
+                                    healText,
+                                    defHealChance.chance.ToStringPercent()
+                                }));
                             }
-                            SlotBonusProps_VampiricEffect vampChance = slotBonus.Props.vampiricHealChance;
+                            var vampChance = slotBonus.Props.vampiricHealChance;
                             if (vampChance != null)
                             {
-                                string vampText = StringOf.all;
+                                var vampText = StringOf.all;
                                 if (vampChance.woundLimit != 0) vampText = defHealChance.woundLimit.ToString();
                                 s.AppendLine("  " + string.Format(StringOf.VampiricChance, new object[]
-                                    {
-                                        vampText,
-                                        vampChance.chance.ToStringPercent()
-                                    }));
+                                {
+                                    vampText,
+                                    vampChance.chance.ToStringPercent()
+                                }));
                             }
                         }
-                    }
-
                 }
             }
             return s.ToString();
@@ -414,14 +340,12 @@ namespace CompSlotLoadable
 
         public override void PostExposeData()
         {
-            Scribe_Values.Look<bool>(ref this.isInitialized, "isInitialized", false);
-            Scribe_Values.Look<bool>(ref this.isGathering, "isGathering", false);
-            Scribe_Collections.Look<SlotLoadable>(ref this.slots, "slots", LookMode.Deep, new object[0]);
+            Scribe_Values.Look(ref isInitialized, "isInitialized", false);
+            Scribe_Values.Look(ref isGathering, "isGathering", false);
+            Scribe_Collections.Look(ref slots, "slots", LookMode.Deep);
             base.PostExposeData();
-            if (this.slots == null)
-            {
-                this.slots = new List<SlotLoadable>();
-            }
+            if (slots == null)
+                slots = new List<SlotLoadable>();
             if (Scribe.mode == LoadSaveMode.LoadingVars)
             {
                 //Scribe.writingForDebug = false;
@@ -433,22 +357,20 @@ namespace CompSlotLoadable
         }
 
 
-        public CompProperties_SlotLoadable Props => (CompProperties_SlotLoadable)this.props;
-
-
         // Grab slots of the thing if they exists. Returns null if none
-        public static List<SlotLoadable> GetSlots(Thing someThing) {
+        public static List<SlotLoadable> GetSlots(Thing someThing)
+        {
             List<SlotLoadable> retval = null;
 
             if (someThing is ThingWithComps thingWithComps)
             {
-                ThingComp comp = thingWithComps.AllComps.FirstOrDefault((ThingComp x) => x is CompSlotLoadable);
+                var comp = thingWithComps.AllComps.FirstOrDefault(x => x is CompSlotLoadable);
                 if (comp != null)
                 {
-                    CompSlotLoadable compSlotLoadable = comp as CompSlotLoadable;
+                    var compSlotLoadable = comp as CompSlotLoadable;
 
                     if (compSlotLoadable.Slots != null && compSlotLoadable.Slots.Count > 0)
-                    { retval = compSlotLoadable.Slots; }
+                        retval = compSlotLoadable.Slots;
                 }
             }
 
@@ -457,33 +379,29 @@ namespace CompSlotLoadable
 
 
         // Get the thing's modificaiton to stat from it's slots
-        public static float CheckThingSlotsForStatAugment(Thing slottedThing, StatDef stat) {
-            float retval = 0.0f;
-            List<SlotLoadable> slots = CompSlotLoadable.GetSlots(slottedThing);
+        public static float CheckThingSlotsForStatAugment(Thing slottedThing, StatDef stat)
+        {
+            var retval = 0.0f;
+            var slots = GetSlots(slottedThing);
 
-            if ( slots != null ) {
-                foreach ( SlotLoadable slot in slots ) {
+            if (slots != null)
+                foreach (var slot in slots)
                     if (!slot.IsEmpty())
                     {
-                        Thing slottable = slot.SlotOccupant;
-                        retval += DetermineSlottableStatAugment(slottable ,stat);
+                        var slottable = slot.SlotOccupant;
+                        retval += DetermineSlottableStatAugment(slottable, stat);
                     }
-                }
-            }
             return retval;
         }
 
-        public static float DetermineSlottableStatAugment(Thing slottable, StatDef stat) {
-            float retval =0.0f;
-            CompSlottedBonus slotBonus = slottable.TryGetComp<CompSlottedBonus>();
+        public static float DetermineSlottableStatAugment(Thing slottable, StatDef stat)
+        {
+            var retval = 0.0f;
+            var slotBonus = slottable.TryGetComp<CompSlottedBonus>();
             if (slotBonus != null)
-            {
                 if (slotBonus.Props != null)
-                {
                     if (slotBonus.Props.statModifiers != null && slotBonus.Props.statModifiers.Count > 0)
-                    {
-                        foreach (StatModifier thisStat in slotBonus.Props.statModifiers)
-                        {
+                        foreach (var thisStat in slotBonus.Props.statModifiers)
                             //Log.Message("Check for modding "+stat+"  against "+thisStat.stat);
                             if (thisStat.stat == stat)
                             {
@@ -493,23 +411,15 @@ namespace CompSlotLoadable
                                 // apply stats parts from Slottable
                                 if (stat.parts != null && stat.parts.Count > 0)
                                 {
-                                    StatRequest req = StatRequest.For(slottable);
-                                    for (int i = 0; i < stat.parts.Count; i++)
-                                    {
+                                    var req = StatRequest.For(slottable);
+                                    for (var i = 0; i < stat.parts.Count; i++)
                                         //Log.Message("adding in parts "+stat.parts[i]);
                                         stat.parts[i].TransformValue(req, ref retval);
-                                    }
                                     //Log.Message("added in parts of a stat for result "+retval);
                                 }
                             }
-                        }
-                    }
-                }
-            }
 
             return retval;
         }
-
-
     }
 }

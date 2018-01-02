@@ -1,39 +1,33 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Diagnostics;
-using System.Collections.Generic;
-using RimWorld;
-using Verse;
-using UnityEngine;
-using Verse.AI;
-using Verse.Sound;
+﻿using Verse;
+
 namespace CompActivatableEffect
 {
     public class CompProperties_ActivatableEffect : CompProperties
     {
-        public GraphicData graphicData;
+        public string ActivateLabel;
+
+        public SoundDef activateSound;
 
         public AltitudeLayer altitudeLayer;
 
-        public string ActivateLabel;
+        public bool autoActivateOnDraft = true;
         public string DeactivateLabel;
+        public SoundDef deactivateSound;
+
+        public bool draftToUseGizmos = true;
+
+        public bool gizmosOnEquip = false;
+        public GraphicData graphicData;
+        public SoundDef sustainerSound;
 
         public string uiIconPathActivate;
         public string uiIconPathDeactivate;
 
-        public SoundDef activateSound;
-        public SoundDef sustainerSound;
-        public SoundDef deactivateSound;
+        public CompProperties_ActivatableEffect()
+        {
+            compClass = typeof(CompActivatableEffect);
+        }
 
-        public bool gizmosOnEquip = false;
-
-        public bool autoActivateOnDraft = true;
-
-        public bool draftToUseGizmos = true;
-
-        public float Altitude => Altitudes.AltitudeFor(this.altitudeLayer);
-
-        public CompProperties_ActivatableEffect() => this.compClass = typeof(CompActivatableEffect);
+        public float Altitude => Altitudes.AltitudeFor(altitudeLayer);
     }
 }

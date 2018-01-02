@@ -31,9 +31,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="0Harmony, Version=1.0.9.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="0Harmony">
+      <HintPath>E:\Steam2\steamapps\common\RimWorld\Mods\HugsLib\Assemblies\0Harmony.dll</HintPath>
+    </Reference>
+    <Reference Include="0JecsTools, Version=1.0.8.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Harmony1091\0Harmony.dll</HintPath>
+      <HintPath>..\..\..\Assemblies\0JecsTools.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Assembly-CSharp">
       <HintPath>..\..\..\..\..\RimWorldWin_Data\Managed\Assembly-CSharp.dll</HintPath>
@@ -63,10 +67,8 @@
     <Compile Include="SlotBonusProps_VampiricEffect.cs" />
     <Compile Include="SlotLoadable.cs" />
     <Compile Include="SlotLoadableDef.cs" />
+    <Compile Include="SlotLoadableFloatMenuPatch.cs" />
     <Compile Include="StringOf.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Languages\English\Keyed\CompSlotLoadable_Strings.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

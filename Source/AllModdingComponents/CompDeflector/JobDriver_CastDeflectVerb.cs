@@ -1,13 +1,8 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Diagnostics;
-using System.Collections.Generic;
 using RimWorld;
 using Verse;
-using UnityEngine;
 using Verse.AI;
-using Verse.Sound;
 
 namespace CompDeflector
 {
@@ -17,15 +12,23 @@ namespace CompDeflector
         {
             get
             {
-                ThingWithComps check = this.pawn.equipment.AllEquipmentListForReading.FirstOrDefault((ThingWithComps x) => x.TryGetComp<CompDeflector>() != null);
+                var check = pawn.equipment.AllEquipmentListForReading.FirstOrDefault(x =>
+                    x.TryGetComp<CompDeflector>() != null);
                 if (check != null)
-                {
                     return check.GetComp<CompDeflector>();
-                }
                 return null;
             }
         }
-        public override void ExposeData() => base.ExposeData();
+
+        public override void ExposeData()
+        {
+            base.ExposeData();
+        }
+
+        public override bool TryMakePreToilReservations()
+        {
+            return true;
+        }
 
         protected override IEnumerable<Toil> MakeNewToils()
         {
@@ -33,7 +36,7 @@ namespace CompDeflector
             yield return Toils_Misc.ThrowColonistAttackingMote(TargetIndex.A);
             //Toil getInRangeToil = Toils_Combat.GotoCastPosition(TargetIndex.A, false);
             //yield return getInRangeToil;
-            Verb_Deflected verb = this.pawn.CurJob.verbToUse as Verb_Deflected;
+            var verb = pawn.CurJob.verbToUse as Verb_Deflected;
 
             //Find.Targeter.targetingVerb = verb;
             yield return Toils_Combat.CastVerb(TargetIndex.A, false);

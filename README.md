@@ -4,7 +4,7 @@
 
 <p align="center">
   <a href="https://github.com/jecrell/JecsTools/releases/">
-    <img src="https://img.shields.io/badge/release-1.0.4-4BC51D.svg?style=flat" alt="v1.0.9.1" />
+    <img src="https://img.shields.io/badge/release-1.0.8-4BC51D.svg?style=flat" alt="v1.0.9.1" />
   </a>
   <a href="https://github.com/roxxploxx/RimWorldModGuide/wiki">
     <img src="https://img.shields.io/badge/documentation-Wiki-4BC51D.svg?style=flat" alt="Documentation" />
@@ -47,7 +47,7 @@ Total list of components:
 *CompSlotLoadable*
  - Adds slots to objects, weapons, apparel, etc that can be filled to have effects. (e.g. an ammo slot for guns with different kinds of ammunition, crystal slots for lightsabers, etc)
  
-*CompVehicle (Experimental)*
+*CompVehicle (Experimental, Additions by Swenzi)*
  - Allows for a pawn to be treated as a vehicle that can be loaded with pilots, gunners, crew, and passengers.
 
 *CompInstalledPart*
@@ -56,8 +56,20 @@ Total list of components:
 *CompToggleDef (by Roxxploxx)*
  - A situational Component that allows you to toggle the ThingDef of a selected Thing via a radio button menu. ex. Change a ring to be for a pinky finger versus a ring or index finger.
 
+*CompDelayedSpawner* 
+- Allows us to create things or pawns after a set amount of time. For instance, I created an invisible spawner for the Star Vampire (as of this update) that uses this CompDelayedSpawner. This lets me trigger the Star Vampire incident, drop down some delayed spawners, and enjoy results after a short period of time. The CompDelayedSpawner is highly customizable for things, pawns, and even allows for setting mental states and hediffs.
+
+Total List of Classes
+
+*JecsTools.Hediff_TransformedPart*
+ - Similar to added part, however, transformed parts will not remove the original parts when removed from the character. This allows for us to "transform" pawn parts. Such as having a colonists' hands turn into deadly claws.
+
+*JecsTools.JobGiver_AIFirelessTrashColonyClose*
+*JecsTools.JobGiver_AIFirelessTrashColonyDistant*
+ - These classes lets us call a special jobgiver for raiders that does not include setting fire to objects. This is good for monstrous creatures that do not have the ability to start fires but still want to break things.
 	
 Additions by roxxploxx.
+Additions by Swenzi.
 Transpilers by Erdelf.
 	
 Special thanks to Pardeike's amazing non-destructive patching library, Harmony. Without his work, none of this would be possible.
