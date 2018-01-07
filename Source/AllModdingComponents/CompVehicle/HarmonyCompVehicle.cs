@@ -22,8 +22,8 @@ namespace CompVehicle
     {
         static HarmonyCompVehicle()
         {
+            HarmonyInstance.DEBUG = true;
             var harmony = HarmonyInstance.Create("rimworld.jecrell.comps.vehicle");
-
 
             #region Functions
 
@@ -73,7 +73,12 @@ namespace CompVehicle
                 null, null,
                 new HarmonyMethod(typeof(HarmonyCompVehicle),
                     nameof(FightActionTranspiler)));
-
+            //Not enough experience Disabled
+            //harmony.Patch(AccessTools.Method(typeof(Pawn_PathFollower), "CostToMoveIntoCell"), new HarmonyMethod(typeof(HarmonyCompVehicle),
+                    //nameof(CostToMoveIntoCell_PreFix)), null, null);
+            //Not enough experience Disabled
+        //    harmony.Patch(AccessTools.Method(typeof(PathFinder), "FindPath",new[] { typeof(IntVec3),typeof(LocalTargetInfo),typeof(TraverseParms),typeof(PathEndMode) }), new HarmonyMethod(typeof(HarmonyCompVehicle),
+        //nameof(FindPath_PreFix)), null, null);
             #endregion Functions
 
             #region ErrorHandling
@@ -144,7 +149,10 @@ namespace CompVehicle
             harmony.Patch(AccessTools.Method(typeof(ThinkNode_ConditionalColonist), "Satisfied"), null,
                 new HarmonyMethod(typeof(HarmonyCompVehicle),
                     nameof(Satisfied_PostFix)), null);
-
+            harmony.Patch(AccessTools.Method(typeof(FloatMenuMakerMap), "AddUndraftedOrders"), null, null,new HarmonyMethod(typeof(HarmonyCompVehicle),
+                    nameof(AddUndraftedOrders_Transpiler)));
+            harmony.Patch(AccessTools.Method(typeof(JobGiver_Haul), "TryGiveJob"),new HarmonyMethod(typeof(HarmonyCompVehicle),
+                    nameof(TryGiveJob_PreFix)), null, null );
             #endregion ErrorHandling
 
             #region AIHandling
@@ -247,12 +255,12 @@ namespace CompVehicle
             /// Most of these methods are prefix detours to make tests.
             /// 
 
-            //harmony.Patch(AccessTools.Method(typeof(RimWorld.Planet.CaravanMaker), "MakeCaravan"), new HarmonyMethod(typeof(HarmonyCompVehicle),
-            //    nameof(MakeCaravan_PreFix)), null);
+
+
             //harmony.Patch(AccessTools.Method(typeof(CaravanExitMapUtility), "ExitMapAndCreateCaravan", new Type[] { typeof(IEnumerable<Pawn>), typeof(Faction), typeof(int) }), new HarmonyMethod(typeof(HarmonyCompVehicle),
-            //    nameof(ExitMapAndCreateCaravan_Test)), null);
-            //harmony.Patch(AccessTools.Method(typeof(Pawn), "ExitMap"), new HarmonyMethod(typeof(HarmonyCompVehicle),
-            //    nameof(ExitMap_Test)), null);
+                //nameof(ExitMapAndCreateCaravan_Test)), null);
+            //harmony.Patch(AccessTools.Method(typeof(Pawn_PathFollower), "TrySetNewPath"), new HarmonyMethod(typeof(HarmonyCompVehicle),
+                //nameof(TrySetNewPath_Test)), null);
 
             #endregion
         }
@@ -264,6 +272,110 @@ namespace CompVehicle
         /// ??? = Needs cleaning
 
         #region FunctionsMethods
+        //S I don't have enough experience with AI or pathing, will come back to this in the future.
+        //S Temporary prefix patching solution until a transpiler is made
+        //Patches PathFinder to create custom pathing based off of a vehicles stats, i.e. boats can only be in water
+        //Due to PathFinder being a none static method, I used slightly destructive patching to call a copy of the PathFinder class (CVPathFinder)
+        //public static bool FindPath_PreFix(IntVec3 start, LocalTargetInfo dest, TraverseParms traverseParms, PathFinder __instance, ref PawnPath __result, PathEndMode peMode = PathEndMode.OnCell){
+        //    Pawn pawn = traverseParms.pawn;
+        //    if(pawn.GetComp<CompVehicle>() != null){
+        //        CVPathFinder test = new CVPathFinder(pawn.Map);
+        //        __result = test.FindPath(start, dest, traverseParms, peMode);
+        //        //Log.Error((__result.Found.ToString()));
+        //        return false;
+        //    }
+        //    return true;
+        //}
+
+        //S Temporary prefix patching solution until a transpiler is made
+        //Patches Pawn_PathFollower to create custom pathing based off of a vehicles stats, i.e. boats can only be in water
+        public static bool CostToMoveIntoCell_PreFix(IntVec3 c, ref int __result, Pawn_PathFollower __instance){
+            Pawn pawn = (Pawn)AccessTools.Field(typeof(Pawn_PathFollower), "pawn").GetValue(__instance);
+            if(pawn.GetComp<CompVehicle>() != null){
+                
+                int num;
+                if (c.x == pawn.Position.x || c.z == pawn.Position.z)
+                {
+                    num = pawn.TicksPerMoveCardinal;
+                }
+                else
+                {
+                    num = pawn.TicksPerMoveDiagonal;
+                }
+                num += CalculatedCostAt(c, false, pawn.Position, __instance, pawn.GetComp<CompVehicle>().Props.vehicleType,pawn);
+                Building edifice = c.GetEdifice(pawn.Map);
+                if (edifice != null)
+                {
+                    num += (int)edifice.PathWalkCostFor(pawn);
+                }
+                if (num > 450)
+                {
+                    num = 450;
+                }
+                if (pawn.jobs.curJob != null)
+                {
+                    switch (pawn.jobs.curJob.locomotionUrgency)
+                    {
+                        case LocomotionUrgency.Amble:
+                            num *= 3;
+                            if (num < 60)
+                            {
+                                num = 60;
+                            }
+                            break;
+                        case LocomotionUrgency.Walk:
+                            num *= 2;
+                            if (num < 50)
+                            {
+                                num = 50;
+                            }
+                            break;
+                        case LocomotionUrgency.Jog:
+                            num = num;
+                            break;
+                        case LocomotionUrgency.Sprint:
+                            num = Mathf.RoundToInt((float)num * 0.75f);
+                            break;
+                    }
+                }
+                __result = Mathf.Max(num, 1);
+                return false;
+            }
+
+            return true;
+        }
+
+        //S Patches FloatingMenuMakerMap so that null reference errors don't occur when generating the GUI for 
+        //pawns that don't have worksettings
+        public static IEnumerable<CodeInstruction> AddUndraftedOrders_Transpiler(IEnumerable<CodeInstruction> instructions){
+            var instructionList = instructions.ToList();
+            var workSettings = AccessTools.Field(typeof(Pawn), nameof(Pawn.workSettings));
+            for (var i = 0; i < instructionList.Count; i++)
+            {
+                var instruction = instructionList[i];
+
+                yield return instruction;
+                if (instruction.operand == workSettings)
+                {
+                    yield return new CodeInstruction(OpCodes.Brfalse_S, instructionList[i + 3].operand);
+                    yield return new CodeInstruction(instructionList[i - 2]){ labels = new List<Label>() };
+                    yield return new CodeInstruction(instructionList[i - 1]);
+                    yield return new CodeInstruction(instruction);
+                }
+
+            }
+        }
+
+        //S Patches JobGiver_Haul so that jobs aren't assigned to vehicles that can't move so that a better suited pawn can take the job
+        //Couldn't get a transpiler to work for this one
+        public static bool TryGiveJob_PreFix(Pawn pawn, ref Job __result)
+        {
+            if(pawn.GetComp<CompVehicle>() != null && pawn.GetComp<CompVehicle>().movingStatus == MovingState.frozen){
+                __result = null;
+                return false;
+            }
+            return true;
+        }
 
         //J Vehicles will no longer rotate when drafted.
         public static bool VehicleRotatorTick(Pawn_RotationTracker __instance)
@@ -2276,6 +2388,114 @@ namespace CompVehicle
 
         // ------- Additions Made By Swenzi --------
         // -------    Private Methods       --------
+
+
+        private static int CalculatedCostAt(IntVec3 c, bool perceivedStatic, IntVec3 prevCell, Pawn_PathFollower __instance, VehicleType type, Pawn pawn){
+            int num = 0;
+            TerrainDef terrainDef = pawn.Map.terrainGrid.TerrainAt(c);
+            if (type == VehicleType.Sea || type == VehicleType.SeaSubmarine)
+            {
+                if(terrainDef == null || !terrainDef.defName.Contains("Water")){
+                    num = 10000;
+                }else{
+                    num += 1;
+                }
+            }else if(type == VehicleType.Amphibious){
+                if (terrainDef == null || (terrainDef.passability == Traversability.Impassable && !terrainDef.defName.Contains("Water")))
+                {
+                    num = 10000;
+                }
+                else
+                {
+                    num += 1;
+                } 
+            }else{
+                if (terrainDef == null || terrainDef.passability == Traversability.Impassable)
+                {
+                    num = 10000;
+                }
+                else
+                {
+                    num += terrainDef.pathCost;
+                } 
+            }
+
+
+            int num2 = SnowUtility.MovementTicksAddOn(pawn.Map.snowGrid.GetCategory(c));
+            num += num2;
+            List<Thing> list = pawn.Map.thingGrid.ThingsListAt(c);
+            for (int i = 0; i < list.Count; i++)
+            {
+                Thing thing = list[i];
+                if (thing.def.passability == Traversability.Impassable)
+                {
+                    return 10000;
+                }
+                if (!IsPathCostIgnoreRepeater(thing.def) || !prevCell.IsValid || !ContainsPathCostIgnoreRepeater(prevCell,pawn))
+                {
+                    num += thing.def.pathCost;
+                }
+                if (prevCell.IsValid && thing is Building_Door)
+                {
+                    Building edifice = prevCell.GetEdifice(pawn.Map);
+                    if (edifice != null && edifice is Building_Door)
+                    {
+                        num += 45;
+                    }
+                }
+            }
+            if (perceivedStatic)
+            {
+                for (int j = 0; j < 9; j++)
+                {
+                    IntVec3 b = GenAdj.AdjacentCellsAndInside[j];
+                    IntVec3 c2 = c + b;
+                    if (c2.InBounds(pawn.Map))
+                    {
+                        Fire fire = null;
+                        list = pawn.Map.thingGrid.ThingsListAtFast(c2);
+                        for (int k = 0; k < list.Count; k++)
+                        {
+                            fire = (list[k] as Fire);
+                            if (fire != null)
+                            {
+                                break;
+                            }
+                        }
+                        if (fire != null && fire.parent == null)
+                        {
+                            if (b.x == 0 && b.z == 0)
+                            {
+                                num += 1000;
+                            }
+                            else
+                            {
+                                num += 150;
+                            }
+                        }
+                    }
+                }
+            }
+            return num;
+        }
+
+        private static bool IsPathCostIgnoreRepeater(ThingDef def)
+        {
+            return def.pathCost >= 25 && def.pathCostIgnoreRepeat;
+        }
+
+        private static bool ContainsPathCostIgnoreRepeater(IntVec3 c, Pawn pawn)
+        {
+            List<Thing> list = pawn.Map.thingGrid.ThingsListAt(c);
+            for (int i = 0; i < list.Count; i++)
+            {
+                if (IsPathCostIgnoreRepeater(list[i].def))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
 
         //Purpose: Find fuel for the vehicle 
         //Corresponding Patch Class: RimWorld.Planet.CaravanPawnsNeedsUtility
