@@ -12,6 +12,8 @@ namespace AbilityUser
 
         public bool AlwaysHits = true;
 
+        public bool canCastInMelee = true;
+
         public List<ExtraDamage> extraDamages = null;
 
         public List<ApplyHediffs> hediffsToApply = null;
