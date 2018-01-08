@@ -165,10 +165,8 @@ namespace AbilityUser
             projectile.localSpawnThings = UseAbilityProps.thingsToSpawn;
             projectile.FreeIntercept = canFreeInterceptNow && !projectile.def.projectile.flyOverhead;
             var shotReport = ShotReport.HitReportFor(caster, this, launchTarget);
-            if (verbProps.soundCast != null)
-                verbProps.soundCast.PlayOneShot(new TargetInfo(caster.Position, caster.Map, false));
-            if (verbProps.soundCastTail != null)
-                verbProps.soundCastTail.PlayOneShotOnCamera();
+            verbProps.soundCast?.PlayOneShot(new TargetInfo(caster.Position, caster.Map, false));
+            verbProps.soundCastTail?.PlayOneShotOnCamera();
             if (!UseAbilityProps.AlwaysHits)
             {
                 if (Rand.Value > shotReport.ChanceToNotGoWild_IgnoringPosture)
