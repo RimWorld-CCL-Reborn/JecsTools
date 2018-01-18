@@ -75,7 +75,7 @@ namespace CompAnimated
                 pAnimatee.Drawer?.renderer?.graphics is PawnGraphicSet pawnGraphicSet)
             {
                 pawnGraphicSet.ClearCache();
-                if (pAnimatee.pather.MovingNow)
+                if (pAnimatee.pather != null && pAnimatee.pather.MovingNow)
                 {
                     result = pProps.movingFrames[pCurIndex].Graphic;
                     pawnGraphicSet.nakedGraphic = result;
