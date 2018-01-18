@@ -34,8 +34,11 @@ namespace AbilityUser
             var verb = pawn.CurJob.verbToUse as Verb_UseAbility;
             if (TargetA.HasThing)
             {
-                var getInRangeToil = Toils_Combat.GotoCastPosition(TargetIndex.A, false);
-                yield return getInRangeToil;
+                if (!GetActor().IsFighting() || !verb.UseAbilityProps.canCastInMelee)
+                {
+                    var getInRangeToil = Toils_Combat.GotoCastPosition(TargetIndex.A, false);
+                    yield return getInRangeToil;
+                }
             }
 
             if (Context == AbilityContext.Player)

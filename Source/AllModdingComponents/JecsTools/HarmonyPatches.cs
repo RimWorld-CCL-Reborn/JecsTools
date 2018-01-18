@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using AbilityUser;
 using Harmony;
@@ -144,17 +145,39 @@ namespace JecsTools
             foreach (var fortitudeHediff in fortitudeHediffs)
             {
                 var soaker = fortitudeHediff.TryGetComp<HediffComp_DamageSoak>();
-                if (soaker?.Props != null && (soaker?.Props?.damageType == null || soaker?.Props?.damageType == dinfo.Def))
+                var soakSetting = soaker?.Props;
+                if (soakSetting == null) continue;
+                if (soakSetting.settings.NullOrEmpty())
                 {
-                    if (!soaker.Props.damageTypesToExclude.NullOrEmpty() &&
-                        soaker.Props.damageTypesToExclude.Contains(dinfo.Def))
+                    if (soakSetting?.damageType != dinfo.Def) continue;
+                    
+                    if (!soakSetting.damageTypesToExclude.NullOrEmpty() &&
+                        soakSetting.damageTypesToExclude.Contains(dinfo.Def))
                         continue;
-                    var dmgAmount = Mathf.Max(dinfo.Amount - soaker.Props.damageToSoak, 0);
+                    var dmgAmount = Mathf.Max(dinfo.Amount - soakSetting.damageToSoak, 0);
                     dinfo.SetAmount(dmgAmount);
                     soakedDamage += dmgAmount;
                     if (dinfo.Amount > 0) continue;
                     absorbed = true;
                     return true;
+                }
+                else
+                {
+                    foreach (var soakSettings in soaker.Props.settings)
+                    {
+                        if (soakSettings?.damageType != dinfo.Def) continue;
+                        
+                        // ReSharper disable once PossibleNullReferenceException
+                        if (!soakSettings.damageTypesToExclude.NullOrEmpty() &&
+                            soakSettings.damageTypesToExclude.Contains(dinfo.Def))
+                            continue;
+                        var dmgAmount = Mathf.Max(dinfo.Amount - soakSettings.damageToSoak, 0);
+                        dinfo.SetAmount(dmgAmount);
+                        soakedDamage += dmgAmount;
+                        if (dinfo.Amount > 0) continue;
+                        absorbed = true;
+                        return true;
+                    }
                 }
             }
             if (soakedDamage != 0 && pawn.Spawned && pawn.MapHeld != null && pawn.DrawPos is Vector3 drawVec &&

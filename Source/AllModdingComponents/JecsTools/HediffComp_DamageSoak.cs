@@ -16,7 +16,18 @@ namespace JecsTools
                 var b = base.CompTipStringExtra;
                 if (b != "")
                     s.Append(b);
-                s.AppendLine("JT_HI_DamageSoaked".Translate((Props.damageType != null) ? Props.damageToSoak.ToString() + " (" +Props.damageType.LabelCap + ") " : Props.damageToSoak.ToString() + " (" +"AllDays".Translate() + ")"));
+
+                if (Props.settings.NullOrEmpty())
+                {
+                    s.AppendLine("JT_HI_DamageSoaked".Translate((Props.damageType != null) ? Props.damageToSoak.ToString() + " (" +Props.damageType.LabelCap + ") " : Props.damageToSoak.ToString() + " (" +"AllDays".Translate() + ")"));                    
+                }
+                else
+                {
+                    foreach (var setting in Props.settings)
+                    {
+                        s.AppendLine("JT_HI_DamageSoaked".Translate((setting.damageType != null) ? setting.damageToSoak.ToString() + " (" +setting.damageType.LabelCap + ") " : setting.damageToSoak.ToString() + " (" +"AllDays".Translate() + ")"));                    
+                    }
+                }
                 return s.ToString().TrimEndNewlines();
             }
         }
