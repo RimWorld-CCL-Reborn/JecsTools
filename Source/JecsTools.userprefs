@@ -1,11 +1,11 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workbench ActiveDocument="AllModdingComponents/CompVehicle/HarmonyCompVehicle.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="AllModdingComponents/CompVehicle/CompVehicle.cs">
     <Files>
-      <File FileName="AllModdingComponents/CompVehicle/CompVehicle.cs" Line="742" Column="17" />
-      <File FileName="AllModdingComponents/CompVehicle/HarmonyCompVehicle.cs" Line="927" Column="36" />
-      <File FileName="AllModdingComponents/CompVehicle/CompProperties_VehicleSpawner.cs" Line="1" Column="1" />
-      <File FileName="AllModdingComponents/CompVehicle/CompProperties_Vehicle.cs" Line="1" Column="1" />
+      <File FileName="AllModdingComponents/CompVehicle/CompVehicle.cs" Line="333" Column="37" />
+      <File FileName="AllModdingComponents/CompVehicle/CompProperties_Vehicle.cs" Line="31" Column="90" />
       <File FileName="AllModdingComponents/CompVehicle/VehicleRole.cs" Line="32" Column="9" />
+      <File FileName="AllModdingComponents/CompVehicle/HarmonyCompVehicle.cs" Line="275" Column="147" />
+      <File FileName="AllModdingComponents/CompVehicle/CVPathFinder.cs" Line="546" Column="26" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />

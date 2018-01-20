@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 using Verse;
 
 namespace CompVehicle
@@ -26,6 +27,20 @@ namespace CompVehicle
 
     public class CompProperties_Vehicle : CompProperties
     {
+        //Added by Swenzi 1/1/2018
+        //Allow animals to pull vehicles and be in a role that controls Movement Handling
+        public bool animalDrivers = false;
+
+        //Modifies the draw offset of the animal when it's attached to the vehicle
+        public Vector3 drawOffset = new Vector3(0, 0, 0);
+
+        //Whether or not the drivers of a pawn should be drawn, i.e. animals pulling a wagon or a pawn on a motorcycle
+        public bool drawDrivers = false;
+
+        //The minimum body size requirement for an animal to haul a vehicle
+        public float minBodySize = 0;
+
+
         public bool canBeDowned = false; // Does this become downed?
 
         public bool canWiggleWhenDowned = false; // Does this wiggle when downed?
