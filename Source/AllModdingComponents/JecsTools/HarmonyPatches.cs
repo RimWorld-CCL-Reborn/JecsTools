@@ -15,6 +15,8 @@ namespace JecsTools
     {
         // Verse.Pawn_HealthTracker
         public static bool StopPreApplyDamageCheck;
+        public static int? tempDamageAmount = null;
+        public static int? tempDamageAbsorbed = null;
 
         static HarmonyPatches()
         {
@@ -22,25 +24,74 @@ namespace JecsTools
             //Allow fortitude to soak damage
             harmony.Patch(AccessTools.Method(typeof(Pawn_HealthTracker), "PreApplyDamage"),
                 new HarmonyMethod(typeof(HarmonyPatches), nameof(PreApplyDamage_PrePatch)), null);
+            harmony.Patch(AccessTools.Method(typeof(ArmorUtility), "ApplyArmor"),
+                new HarmonyMethod(typeof(HarmonyPatches), nameof(ApplyProperDamage)), null);
+            harmony.Patch(AccessTools.Method(typeof(ArmorUtility), "GetPostArmorDamage"), null,
+                new HarmonyMethod(typeof(HarmonyPatches), nameof(Post_GetPostArmorDamage)));
+            
+/*            harmony.Patch(
+                AccessTools.Method(typeof(DamageWorker_AddInjury), "FinalizeAndAddInjury",
+                    new[]
+                    {
+                        typeof(Pawn), typeof(Hediff_Injury), typeof(DamageInfo),
+                        AccessTools.TypeByName("DamageResult").MakeByRefType()
+                    }),
+                new HarmonyMethod(typeof(HarmonyPatches),
+                    nameof(ApplyProperDamage)), null);*/
         }
 
+        //ArmorUtility
+        public static void Post_GetPostArmorDamage(Pawn pawn, int amountInt, BodyPartRecord part, DamageDef damageDef)
+        {
+            if (tempDamageAbsorbed != null)
+            {
+                
+                var hasFortitudeHediffs =
+                    pawn?.health?.hediffSet?.hediffs?.Any(x => x.TryGetComp<HediffComp_DamageSoak>() != null);
+                if (hasFortitudeHediffs ?? false)
+                {
+                    DamageSoakedMote(pawn, tempDamageAbsorbed.Value);   
+  
+                }
+                tempDamageAbsorbed = null;
+            }
+        }
         
+        public static void ApplyProperDamage(ref float damAmount, float armorRating, Thing armorThing, DamageDef damageDef)
+        {
+            if (tempDamageAmount != null && damAmount > 0)
+            {
+                float damageDiff = Mathf.Clamp(damAmount - tempDamageAmount.Value, 0, damAmount);
+                
+                //Log.Message("Apply amount original: " + damAmount);
+                //Log.Message("Apply amount modified: " + tempDamageAmount.Value);
+                damAmount = GenMath.RoundRandom(tempDamageAmount.Value);
+                tempDamageAmount = null;
+                if (damageDiff > 0)
+                    tempDamageAbsorbed = GenMath.RoundRandom(damageDiff);
+            }
+        }
         
-        public static bool PreApplyDamage_PrePatch(Pawn_HealthTracker __instance, DamageInfo dinfo, out bool absorbed)
+        public static bool PreApplyDamage_PrePatch(Pawn_HealthTracker __instance, ref DamageInfo dinfo, out bool absorbed)
         {
             var pawn = (Pawn) AccessTools.Field(typeof(Pawn_HealthTracker), "pawn").GetValue(__instance);
+            //Log.Message("Entry");
             if (pawn != null && !StopPreApplyDamageCheck)
+            {
+                //Log.Message("0");
                 if (pawn?.health?.hediffSet?.hediffs != null && pawn?.health?.hediffSet?.hediffs?.Count > 0)
                 {
+                    //Log.Message("1");
                     //A list will stack.
                     var fortitudeHediffs =
                         pawn?.health?.hediffSet?.hediffs?.FindAll(x => x.TryGetComp<HediffComp_DamageSoak>() != null);
                     if (!fortitudeHediffs.NullOrEmpty())
                     {
+                        //Log.Message("2");
                         try
                         {
-                            if (PreApplyDamage_ApplyDamageSoakers(dinfo, out absorbed, fortitudeHediffs, pawn))
-                                return true;
+                            if (PreApplyDamage_ApplyDamageSoakers(ref dinfo, out absorbed, fortitudeHediffs, pawn))
+                                return false;
                         }
                         catch (NullReferenceException e)
                         {
@@ -52,7 +103,7 @@ namespace JecsTools
                         {
                             try
                             {
-                                if (PreApplyDamage_ApplyExtraDamages(out absorbed, instigator, pawn)) return true;
+                                if (PreApplyDamage_ApplyExtraDamages(out absorbed, instigator, pawn)) return false;
                             }
                             catch (NullReferenceException e)
                             {
@@ -69,7 +120,10 @@ namespace JecsTools
                             }
                         }
                 }
+            }
+            tempDamageAmount = dinfo.Amount;
             absorbed = false;
+            //Log.Message("Current Damage :" + dinfo.Amount);
             return true;
         }
 
@@ -138,54 +192,87 @@ namespace JecsTools
             return false;
         }
 
-        private static bool PreApplyDamage_ApplyDamageSoakers(DamageInfo dinfo, out bool absorbed, List<Hediff> fortitudeHediffs,
+        private static bool PreApplyDamage_ApplyDamageSoakers(ref DamageInfo dinfo, out bool absorbed, List<Hediff> fortitudeHediffs,
             Pawn pawn)
         {
+            //Log.Message("3");
+
             var soakedDamage = 0;
             foreach (var fortitudeHediff in fortitudeHediffs)
             {
+                //Log.Message("Hediff");
+
                 var soaker = fortitudeHediff.TryGetComp<HediffComp_DamageSoak>();
                 var soakSetting = soaker?.Props;
                 if (soakSetting == null) continue;
                 if (soakSetting.settings.NullOrEmpty())
                 {
-                    if (soakSetting?.damageType != dinfo.Def) continue;
-                    
+                    //Log.Message("Hediff_A1");
+                    //Null, here, means "all damage types"
+                    //So Null should pass this check.
+                    if (soakSetting.damageType != null && soakSetting.damageType != dinfo.Def) continue;
+
+                    //Log.Message("Hediff_A2");
+
                     if (!soakSetting.damageTypesToExclude.NullOrEmpty() &&
                         soakSetting.damageTypesToExclude.Contains(dinfo.Def))
                         continue;
-                    var dmgAmount = Mathf.Max(dinfo.Amount - soakSetting.damageToSoak, 0);
+                    //Log.Message("Hediff_A3");
+                    var dmgAmount = Mathf.Clamp(dinfo.Amount - soakSetting.damageToSoak, 0, dinfo.Amount);
+                    //Log.Message(dinfo.Amount + " - " + soakSetting.damageToSoak + " = " + dmgAmount);
                     dinfo.SetAmount(dmgAmount);
+                    //Log.Message("New damage amt: " + dinfo.Amount);
                     soakedDamage += dmgAmount;
                     if (dinfo.Amount > 0) continue;
+                    //Log.Message("Hediff_A_Absorbed");
+                    DamageSoakedMote(pawn, soakedDamage);   
                     absorbed = true;
                     return true;
                 }
                 else
                 {
+                    //Log.Message("Hediff_B1");
                     foreach (var soakSettings in soaker.Props.settings)
                     {
-                        if (soakSettings?.damageType != dinfo.Def) continue;
+                        DamageInfo info = dinfo;
+                        //Log.Message("Hediff_B1_Setting");
+
+                        //Log.Message("Hediff Damage: " + info.Def.defName);
+                        //Null, here, means "all damage types"
+                        //So Null should pass this check.
+                        if (soakSettings.damageType != null && soakSettings.damageType != info.Def) continue;
+                        //Log.Message("Hediff_B1_Setting1");
                         
                         // ReSharper disable once PossibleNullReferenceException
                         if (!soakSettings.damageTypesToExclude.NullOrEmpty() &&
-                            soakSettings.damageTypesToExclude.Contains(dinfo.Def))
+                            soakSettings.damageTypesToExclude.Any(x => x == info.Def))
                             continue;
-                        var dmgAmount = Mathf.Max(dinfo.Amount - soakSettings.damageToSoak, 0);
-                        dinfo.SetAmount(dmgAmount);
+                        //Log.Message("Hediff_B1_Setting2");
+
+                        var dmgAmount = Mathf.Clamp(dinfo.Amount - soakSettings.damageToSoak, 0, dinfo.Amount);
+                        //Log.Message(dinfo.Amount + " - " + soakSettings.damageToSoak + " = " + dmgAmount);
                         soakedDamage += dmgAmount;
+                        dinfo.SetAmount(dmgAmount);
+                        //Log.Message("New damage amt: " + dinfo.Amount);
+                        //Log.Message("Total soaked: " + soakedDamage);
                         if (dinfo.Amount > 0) continue;
+                        //Log.Message("Hediff_B_Setting_Absorbed");
+                        DamageSoakedMote(pawn, soakedDamage);   
                         absorbed = true;
                         return true;
                     }
                 }
             }
-            if (soakedDamage != 0 && pawn.Spawned && pawn.MapHeld != null && pawn.DrawPos is Vector3 drawVec &&
-                drawVec.InBounds(pawn.MapHeld))
-                MoteMaker.ThrowText(drawVec, pawn.MapHeld,
-                    "JT_DamageSoaked".Translate(soakedDamage), -1f);
             absorbed = false;
             return false;
+        }
+
+        private static void DamageSoakedMote(Pawn pawn, int soakedDamage)
+        {
+            if (soakedDamage > 0 && pawn != null && pawn.Spawned && pawn.MapHeld != null &&
+                pawn.DrawPos is Vector3 drawVecDos && drawVecDos.InBounds(pawn.MapHeld))
+                MoteMaker.ThrowText(drawVecDos, pawn.MapHeld,
+                    "JT_DamageSoaked".Translate(soakedDamage), -1f);
         }
 
         public static Vector3 PushResult(Thing Caster, Thing thingToPush, int pushDist, out bool collision)

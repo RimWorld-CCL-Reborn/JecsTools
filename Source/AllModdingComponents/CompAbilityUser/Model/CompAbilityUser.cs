@@ -13,7 +13,6 @@ namespace AbilityUser
                                     -Jecrell
     */
 
-
     public class CompAbilityUser : CompUseEffect
     {
         protected static bool classRegisteredWithUtility = false;
