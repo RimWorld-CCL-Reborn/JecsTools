@@ -224,6 +224,7 @@
         <e p="CompVehicle.csproj" t="IncludeRecursive" />
         <e p="CompVehicleSpawner.cs" t="Include" />
         <e p="CompVehicleUtility.cs" t="Include" />
+        <e p="CVPathFinder.cs" t="Include" />
         <e p="DeathActionWorker_NoCorpse.cs" t="Include" />
         <e p="GlobalSuppressions.cs" t="Include" />
         <e p="HandlingTypeFlags.cs" t="Include" />

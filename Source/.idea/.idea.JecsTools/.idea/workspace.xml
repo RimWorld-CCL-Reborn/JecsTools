@@ -152,11 +152,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="HarmonyPatches.cs" pinned="false" current-in-tab="true">
+      <file leaf-file-name="HarmonyPatches.cs" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/AllModdingComponents/JecsTools/HarmonyPatches.cs">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="308">
-              <caret line="67" column="72" lean-forward="true" selection-start-line="67" selection-start-column="72" selection-end-line="67" selection-end-column="72" />
+              <caret line="67" column="72" lean-forward="false" selection-start-line="67" selection-start-column="72" selection-end-line="67" selection-end-column="72" />
               <folding>
                 <marker date="1516447718498" expanded="false" signature="6:177" ph="..." />
                 <marker date="1516447718498" expanded="true" signature="198:15238" ph="{...}" />
@@ -211,344 +211,87 @@
           </provider>
         </entry>
       </file>
+      <file leaf-file-name="Bill_LoadVehicle.cs" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/AllModdingComponents/CompVehicle/Bill_LoadVehicle.cs">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="475">
+              <caret line="25" column="1" lean-forward="true" selection-start-line="25" selection-start-column="1" selection-end-line="25" selection-end-column="1" />
+              <folding>
+                <marker date="1513946385550" expanded="true" signature="35:581" ph="{...}" />
+                <marker date="1513946385550" expanded="true" signature="84:579" ph="{...}" />
+                <marker date="1513946385550" expanded="true" signature="199:219" ph="{...}" />
+                <marker date="1513946385550" expanded="true" signature="313:397" ph="{...}" />
+                <marker date="1513946385550" expanded="true" signature="431:573" ph="{...}" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="HarmonyCompVehicle.cs" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/AllModdingComponents/CompVehicle/HarmonyCompVehicle.cs">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="304">
-              <caret line="37" column="0" lean-forward="false" selection-start-line="37" selection-start-column="0" selection-end-line="45" selection-end-column="56" />
+              <caret line="37" column="0" lean-forward="false" selection-start-line="37" selection-start-column="0" selection-end-line="37" selection-end-column="0" />
               <folding>
-                <marker date="1513946385603" expanded="false" signature="6:346" ph="..." />
-                <marker date="1513946385603" expanded="true" signature="369:134565" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="449:134563" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="491:14391" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="600:3474" ph="Functions" />
-                <marker date="1513946385603" expanded="true" signature="631:778" ph="/* VEHICLE FUNCTIONS ... */" />
-                <marker date="1513946385603" expanded="true" signature="1157:1340" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="3488:7934" ph="ErrorHandling" />
-                <marker date="1513946385603" expanded="true" signature="3523:3757" ph="/* VEHICLE ERROR HANDLING ... */" />
-                <marker date="1513946385603" expanded="true" signature="7948:9764" ph="AIHandling" />
-                <marker date="1513946385603" expanded="true" signature="7980:8088" ph="/* AI HANDLING ... */" />
-                <marker date="1513946385603" expanded="true" signature="9778:13484" ph="CaravanHandling" />
-                <marker date="1513946385603" expanded="true" signature="9815:9974" ph="/* CARAVAN HANDLING ... */" />
-                <marker date="1513946385603" expanded="true" signature="11718:11908" ph="/* harmony.Patch(AccessTools.Method(typeof(RimWorld.Planet.CaravanMaker), &quot;MakeCaravan&quot;), null, new HarmonyMethod ... */" />
-                <marker date="1513946385603" expanded="true" signature="12304:12481" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="12948:13122" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="13498:14381" ph="Tests" />
-                <marker date="1513946385603" expanded="true" signature="13525:14357" ph="/* TESTS ... */" />
-                <marker date="1513946385603" expanded="true" signature="14401:14542" ph="/* CODE LEGEND ... */" />
-                <marker date="1513946385603" expanded="true" signature="14401:14634" ph="/// CODE LEGEND ... " />
-                <marker date="1513946385603" expanded="true" signature="14713:21802" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="14895:21767" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="15143:15790" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="15569:15738" ph="/* Traverse.Create(__instance).Method(&quot;FaceAdjacentCell&quot;, new object[] { thisPawn.pather.nextCell }); ... */" />
-                <marker date="1513946385603" expanded="true" signature="15941:16450" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="16502:21574" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="16659:20021" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="16730:19999" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="17169:17670" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="17240:17395" ph="/* this.Face(target.Thing.DrawPos); ... */" />
-                <marker date="1513946385603" expanded="true" signature="17832:18779" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="18011:18506" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="18584:18749" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="18817:19643" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="18924:19221" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="20046:21556" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="20143:20995" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="20242:20567" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="21080:21534" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="21135:21288" ph="/* this.Face(target.Cell.ToVector3()); ... */" />
-                <marker date="1513946385603" expanded="true" signature="21591:21723" ph="/* if (thisPawn.Drafted) ... */" />
-                <marker date="1513946385603" expanded="true" signature="21812:22089" ph="/* J When characters fire upon the vehicle, if the vehicle's body part defs include a tag that references a vehic ... */" />
-                <marker date="1513946385603" expanded="true" signature="22240:23477" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="22350:23467" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="22942:23453" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="23487:23600" ph="/* J Allows for various condition labels to be changed in CompVehicle's properties. ... */" />
-                <marker date="1513946385603" expanded="true" signature="23708:24700" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="23748:24665" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="23870:24651" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="23963:24117" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="24152:24302" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="24381:24532" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="24710:24866" ph="/* J Changes the CompVehicle health card to display which systems are operational rather than standard pawn capac ... */" />
-                <marker date="1513946385603" expanded="true" signature="24977:27837" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="25017:27802" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="25139:27788" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="25277:25978" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="26070:26836" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="26922:27666" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="27847:27929" ph="/* E Adds colonists to the map pawns list when they are inside vehicles. ... */" />
-                <marker date="1513946385603" expanded="true" signature="28029:28266" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="28276:28367" ph="/* J Downed can be disabled from CompProperties_Vehicle. ... */" />
-                <marker date="1513946385603" expanded="true" signature="28466:28965" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="28612:28930" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="28792:28916" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="28975:29067" ph="/* J Wiggling can be disabled from CompProperties_Vehicle. ... */" />
-                <marker date="1513946385603" expanded="true" signature="29144:29518" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="29267:29483" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="29711:30594" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="29949:30584" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="30081:30527" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="30641:38946" ph="ErrorHandlingMethods" />
-                <marker date="1513946385603" expanded="true" signature="30679:30837" ph="/* J This patch allows colonists to freely join vehicles ... */" />
-                <marker date="1513946385603" expanded="true" signature="30924:31114" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="31125:31335" ph="/* S Bug fixes social tab issue with vehicles ... */" />
-                <marker date="1513946385603" expanded="true" signature="31411:31574" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="31740:31931" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="31941:31997" ph="/* J Moving vehicles can't be used. ... */" />
-                <marker date="1513946385603" expanded="true" signature="32082:32263" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="32398:32852" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="32572:32817" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="32862:32954" ph="/* J If needed drivers are absent, Vehicles don't move. ... */" />
-                <marker date="1513946385603" expanded="true" signature="33068:33472" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="33213:33437" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="33482:33565" ph="/* J If needed gunners are absent, Vehicles don't shoot. ... */" />
-                <marker date="1513946385603" expanded="true" signature="33650:34105" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="33736:34070" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="33932:34056" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="34267:34492" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="34653:34774" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="34784:34862" ph="/* J Removes option to *rescue* vehicles. ... */" />
-                <marker date="1513946385603" expanded="true" signature="34977:35596" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="35251:35586" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="35606:35686" ph="/* E No vehicles in ancient dangers. ... */" />
-                <marker date="1513946385603" expanded="true" signature="35773:35899" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="35909:35987" ph="/* E No vehicles in crashed ships. ... */" />
-                <marker date="1513946385603" expanded="true" signature="36066:36191" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="36201:36329" ph="/* E Stops verb exceptions. ... */" />
-                <marker date="1513946385603" expanded="true" signature="36465:37419" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="36738:37409" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="36878:37352" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="37541:38500" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="37779:38490" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="37911:38433" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="38510:38649" ph="/* J Vehicles with a movement handler are considered colonists. ... */" />
-                <marker date="1513946385603" expanded="true" signature="38724:38905" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="38956:48033" ph="AIHandlingMethods" />
-                <marker date="1513946385603" expanded="true" signature="38991:39111" ph="/* J Disable the WaitCombat job when our vehicle cannot fire. ... */" />
-                <marker date="1513946385603" expanded="true" signature="39190:39399" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="39409:39683" ph="/* J Handles vehicles in preparing caravans. If this code isn't executed, they will never load to leave. ... */" />
-                <marker date="1513946385603" expanded="true" signature="39785:41103" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="39978:41038" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="40083:40960" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="40250:40392" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="40444:40712" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="40737:40872" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="41210:42355" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="41505:42345" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="41773:42167" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="42051:42144" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="42192:42327" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="42460:43052" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="42525:43042" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="43062:43246" ph="/* S Vehicles Item Pickup Fix! ... */" />
-                <marker date="1513946385603" expanded="true" signature="43385:45225" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="43450:45189" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="43572:44365" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="43875:44049" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="44078:44347" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="44176:44321" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="44391:45006" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="44859:44988" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="45032:45175" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="45235:45606" ph="/* S Tries to find satisfy the vehicle's fuel &quot;need&quot; ... */" />
-                <marker date="1513946385603" expanded="true" signature="45681:47063" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="46198:46929" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="46451:46915" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="47073:47135" ph="/* J TB ... */" />
-                <marker date="1513946385603" expanded="true" signature="47213:47995" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="47289:47960" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="47390:47497" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="47661:47768" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="47864:47915" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="48043:99533" ph="CaravanHandlingMethods" />
-                <marker date="1513946385603" expanded="true" signature="48083:48316" ph="/* J This code checks all the characters inside a vehicle. ... */" />
-                <marker date="1513946385603" expanded="true" signature="48434:52109" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="48558:52074" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="48660:48816" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="48870:51899" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="48909:49013" ph="/* Log.Message(&quot;AddVehicles2&quot;); ... */" />
-                <marker date="1513946385603" expanded="true" signature="49101:51241" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="49148:49322" ph="/* Log.Message(&quot;AddVehicles3&quot;); ... */" />
-                <marker date="1513946385603" expanded="true" signature="49475:51219" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="49786:51193" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="50110:50593" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="50630:51035" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="51068:51163" ph="/* Log.Message(&quot;AddVehicles6b&quot;); ... */" />
-                <marker date="1513946385603" expanded="true" signature="51461:51881" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="51920:52030" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="52120:52323" ph="/* J Prevents caravans from being split while having colonists that are in vehicles. ... */" />
-                <marker date="1513946385603" expanded="true" signature="52461:53793" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="52677:53758" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="53394:53744" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="53804:54037" ph="/* J ??? Forces caravan checks to be accepted if a vehicle is loaded. ... */" />
-                <marker date="1513946385603" expanded="true" signature="54154:58409" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="54257:58374" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="54534:54719" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="55005:55256" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="55454:55736" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="56164:56405" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="56571:58297" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="56770:58275" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="56891:57568" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="57302:57538" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="58419:58708" ph="/* J ??? Shows &quot;Vehicles&quot; in the caravan tab. Messy patch. ... */" />
-                <marker date="1513946385603" expanded="true" signature="58968:65188" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="59063:65153" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="60221:61207" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="60458:61189" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="60515:60716" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="60789:60997" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="61297:62322" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="61560:62304" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="61618:61830" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="61903:62112" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="62413:63459" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="62697:63441" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="62755:62967" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="63040:63249" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="63735:64530" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="63793:64052" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="64125:64338" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="64584:64958" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="65198:65285" ph="/* J Adds a vehicles section to Caravan forming UI. ... */" />
-                <marker date="1513946385603" expanded="true" signature="65422:65863" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="65873:65987" ph="/* J Movement handlers in vehicles are counted in caravan forming. ... */" />
-                <marker date="1513946385603" expanded="true" signature="66060:66390" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="66400:66481" ph="/* J Changes the caravan capacity for the vehicle. ... */" />
-                <marker date="1513946385603" expanded="true" signature="66553:66729" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="66739:70913" ph="/* S Modifies caravan movement speed if vehicles are present ... */" />
-                <marker date="1513946385603" expanded="true" signature="71000:75755" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="71288:73306" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="71319:71455" ph="/* Make a list of non-vehicle characters that are not inside vehicles. ... */" />
-                <marker date="1513946385603" expanded="true" signature="71760:72662" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="71986:72565" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="72169:72452" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="72680:72883" ph="/* Are there any characters not inside vehicles? ... */" />
-                <marker date="1513946385603" expanded="true" signature="73320:75745" ph="/* Previous code. ... */" />
-                <marker date="1513946385603" expanded="true" signature="75765:76300" ph="/* S Remove pawns from the vehicle when making a caravan ... */" />
-                <marker date="1513946385603" expanded="true" signature="76309:79186" ph="/* RimWorld.Planet.CaravanMaker ... */" />
-                <marker date="1513946385603" expanded="true" signature="79261:83155" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="79343:83120" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="79374:79436" ph="/* Vanilla code start ... */" />
-                <marker date="1513946385603" expanded="true" signature="79596:79949" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="79966:80060" ph="/* Vanilla code edit transpiler here for if statement ... */" />
-                <marker date="1513946385603" expanded="true" signature="80781:83035" ph="/* Log.Message(&quot;EMJOC_4f&quot;); ... */" />
-                <marker date="1513946385603" expanded="true" signature="83165:83869" ph="/* S Add pawns back to the vehicle and remove them from the caravan when entering the map ... */" />
-                <marker date="1513946385603" expanded="true" signature="83926:85884" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="84004:84071" ph="/* Log.Error(members.Count().ToString()); ... */" />
-                <marker date="1513946385603" expanded="true" signature="84123:85821" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="84372:85807" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="84525:85621" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="84681:85599" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="85033:85573" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="85245:85488" ph="/* Log.Message(&quot;RemovedPawn &quot; + pawn.LabelShort); ... */" />
-                <marker date="1513946385603" expanded="true" signature="85894:86241" ph="/* S Modifies the caravan inspect string so fuel is shown ... */" />
-                <marker date="1513946385603" expanded="true" signature="86334:87637" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="86578:86714" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="86731:87560" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="86915:87400" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="87421:87546" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="87647:87855" ph="/* S Modifies the Caravan Needs WITab to show vehicle fuel ... */" />
-                <marker date="1513946385603" expanded="true" signature="87995:90765" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="88402:88564" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="88686:90755" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="88810:90699" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="90775:91546" ph="/* S Modifies the Caravan Contents Window when forming a caravan to show the fuel carried by the caravan ... */" />
-                <marker date="1513946385603" expanded="true" signature="91677:99490" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="92078:99455" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="93336:94460" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="93627:94252" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="94803:94991" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="95081:95289" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="97236:98067" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="98439:99052" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="99078:99379" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="99543:109549" ph="TestMethods" />
-                <marker date="1513946385603" expanded="true" signature="99777:102249" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="100481:100629" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="100882:101033" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="101086:102181" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="101213:101370" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="101401:101522" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="101543:102167" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="101795:102107" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="102449:104503" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="102587:102760" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="103134:103265" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="103482:103634" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="103837:104196" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="103952:104182" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="104225:104398" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="104618:109517" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="104707:109482" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="104808:104959" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="105102:105350" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="105475:105687" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="105788:107184" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="106029:106841" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="106196:106444" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="106473:106819" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="106866:107051" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="107781:108323" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="108373:108556" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="108610:108805" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="108845:109016" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="109559:111805" ph="/* RimWorld.RestUtility ... */" />
-                <marker date="1513946385603" expanded="true" signature="111815:134557" ph="SwenzisPrivateMethods" />
-                <marker date="1513946385603" expanded="true" signature="111854:112185" ph="/* ------- Additions Made By Swenzi -------- ... */" />
-                <marker date="1513946385603" expanded="true" signature="112326:113819" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="112624:113140" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="112785:113126" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="113402:113783" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="113829:114030" ph="/* Purpose: Check if anything in the caravan is out of fuel ... */" />
-                <marker date="1513946385603" expanded="true" signature="114093:114417" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="114427:114643" ph="/* Purpose: Check if anything in the caravan needs fuel and adds to a list ... */" />
-                <marker date="1513946385603" expanded="true" signature="114731:115137" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="115147:115761" ph="/* Purpose: Calculate the amount of fuel left in the caravan ... */" />
-                <marker date="1513946385603" expanded="true" signature="115856:116702" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="116030:116399" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="116712:116907" ph="/* Purpose: Draw the Vehicle fuel bar in the WITab for Needs ... */" />
-                <marker date="1513946385603" expanded="true" signature="117098:118855" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="117275:117421" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="118865:119056" ph="/* Purpose: Get the Tip String explaining what fuel does ... */" />
-                <marker date="1513946385603" expanded="true" signature="119122:119398" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="119184:119386" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="119408:119650" ph="/* Purpose: Draw the bar marker ... */" />
-                <marker date="1513946385603" expanded="true" signature="119726:120118" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="120128:120758" ph="/* Purpose: Calculate the amount of fuel left in the caravan ... */" />
-                <marker date="1513946385603" expanded="true" signature="120903:122707" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="121082:122550" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="121207:122536" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="121413:121827" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="121587:121801" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="121918:122518" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="122238:122492" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="122717:122898" ph="/* Purpose: Draw the information for days worth of fuel ... */" />
-                <marker date="1513946385603" expanded="true" signature="123059:124219" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="124229:124411" ph="/* Purpose: Draw the Config Tab, copied from the original method ... */" />
-                <marker date="1513946385603" expanded="true" signature="124483:126238" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="125135:125949" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="125202:125935" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="125966:126228" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="126248:126591" ph="/* Purpose: Draw the BottomButtons aka what happens after accept/cancel is pressed ... */" />
-                <marker date="1513946385603" expanded="true" signature="126854:133139" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="127561:127924" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="127677:127906" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="127945:130371" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="128835:129955" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="129661:129883" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="130124:130353" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="130579:130825" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="131016:131141" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="131189:132015" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="131437:132001" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="132046:133129" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="132481:132690" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="132861:133115" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="133149:133359" ph="/* Purpose: Return a bool on whether vehicles in the caravan don't have fuel in them ... */" />
-                <marker date="1513946385603" expanded="true" signature="133496:134515" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="133610:134213" ph="{...}" />
-                <marker date="1513946385603" expanded="true" signature="133881:134199" ph="{...}" />
+                <marker date="1516448700826" expanded="false" signature="6:346" ph="..." />
+                <marker date="1516448700826" expanded="true" signature="369:144291" ph="{...}" />
+                <marker date="1516448700826" expanded="true" signature="449:144289" ph="{...}" />
+                <marker date="1516448700826" expanded="true" signature="491:514" ph="{...}" />
+                <marker date="1516448700826" expanded="true" signature="121677:121911" ph="/* ------- Additions Made By Swenzi -------- ... */" />
+                <marker date="1516448700826" expanded="true" signature="121677:144283" ph="SwenzisPrivateMethods" />
+                <marker date="1516448700826" expanded="true" signature="122052:123545" ph="{...}" />
+                <marker date="1516448700826" expanded="true" signature="122350:122866" ph="{...}" />
+                <marker date="1516448700826" expanded="true" signature="122511:122852" ph="{...}" />
+                <marker date="1516448700826" expanded="true" signature="123128:123509" ph="{...}" />
+                <marker date="1516448700826" expanded="true" signature="123555:123756" ph="/* Purpose: Check if anything in the caravan is out of fuel ... */" />
+                <marker date="1516448700826" expanded="true" signature="123819:124143" ph="{...}" />
+                <marker date="1516448700826" expanded="true" signature="124153:124369" ph="/* Purpose: Check if anything in the caravan needs fuel and adds to a list ... */" />
+                <marker date="1516448700826" expanded="true" signature="124457:124863" ph="{...}" />
+                <marker date="1516448700826" expanded="true" signature="124873:125487" ph="/* Purpose: Calculate the amount of fuel left in the caravan ... */" />
+                <marker date="1516448700826" expanded="true" signature="125582:126428" ph="{...}" />
+                <marker date="1516448700826" expanded="true" signature="125756:126125" ph="{...}" />
+                <marker date="1516448700826" expanded="true" signature="126438:126633" ph="/* Purpose: Draw the Vehicle fuel bar in the WITab for Needs ... */" />
+                <marker date="1516448700826" expanded="true" signature="126824:128581" ph="{...}" />
+                <marker date="1516448700826" expanded="true" signature="127001:127147" ph="{...}" />
+                <marker date="1516448700826" expanded="true" signature="128591:128782" ph="/* Purpose: Get the Tip String explaining what fuel does ... */" />
+                <marker date="1516448700826" expanded="true" signature="128848:129124" ph="{...}" />
+                <marker date="1516448700826" expanded="true" signature="128910:129112" ph="{...}" />
+                <marker date="1516448700826" expanded="true" signature="129134:129376" ph="/* Purpose: Draw the bar marker ... */" />
+                <marker date="1516448700826" expanded="true" signature="129452:129844" ph="{...}" />
+                <marker date="1516448700826" expanded="true" signature="129854:130484" ph="/* Purpose: Calculate the amount of fuel left in the caravan ... */" />
+                <marker date="1516448700826" expanded="true" signature="130629:132433" ph="{...}" />
+                <marker date="1516448700826" expanded="true" signature="130808:132276" ph="{...}" />
+                <marker date="1516448700826" expanded="true" signature="130933:132262" ph="{...}" />
+                <marker date="1516448700826" expanded="true" signature="131139:131553" ph="{...}" />
+                <marker date="1516448700826" expanded="true" signature="131313:131527" ph="{...}" />
+                <marker date="1516448700826" expanded="true" signature="131644:132244" ph="{...}" />
+                <marker date="1516448700826" expanded="true" signature="131964:132218" ph="{...}" />
+                <marker date="1516448700826" expanded="true" signature="132443:132624" ph="/* Purpose: Draw the information for days worth of fuel ... */" />
+                <marker date="1516448700826" expanded="true" signature="132785:133945" ph="{...}" />
+                <marker date="1516448700826" expanded="true" signature="133955:134137" ph="/* Purpose: Draw the Config Tab, copied from the original method ... */" />
+                <marker date="1516448700826" expanded="true" signature="134209:135964" ph="{...}" />
+                <marker date="1516448700826" expanded="true" signature="134861:135675" ph="{...}" />
+                <marker date="1516448700826" expanded="true" signature="134928:135661" ph="{...}" />
+                <marker date="1516448700826" expanded="true" signature="135692:135954" ph="{...}" />
+                <marker date="1516448700826" expanded="true" signature="135974:136317" ph="/* Purpose: Draw the BottomButtons aka what happens after accept/cancel is pressed ... */" />
+                <marker date="1516448700826" expanded="true" signature="136580:142865" ph="{...}" />
+                <marker date="1516448700826" expanded="true" signature="137287:137650" ph="{...}" />
+                <marker date="1516448700826" expanded="true" signature="137403:137632" ph="{...}" />
+                <marker date="1516448700826" expanded="true" signature="137671:140097" ph="{...}" />
+                <marker date="1516448700826" expanded="true" signature="138561:139681" ph="{...}" />
+                <marker date="1516448700826" expanded="true" signature="139387:139609" ph="{...}" />
+                <marker date="1516448700826" expanded="true" signature="139850:140079" ph="{...}" />
+                <marker date="1516448700826" expanded="true" signature="140305:140551" ph="{...}" />
+                <marker date="1516448700826" expanded="true" signature="140742:140867" ph="{...}" />
+                <marker date="1516448700826" expanded="true" signature="140915:141741" ph="{...}" />
+                <marker date="1516448700826" expanded="true" signature="141163:141727" ph="{...}" />
+                <marker date="1516448700826" expanded="true" signature="141772:142855" ph="{...}" />
+                <marker date="1516448700826" expanded="true" signature="142207:142416" ph="{...}" />
+                <marker date="1516448700826" expanded="true" signature="142587:142841" ph="{...}" />
+                <marker date="1516448700826" expanded="true" signature="142875:143085" ph="/* Purpose: Return a bool on whether vehicles in the caravan don't have fuel in them ... */" />
+                <marker date="1516448700826" expanded="true" signature="143222:144241" ph="{...}" />
+                <marker date="1516448700826" expanded="true" signature="143336:143939" ph="{...}" />
+                <marker date="1516448700826" expanded="true" signature="143607:143925" ph="{...}" />
               </folding>
             </state>
           </provider>
@@ -565,26 +308,6 @@
                 <marker date="1515207932526" expanded="true" signature="105:357" ph="{...}" />
                 <marker date="1515207932526" expanded="true" signature="434:840" ph="{...}" />
                 <marker date="1515207932526" expanded="true" signature="759:834" ph="{...}" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="AbilityData.cs" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/AllModdingComponents/CompAbilityUser/Model/AbilityData.cs">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-              <folding>
-                <marker date="1513946385061" expanded="false" signature="6:60" ph="..." />
-                <marker date="1513946385061" expanded="true" signature="127:1861" ph="{...}" />
-                <marker date="1513946385061" expanded="true" signature="338:358" ph="{...}" />
-                <marker date="1513946385061" expanded="true" signature="415:522" ph="{...}" />
-                <marker date="1513946385061" expanded="true" signature="648:730" ph="{...}" />
-                <marker date="1513946385061" expanded="true" signature="968:1595" ph="{...}" />
-                <marker date="1513946385061" expanded="true" signature="994:1547" ph="{...}" />
-                <marker date="1513946385061" expanded="true" signature="1047:1499" ph="{...}" />
-                <marker date="1513946385061" expanded="true" signature="1629:1855" ph="{...}" />
               </folding>
             </state>
           </provider>
@@ -699,6 +422,7 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/765250CD-2B53-4903-8F57-1EFC3734D8FA/67/a0947aae/Toils_Combat.cs" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/AllModdingComponents/CompVehicle/HarmonyCompVehicle.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AllModdingComponents/JecsTools/HarmonyPatches.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/AllModdingComponents/CompVehicle/Bill_LoadVehicle.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AllModdingComponents/JecsTools/FirelessTrashUtility.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AllModdingComponents/CompVehicle/Command_VehicleHandler.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AllModdingComponents/JecsTools/GrappleUtility.cs" root0="FORCE_HIGHLIGHTING" />
@@ -731,7 +455,7 @@
     <detection-done>true</detection-done>
     <sorting>DEFINITION_ORDER</sorting>
   </component>
-  <component name="ProjectFrameBounds" extendedState="7">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="39" />
     <option name="y" value="140" />
     <option name="width" value="1300" />
@@ -762,6 +486,24 @@
             <path>
               <item name="" type="13324e5d:SolutionExplorerViewPane$ProjectViewPaneTreeStructure$createRoot$1" />
               <item name="JecsTools (15 projects)" type="977d5f41:SolutionExplorerNodeRider" />
+              <item name="CompAnimated" type="977d5f41:SolutionExplorerNodeRider" />
+            </path>
+            <path>
+              <item name="" type="13324e5d:SolutionExplorerViewPane$ProjectViewPaneTreeStructure$createRoot$1" />
+              <item name="JecsTools (15 projects)" type="977d5f41:SolutionExplorerNodeRider" />
+              <item name="CompAnimated" type="977d5f41:SolutionExplorerNodeRider" />
+              <item name="References" type="977d5f41:SolutionExplorerNodeRider" />
+            </path>
+            <path>
+              <item name="" type="13324e5d:SolutionExplorerViewPane$ProjectViewPaneTreeStructure$createRoot$1" />
+              <item name="JecsTools (15 projects)" type="977d5f41:SolutionExplorerNodeRider" />
+              <item name="CompAnimated" type="977d5f41:SolutionExplorerNodeRider" />
+              <item name="References" type="977d5f41:SolutionExplorerNodeRider" />
+              <item name="Assemblies" type="977d5f41:SolutionExplorerNodeRider" />
+            </path>
+            <path>
+              <item name="" type="13324e5d:SolutionExplorerViewPane$ProjectViewPaneTreeStructure$createRoot$1" />
+              <item name="JecsTools (15 projects)" type="977d5f41:SolutionExplorerNodeRider" />
               <item name="CompVehicle" type="977d5f41:SolutionExplorerNodeRider" />
             </path>
             <path>
@@ -781,7 +523,7 @@
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="SearchEverywhereHistoryKey" value="HideyHole&#9;null&#9;null" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../RimworldModReleaseTool.exe" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../../RimWorldWin_Data/Managed/Assembly-CSharp.dll" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -830,12 +572,12 @@
       <workItem from="1515511775551" duration="646000" />
       <workItem from="1515586695552" duration="126000" />
       <workItem from="1515674267079" duration="6656000" />
-      <workItem from="1516429455303" duration="13758000" />
+      <workItem from="1516429455303" duration="14529000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="46011000" />
+    <option name="totallyTimeSpent" value="46782000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -847,15 +589,14 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-9" y="-9" width="1938" height="1048" extended-state="7" />
-    <editor active="true" />
+    <frame x="-9" y="-9" width="1938" height="1048" extended-state="6" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Errors In Solution" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Unit Tests" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24724062" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24724062" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="NuGet" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1578125" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -887,23 +628,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/AllModdingComponents/JecsTools/HediffComp_DamageSoak.cs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="209">
-          <caret line="12" column="13" lean-forward="true" selection-start-line="12" selection-start-column="13" selection-end-line="12" selection-end-column="13" />
-          <folding>
-            <marker date="1515207928853" expanded="false" signature="6:31" ph="..." />
-            <marker date="1515207928853" expanded="true" signature="52:1314" ph="{...}" />
-            <marker date="1515207928853" expanded="true" signature="106:1312" ph="{...}" />
-            <marker date="1515207928853" expanded="true" signature="260:1306" ph="{...}" />
-            <marker date="1515207928853" expanded="true" signature="286:1296" ph="{...}" />
-            <marker date="1515207928853" expanded="true" signature="508:799" ph="{...}" />
-            <marker date="1515207928853" expanded="true" signature="820:1227" ph="{...}" />
-            <marker date="1515207928853" expanded="true" signature="898:1209" ph="{...}" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/AllModdingComponents/JecsTools/HarmonyPatches.cs">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -1687,340 +1411,67 @@
     <entry file="file://$PROJECT_DIR$/AllModdingComponents/CompVehicle/HarmonyCompVehicle.cs">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="304">
-          <caret line="37" column="0" lean-forward="false" selection-start-line="37" selection-start-column="0" selection-end-line="45" selection-end-column="56" />
+          <caret line="37" column="0" lean-forward="false" selection-start-line="37" selection-start-column="0" selection-end-line="37" selection-end-column="0" />
           <folding>
-            <marker date="1513946385603" expanded="false" signature="6:346" ph="..." />
-            <marker date="1513946385603" expanded="true" signature="369:134565" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="449:134563" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="491:14391" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="600:3474" ph="Functions" />
-            <marker date="1513946385603" expanded="true" signature="631:778" ph="/* VEHICLE FUNCTIONS ... */" />
-            <marker date="1513946385603" expanded="true" signature="1157:1340" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="3488:7934" ph="ErrorHandling" />
-            <marker date="1513946385603" expanded="true" signature="3523:3757" ph="/* VEHICLE ERROR HANDLING ... */" />
-            <marker date="1513946385603" expanded="true" signature="7948:9764" ph="AIHandling" />
-            <marker date="1513946385603" expanded="true" signature="7980:8088" ph="/* AI HANDLING ... */" />
-            <marker date="1513946385603" expanded="true" signature="9778:13484" ph="CaravanHandling" />
-            <marker date="1513946385603" expanded="true" signature="9815:9974" ph="/* CARAVAN HANDLING ... */" />
-            <marker date="1513946385603" expanded="true" signature="11718:11908" ph="/* harmony.Patch(AccessTools.Method(typeof(RimWorld.Planet.CaravanMaker), &quot;MakeCaravan&quot;), null, new HarmonyMethod ... */" />
-            <marker date="1513946385603" expanded="true" signature="12304:12481" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="12948:13122" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="13498:14381" ph="Tests" />
-            <marker date="1513946385603" expanded="true" signature="13525:14357" ph="/* TESTS ... */" />
-            <marker date="1513946385603" expanded="true" signature="14401:14542" ph="/* CODE LEGEND ... */" />
-            <marker date="1513946385603" expanded="true" signature="14401:14634" ph="/// CODE LEGEND ... " />
-            <marker date="1513946385603" expanded="true" signature="14713:21802" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="14895:21767" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="15143:15790" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="15569:15738" ph="/* Traverse.Create(__instance).Method(&quot;FaceAdjacentCell&quot;, new object[] { thisPawn.pather.nextCell }); ... */" />
-            <marker date="1513946385603" expanded="true" signature="15941:16450" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="16502:21574" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="16659:20021" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="16730:19999" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="17169:17670" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="17240:17395" ph="/* this.Face(target.Thing.DrawPos); ... */" />
-            <marker date="1513946385603" expanded="true" signature="17832:18779" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="18011:18506" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="18584:18749" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="18817:19643" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="18924:19221" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="20046:21556" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="20143:20995" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="20242:20567" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="21080:21534" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="21135:21288" ph="/* this.Face(target.Cell.ToVector3()); ... */" />
-            <marker date="1513946385603" expanded="true" signature="21591:21723" ph="/* if (thisPawn.Drafted) ... */" />
-            <marker date="1513946385603" expanded="true" signature="21812:22089" ph="/* J When characters fire upon the vehicle, if the vehicle's body part defs include a tag that references a vehic ... */" />
-            <marker date="1513946385603" expanded="true" signature="22240:23477" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="22350:23467" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="22942:23453" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="23487:23600" ph="/* J Allows for various condition labels to be changed in CompVehicle's properties. ... */" />
-            <marker date="1513946385603" expanded="true" signature="23708:24700" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="23748:24665" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="23870:24651" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="23963:24117" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="24152:24302" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="24381:24532" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="24710:24866" ph="/* J Changes the CompVehicle health card to display which systems are operational rather than standard pawn capac ... */" />
-            <marker date="1513946385603" expanded="true" signature="24977:27837" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="25017:27802" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="25139:27788" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="25277:25978" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="26070:26836" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="26922:27666" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="27847:27929" ph="/* E Adds colonists to the map pawns list when they are inside vehicles. ... */" />
-            <marker date="1513946385603" expanded="true" signature="28029:28266" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="28276:28367" ph="/* J Downed can be disabled from CompProperties_Vehicle. ... */" />
-            <marker date="1513946385603" expanded="true" signature="28466:28965" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="28612:28930" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="28792:28916" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="28975:29067" ph="/* J Wiggling can be disabled from CompProperties_Vehicle. ... */" />
-            <marker date="1513946385603" expanded="true" signature="29144:29518" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="29267:29483" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="29711:30594" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="29949:30584" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="30081:30527" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="30641:38946" ph="ErrorHandlingMethods" />
-            <marker date="1513946385603" expanded="true" signature="30679:30837" ph="/* J This patch allows colonists to freely join vehicles ... */" />
-            <marker date="1513946385603" expanded="true" signature="30924:31114" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="31125:31335" ph="/* S Bug fixes social tab issue with vehicles ... */" />
-            <marker date="1513946385603" expanded="true" signature="31411:31574" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="31740:31931" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="31941:31997" ph="/* J Moving vehicles can't be used. ... */" />
-            <marker date="1513946385603" expanded="true" signature="32082:32263" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="32398:32852" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="32572:32817" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="32862:32954" ph="/* J If needed drivers are absent, Vehicles don't move. ... */" />
-            <marker date="1513946385603" expanded="true" signature="33068:33472" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="33213:33437" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="33482:33565" ph="/* J If needed gunners are absent, Vehicles don't shoot. ... */" />
-            <marker date="1513946385603" expanded="true" signature="33650:34105" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="33736:34070" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="33932:34056" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="34267:34492" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="34653:34774" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="34784:34862" ph="/* J Removes option to *rescue* vehicles. ... */" />
-            <marker date="1513946385603" expanded="true" signature="34977:35596" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="35251:35586" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="35606:35686" ph="/* E No vehicles in ancient dangers. ... */" />
-            <marker date="1513946385603" expanded="true" signature="35773:35899" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="35909:35987" ph="/* E No vehicles in crashed ships. ... */" />
-            <marker date="1513946385603" expanded="true" signature="36066:36191" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="36201:36329" ph="/* E Stops verb exceptions. ... */" />
-            <marker date="1513946385603" expanded="true" signature="36465:37419" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="36738:37409" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="36878:37352" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="37541:38500" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="37779:38490" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="37911:38433" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="38510:38649" ph="/* J Vehicles with a movement handler are considered colonists. ... */" />
-            <marker date="1513946385603" expanded="true" signature="38724:38905" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="38956:48033" ph="AIHandlingMethods" />
-            <marker date="1513946385603" expanded="true" signature="38991:39111" ph="/* J Disable the WaitCombat job when our vehicle cannot fire. ... */" />
-            <marker date="1513946385603" expanded="true" signature="39190:39399" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="39409:39683" ph="/* J Handles vehicles in preparing caravans. If this code isn't executed, they will never load to leave. ... */" />
-            <marker date="1513946385603" expanded="true" signature="39785:41103" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="39978:41038" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="40083:40960" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="40250:40392" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="40444:40712" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="40737:40872" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="41210:42355" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="41505:42345" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="41773:42167" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="42051:42144" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="42192:42327" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="42460:43052" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="42525:43042" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="43062:43246" ph="/* S Vehicles Item Pickup Fix! ... */" />
-            <marker date="1513946385603" expanded="true" signature="43385:45225" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="43450:45189" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="43572:44365" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="43875:44049" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="44078:44347" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="44176:44321" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="44391:45006" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="44859:44988" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="45032:45175" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="45235:45606" ph="/* S Tries to find satisfy the vehicle's fuel &quot;need&quot; ... */" />
-            <marker date="1513946385603" expanded="true" signature="45681:47063" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="46198:46929" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="46451:46915" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="47073:47135" ph="/* J TB ... */" />
-            <marker date="1513946385603" expanded="true" signature="47213:47995" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="47289:47960" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="47390:47497" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="47661:47768" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="47864:47915" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="48043:99533" ph="CaravanHandlingMethods" />
-            <marker date="1513946385603" expanded="true" signature="48083:48316" ph="/* J This code checks all the characters inside a vehicle. ... */" />
-            <marker date="1513946385603" expanded="true" signature="48434:52109" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="48558:52074" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="48660:48816" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="48870:51899" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="48909:49013" ph="/* Log.Message(&quot;AddVehicles2&quot;); ... */" />
-            <marker date="1513946385603" expanded="true" signature="49101:51241" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="49148:49322" ph="/* Log.Message(&quot;AddVehicles3&quot;); ... */" />
-            <marker date="1513946385603" expanded="true" signature="49475:51219" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="49786:51193" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="50110:50593" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="50630:51035" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="51068:51163" ph="/* Log.Message(&quot;AddVehicles6b&quot;); ... */" />
-            <marker date="1513946385603" expanded="true" signature="51461:51881" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="51920:52030" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="52120:52323" ph="/* J Prevents caravans from being split while having colonists that are in vehicles. ... */" />
-            <marker date="1513946385603" expanded="true" signature="52461:53793" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="52677:53758" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="53394:53744" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="53804:54037" ph="/* J ??? Forces caravan checks to be accepted if a vehicle is loaded. ... */" />
-            <marker date="1513946385603" expanded="true" signature="54154:58409" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="54257:58374" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="54534:54719" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="55005:55256" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="55454:55736" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="56164:56405" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="56571:58297" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="56770:58275" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="56891:57568" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="57302:57538" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="58419:58708" ph="/* J ??? Shows &quot;Vehicles&quot; in the caravan tab. Messy patch. ... */" />
-            <marker date="1513946385603" expanded="true" signature="58968:65188" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="59063:65153" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="60221:61207" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="60458:61189" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="60515:60716" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="60789:60997" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="61297:62322" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="61560:62304" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="61618:61830" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="61903:62112" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="62413:63459" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="62697:63441" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="62755:62967" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="63040:63249" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="63735:64530" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="63793:64052" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="64125:64338" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="64584:64958" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="65198:65285" ph="/* J Adds a vehicles section to Caravan forming UI. ... */" />
-            <marker date="1513946385603" expanded="true" signature="65422:65863" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="65873:65987" ph="/* J Movement handlers in vehicles are counted in caravan forming. ... */" />
-            <marker date="1513946385603" expanded="true" signature="66060:66390" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="66400:66481" ph="/* J Changes the caravan capacity for the vehicle. ... */" />
-            <marker date="1513946385603" expanded="true" signature="66553:66729" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="66739:70913" ph="/* S Modifies caravan movement speed if vehicles are present ... */" />
-            <marker date="1513946385603" expanded="true" signature="71000:75755" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="71288:73306" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="71319:71455" ph="/* Make a list of non-vehicle characters that are not inside vehicles. ... */" />
-            <marker date="1513946385603" expanded="true" signature="71760:72662" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="71986:72565" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="72169:72452" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="72680:72883" ph="/* Are there any characters not inside vehicles? ... */" />
-            <marker date="1513946385603" expanded="true" signature="73320:75745" ph="/* Previous code. ... */" />
-            <marker date="1513946385603" expanded="true" signature="75765:76300" ph="/* S Remove pawns from the vehicle when making a caravan ... */" />
-            <marker date="1513946385603" expanded="true" signature="76309:79186" ph="/* RimWorld.Planet.CaravanMaker ... */" />
-            <marker date="1513946385603" expanded="true" signature="79261:83155" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="79343:83120" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="79374:79436" ph="/* Vanilla code start ... */" />
-            <marker date="1513946385603" expanded="true" signature="79596:79949" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="79966:80060" ph="/* Vanilla code edit transpiler here for if statement ... */" />
-            <marker date="1513946385603" expanded="true" signature="80781:83035" ph="/* Log.Message(&quot;EMJOC_4f&quot;); ... */" />
-            <marker date="1513946385603" expanded="true" signature="83165:83869" ph="/* S Add pawns back to the vehicle and remove them from the caravan when entering the map ... */" />
-            <marker date="1513946385603" expanded="true" signature="83926:85884" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="84004:84071" ph="/* Log.Error(members.Count().ToString()); ... */" />
-            <marker date="1513946385603" expanded="true" signature="84123:85821" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="84372:85807" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="84525:85621" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="84681:85599" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="85033:85573" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="85245:85488" ph="/* Log.Message(&quot;RemovedPawn &quot; + pawn.LabelShort); ... */" />
-            <marker date="1513946385603" expanded="true" signature="85894:86241" ph="/* S Modifies the caravan inspect string so fuel is shown ... */" />
-            <marker date="1513946385603" expanded="true" signature="86334:87637" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="86578:86714" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="86731:87560" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="86915:87400" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="87421:87546" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="87647:87855" ph="/* S Modifies the Caravan Needs WITab to show vehicle fuel ... */" />
-            <marker date="1513946385603" expanded="true" signature="87995:90765" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="88402:88564" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="88686:90755" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="88810:90699" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="90775:91546" ph="/* S Modifies the Caravan Contents Window when forming a caravan to show the fuel carried by the caravan ... */" />
-            <marker date="1513946385603" expanded="true" signature="91677:99490" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="92078:99455" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="93336:94460" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="93627:94252" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="94803:94991" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="95081:95289" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="97236:98067" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="98439:99052" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="99078:99379" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="99543:109549" ph="TestMethods" />
-            <marker date="1513946385603" expanded="true" signature="99777:102249" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="100481:100629" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="100882:101033" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="101086:102181" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="101213:101370" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="101401:101522" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="101543:102167" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="101795:102107" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="102449:104503" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="102587:102760" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="103134:103265" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="103482:103634" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="103837:104196" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="103952:104182" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="104225:104398" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="104618:109517" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="104707:109482" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="104808:104959" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="105102:105350" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="105475:105687" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="105788:107184" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="106029:106841" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="106196:106444" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="106473:106819" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="106866:107051" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="107781:108323" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="108373:108556" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="108610:108805" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="108845:109016" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="109559:111805" ph="/* RimWorld.RestUtility ... */" />
-            <marker date="1513946385603" expanded="true" signature="111815:134557" ph="SwenzisPrivateMethods" />
-            <marker date="1513946385603" expanded="true" signature="111854:112185" ph="/* ------- Additions Made By Swenzi -------- ... */" />
-            <marker date="1513946385603" expanded="true" signature="112326:113819" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="112624:113140" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="112785:113126" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="113402:113783" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="113829:114030" ph="/* Purpose: Check if anything in the caravan is out of fuel ... */" />
-            <marker date="1513946385603" expanded="true" signature="114093:114417" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="114427:114643" ph="/* Purpose: Check if anything in the caravan needs fuel and adds to a list ... */" />
-            <marker date="1513946385603" expanded="true" signature="114731:115137" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="115147:115761" ph="/* Purpose: Calculate the amount of fuel left in the caravan ... */" />
-            <marker date="1513946385603" expanded="true" signature="115856:116702" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="116030:116399" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="116712:116907" ph="/* Purpose: Draw the Vehicle fuel bar in the WITab for Needs ... */" />
-            <marker date="1513946385603" expanded="true" signature="117098:118855" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="117275:117421" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="118865:119056" ph="/* Purpose: Get the Tip String explaining what fuel does ... */" />
-            <marker date="1513946385603" expanded="true" signature="119122:119398" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="119184:119386" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="119408:119650" ph="/* Purpose: Draw the bar marker ... */" />
-            <marker date="1513946385603" expanded="true" signature="119726:120118" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="120128:120758" ph="/* Purpose: Calculate the amount of fuel left in the caravan ... */" />
-            <marker date="1513946385603" expanded="true" signature="120903:122707" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="121082:122550" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="121207:122536" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="121413:121827" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="121587:121801" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="121918:122518" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="122238:122492" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="122717:122898" ph="/* Purpose: Draw the information for days worth of fuel ... */" />
-            <marker date="1513946385603" expanded="true" signature="123059:124219" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="124229:124411" ph="/* Purpose: Draw the Config Tab, copied from the original method ... */" />
-            <marker date="1513946385603" expanded="true" signature="124483:126238" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="125135:125949" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="125202:125935" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="125966:126228" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="126248:126591" ph="/* Purpose: Draw the BottomButtons aka what happens after accept/cancel is pressed ... */" />
-            <marker date="1513946385603" expanded="true" signature="126854:133139" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="127561:127924" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="127677:127906" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="127945:130371" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="128835:129955" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="129661:129883" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="130124:130353" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="130579:130825" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="131016:131141" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="131189:132015" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="131437:132001" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="132046:133129" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="132481:132690" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="132861:133115" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="133149:133359" ph="/* Purpose: Return a bool on whether vehicles in the caravan don't have fuel in them ... */" />
-            <marker date="1513946385603" expanded="true" signature="133496:134515" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="133610:134213" ph="{...}" />
-            <marker date="1513946385603" expanded="true" signature="133881:134199" ph="{...}" />
+            <marker date="1516448700826" expanded="false" signature="6:346" ph="..." />
+            <marker date="1516448700826" expanded="true" signature="369:144291" ph="{...}" />
+            <marker date="1516448700826" expanded="true" signature="449:144289" ph="{...}" />
+            <marker date="1516448700826" expanded="true" signature="491:514" ph="{...}" />
+            <marker date="1516448700826" expanded="true" signature="121677:121911" ph="/* ------- Additions Made By Swenzi -------- ... */" />
+            <marker date="1516448700826" expanded="true" signature="121677:144283" ph="SwenzisPrivateMethods" />
+            <marker date="1516448700826" expanded="true" signature="122052:123545" ph="{...}" />
+            <marker date="1516448700826" expanded="true" signature="122350:122866" ph="{...}" />
+            <marker date="1516448700826" expanded="true" signature="122511:122852" ph="{...}" />
+            <marker date="1516448700826" expanded="true" signature="123128:123509" ph="{...}" />
+            <marker date="1516448700826" expanded="true" signature="123555:123756" ph="/* Purpose: Check if anything in the caravan is out of fuel ... */" />
+            <marker date="1516448700826" expanded="true" signature="123819:124143" ph="{...}" />
+            <marker date="1516448700826" expanded="true" signature="124153:124369" ph="/* Purpose: Check if anything in the caravan needs fuel and adds to a list ... */" />
+            <marker date="1516448700826" expanded="true" signature="124457:124863" ph="{...}" />
+            <marker date="1516448700826" expanded="true" signature="124873:125487" ph="/* Purpose: Calculate the amount of fuel left in the caravan ... */" />
+            <marker date="1516448700826" expanded="true" signature="125582:126428" ph="{...}" />
+            <marker date="1516448700826" expanded="true" signature="125756:126125" ph="{...}" />
+            <marker date="1516448700826" expanded="true" signature="126438:126633" ph="/* Purpose: Draw the Vehicle fuel bar in the WITab for Needs ... */" />
+            <marker date="1516448700826" expanded="true" signature="126824:128581" ph="{...}" />
+            <marker date="1516448700826" expanded="true" signature="127001:127147" ph="{...}" />
+            <marker date="1516448700826" expanded="true" signature="128591:128782" ph="/* Purpose: Get the Tip String explaining what fuel does ... */" />
+            <marker date="1516448700826" expanded="true" signature="128848:129124" ph="{...}" />
+            <marker date="1516448700826" expanded="true" signature="128910:129112" ph="{...}" />
+            <marker date="1516448700826" expanded="true" signature="129134:129376" ph="/* Purpose: Draw the bar marker ... */" />
+            <marker date="1516448700826" expanded="true" signature="129452:129844" ph="{...}" />
+            <marker date="1516448700826" expanded="true" signature="129854:130484" ph="/* Purpose: Calculate the amount of fuel left in the caravan ... */" />
+            <marker date="1516448700826" expanded="true" signature="130629:132433" ph="{...}" />
+            <marker date="1516448700826" expanded="true" signature="130808:132276" ph="{...}" />
+            <marker date="1516448700826" expanded="true" signature="130933:132262" ph="{...}" />
+            <marker date="1516448700826" expanded="true" signature="131139:131553" ph="{...}" />
+            <marker date="1516448700826" expanded="true" signature="131313:131527" ph="{...}" />
+            <marker date="1516448700826" expanded="true" signature="131644:132244" ph="{...}" />
+            <marker date="1516448700826" expanded="true" signature="131964:132218" ph="{...}" />
+            <marker date="1516448700826" expanded="true" signature="132443:132624" ph="/* Purpose: Draw the information for days worth of fuel ... */" />
+            <marker date="1516448700826" expanded="true" signature="132785:133945" ph="{...}" />
+            <marker date="1516448700826" expanded="true" signature="133955:134137" ph="/* Purpose: Draw the Config Tab, copied from the original method ... */" />
+            <marker date="1516448700826" expanded="true" signature="134209:135964" ph="{...}" />
+            <marker date="1516448700826" expanded="true" signature="134861:135675" ph="{...}" />
+            <marker date="1516448700826" expanded="true" signature="134928:135661" ph="{...}" />
+            <marker date="1516448700826" expanded="true" signature="135692:135954" ph="{...}" />
+            <marker date="1516448700826" expanded="true" signature="135974:136317" ph="/* Purpose: Draw the BottomButtons aka what happens after accept/cancel is pressed ... */" />
+            <marker date="1516448700826" expanded="true" signature="136580:142865" ph="{...}" />
+            <marker date="1516448700826" expanded="true" signature="137287:137650" ph="{...}" />
+            <marker date="1516448700826" expanded="true" signature="137403:137632" ph="{...}" />
+            <marker date="1516448700826" expanded="true" signature="137671:140097" ph="{...}" />
+            <marker date="1516448700826" expanded="true" signature="138561:139681" ph="{...}" />
+            <marker date="1516448700826" expanded="true" signature="139387:139609" ph="{...}" />
+            <marker date="1516448700826" expanded="true" signature="139850:140079" ph="{...}" />
+            <marker date="1516448700826" expanded="true" signature="140305:140551" ph="{...}" />
+            <marker date="1516448700826" expanded="true" signature="140742:140867" ph="{...}" />
+            <marker date="1516448700826" expanded="true" signature="140915:141741" ph="{...}" />
+            <marker date="1516448700826" expanded="true" signature="141163:141727" ph="{...}" />
+            <marker date="1516448700826" expanded="true" signature="141772:142855" ph="{...}" />
+            <marker date="1516448700826" expanded="true" signature="142207:142416" ph="{...}" />
+            <marker date="1516448700826" expanded="true" signature="142587:142841" ph="{...}" />
+            <marker date="1516448700826" expanded="true" signature="142875:143085" ph="/* Purpose: Return a bool on whether vehicles in the caravan don't have fuel in them ... */" />
+            <marker date="1516448700826" expanded="true" signature="143222:144241" ph="{...}" />
+            <marker date="1516448700826" expanded="true" signature="143336:143939" ph="{...}" />
+            <marker date="1516448700826" expanded="true" signature="143607:143925" ph="{...}" />
           </folding>
         </state>
       </provider>
@@ -2042,7 +1493,7 @@
     <entry file="file://$PROJECT_DIR$/AllModdingComponents/JecsTools/HarmonyPatches.cs">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="308">
-          <caret line="67" column="72" lean-forward="true" selection-start-line="67" selection-start-column="72" selection-end-line="67" selection-end-column="72" />
+          <caret line="67" column="72" lean-forward="false" selection-start-line="67" selection-start-column="72" selection-end-line="67" selection-end-column="72" />
           <folding>
             <marker date="1516447718498" expanded="false" signature="6:177" ph="..." />
             <marker date="1516447718498" expanded="true" signature="198:15238" ph="{...}" />
@@ -2092,6 +1543,20 @@
             <marker date="1516447718498" expanded="true" signature="13696:13939" ph="{...}" />
             <marker date="1516447718498" expanded="true" signature="14162:15230" ph="{...}" />
             <marker date="1516447718498" expanded="true" signature="14354:15171" ph="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/AllModdingComponents/CompVehicle/Bill_LoadVehicle.cs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="475">
+          <caret line="25" column="1" lean-forward="true" selection-start-line="25" selection-start-column="1" selection-end-line="25" selection-end-column="1" />
+          <folding>
+            <marker date="1513946385550" expanded="true" signature="35:581" ph="{...}" />
+            <marker date="1513946385550" expanded="true" signature="84:579" ph="{...}" />
+            <marker date="1513946385550" expanded="true" signature="199:219" ph="{...}" />
+            <marker date="1513946385550" expanded="true" signature="313:397" ph="{...}" />
+            <marker date="1513946385550" expanded="true" signature="431:573" ph="{...}" />
           </folding>
         </state>
       </provider>
