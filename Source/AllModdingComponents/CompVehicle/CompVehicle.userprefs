@@ -1,24 +1,27 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workbench ActiveDocument="VehicleHandlerGroup.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="JobDriver_LoadPassenger.cs">
     <Files>
       <File FileName="Command_VehicleHandler.cs" Line="1" Column="1" />
-      <File FileName="CompProperties_Vehicle.cs" Line="42" Column="73" />
-      <File FileName="CompVehicle.cs" Line="404" Column="131" />
+      <File FileName="CompProperties_Vehicle.cs" Line="31" Column="9" />
+      <File FileName="CompVehicle.cs" Line="190" Column="40" />
       <File FileName="VehicleHandlerGroup.cs" Line="1" Column="1" />
+      <File FileName="CompProperties_VehicleSpawner.cs" Line="1" Column="1" />
+      <File FileName="JobDriver_LoadPassenger.cs" Line="1" Column="1" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State name="__root__">
           <Node name="CompVehicle" expanded="True">
             <Node name="CompVehicle" expanded="True">
-              <Node name="VehicleHandlerGroup.cs" selected="True" />
+              <Node name="References" expanded="True" />
+              <Node name="JobDriver_LoadPassenger.cs" selected="True" />
             </Node>
           </Node>
         </State>
       </Pad>
     </Pads>
   </MonoDevelop.Ide.Workbench>
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" ActiveRuntime="Mono 5.0.1.1" />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
