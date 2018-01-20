@@ -33,6 +33,7 @@
   <ItemGroup>
     <Reference Include="Assembly-CSharp, Version=0.18.6527.35959, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\..\..\..\..\RimWorldWin_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -42,13 +43,14 @@
     <Reference Include="System.Xml" />
     <Reference Include="0Harmony">
       <HintPath>..\..\..\..\..\..\Library\Application Support\Steam\SteamApps\common\RimWorld\RimWorldMac.app\Mods\Revamped Economy\Assemblies\0Harmony.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Assembly-CSharp">
       <HintPath>..\..\..\..\..\..\Library\Application Support\Steam\SteamApps\common\RimWorld\RimWorldMac.app\Contents\Resources\Data\Managed\Assembly-CSharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="UnityEngine">
-      <HintPath>..\..\..\..\..\..\Library\Application Support\Steam\SteamApps\common\RimWorld\RimWorldMac.app\Contents\Resources\Data\Managed\UnityEngine.dll</HintPath>
+    <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\..\..\..\RimWorldWin_Data\Managed\UnityEngine.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
