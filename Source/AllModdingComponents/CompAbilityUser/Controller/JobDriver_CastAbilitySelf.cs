@@ -39,6 +39,17 @@ namespace AbilityUser
                 defaultCompleteMode = ToilCompleteMode.Instant
             };
             yield return Toils_Combat.CastVerb(TargetIndex.A, false);
+            yield return new Toil
+            {
+                initAction = delegate
+                {
+                    if (verb.UseAbilityProps.isViolent)
+                    {
+                        JobDriver_CastAbilityVerb.CheckForAutoAttack(this.pawn);
+                    }
+                },
+                defaultCompleteMode = ToilCompleteMode.Instant
+            };
         }
     }
 }

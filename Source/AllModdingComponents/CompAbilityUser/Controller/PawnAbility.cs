@@ -172,7 +172,7 @@ namespace AbilityUser
             var reason = "";
             if (!CanCastPowerCheck(context, out reason))
                 return false;
-
+           
             //If we're a player, let's target.
             if (context == AbilityContext.Player)
             {
