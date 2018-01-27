@@ -292,9 +292,11 @@
         <e p="obj" t="ExcludeRecursive" />
         <e p="PlaceWorker_OnTopOfWalls.cs" t="Include" />
         <e p="PlaceWorker_Outline.cs" t="Include" />
+        <e p="Projectile_Laser.cs" t="Include" />
         <e p="Properties" t="Include">
           <e p="AssemblyInfo.cs" t="Include" />
         </e>
+        <e p="ThingDef_LaserProjectile.cs" t="Include" />
         <e p="TransformedPart.cs" t="Include" />
       </e>
       <e p="JecsTools.sln" t="IncludeFlat" />

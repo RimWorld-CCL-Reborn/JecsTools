@@ -13,6 +13,9 @@ namespace JecsTools
     [StaticConstructorOnStartup]
     public static class HarmonyPatches
     {
+        //For alternating fire on some weapons
+        public static Dictionary<Thing, int> AlternatingFireTracker = new Dictionary<Thing, int>();
+        
         // Verse.Pawn_HealthTracker
         public static bool StopPreApplyDamageCheck;
         public static int? tempDamageAmount = null;
