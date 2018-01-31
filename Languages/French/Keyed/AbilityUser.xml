@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>
+
+<AU_DISABLED>DISABLED</AU_DISABLED>
+
+<AU_Type>Type: </AU_Type>
+<AU_TargetAoE>Zone d'effet</AU_TargetAoE>
+<AU_TargetSelf>Cibler (moi)</AU_TargetSelf>
+<AU_TargetThing>Cibler (autres)</AU_TargetThing>
+<AU_TargetLocation>Emplacement de la cible</AU_TargetLocation>
+<AU_Cooldown>Recharge: </AU_Cooldown>
+<AU_Extra>Extra</AU_Extra>
+<AU_MentalStateChance>probabilité d'état mental</AU_MentalStateChance>
+<AU_EffectChance>probabilité d'effet</AU_EffectChance>
+<AU_PawnAbilityRecharging>{0} a besoin de temps pour recharger</AU_PawnAbilityRecharging>
+
+
+<AU_AoEProperties>Propriétés de la zone d'effet</AU_AoEProperties>
+<AU_TargetClass>Targets: </AU_TargetClass>
+<AU_AoECharacters>Personnages</AU_AoECharacters>
+<AU_AoEFriendlyFire>Tir fratricide: </AU_AoEFriendlyFire>
+<AU_AoEMaxTargets>Nombre de cibles maximal: </AU_AoEMaxTargets>
+<AU_AoEStartsFromCaster>Se déclenche a partir du sorcier: </AU_AoEStartsFromCaster>
+	
+</LanguageData>
