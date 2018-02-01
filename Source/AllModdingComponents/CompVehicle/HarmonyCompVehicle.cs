@@ -74,8 +74,8 @@ namespace CompVehicle
                 new HarmonyMethod(typeof(HarmonyCompVehicle),
                     nameof(FightActionTranspiler)));
             //Not enough experience Disabled
-            //harmony.Patch(AccessTools.Method(typeof(Pawn_PathFollower), "CostToMoveIntoCell"), new HarmonyMethod(typeof(HarmonyCompVehicle),
-                    //nameof(CostToMoveIntoCell_PreFix)), null, null);
+            harmony.Patch(AccessTools.Method(typeof(VerbTracker), "GetVerbsCommands"), new HarmonyMethod(typeof(HarmonyCompVehicle),
+                                                                                                         nameof(GetVerbsCommands_PreFix)), null, null);
             //Not enough experience Disabled
         //    harmony.Patch(AccessTools.Method(typeof(PathFinder), "FindPath",new[] { typeof(IntVec3),typeof(LocalTargetInfo),typeof(TraverseParms),typeof(PathEndMode) }), new HarmonyMethod(typeof(HarmonyCompVehicle),
         //nameof(FindPath_PreFix)), null, null);
@@ -140,12 +140,12 @@ namespace CompVehicle
             harmony.Patch(AccessTools.Method(typeof(JobDriver_Wait), "CheckForAutoAttack"), null, null,
                 new HarmonyMethod(typeof(HarmonyCompVehicle),
                     nameof(CheckForAutoAttackTranspiler)));
-            harmony.Patch(
-                AccessTools.Method(
-                    typeof(VerbTracker).GetNestedTypes(BindingFlags.NonPublic | BindingFlags.Instance)
-                        .First(t => AccessTools.Method(t, "MoveNext") != null), "MoveNext"), null, null,
-                new HarmonyMethod(typeof(HarmonyCompVehicle),
-                    nameof(GetVerbsCommandsTranspiler)));
+            //harmony.Patch(
+                //AccessTools.Method(
+                //    typeof(VerbTracker).GetNestedTypes(BindingFlags.NonPublic | BindingFlags.Instance)
+                //        .First(t => AccessTools.Method(t, "MoveNext") != null), "MoveNext"), null, null,
+                //new HarmonyMethod(typeof(HarmonyCompVehicle),
+                    //nameof(GetVerbsCommandsTranspiler)));
             harmony.Patch(AccessTools.Method(typeof(ThinkNode_ConditionalColonist), "Satisfied"), null,
                 new HarmonyMethod(typeof(HarmonyCompVehicle),
                     nameof(Satisfied_PostFix)), null);
@@ -286,6 +286,9 @@ namespace CompVehicle
         //    }
         //    return true;
         //}
+
+
+
 
         //S Temporary prefix patching solution until a transpiler is made
         //Patches Pawn_PathFollower to create custom pathing based off of a vehicles stats, i.e. boats can only be in water
@@ -862,14 +865,21 @@ namespace CompVehicle
         public static IEnumerable<CodeInstruction> GetVerbsCommandsTranspiler(IEnumerable<CodeInstruction> instructions)
         {
             var storyInfo = AccessTools.Field(typeof(Pawn), nameof(Pawn.story));
+            Log.Error(storyInfo.ToString());
             var done = false;
             var instructionList = instructions.ToList();
             for (var i = 0; i < instructionList.Count; i++)
             {
                 var instruction = instructionList[i];
-
+                Log.Error(instruction.ToString());
                 if (!done && instruction.operand == storyInfo)
                 {
+                    Log.Error("Patching");
+                    Log.Error(instruction.ToString());
+                    Log.Error(instructionList[i + 3].operand.ToString());
+                    Log.Error(instructionList[i - 3].ToString());
+                    Log.Error(instructionList[i - 2].ToString());
+                    Log.Error(instructionList[i - 1].ToString());
                     yield return instruction;
                     yield return new CodeInstruction(OpCodes.Brfalse_S, instructionList[i + 3].operand);
                     yield return new CodeInstruction(instructionList[i - 3]);
@@ -2342,6 +2352,35 @@ namespace CompVehicle
                 return false;
             }
             return true;
+        }
+        public static bool GetVerbsCommands_PreFix(VerbTracker __instance, ref IEnumerable<Command> __result, KeyCode hotKey = 0){
+            __result = GetVerbsCommands(__instance);
+            return false;
+        }
+        public static IEnumerable<Command> GetVerbsCommands(VerbTracker __instance, KeyCode hotKey = 0){
+            CompEquippable ce = __instance.directOwner as CompEquippable;
+            if (ce != null)
+            {
+                Thing ownerThing = ce.parent;
+                if(ownerThing != null && ownerThing.def != null){
+                    List<Verb> verbs = __instance.AllVerbs;
+                    for (int i = 0; i < verbs.Count; i++)
+                    {
+                        Verb verb = verbs[i];
+                        if (verb != null && verb.verbProps.hasStandardCommand && verb.CasterPawn != null && (!verb.CasterIsPawn || verb.CasterPawn.story != null))
+                        {
+                            yield return (Verse.Command)AccessTools.Method(typeof(VerbTracker), "CreateVerbTargetCommand").Invoke(__instance, new object[] { ownerThing, verb });
+                        }
+                    }
+                    CompEquippable equippable = __instance.directOwner as CompEquippable;
+                    if (!__instance.directOwner.Tools.NullOrEmpty<Tool>() && equippable != null && equippable.parent.def.IsMeleeWeapon)
+                    {
+                        yield return (Verse.Command)AccessTools.Method(typeof(VerbTracker), "CreateVerbTargetCommand").Invoke(__instance, new object[] { ownerThing, (from v in verbs
+                                                                           where v.verbProps.MeleeRange
+                                                                                                                                                                  select v).FirstOrDefault<Verb>() });
+                    }
+                }
+            }
         }
 
         #endregion TestMethods
