@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <LanguageData>
 
+<AU_NoTargets>No targets available.</AU_NoTargets>
+
 <AU_DISABLED>DISABLED</AU_DISABLED>
 
 <AU_Type>Type: </AU_Type>

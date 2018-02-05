@@ -86,6 +86,12 @@ namespace AbilityUser
             set => TicksUntilCasting = value;
         } //Log.Message(value.ToString()); } }
 
+        public virtual void Notify_AbilityFailed(bool refund)
+        {
+            if (refund)
+                CooldownTicksLeft = -1;
+        }
+
         public int MaxCastingTicks => (int) (powerdef.MainVerb.SecondsToRecharge * GenTicks.TicksPerRealSecond);
 
         public Verb_UseAbility Verb

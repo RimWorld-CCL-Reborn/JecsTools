@@ -9,20 +9,6 @@ namespace AbilityUser
     {
         public AbilityContext Context => job.count == 1 ? AbilityContext.Player : AbilityContext.AI;
 
-
-        private List<CompAbilityUser> CompAbilityUsers
-        {
-            get
-            {
-                var results = new List<CompAbilityUser>();
-                var allCompAbilityUsers = pawn.GetComps<CompAbilityUser>();
-                if (allCompAbilityUsers.TryRandomElement(out var comp))
-                    foreach (var compy in allCompAbilityUsers)
-                        results.Add(compy);
-                return results;
-            }
-        }
-
         public override bool TryMakePreToilReservations()
         {
             return true;

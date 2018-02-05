@@ -52,7 +52,7 @@ namespace AbilityUser
                     targets = caster.Map.listerThings.AllThings.Where(x =>
                         x.Position.InHorDistOf(aoeStartPosition, UseAbilityProps.TargetAoEProperties.range) &&
                         UseAbilityProps.TargetAoEProperties.targetClass.IsAssignableFrom(x.GetType()) &&
-                        !x.Faction.HostileTo(Faction.OfPlayer)).ToList();
+                        x.Faction.HostileTo(Faction.OfPlayer)).ToList();
                 }
                 else if (UseAbilityProps.TargetAoEProperties.targetClass == typeof(Plant) ||
                          UseAbilityProps.TargetAoEProperties.targetClass == typeof(Building))
@@ -106,6 +106,12 @@ namespace AbilityUser
             var burstShots = ShotsPerBurst;
             if (UseAbilityProps.AbilityTargetCategory != AbilityTargetCategory.TargetAoE && TargetsAoE.Count > 1)
                 TargetsAoE.RemoveRange(0, TargetsAoE.Count - 1);
+            if (UseAbilityProps.mustHaveTarget && TargetsAoE.Count == 0)
+            {
+                Messages.Message("AU_NoTargets".Translate(), MessageTypeDefOf.RejectInput);
+                Ability.Notify_AbilityFailed(true);
+                return false;
+            }
             for (var i = 0; i < TargetsAoE.Count; i++)
             {
                 //                for (int j = 0; j < burstshots; j++)
@@ -126,6 +132,10 @@ namespace AbilityUser
             //{
             //}
             PostCastShot(result, out result);
+            if (result == false)
+            {
+                Ability.Notify_AbilityFailed(UseAbilityProps.refundsPointsAfterFailing);
+            }
             return result;
             //bool result = false;
             //this.TargetsAoE.Clear();

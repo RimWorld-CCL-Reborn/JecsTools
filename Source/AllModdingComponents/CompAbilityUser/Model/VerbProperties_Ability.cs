@@ -12,6 +12,9 @@ namespace AbilityUser
 
         public bool AlwaysHits = true;
 
+        public bool mustHaveTarget = false;
+        public bool refundsPointsAfterFailing = false;
+
         public bool canCastInMelee = true;
 
         public List<ExtraDamage> extraDamages = null;
