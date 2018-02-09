@@ -341,7 +341,7 @@
         <entry file="file://$PROJECT_DIR$/AllModdingComponents/PawnShields/HarmonyPatches.cs">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="133">
-              <caret line="17" column="32" lean-forward="true" selection-start-line="17" selection-start-column="32" selection-end-line="17" selection-end-column="32" />
+              <caret line="17" column="32" lean-forward="false" selection-start-line="17" selection-start-column="32" selection-end-line="17" selection-end-column="32" />
               <folding>
                 <marker date="1518181050494" expanded="false" signature="6:222" ph="..." />
                 <marker date="1518181050494" expanded="true" signature="245:20545" ph="{...}" />
@@ -484,7 +484,7 @@
     <detection-done>true</detection-done>
     <sorting>DEFINITION_ORDER</sorting>
   </component>
-  <component name="ProjectFrameBounds">
+  <component name="ProjectFrameBounds" extendedState="1">
     <option name="x" value="81" />
     <option name="y" value="49" />
     <option name="width" value="1400" />
@@ -577,12 +577,12 @@
       <workItem from="1516451610248" duration="1686000" />
       <workItem from="1517019576580" duration="13698000" />
       <workItem from="1517836258850" duration="6564000" />
-      <workItem from="1518181043501" duration="63000" />
+      <workItem from="1518181043501" duration="768000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="70660000" />
+    <option name="totallyTimeSpent" value="71365000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -594,7 +594,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="81" y="49" width="1400" height="880" extended-state="0" />
+    <frame x="81" y="49" width="1400" height="880" extended-state="1" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Errors In Solution" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -1686,7 +1686,7 @@
     <entry file="file://$PROJECT_DIR$/AllModdingComponents/PawnShields/HarmonyPatches.cs">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="133">
-          <caret line="17" column="32" lean-forward="true" selection-start-line="17" selection-start-column="32" selection-end-line="17" selection-end-column="32" />
+          <caret line="17" column="32" lean-forward="false" selection-start-line="17" selection-start-column="32" selection-end-line="17" selection-end-column="32" />
           <folding>
             <marker date="1518181050494" expanded="false" signature="6:222" ph="..." />
             <marker date="1518181050494" expanded="true" signature="245:20545" ph="{...}" />
