@@ -36,6 +36,7 @@
     </Reference>
     <Reference Include="Assembly-CSharp, Version=0.18.6527.35959, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\..\Dependencies\Assembly-CSharp.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -45,6 +46,7 @@
     <Reference Include="System.Xml" />
     <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\..\Dependencies\UnityEngine.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
