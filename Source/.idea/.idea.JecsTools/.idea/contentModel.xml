@@ -299,6 +299,35 @@
         <e p="ThingDef_LaserProjectile.cs" t="Include" />
         <e p="TransformedPart.cs" t="Include" />
       </e>
+      <e p="AllModdingComponents\PawnShields" t="IncludeRecursive">
+        <e p="HarmonyPatches.cs" t="Include" />
+        <e p="Mod Extensions" t="Include">
+          <e p="ShieldPawnGeneratorProperties.cs" t="Include" />
+        </e>
+        <e p="obj" t="ExcludeRecursive" />
+        <e p="PawnShields.csproj" t="IncludeRecursive" />
+        <e p="Properties" t="Include">
+          <e p="AssemblyInfo.cs" t="Include" />
+        </e>
+        <e p="Shields.cs" t="Include" />
+        <e p="ThingComps" t="Include">
+          <e p="CompShield.cs" t="Include" />
+          <e p="Properties" t="Include">
+            <e p="CompProperties_Shield.cs" t="Include" />
+            <e p="ShieldRenderProperties.cs" t="Include" />
+            <e p="StuffedSound.cs" t="Include" />
+          </e>
+        </e>
+        <e p="Utility" t="Include">
+          <e p="PawnShieldGenerator.cs" t="Include" />
+          <e p="ShieldHediffDefOf.cs" t="Include" />
+          <e p="ShieldStatsDefOf.cs" t="Include" />
+          <e p="ShieldUtility.cs" t="Include" />
+        </e>
+        <e p="Workers" t="Include">
+          <e p="StatWorker_Shield.cs" t="Include" />
+        </e>
+      </e>
       <e p="JecsTools.sln" t="IncludeFlat" />
       <e p="packages" t="ExcludeRecursive" />
     </e>

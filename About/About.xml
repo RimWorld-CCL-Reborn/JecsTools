@@ -5,7 +5,7 @@
   <url></url>
   <targetVersion>0.18.0</targetVersion>
   <description>
-[1.0.8.9] Adds modding components to RimWorld: vehicles, spell casting, weapon slots, oversized weapons, and more!
+[1.0.9.0] Adds modding components to RimWorld: vehicles, spell casting, weapon slots, oversized weapons, and more!
 
 Note to players: This mod will not change your game, but rather it lets modders do more, so you can have an even more amazing RimWorld experience.
 
@@ -43,7 +43,9 @@ CompVehicle (Experimental)
 CompInstalledPart (WIP)
 - Allows installation and uninstallation of things onto other things. This is particularly useful for weapons on vehicles.
 
-Additions by roxxploxx.
-Additions and transpilers by Erdelf.
+Additions by ChJees
+Additions by roxxploxx
+Additions by Swenzi
+Additions and transpilers by Erdelf
   </description>
 </ModMetaData>
