@@ -14,7 +14,7 @@ namespace CompOversizedWeapon
             harmony.Patch(typeof(PawnRenderer).GetMethod("DrawEquipmentAiming"),
                 new HarmonyMethod(typeof(HarmonyCompOversizedWeapon).GetMethod("DrawEquipmentAimingPreFix")), null);
             harmony.Patch(AccessTools.Method(typeof(Thing), "get_DefaultGraphic"), null,
-                new HarmonyMethod(typeof(HarmonyCompOversizedWeapon).GetMethod("get_Graphic_PostFix")));
+                new HarmonyMethod(typeof(HarmonyCompOversizedWeapon), nameof(get_Graphic_PostFix)));
         }
 
 
@@ -74,7 +74,7 @@ namespace CompOversizedWeapon
 
                     var s = new Vector3(eq.def.graphicData.drawSize.x, 1f, eq.def.graphicData.drawSize.y);
                     var matrix = default(Matrix4x4);
-                    matrix.SetTRS(drawLoc, Quaternion.AngleAxis(num, Vector3.up), s);
+                    matrix.SetTRS(drawLoc + compOversizedWeapon.Props.offset, Quaternion.AngleAxis(num, Vector3.up), s);
                     if (!flip) Graphics.DrawMesh(MeshPool.plane10, matrix, matSingle, 0);
                     else Graphics.DrawMesh(MeshPool.plane10Flip, matrix, matSingle, 0);
                     return false;
@@ -85,7 +85,7 @@ namespace CompOversizedWeapon
         }
 
 
-        public static void Get_Graphic_PostFix(Thing __instance, ref Graphic __result)
+        public static void get_Graphic_PostFix(Thing __instance, ref Graphic __result)
         {
             var tempGraphic = Traverse.Create(__instance).Field("graphicInt").GetValue<Graphic>();
             if (tempGraphic != null)

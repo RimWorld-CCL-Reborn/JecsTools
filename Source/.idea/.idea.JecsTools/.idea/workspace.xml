@@ -11,106 +11,6 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="375">
-      <file leaf-file-name="VerbProperties_Ability.cs" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/AllModdingComponents/CompAbilityUser/Model/VerbProperties_Ability.cs">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="247">
-              <caret line="15" column="54" lean-forward="false" selection-start-line="15" selection-start-column="54" selection-end-line="15" selection-end-column="54" />
-              <folding>
-                <marker date="1517838360030" expanded="false" signature="6:62" ph="..." />
-                <marker date="1517838360030" expanded="true" signature="144:1190" ph="{...}" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="PawnAbility.cs" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/AllModdingComponents/CompAbilityUser/Controller/PawnAbility.cs">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1558">
-              <caret line="89" column="9" lean-forward="false" selection-start-line="89" selection-start-column="9" selection-end-line="89" selection-end-column="9" />
-              <folding>
-                <marker date="1517839152296" expanded="false" signature="6:149" ph="..." />
-                <marker date="1517839152296" expanded="true" signature="289:9622" ph="{...}" />
-                <marker date="1517839152296" expanded="true" signature="618:710" ph="{...}" />
-                <marker date="1517839152296" expanded="true" signature="760:920" ph="{...}" />
-                <marker date="1517839152296" expanded="true" signature="966:1206" ph="{...}" />
-                <marker date="1517839152296" expanded="true" signature="1262:1446" ph="{...}" />
-                <marker date="1517839152296" expanded="true" signature="1498:1748" ph="{...}" />
-                <marker date="1517839152296" expanded="true" signature="1524:1738" ph="{...}" />
-                <marker date="1517839152296" expanded="true" signature="1774:1852" ph="{...}" />
-                <marker date="1517839152296" expanded="true" signature="1883:1969" ph="{...}" />
-                <marker date="1517839152296" expanded="true" signature="2079:2271" ph="{...}" />
-                <marker date="1517839152296" expanded="true" signature="2105:2261" ph="{...}" />
-                <marker date="1517839152296" expanded="true" signature="2309:2413" ph="{...}" />
-                <marker date="1517839152296" expanded="true" signature="2513:2597" ph="{...}" />
-                <marker date="1517839152296" expanded="true" signature="2748:3219" ph="{...}" />
-                <marker date="1517839152296" expanded="true" signature="2774:3209" ph="{...}" />
-                <marker date="1517839152296" expanded="true" signature="2822:3166" ph="{...}" />
-                <marker date="1517839152296" expanded="true" signature="3319:3440" ph="{...}" />
-                <marker date="1517839152296" expanded="true" signature="3474:3717" ph="{...}" />
-                <marker date="1517839152296" expanded="true" signature="3745:4043" ph="{...}" />
-                <marker date="1517839152296" expanded="true" signature="4090:4135" ph="{...}" />
-                <marker date="1517839152296" expanded="true" signature="4250:4320" ph="{...}" />
-                <marker date="1517839152296" expanded="true" signature="4407:4746" ph="{...}" />
-                <marker date="1517839152296" expanded="true" signature="4829:5289" ph="{...}" />
-                <marker date="1517839152296" expanded="true" signature="5373:6288" ph="{...}" />
-                <marker date="1517839152296" expanded="true" signature="5641:6153" ph="{...}" />
-                <marker date="1517839152296" expanded="true" signature="5848:6080" ph="{...}" />
-                <marker date="1517839152296" expanded="true" signature="6170:6253" ph="{...}" />
-                <marker date="1517839152296" expanded="true" signature="6335:7519" ph="{...}" />
-                <marker date="1517839152296" expanded="true" signature="6456:6549" ph="{...}" />
-                <marker date="1517839152296" expanded="true" signature="7609:8613" ph="{...}" />
-                <marker date="1517839152296" expanded="true" signature="7738:7861" ph="{...}" />
-                <marker date="1517839152296" expanded="true" signature="7983:8134" ph="{...}" />
-                <marker date="1517839152296" expanded="true" signature="8173:8327" ph="{...}" />
-                <marker date="1517839152296" expanded="true" signature="8340:8577" ph="/* else if (!Verb.CasterPawn.drafter.Drafted) ... */" />
-                <marker date="1517839152296" expanded="true" signature="8664:8733" ph="{...}" />
-                <marker date="1517839152296" expanded="true" signature="8820:8863" ph="{...}" />
-                <marker date="1517839152296" expanded="true" signature="8916:8959" ph="{...}" />
-                <marker date="1517839152296" expanded="true" signature="9027:9110" ph="{...}" />
-                <marker date="1517839152296" expanded="true" signature="9151:9213" ph="{...}" />
-                <marker date="1517839152296" expanded="true" signature="9256:9616" ph="{...}" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="AbilityDef.cs" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/AllModdingComponents/CompAbilityUser/Model/AbilityDef.cs">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="931">
-              <caret line="53" column="24" lean-forward="false" selection-start-line="53" selection-start-column="24" selection-end-line="53" selection-end-column="24" />
-              <folding>
-                <marker date="1513946385125" expanded="false" signature="6:80" ph="..." />
-                <marker date="1513946385125" expanded="true" signature="139:10221" ph="{...}" />
-                <marker date="1513946385125" expanded="true" signature="445:555" ph="{...}" />
-                <marker date="1513946385125" expanded="true" signature="596:1075" ph="{...}" />
-                <marker date="1513946385125" expanded="true" signature="848:1049" ph="/* else if (this.DrawMatSingle != null &amp;&amp; this.DrawMatSingle != BaseContent.BadMat) ... */" />
-                <marker date="1513946385125" expanded="true" signature="1153:1856" ph="{...}" />
-                <marker date="1513946385125" expanded="true" signature="1188:1846" ph="{...}" />
-                <marker date="1513946385125" expanded="true" signature="1904:2416" ph="{...}" />
-                <marker date="1513946385125" expanded="true" signature="2460:3736" ph="{...}" />
-                <marker date="1513946385125" expanded="true" signature="2613:3699" ph="{...}" />
-                <marker date="1513946385125" expanded="true" signature="3771:10215" ph="{...}" />
-                <marker date="1513946385125" expanded="true" signature="3871:10178" ph="{...}" />
-                <marker date="1513946385125" expanded="true" signature="4146:4954" ph="{...}" />
-                <marker date="1513946385125" expanded="true" signature="5219:5653" ph="{...}" />
-                <marker date="1513946385125" expanded="true" signature="5839:6285" ph="{...}" />
-                <marker date="1513946385125" expanded="true" signature="6314:7006" ph="{...}" />
-                <marker date="1513946385125" expanded="true" signature="6518:6980" ph="{...}" />
-                <marker date="1513946385125" expanded="true" signature="7220:7562" ph="{...}" />
-                <marker date="1513946385125" expanded="true" signature="7591:7992" ph="{...}" />
-                <marker date="1513946385125" expanded="true" signature="8043:10124" ph="{...}" />
-                <marker date="1513946385125" expanded="true" signature="8204:8478" ph="{...}" />
-                <marker date="1513946385125" expanded="true" signature="8507:9955" ph="{...}" />
-                <marker date="1513946385125" expanded="true" signature="8682:9929" ph="{...}" />
-                <marker date="1513946385125" expanded="true" signature="8929:9352" ph="{...}" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="JobDriver_CastAbilityVerb.cs" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/AllModdingComponents/CompAbilityUser/Controller/JobDriver_CastAbilityVerb.cs">
           <provider selected="true" editor-type-id="text-editor">
@@ -259,7 +159,7 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="CompProperties_Shield.cs" pinned="false" current-in-tab="true">
+      <file leaf-file-name="CompProperties_Shield.cs" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/AllModdingComponents/PawnShields/ThingComps/Properties/CompProperties_Shield.cs">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="285">
@@ -290,6 +190,62 @@
                 <marker date="1518185867915" expanded="true" signature="3795:4004" ph="{...}" />
                 <marker date="1518185867915" expanded="true" signature="3870:3990" ph="{...}" />
                 <marker date="1518185867915" expanded="true" signature="4054:4118" ph="{...}" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="CompProperties_OversizedWeapon.cs" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/AllModdingComponents/CompOversizedWeapon/CompProperties_OversizedWeapon.cs">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="57">
+              <caret line="3" column="29" lean-forward="false" selection-start-line="3" selection-start-column="10" selection-end-line="3" selection-end-column="29" />
+              <folding>
+                <marker date="1518246279305" expanded="true" signature="6:31" ph="..." />
+                <marker date="1518246279305" expanded="true" signature="62:522" ph="{...}" />
+                <marker date="1518246279305" expanded="true" signature="131:520" ph="{...}" />
+                <marker date="1518246279305" expanded="true" signature="146:337" ph="/* public SoundDef soundMiss; ... */" />
+                <marker date="1518246279305" expanded="true" signature="441:514" ph="{...}" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="CompOversizedWeapon.cs" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/AllModdingComponents/CompOversizedWeapon/CompOversizedWeapon.cs">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="114">
+              <caret line="6" column="71" lean-forward="false" selection-start-line="6" selection-start-column="71" selection-end-line="6" selection-end-column="71" />
+              <folding>
+                <marker date="1513946385449" expanded="true" signature="43:205" ph="{...}" />
+                <marker date="1513946385449" expanded="true" signature="96:203" ph="{...}" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="HarmonyCompOversizedWeapon.cs" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/AllModdingComponents/CompOversizedWeapon/HarmonyCompOversizedWeapon.cs">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="602">
+              <caret line="82" column="15" lean-forward="false" selection-start-line="82" selection-start-column="15" selection-end-line="82" selection-end-column="15" />
+              <folding>
+                <marker date="1518246363057" expanded="false" signature="6:65" ph="..." />
+                <marker date="1518246363057" expanded="true" signature="96:5035" ph="{...}" />
+                <marker date="1518246363057" expanded="true" signature="184:5033" ph="{...}" />
+                <marker date="1518246363057" expanded="true" signature="234:728" ph="{...}" />
+                <marker date="1518246363057" expanded="true" signature="739:1075" ph="///     Adds another &quot;layer&quot; to the equipment aiming if they have a ... " />
+                <marker date="1518246363057" expanded="true" signature="1196:3780" ph="{...}" />
+                <marker date="1518246363057" expanded="true" signature="1259:3729" ph="{...}" />
+                <marker date="1518246363057" expanded="true" signature="1630:1857" ph="{...}" />
+                <marker date="1518246363057" expanded="true" signature="1999:3715" ph="{...}" />
+                <marker date="1518246363057" expanded="true" signature="2191:2343" ph="{...}" />
+                <marker date="1518246363057" expanded="true" signature="2408:2638" ph="{...}" />
+                <marker date="1518246363057" expanded="true" signature="2663:2815" ph="{...}" />
+                <marker date="1518246363057" expanded="true" signature="3869:5027" ph="{...}" />
+                <marker date="1518246363057" expanded="true" signature="4080:5017" ph="{...}" />
+                <marker date="1518246363057" expanded="true" signature="4438:4674" ph="{...}" />
+                <marker date="1518246363057" expanded="true" signature="4823:4999" ph="{...}" />
               </folding>
             </state>
           </provider>
@@ -370,12 +326,21 @@
     </replaceStrings>
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$PROJECT_DIR$/AllModdingComponents/JecsTools/CaravanJobs/CaravanJobDriver.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AllModdingComponents/CompAbilityUser/Model/AbilityDef.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/AllModdingComponents/CompAnimated/CompAnimated.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/765250CD-2B53-4903-8F57-1EFC3734D8FA/a8/d91e0b52/Bullet.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/AllModdingComponents/CompInstalledPart/CompInstalledPart.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/AC898917-3E3A-4AAD-B4DC-7CC27166F08A/b8/17a7b327/Quaternion.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/AllModdingComponents/CompVehicle/HarmonyCompVehicle.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/AllModdingComponents/CompVehicle/Bill_LoadVehicle.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/765250CD-2B53-4903-8F57-1EFC3734D8FA/bb/251ee086/Projectile.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/AllModdingComponents/CompVehicle/Command_VehicleHandler.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/AC898917-3E3A-4AAD-B4DC-7CC27166F08A/e1/e8309a4c/Vector3.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/AllModdingComponents/CompVehicle/CompProperties_Vehicle.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/AllModdingComponents/JecsTools/CaravanJobs/CaravanJobDriver.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AllModdingComponents/PawnShields/Shields.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AllModdingComponents/PawnShields/HarmonyPatches.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AllModdingComponents/CompAbilityUser/Controller/JobDriver_CastAbilitySelf.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/AllModdingComponents/CompAnimated/CompAnimated.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AllModdingComponents/CompAbilityUser/Controller/Verb_UseAbility.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AllModdingComponents/CompAbilityUser/Controller/AbilityContext.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AllModdingComponents/CompAbilityUser/Controller/PawnAbility.cs" root0="FORCE_HIGHLIGHTING" />
@@ -389,31 +354,25 @@
     <setting file="file://$PROJECT_DIR$/AllModdingComponents/JecsTools/ThingDef_LaserProjectile.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/765250CD-2B53-4903-8F57-1EFC3734D8FA/01/31703258/VerbProperties.cs" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/AllModdingComponents/AbilityUserAI/AI/JobGiver_AIAbilityUser.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/765250CD-2B53-4903-8F57-1EFC3734D8FA/a8/d91e0b52/Bullet.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/AllModdingComponents/CompInstalledPart/CompInstalledPart.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AllModdingComponents/JecsTools/DamageWorker_Cleave.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AllModdingComponents/JecsTools/DamageDefCleave.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/AC898917-3E3A-4AAD-B4DC-7CC27166F08A/b8/17a7b327/Quaternion.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AllModdingComponents/JecsTools/Hediff_InjuryCustomLabel.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AllModdingComponents/JecsTools/HediffComp_Knockback.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/765250CD-2B53-4903-8F57-1EFC3734D8FA/67/a0947aae/Toils_Combat.cs" root0="SKIP_INSPECTION" />
-    <setting file="file://$PROJECT_DIR$/AllModdingComponents/CompVehicle/HarmonyCompVehicle.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AllModdingComponents/JecsTools/HarmonyPatches.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/AllModdingComponents/CompVehicle/Bill_LoadVehicle.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/765250CD-2B53-4903-8F57-1EFC3734D8FA/bb/251ee086/Projectile.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AllModdingComponents/JecsTools/FirelessTrashUtility.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/AllModdingComponents/CompVehicle/Command_VehicleHandler.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/AC898917-3E3A-4AAD-B4DC-7CC27166F08A/e1/e8309a4c/Vector3.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AllModdingComponents/JecsTools/GrappleUtility.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/765250CD-2B53-4903-8F57-1EFC3734D8FA/e8/be1d57bf/Command_Target.cs" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/AllModdingComponents/PawnShields/Mod Extensions/ShieldPawnGeneratorProperties.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AllModdingComponents/JecsTools/HediffComp_ExtraMeleeDamages.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AllModdingComponents/JecsTools/HediffCompProperties_DamageSoak.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AllModdingComponents/PawnShields/ThingComps/Properties/CompProperties_Shield.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/AllModdingComponents/CompOversizedWeapon/CompOversizedWeapon.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AllModdingComponents/PawnShields/ThingComps/CompShield.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/AllModdingComponents/CompVehicle/CompProperties_Vehicle.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AllModdingComponents/JecsTools/TransformedPart.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/AllModdingComponents/CompOversizedWeapon/CompProperties_OversizedWeapon.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AllModdingComponents/JecsTools/PlaceWorker_Outline.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/AllModdingComponents/CompOversizedWeapon/HarmonyCompOversizedWeapon.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AllModdingComponents/JecsTools/HediffComp_DamageSoak.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AllModdingComponents/CompAbilityUser/Projectile_Ability.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
@@ -436,6 +395,8 @@
         <option value="$PROJECT_DIR$/AllModdingComponents/CompAbilityUser/Model/VerbProperties_Ability.cs" />
         <option value="$PROJECT_DIR$/AllModdingComponents/CompAbilityUser/Controller/PawnAbility.cs" />
         <option value="$PROJECT_DIR$/AllModdingComponents/CompAbilityUser/Controller/Verb_UseAbility.cs" />
+        <option value="$PROJECT_DIR$/AllModdingComponents/CompOversizedWeapon/CompProperties_OversizedWeapon.cs" />
+        <option value="$PROJECT_DIR$/AllModdingComponents/CompOversizedWeapon/HarmonyCompOversizedWeapon.cs" />
       </list>
     </option>
   </component>
@@ -445,11 +406,11 @@
     <detection-done>true</detection-done>
     <sorting>DEFINITION_ORDER</sorting>
   </component>
-  <component name="ProjectFrameBounds">
-    <option name="x" value="64" />
-    <option name="y" value="70" />
-    <option name="width" value="1400" />
-    <option name="height" value="880" />
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="406" />
+    <option name="y" value="71" />
+    <option name="width" value="1249" />
+    <option name="height" value="924" />
   </component>
   <component name="ProjectView">
     <navigator currentView="SolutionExplorer" proportions="" version="1">
@@ -476,32 +437,7 @@
             <path>
               <item name="" type="13324e5d:SolutionExplorerViewPane$ProjectViewPaneTreeStructure$createRoot$1" />
               <item name="JecsTools (16 projects)" type="977d5f41:SolutionExplorerNodeRider" />
-              <item name="PawnShields" type="977d5f41:SolutionExplorerNodeRider" />
-            </path>
-            <path>
-              <item name="" type="13324e5d:SolutionExplorerViewPane$ProjectViewPaneTreeStructure$createRoot$1" />
-              <item name="JecsTools (16 projects)" type="977d5f41:SolutionExplorerNodeRider" />
-              <item name="PawnShields" type="977d5f41:SolutionExplorerNodeRider" />
-              <item name="Mod Extensions" type="977d5f41:SolutionExplorerNodeRider" />
-            </path>
-            <path>
-              <item name="" type="13324e5d:SolutionExplorerViewPane$ProjectViewPaneTreeStructure$createRoot$1" />
-              <item name="JecsTools (16 projects)" type="977d5f41:SolutionExplorerNodeRider" />
-              <item name="PawnShields" type="977d5f41:SolutionExplorerNodeRider" />
-              <item name="Properties" type="977d5f41:SolutionExplorerNodeRider" />
-            </path>
-            <path>
-              <item name="" type="13324e5d:SolutionExplorerViewPane$ProjectViewPaneTreeStructure$createRoot$1" />
-              <item name="JecsTools (16 projects)" type="977d5f41:SolutionExplorerNodeRider" />
-              <item name="PawnShields" type="977d5f41:SolutionExplorerNodeRider" />
-              <item name="ThingComps" type="977d5f41:SolutionExplorerNodeRider" />
-            </path>
-            <path>
-              <item name="" type="13324e5d:SolutionExplorerViewPane$ProjectViewPaneTreeStructure$createRoot$1" />
-              <item name="JecsTools (16 projects)" type="977d5f41:SolutionExplorerNodeRider" />
-              <item name="PawnShields" type="977d5f41:SolutionExplorerNodeRider" />
-              <item name="ThingComps" type="977d5f41:SolutionExplorerNodeRider" />
-              <item name="Properties" type="977d5f41:SolutionExplorerNodeRider" />
+              <item name="CompOversizedWeapon" type="977d5f41:SolutionExplorerNodeRider" />
             </path>
           </expand>
           <select />
@@ -568,12 +504,12 @@
       <workItem from="1516451610248" duration="1686000" />
       <workItem from="1517019576580" duration="13698000" />
       <workItem from="1517836258850" duration="6564000" />
-      <workItem from="1518181043501" duration="2468000" />
+      <workItem from="1518181043501" duration="5413000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="73065000" />
+    <option name="totallyTimeSpent" value="76010000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -585,17 +521,17 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="64" y="70" width="1400" height="880" extended-state="0" />
+    <frame x="-9" y="-9" width="1938" height="1048" extended-state="6" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Errors In Solution" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Unit Tests" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3197832" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.26048565" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="NuGet" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.33357453" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24010417" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Build" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.37656903" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -624,27 +560,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/AllModdingComponents/JecsTools/HediffComp_DamageSoak.cs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="285">
-          <caret line="16" column="28" lean-forward="false" selection-start-line="16" selection-start-column="28" selection-end-line="16" selection-end-column="28" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/AllModdingComponents/JecsTools/HediffComp_ExtraMeleeDamages.cs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/AllModdingComponents/JecsTools/TransformedPart.cs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/AllModdingComponents/JecsTools/PlaceWorker_Outline.cs">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -1792,6 +1707,56 @@
             <marker date="1518185867915" expanded="true" signature="3795:4004" ph="{...}" />
             <marker date="1518185867915" expanded="true" signature="3870:3990" ph="{...}" />
             <marker date="1518185867915" expanded="true" signature="4054:4118" ph="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/AllModdingComponents/CompOversizedWeapon/CompOversizedWeapon.cs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="114">
+          <caret line="6" column="71" lean-forward="false" selection-start-line="6" selection-start-column="71" selection-end-line="6" selection-end-column="71" />
+          <folding>
+            <marker date="1513946385449" expanded="true" signature="43:205" ph="{...}" />
+            <marker date="1513946385449" expanded="true" signature="96:203" ph="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/AllModdingComponents/CompOversizedWeapon/HarmonyCompOversizedWeapon.cs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="602">
+          <caret line="82" column="15" lean-forward="false" selection-start-line="82" selection-start-column="15" selection-end-line="82" selection-end-column="15" />
+          <folding>
+            <marker date="1518246363057" expanded="false" signature="6:65" ph="..." />
+            <marker date="1518246363057" expanded="true" signature="96:5035" ph="{...}" />
+            <marker date="1518246363057" expanded="true" signature="184:5033" ph="{...}" />
+            <marker date="1518246363057" expanded="true" signature="234:728" ph="{...}" />
+            <marker date="1518246363057" expanded="true" signature="739:1075" ph="///     Adds another &quot;layer&quot; to the equipment aiming if they have a ... " />
+            <marker date="1518246363057" expanded="true" signature="1196:3780" ph="{...}" />
+            <marker date="1518246363057" expanded="true" signature="1259:3729" ph="{...}" />
+            <marker date="1518246363057" expanded="true" signature="1630:1857" ph="{...}" />
+            <marker date="1518246363057" expanded="true" signature="1999:3715" ph="{...}" />
+            <marker date="1518246363057" expanded="true" signature="2191:2343" ph="{...}" />
+            <marker date="1518246363057" expanded="true" signature="2408:2638" ph="{...}" />
+            <marker date="1518246363057" expanded="true" signature="2663:2815" ph="{...}" />
+            <marker date="1518246363057" expanded="true" signature="3869:5027" ph="{...}" />
+            <marker date="1518246363057" expanded="true" signature="4080:5017" ph="{...}" />
+            <marker date="1518246363057" expanded="true" signature="4438:4674" ph="{...}" />
+            <marker date="1518246363057" expanded="true" signature="4823:4999" ph="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/AllModdingComponents/CompOversizedWeapon/CompProperties_OversizedWeapon.cs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="57">
+          <caret line="3" column="29" lean-forward="false" selection-start-line="3" selection-start-column="10" selection-end-line="3" selection-end-column="29" />
+          <folding>
+            <marker date="1518246279305" expanded="true" signature="6:31" ph="..." />
+            <marker date="1518246279305" expanded="true" signature="62:522" ph="{...}" />
+            <marker date="1518246279305" expanded="true" signature="131:520" ph="{...}" />
+            <marker date="1518246279305" expanded="true" signature="146:337" ph="/* public SoundDef soundMiss; ... */" />
+            <marker date="1518246279305" expanded="true" signature="441:514" ph="{...}" />
           </folding>
         </state>
       </provider>
