@@ -11,143 +11,6 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="375">
-      <file leaf-file-name="ThingDef_LaserProjectile.cs" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/AllModdingComponents/JecsTools/ThingDef_LaserProjectile.cs">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="361">
-              <caret line="19" column="45" lean-forward="false" selection-start-line="19" selection-start-column="45" selection-end-line="19" selection-end-column="45" />
-              <folding>
-                <marker date="1517836263402" expanded="true" signature="6:46" ph="..." />
-                <marker date="1517836263402" expanded="true" signature="177:789" ph="{...}" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Projectile_Laser.cs" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/AllModdingComponents/JecsTools/Projectile_Laser.cs">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="4275">
-              <caret line="229" column="39" lean-forward="false" selection-start-line="229" selection-start-column="15" selection-end-line="229" selection-end-column="39" />
-              <folding>
-                <marker date="1517836263431" expanded="false" signature="6:100" ph="..." />
-                <marker date="1517836263431" expanded="true" signature="163:206" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="258:20832" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="957:1029" ph="/* public Vector3 drawingScale; ... */" />
-                <marker date="1517836263431" expanded="true" signature="1195:2883" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="1411:1624" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="2980:3095" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="3105:3178" ph="/// Get parameters from XML. ... " />
-                <marker date="1517836263431" expanded="true" signature="3221:3986" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="3996:4126" ph="/// Save/load data from a savegame file (apparently not used for projectile for now). ... " />
-                <marker date="1517836263431" expanded="true" signature="4168:4418" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="4340:4408" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="4428:4502" ph="/// Main projectile sequence. ... " />
-                <marker date="1517836263431" expanded="true" signature="4538:6310" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="4574:4807" ph="/* Log.Message(&quot;Tickng Ma Lazor&quot;); ... */" />
-                <marker date="1517836263431" expanded="true" signature="4823:6203" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="4876:5005" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="5090:5179" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="5270:5388" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="5441:5531" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="5637:5727" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="5770:6158" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="5835:6140" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="6004:6118" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="6234:6299" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="6320:6418" ph="/// Performs prefiring treatment: data initalization. ... " />
-                <marker date="1517836263431" expanded="true" signature="6474:8328" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="6678:7224" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="7245:8318" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="7373:7581" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="7461:7560" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="7602:8304" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="7748:8044" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="8069:8205" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="8403:9269" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="8935:9031" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="9368:9455" ph="/// Gets the prefiring drawing parameters. ... " />
-                <marker date="1517836263431" expanded="true" signature="9515:9769" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="9565:9759" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="9779:9867" ph="/// Gets the postfiring drawing parameters. ... " />
-                <marker date="1517836263431" expanded="true" signature="9928:10218" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="9979:10208" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="10228:10357" ph="/// Checks for colateral targets (cover, neutral animal, pawn) along the trajectory. ... " />
-                <marker date="1517836263431" expanded="true" signature="10411:14128" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="11058:14118" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="11258:11382" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="11458:14043" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="11620:14025" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="11813:12103" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="12227:14003" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="12426:12555" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="12739:12866" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="12899:13500" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="12997:13138" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="13175:13470" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="13282:13436" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="13663:13977" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="14138:14229" ph="/// Manages the projectile damage application. ... " />
-                <marker date="1517836263431" expanded="true" signature="14264:14324" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="14334:14432" ph="/// Applies damage on a collateral pawn or an object. ... " />
-                <marker date="1517836263431" expanded="true" signature="14483:14734" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="14527:14639" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="14656:14724" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="14744:14849" ph="/// Computes what should be impacted in the DestinationCell. ... " />
-                <marker date="1517836263431" expanded="true" signature="14890:16744" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="14998:15440" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="15154:15426" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="15535:15918" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="15727:15830" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="15935:16734" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="16153:16257" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="16394:16661" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="16521:16643" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="16754:16839" ph="/// Impacts a pawn/object or the ground. ... " />
-                <marker date="1517836263431" expanded="true" signature="16894:20039" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="16947:17153" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="17212:19619" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="17547:18207" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="18228:18729" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="18525:18711" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="18746:19071" ph="/* int damageAmountBase = this.def.projectile.damageAmountBase; ... */" />
-                <marker date="1517836263431" expanded="true" signature="19150:19237" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="19317:19605" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="19636:20029" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="20049:20244" ph="/// JECRELL:: Added this to make derived classes work easily. ... " />
-                <marker date="1517836263431" expanded="true" signature="20321:20342" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="20352:20421" ph="/// Draws the laser ray. ... " />
-                <marker date="1517836263431" expanded="true" signature="20457:20826" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="20548:20816" ph="{...}" />
-                <marker date="1517836263431" expanded="true" signature="20617:20802" ph="{...}" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Projectile_Ability.cs" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/AllModdingComponents/CompAbilityUser/Projectile_Ability.cs">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-              <folding>
-                <marker date="1513946385295" expanded="false" signature="6:31" ph="..." />
-                <marker date="1513946385295" expanded="true" signature="117:2531" ph="{...}" />
-                <marker date="1513946385295" expanded="true" signature="216:490" ph="{...}" />
-                <marker date="1513946385295" expanded="true" signature="242:480" ph="{...}" />
-                <marker date="1513946385295" expanded="true" signature="527:1337" ph="{...}" />
-                <marker date="1513946385295" expanded="true" signature="598:1153" ph="{...}" />
-                <marker date="1513946385295" expanded="true" signature="1170:1297" ph="{...}" />
-                <marker date="1513946385295" expanded="true" signature="1399:1907" ph="{...}" />
-                <marker date="1513946385295" expanded="true" signature="1487:1897" ph="{...}" />
-                <marker date="1513946385295" expanded="true" signature="1970:1990" ph="{...}" />
-                <marker date="1513946385295" expanded="true" signature="2055:2525" ph="{...}" />
-                <marker date="1513946385295" expanded="true" signature="2137:2488" ph="{...}" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="VerbProperties_Ability.cs" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/AllModdingComponents/CompAbilityUser/Model/VerbProperties_Ability.cs">
           <provider selected="true" editor-type-id="text-editor">
@@ -337,11 +200,106 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="HarmonyPatches.cs" pinned="false" current-in-tab="true">
+      <file leaf-file-name="ShieldPawnGeneratorProperties.cs" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/AllModdingComponents/PawnShields/Mod Extensions/ShieldPawnGeneratorProperties.cs">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="0">
+              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding>
+                <marker date="1517777188129" expanded="false" signature="6:98" ph="..." />
+                <marker date="1517777188129" expanded="true" signature="121:658" ph="{...}" />
+                <marker date="1517777188129" expanded="true" signature="128:267" ph="/// Contains extra information for the patched pawn generator to give a appropiate shield to the pawn. ... " />
+                <marker date="1517777188129" expanded="true" signature="332:656" ph="{...}" />
+                <marker date="1517777188129" expanded="true" signature="347:447" ph="/// How much &quot;money&quot; the pawn got pay for their shield. ... " />
+                <marker date="1517777188129" expanded="true" signature="514:610" ph="/// The shields with any of these tags can be used. ... " />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="CompShield.cs" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/AllModdingComponents/PawnShields/ThingComps/CompShield.cs">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="0">
+              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding>
+                <marker date="1518185934387" expanded="false" signature="6:133" ph="..." />
+                <marker date="1518185934387" expanded="true" signature="156:7343" ph="{...}" />
+                <marker date="1518185934387" expanded="true" signature="163:261" ph="/// Component class for shields. Relevant logic is done here. ... " />
+                <marker date="1518185934387" expanded="true" signature="301:7341" ph="{...}" />
+                <marker date="1518185934387" expanded="true" signature="316:383" ph="/// Shield properties. ... " />
+                <marker date="1518185934387" expanded="true" signature="432:551" ph="{...}" />
+                <marker date="1518185934387" expanded="true" signature="458:541" ph="{...}" />
+                <marker date="1518185934387" expanded="true" signature="561:657" ph="/// Determines whether the shield is broken or not. ... " />
+                <marker date="1518185934387" expanded="true" signature="694:967" ph="{...}" />
+                <marker date="1518185934387" expanded="true" signature="720:957" ph="{...}" />
+                <marker date="1518185934387" expanded="true" signature="977:1085" ph="/// The blocking sound the shield use when it blocks something. ... " />
+                <marker date="1518185934387" expanded="true" signature="1128:1560" ph="{...}" />
+                <marker date="1518185934387" expanded="true" signature="1154:1550" ph="{...}" />
+                <marker date="1518185934387" expanded="true" signature="1320:1454" ph="{...}" />
+                <marker date="1518185934387" expanded="true" signature="1570:1935" ph="/// Absorbs the attacker damage. ... " />
+                <marker date="1518185934387" expanded="true" signature="2022:4129" ph="{...}" />
+                <marker date="1518185934387" expanded="true" signature="2180:2611" ph="{...}" />
+                <marker date="1518185934387" expanded="true" signature="2658:3093" ph="{...}" />
+                <marker date="1518185934387" expanded="true" signature="3245:3468" ph="{...}" />
+                <marker date="1518185934387" expanded="true" signature="3554:3884" ph="{...}" />
+                <marker date="1518185934387" expanded="true" signature="3977:4092" ph="{...}" />
+                <marker date="1518185934387" expanded="true" signature="4139:4495" ph="/// Delegate for making the blocking effect on successful block while the shield is not broken. ... " />
+                <marker date="1518185934387" expanded="true" signature="4585:4690" ph="{...}" />
+                <marker date="1518185934387" expanded="true" signature="4700:5026" ph="/// Renders the shield on the pawn wielding it. ... " />
+                <marker date="1518185934387" expanded="true" signature="5114:7199" ph="{...}" />
+                <marker date="1518185934387" expanded="true" signature="5661:7057" ph="{...}" />
+                <marker date="1518185934387" expanded="true" signature="5713:6197" ph="{...}" />
+                <marker date="1518185934387" expanded="true" signature="6241:6725" ph="{...}" />
+                <marker date="1518185934387" expanded="true" signature="6746:7043" ph="{...}" />
+                <marker date="1518185934387" expanded="true" signature="7074:7189" ph="{...}" />
+                <marker date="1518185934387" expanded="true" signature="7209:7335" ph="/* public override void CompTick() ... */" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="CompProperties_Shield.cs" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/AllModdingComponents/PawnShields/ThingComps/Properties/CompProperties_Shield.cs">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="285">
+              <caret line="65" column="45" lean-forward="false" selection-start-line="65" selection-start-column="45" selection-end-line="65" selection-end-column="45" />
+              <folding>
+                <marker date="1518185867915" expanded="false" signature="6:114" ph="..." />
+                <marker date="1518185867915" expanded="true" signature="137:4126" ph="{...}" />
+                <marker date="1518185867915" expanded="true" signature="144:203" ph="/// Shield properties. ... " />
+                <marker date="1518185867915" expanded="true" signature="259:4124" ph="{...}" />
+                <marker date="1518185867915" expanded="true" signature="274:351" ph="/// Graphic when shield is worn. ... " />
+                <marker date="1518185867915" expanded="true" signature="404:526" ph="/// If true it will attempt to use a colored version of the shield. e.g stuff ... " />
+                <marker date="1518185867915" expanded="true" signature="582:659" ph="/// Shield rendering properties. ... " />
+                <marker date="1518185867915" expanded="true" signature="756:845" ph="/// Do the shield take damage when blocking? ... " />
+                <marker date="1518185867915" expanded="true" signature="900:1013" ph="/// How much of the damage the shield absorbs upon successful block. ... " />
+                <marker date="1518185867915" expanded="true" signature="1094:1178" ph="/// Can the shield block melee attacks? ... " />
+                <marker date="1518185867915" expanded="true" signature="1231:1316" ph="/// Can the shield block ranged attacks? ... " />
+                <marker date="1518185867915" expanded="true" signature="1368:1541" ph="/// Melee block chance factor the shield provides which is multiplied by the relevant statistic. 1.0 is equivalen ... " />
+                <marker date="1518185867915" expanded="true" signature="1622:1796" ph="/// Ranged block chance factor the shield provides which is multiplied by the relevant statistic. 1.0 is equivale ... " />
+                <marker date="1518185867915" expanded="true" signature="1878:2005" ph="/// Determines whether the shield can be automatically discarded by a pawn or not. ... " />
+                <marker date="1518185867915" expanded="true" signature="2062:2182" ph="/// The % threshold when the shield is automatically discarded by the pawn. ... " />
+                <marker date="1518185867915" expanded="true" signature="2249:2366" ph="/// If true the shield user gets fatigued when blocking with the shield. ... " />
+                <marker date="1518185867915" expanded="true" signature="2416:2532" ph="/// How much damage is converted to fatigue damage on successful block. ... " />
+                <marker date="1518185867915" expanded="true" signature="2594:2701" ph="/// The stuff the shield is made out of can be linked to here. ... " />
+                <marker date="1518185867915" expanded="true" signature="2780:2877" ph="/// Default blocking sound if no sounds are defined. ... " />
+                <marker date="1518185867915" expanded="true" signature="2956:3034" ph="/// Helps fetching sounds easier. ... " />
+                <marker date="1518185867915" expanded="true" signature="3178:3606" ph="/* public override IEnumerable&lt;StatDrawEntry&gt; SpecialDisplayStats() ... */" />
+                <marker date="1518185867915" expanded="true" signature="3674:4014" ph="{...}" />
+                <marker date="1518185867915" expanded="true" signature="3795:4004" ph="{...}" />
+                <marker date="1518185867915" expanded="true" signature="3870:3990" ph="{...}" />
+                <marker date="1518185867915" expanded="true" signature="4054:4118" ph="{...}" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="HarmonyPatches.cs" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/AllModdingComponents/PawnShields/HarmonyPatches.cs">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="228">
-              <caret line="22" column="21" lean-forward="false" selection-start-line="22" selection-start-column="21" selection-end-line="22" selection-end-column="21" />
+            <state relative-caret-position="361">
+              <caret line="29" column="9" lean-forward="false" selection-start-line="29" selection-start-column="9" selection-end-line="29" selection-end-column="9" />
               <folding>
                 <marker date="1517843814056" expanded="false" signature="6:222" ph="..." />
                 <marker date="1517843814056" expanded="true" signature="245:20545" ph="{...}" />
@@ -448,8 +406,11 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/AC898917-3E3A-4AAD-B4DC-7CC27166F08A/e1/e8309a4c/Vector3.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AllModdingComponents/JecsTools/GrappleUtility.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/765250CD-2B53-4903-8F57-1EFC3734D8FA/e8/be1d57bf/Command_Target.cs" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/AllModdingComponents/PawnShields/Mod Extensions/ShieldPawnGeneratorProperties.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AllModdingComponents/JecsTools/HediffComp_ExtraMeleeDamages.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AllModdingComponents/JecsTools/HediffCompProperties_DamageSoak.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/AllModdingComponents/PawnShields/ThingComps/Properties/CompProperties_Shield.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/AllModdingComponents/PawnShields/ThingComps/CompShield.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AllModdingComponents/CompVehicle/CompProperties_Vehicle.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AllModdingComponents/JecsTools/TransformedPart.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AllModdingComponents/JecsTools/PlaceWorker_Outline.cs" root0="FORCE_HIGHLIGHTING" />
@@ -484,9 +445,9 @@
     <detection-done>true</detection-done>
     <sorting>DEFINITION_ORDER</sorting>
   </component>
-  <component name="ProjectFrameBounds" extendedState="1">
-    <option name="x" value="81" />
-    <option name="y" value="49" />
+  <component name="ProjectFrameBounds">
+    <option name="x" value="64" />
+    <option name="y" value="70" />
     <option name="width" value="1400" />
     <option name="height" value="880" />
   </component>
@@ -511,6 +472,36 @@
             <path>
               <item name="" type="13324e5d:SolutionExplorerViewPane$ProjectViewPaneTreeStructure$createRoot$1" />
               <item name="JecsTools (16 projects)" type="977d5f41:SolutionExplorerNodeRider" />
+            </path>
+            <path>
+              <item name="" type="13324e5d:SolutionExplorerViewPane$ProjectViewPaneTreeStructure$createRoot$1" />
+              <item name="JecsTools (16 projects)" type="977d5f41:SolutionExplorerNodeRider" />
+              <item name="PawnShields" type="977d5f41:SolutionExplorerNodeRider" />
+            </path>
+            <path>
+              <item name="" type="13324e5d:SolutionExplorerViewPane$ProjectViewPaneTreeStructure$createRoot$1" />
+              <item name="JecsTools (16 projects)" type="977d5f41:SolutionExplorerNodeRider" />
+              <item name="PawnShields" type="977d5f41:SolutionExplorerNodeRider" />
+              <item name="Mod Extensions" type="977d5f41:SolutionExplorerNodeRider" />
+            </path>
+            <path>
+              <item name="" type="13324e5d:SolutionExplorerViewPane$ProjectViewPaneTreeStructure$createRoot$1" />
+              <item name="JecsTools (16 projects)" type="977d5f41:SolutionExplorerNodeRider" />
+              <item name="PawnShields" type="977d5f41:SolutionExplorerNodeRider" />
+              <item name="Properties" type="977d5f41:SolutionExplorerNodeRider" />
+            </path>
+            <path>
+              <item name="" type="13324e5d:SolutionExplorerViewPane$ProjectViewPaneTreeStructure$createRoot$1" />
+              <item name="JecsTools (16 projects)" type="977d5f41:SolutionExplorerNodeRider" />
+              <item name="PawnShields" type="977d5f41:SolutionExplorerNodeRider" />
+              <item name="ThingComps" type="977d5f41:SolutionExplorerNodeRider" />
+            </path>
+            <path>
+              <item name="" type="13324e5d:SolutionExplorerViewPane$ProjectViewPaneTreeStructure$createRoot$1" />
+              <item name="JecsTools (16 projects)" type="977d5f41:SolutionExplorerNodeRider" />
+              <item name="PawnShields" type="977d5f41:SolutionExplorerNodeRider" />
+              <item name="ThingComps" type="977d5f41:SolutionExplorerNodeRider" />
+              <item name="Properties" type="977d5f41:SolutionExplorerNodeRider" />
             </path>
           </expand>
           <select />
@@ -577,12 +568,12 @@
       <workItem from="1516451610248" duration="1686000" />
       <workItem from="1517019576580" duration="13698000" />
       <workItem from="1517836258850" duration="6564000" />
-      <workItem from="1518181043501" duration="1324000" />
+      <workItem from="1518181043501" duration="2468000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="71921000" />
+    <option name="totallyTimeSpent" value="73065000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -594,7 +585,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="81" y="49" width="1400" height="880" extended-state="1" />
+    <frame x="64" y="70" width="1400" height="880" extended-state="0" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Errors In Solution" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -633,27 +624,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/AllModdingComponents/CompInstalledPart/CompInstalledPart.cs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="380">
-          <caret line="22" column="18" lean-forward="false" selection-start-line="22" selection-start-column="18" selection-end-line="22" selection-end-column="18" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/AllModdingComponents/CompVehicle/Command_VehicleHandler.cs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="380">
-          <caret line="20" column="21" lean-forward="false" selection-start-line="20" selection-start-column="21" selection-end-line="20" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/AllModdingComponents/JecsTools/CaravanJobs/CaravanJobDriver.cs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="7524">
-          <caret line="396" column="13" lean-forward="false" selection-start-line="396" selection-start-column="13" selection-end-line="396" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/AllModdingComponents/JecsTools/HediffComp_DamageSoak.cs">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="285">
@@ -1669,24 +1639,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/AllModdingComponents/PawnShields/Shields.cs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="304">
-          <caret line="20" column="0" lean-forward="false" selection-start-line="20" selection-start-column="0" selection-end-line="20" selection-end-column="0" />
-          <folding>
-            <marker date="1517779491361" expanded="false" signature="6:98" ph="..." />
-            <marker date="1517779491361" expanded="true" signature="121:369" ph="{...}" />
-            <marker date="1517779491361" expanded="true" signature="128:204" ph="/// Entry class for the shields module. ... " />
-            <marker date="1517779491361" expanded="true" signature="269:367" ph="{...}" />
-            <marker date="1517779491361" expanded="true" signature="300:361" ph="{...}" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/AllModdingComponents/PawnShields/HarmonyPatches.cs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="228">
-          <caret line="22" column="21" lean-forward="false" selection-start-line="22" selection-start-column="21" selection-end-line="22" selection-end-column="21" />
+        <state relative-caret-position="361">
+          <caret line="29" column="9" lean-forward="false" selection-start-line="29" selection-start-column="9" selection-end-line="29" selection-end-column="9" />
           <folding>
             <marker date="1517843814056" expanded="false" signature="6:222" ph="..." />
             <marker date="1517843814056" expanded="true" signature="245:20545" ph="{...}" />
@@ -1733,6 +1689,109 @@
             <marker date="1517843814056" expanded="true" signature="20103:20297" ph="{...}" />
             <marker date="1517843814056" expanded="true" signature="20169:20279" ph="{...}" />
             <marker date="1517843814056" expanded="true" signature="20318:20430" ph="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/AllModdingComponents/PawnShields/Shields.cs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="304">
+          <caret line="20" column="0" lean-forward="false" selection-start-line="20" selection-start-column="0" selection-end-line="20" selection-end-column="0" />
+          <folding>
+            <marker date="1517779491361" expanded="false" signature="6:98" ph="..." />
+            <marker date="1517779491361" expanded="true" signature="121:369" ph="{...}" />
+            <marker date="1517779491361" expanded="true" signature="128:204" ph="/// Entry class for the shields module. ... " />
+            <marker date="1517779491361" expanded="true" signature="269:367" ph="{...}" />
+            <marker date="1517779491361" expanded="true" signature="300:361" ph="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/AllModdingComponents/PawnShields/Mod Extensions/ShieldPawnGeneratorProperties.cs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <marker date="1517777188129" expanded="false" signature="6:98" ph="..." />
+            <marker date="1517777188129" expanded="true" signature="121:658" ph="{...}" />
+            <marker date="1517777188129" expanded="true" signature="128:267" ph="/// Contains extra information for the patched pawn generator to give a appropiate shield to the pawn. ... " />
+            <marker date="1517777188129" expanded="true" signature="332:656" ph="{...}" />
+            <marker date="1517777188129" expanded="true" signature="347:447" ph="/// How much &quot;money&quot; the pawn got pay for their shield. ... " />
+            <marker date="1517777188129" expanded="true" signature="514:610" ph="/// The shields with any of these tags can be used. ... " />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/AllModdingComponents/PawnShields/ThingComps/CompShield.cs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <marker date="1518185934387" expanded="false" signature="6:133" ph="..." />
+            <marker date="1518185934387" expanded="true" signature="156:7343" ph="{...}" />
+            <marker date="1518185934387" expanded="true" signature="163:261" ph="/// Component class for shields. Relevant logic is done here. ... " />
+            <marker date="1518185934387" expanded="true" signature="301:7341" ph="{...}" />
+            <marker date="1518185934387" expanded="true" signature="316:383" ph="/// Shield properties. ... " />
+            <marker date="1518185934387" expanded="true" signature="432:551" ph="{...}" />
+            <marker date="1518185934387" expanded="true" signature="458:541" ph="{...}" />
+            <marker date="1518185934387" expanded="true" signature="561:657" ph="/// Determines whether the shield is broken or not. ... " />
+            <marker date="1518185934387" expanded="true" signature="694:967" ph="{...}" />
+            <marker date="1518185934387" expanded="true" signature="720:957" ph="{...}" />
+            <marker date="1518185934387" expanded="true" signature="977:1085" ph="/// The blocking sound the shield use when it blocks something. ... " />
+            <marker date="1518185934387" expanded="true" signature="1128:1560" ph="{...}" />
+            <marker date="1518185934387" expanded="true" signature="1154:1550" ph="{...}" />
+            <marker date="1518185934387" expanded="true" signature="1320:1454" ph="{...}" />
+            <marker date="1518185934387" expanded="true" signature="1570:1935" ph="/// Absorbs the attacker damage. ... " />
+            <marker date="1518185934387" expanded="true" signature="2022:4129" ph="{...}" />
+            <marker date="1518185934387" expanded="true" signature="2180:2611" ph="{...}" />
+            <marker date="1518185934387" expanded="true" signature="2658:3093" ph="{...}" />
+            <marker date="1518185934387" expanded="true" signature="3245:3468" ph="{...}" />
+            <marker date="1518185934387" expanded="true" signature="3554:3884" ph="{...}" />
+            <marker date="1518185934387" expanded="true" signature="3977:4092" ph="{...}" />
+            <marker date="1518185934387" expanded="true" signature="4139:4495" ph="/// Delegate for making the blocking effect on successful block while the shield is not broken. ... " />
+            <marker date="1518185934387" expanded="true" signature="4585:4690" ph="{...}" />
+            <marker date="1518185934387" expanded="true" signature="4700:5026" ph="/// Renders the shield on the pawn wielding it. ... " />
+            <marker date="1518185934387" expanded="true" signature="5114:7199" ph="{...}" />
+            <marker date="1518185934387" expanded="true" signature="5661:7057" ph="{...}" />
+            <marker date="1518185934387" expanded="true" signature="5713:6197" ph="{...}" />
+            <marker date="1518185934387" expanded="true" signature="6241:6725" ph="{...}" />
+            <marker date="1518185934387" expanded="true" signature="6746:7043" ph="{...}" />
+            <marker date="1518185934387" expanded="true" signature="7074:7189" ph="{...}" />
+            <marker date="1518185934387" expanded="true" signature="7209:7335" ph="/* public override void CompTick() ... */" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/AllModdingComponents/PawnShields/ThingComps/Properties/CompProperties_Shield.cs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="285">
+          <caret line="65" column="45" lean-forward="false" selection-start-line="65" selection-start-column="45" selection-end-line="65" selection-end-column="45" />
+          <folding>
+            <marker date="1518185867915" expanded="false" signature="6:114" ph="..." />
+            <marker date="1518185867915" expanded="true" signature="137:4126" ph="{...}" />
+            <marker date="1518185867915" expanded="true" signature="144:203" ph="/// Shield properties. ... " />
+            <marker date="1518185867915" expanded="true" signature="259:4124" ph="{...}" />
+            <marker date="1518185867915" expanded="true" signature="274:351" ph="/// Graphic when shield is worn. ... " />
+            <marker date="1518185867915" expanded="true" signature="404:526" ph="/// If true it will attempt to use a colored version of the shield. e.g stuff ... " />
+            <marker date="1518185867915" expanded="true" signature="582:659" ph="/// Shield rendering properties. ... " />
+            <marker date="1518185867915" expanded="true" signature="756:845" ph="/// Do the shield take damage when blocking? ... " />
+            <marker date="1518185867915" expanded="true" signature="900:1013" ph="/// How much of the damage the shield absorbs upon successful block. ... " />
+            <marker date="1518185867915" expanded="true" signature="1094:1178" ph="/// Can the shield block melee attacks? ... " />
+            <marker date="1518185867915" expanded="true" signature="1231:1316" ph="/// Can the shield block ranged attacks? ... " />
+            <marker date="1518185867915" expanded="true" signature="1368:1541" ph="/// Melee block chance factor the shield provides which is multiplied by the relevant statistic. 1.0 is equivalen ... " />
+            <marker date="1518185867915" expanded="true" signature="1622:1796" ph="/// Ranged block chance factor the shield provides which is multiplied by the relevant statistic. 1.0 is equivale ... " />
+            <marker date="1518185867915" expanded="true" signature="1878:2005" ph="/// Determines whether the shield can be automatically discarded by a pawn or not. ... " />
+            <marker date="1518185867915" expanded="true" signature="2062:2182" ph="/// The % threshold when the shield is automatically discarded by the pawn. ... " />
+            <marker date="1518185867915" expanded="true" signature="2249:2366" ph="/// If true the shield user gets fatigued when blocking with the shield. ... " />
+            <marker date="1518185867915" expanded="true" signature="2416:2532" ph="/// How much damage is converted to fatigue damage on successful block. ... " />
+            <marker date="1518185867915" expanded="true" signature="2594:2701" ph="/// The stuff the shield is made out of can be linked to here. ... " />
+            <marker date="1518185867915" expanded="true" signature="2780:2877" ph="/// Default blocking sound if no sounds are defined. ... " />
+            <marker date="1518185867915" expanded="true" signature="2956:3034" ph="/// Helps fetching sounds easier. ... " />
+            <marker date="1518185867915" expanded="true" signature="3178:3606" ph="/* public override IEnumerable&lt;StatDrawEntry&gt; SpecialDisplayStats() ... */" />
+            <marker date="1518185867915" expanded="true" signature="3674:4014" ph="{...}" />
+            <marker date="1518185867915" expanded="true" signature="3795:4004" ph="{...}" />
+            <marker date="1518185867915" expanded="true" signature="3870:3990" ph="{...}" />
+            <marker date="1518185867915" expanded="true" signature="4054:4118" ph="{...}" />
           </folding>
         </state>
       </provider>

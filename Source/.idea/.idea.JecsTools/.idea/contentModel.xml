@@ -331,6 +331,5 @@
       <e p="JecsTools.sln" t="IncludeFlat" />
       <e p="packages" t="ExcludeRecursive" />
     </e>
-    <e p="D:\SteamLibrary\steamapps\common\RimWorld\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\ShieldsCore\Assemblies" t="ExcludeRecursive" />
   </component>
 </project>
