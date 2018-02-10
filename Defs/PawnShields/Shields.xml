@@ -148,7 +148,7 @@
 				<li>(20, 0.30)</li>
 				<li>(60, 0.50)</li>
 				<li>(100, 0.80)</li>
-				<li>(140, 0.99)</li>
+				<li>(140, 0.90)</li>
 			</points>
 		</postProcessCurve>
 	</StatDef>

@@ -327,11 +327,11 @@
             <state relative-caret-position="304">
               <caret line="20" column="0" lean-forward="false" selection-start-line="20" selection-start-column="0" selection-end-line="20" selection-end-column="0" />
               <folding>
-                <marker date="1518181050480" expanded="false" signature="6:98" ph="..." />
-                <marker date="1518181050480" expanded="true" signature="121:369" ph="{...}" />
-                <marker date="1518181050480" expanded="true" signature="128:204" ph="/// Entry class for the shields module. ... " />
-                <marker date="1518181050480" expanded="true" signature="269:367" ph="{...}" />
-                <marker date="1518181050480" expanded="true" signature="300:361" ph="{...}" />
+                <marker date="1517779491361" expanded="false" signature="6:98" ph="..." />
+                <marker date="1517779491361" expanded="true" signature="121:369" ph="{...}" />
+                <marker date="1517779491361" expanded="true" signature="128:204" ph="/// Entry class for the shields module. ... " />
+                <marker date="1517779491361" expanded="true" signature="269:367" ph="{...}" />
+                <marker date="1517779491361" expanded="true" signature="300:361" ph="{...}" />
               </folding>
             </state>
           </provider>
@@ -340,54 +340,54 @@
       <file leaf-file-name="HarmonyPatches.cs" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/AllModdingComponents/PawnShields/HarmonyPatches.cs">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="133">
-              <caret line="17" column="32" lean-forward="false" selection-start-line="17" selection-start-column="32" selection-end-line="17" selection-end-column="32" />
+            <state relative-caret-position="228">
+              <caret line="22" column="21" lean-forward="false" selection-start-line="22" selection-start-column="21" selection-end-line="22" selection-end-column="21" />
               <folding>
-                <marker date="1518181050494" expanded="false" signature="6:222" ph="..." />
-                <marker date="1518181050494" expanded="true" signature="245:20545" ph="{...}" />
-                <marker date="1518181050494" expanded="true" signature="252:330" ph="/// Harmony patches, these aren't pretty. ... " />
-                <marker date="1518181050494" expanded="true" signature="402:20543" ph="{...}" />
-                <marker date="1518181050494" expanded="true" signature="774:868" ph="{...}" />
-                <marker date="1518181050494" expanded="true" signature="938:1035" ph="{...}" />
-                <marker date="1518181050494" expanded="true" signature="1101:1189" ph="{...}" />
-                <marker date="1518181050494" expanded="true" signature="1261:1353" ph="{...}" />
-                <marker date="1518181050494" expanded="true" signature="1386:6098" ph="{...}" />
-                <marker date="1518181050494" expanded="true" signature="1513:1934" ph="/* { ... */" />
-                <marker date="1518181050494" expanded="true" signature="6108:6564" ph="/* public static void Patch_ThingDef_SpecialDisplayStats(ThingDef __instance, ref IEnumerable&lt;StatDrawEntry&gt; __re ... */" />
-                <marker date="1518181050494" expanded="true" signature="6674:6763" ph="{...}" />
-                <marker date="1518181050494" expanded="true" signature="6852:7183" ph="{...}" />
-                <marker date="1518181050494" expanded="true" signature="6948:7149" ph="{...}" />
-                <marker date="1518181050494" expanded="true" signature="7335:7534" ph="{...}" />
-                <marker date="1518181050494" expanded="true" signature="7687:11028" ph="{...}" />
-                <marker date="1518181050494" expanded="true" signature="8110:8232" ph="/* Log.Message(&quot;##1: desiredPosition is at: &quot; + desiredPosition); ... */" />
-                <marker date="1518181050494" expanded="true" signature="11148:11397" ph="{...}" />
-                <marker date="1518181050494" expanded="true" signature="11243:11387" ph="{...}" />
-                <marker date="1518181050494" expanded="true" signature="11556:14969" ph="{...}" />
-                <marker date="1518181050494" expanded="true" signature="12018:12162" ph="/* Log.Message(&quot;##1: desiredPosition is at: &quot; + desiredPosition); ... */" />
-                <marker date="1518181050494" expanded="true" signature="12489:12867" ph="{...}" />
-                <marker date="1518181050494" expanded="true" signature="12749:12853" ph="{...}" />
-                <marker date="1518181050494" expanded="true" signature="12916:13038" ph="/* Log.Message(&quot;##2: desiredPosition is at: &quot; + desiredPosition); ... */" />
-                <marker date="1518181050494" expanded="true" signature="15125:15635" ph="{...}" />
-                <marker date="1518181050494" expanded="true" signature="15297:15625" ph="{...}" />
-                <marker date="1518181050494" expanded="true" signature="15760:16683" ph="{...}" />
-                <marker date="1518181050494" expanded="true" signature="15870:16673" ph="{...}" />
-                <marker date="1518181050494" expanded="true" signature="16030:16659" ph="{...}" />
-                <marker date="1518181050494" expanded="true" signature="16272:16490" ph="{...}" />
-                <marker date="1518181050494" expanded="true" signature="16346:16468" ph="{...}" />
-                <marker date="1518181050494" expanded="true" signature="16515:16641" ph="{...}" />
-                <marker date="1518181050494" expanded="true" signature="16744:17199" ph="{...}" />
-                <marker date="1518181050494" expanded="true" signature="16899:17189" ph="{...}" />
-                <marker date="1518181050494" expanded="true" signature="17339:20537" ph="{...}" />
-                <marker date="1518181050494" expanded="true" signature="17870:17946" ph="/* Log.Message(&quot;Equipment got.&quot;); ... */" />
-                <marker date="1518181050494" expanded="true" signature="18455:18907" ph="{...}" />
-                <marker date="1518181050494" expanded="true" signature="18815:18893" ph="{...}" />
-                <marker date="1518181050494" expanded="true" signature="19095:19547" ph="{...}" />
-                <marker date="1518181050494" expanded="true" signature="19455:19533" ph="{...}" />
-                <marker date="1518181050494" expanded="true" signature="19738:19804" ph="{...}" />
-                <marker date="1518181050494" expanded="true" signature="19941:20444" ph="{...}" />
-                <marker date="1518181050494" expanded="true" signature="20103:20297" ph="{...}" />
-                <marker date="1518181050494" expanded="true" signature="20169:20279" ph="{...}" />
-                <marker date="1518181050494" expanded="true" signature="20318:20430" ph="{...}" />
+                <marker date="1517843814056" expanded="false" signature="6:222" ph="..." />
+                <marker date="1517843814056" expanded="true" signature="245:20545" ph="{...}" />
+                <marker date="1517843814056" expanded="true" signature="252:330" ph="/// Harmony patches, these aren't pretty. ... " />
+                <marker date="1517843814056" expanded="true" signature="402:20543" ph="{...}" />
+                <marker date="1517843814056" expanded="true" signature="774:868" ph="{...}" />
+                <marker date="1517843814056" expanded="true" signature="938:1035" ph="{...}" />
+                <marker date="1517843814056" expanded="true" signature="1101:1189" ph="{...}" />
+                <marker date="1517843814056" expanded="true" signature="1261:1353" ph="{...}" />
+                <marker date="1517843814056" expanded="true" signature="1386:6098" ph="{...}" />
+                <marker date="1517843814056" expanded="true" signature="1513:1934" ph="/* { ... */" />
+                <marker date="1517843814056" expanded="true" signature="6108:6564" ph="/* public static void Patch_ThingDef_SpecialDisplayStats(ThingDef __instance, ref IEnumerable&lt;StatDrawEntry&gt; __re ... */" />
+                <marker date="1517843814056" expanded="true" signature="6674:6763" ph="{...}" />
+                <marker date="1517843814056" expanded="true" signature="6852:7183" ph="{...}" />
+                <marker date="1517843814056" expanded="true" signature="6948:7149" ph="{...}" />
+                <marker date="1517843814056" expanded="true" signature="7335:7534" ph="{...}" />
+                <marker date="1517843814056" expanded="true" signature="7687:11028" ph="{...}" />
+                <marker date="1517843814056" expanded="true" signature="8110:8232" ph="/* Log.Message(&quot;##1: desiredPosition is at: &quot; + desiredPosition); ... */" />
+                <marker date="1517843814056" expanded="true" signature="11148:11397" ph="{...}" />
+                <marker date="1517843814056" expanded="true" signature="11243:11387" ph="{...}" />
+                <marker date="1517843814056" expanded="true" signature="11556:14969" ph="{...}" />
+                <marker date="1517843814056" expanded="true" signature="12018:12162" ph="/* Log.Message(&quot;##1: desiredPosition is at: &quot; + desiredPosition); ... */" />
+                <marker date="1517843814056" expanded="true" signature="12489:12867" ph="{...}" />
+                <marker date="1517843814056" expanded="true" signature="12749:12853" ph="{...}" />
+                <marker date="1517843814056" expanded="true" signature="12916:13038" ph="/* Log.Message(&quot;##2: desiredPosition is at: &quot; + desiredPosition); ... */" />
+                <marker date="1517843814056" expanded="true" signature="15125:15635" ph="{...}" />
+                <marker date="1517843814056" expanded="true" signature="15297:15625" ph="{...}" />
+                <marker date="1517843814056" expanded="true" signature="15760:16683" ph="{...}" />
+                <marker date="1517843814056" expanded="true" signature="15870:16673" ph="{...}" />
+                <marker date="1517843814056" expanded="true" signature="16030:16659" ph="{...}" />
+                <marker date="1517843814056" expanded="true" signature="16272:16490" ph="{...}" />
+                <marker date="1517843814056" expanded="true" signature="16346:16468" ph="{...}" />
+                <marker date="1517843814056" expanded="true" signature="16515:16641" ph="{...}" />
+                <marker date="1517843814056" expanded="true" signature="16744:17199" ph="{...}" />
+                <marker date="1517843814056" expanded="true" signature="16899:17189" ph="{...}" />
+                <marker date="1517843814056" expanded="true" signature="17339:20537" ph="{...}" />
+                <marker date="1517843814056" expanded="true" signature="17870:17946" ph="/* Log.Message(&quot;Equipment got.&quot;); ... */" />
+                <marker date="1517843814056" expanded="true" signature="18455:18907" ph="{...}" />
+                <marker date="1517843814056" expanded="true" signature="18815:18893" ph="{...}" />
+                <marker date="1517843814056" expanded="true" signature="19095:19547" ph="{...}" />
+                <marker date="1517843814056" expanded="true" signature="19455:19533" ph="{...}" />
+                <marker date="1517843814056" expanded="true" signature="19738:19804" ph="{...}" />
+                <marker date="1517843814056" expanded="true" signature="19941:20444" ph="{...}" />
+                <marker date="1517843814056" expanded="true" signature="20103:20297" ph="{...}" />
+                <marker date="1517843814056" expanded="true" signature="20169:20279" ph="{...}" />
+                <marker date="1517843814056" expanded="true" signature="20318:20430" ph="{...}" />
               </folding>
             </state>
           </provider>
@@ -577,12 +577,12 @@
       <workItem from="1516451610248" duration="1686000" />
       <workItem from="1517019576580" duration="13698000" />
       <workItem from="1517836258850" duration="6564000" />
-      <workItem from="1518181043501" duration="768000" />
+      <workItem from="1518181043501" duration="1324000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="71365000" />
+    <option name="totallyTimeSpent" value="71921000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -1674,65 +1674,65 @@
         <state relative-caret-position="304">
           <caret line="20" column="0" lean-forward="false" selection-start-line="20" selection-start-column="0" selection-end-line="20" selection-end-column="0" />
           <folding>
-            <marker date="1518181050480" expanded="false" signature="6:98" ph="..." />
-            <marker date="1518181050480" expanded="true" signature="121:369" ph="{...}" />
-            <marker date="1518181050480" expanded="true" signature="128:204" ph="/// Entry class for the shields module. ... " />
-            <marker date="1518181050480" expanded="true" signature="269:367" ph="{...}" />
-            <marker date="1518181050480" expanded="true" signature="300:361" ph="{...}" />
+            <marker date="1517779491361" expanded="false" signature="6:98" ph="..." />
+            <marker date="1517779491361" expanded="true" signature="121:369" ph="{...}" />
+            <marker date="1517779491361" expanded="true" signature="128:204" ph="/// Entry class for the shields module. ... " />
+            <marker date="1517779491361" expanded="true" signature="269:367" ph="{...}" />
+            <marker date="1517779491361" expanded="true" signature="300:361" ph="{...}" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/AllModdingComponents/PawnShields/HarmonyPatches.cs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="133">
-          <caret line="17" column="32" lean-forward="false" selection-start-line="17" selection-start-column="32" selection-end-line="17" selection-end-column="32" />
+        <state relative-caret-position="228">
+          <caret line="22" column="21" lean-forward="false" selection-start-line="22" selection-start-column="21" selection-end-line="22" selection-end-column="21" />
           <folding>
-            <marker date="1518181050494" expanded="false" signature="6:222" ph="..." />
-            <marker date="1518181050494" expanded="true" signature="245:20545" ph="{...}" />
-            <marker date="1518181050494" expanded="true" signature="252:330" ph="/// Harmony patches, these aren't pretty. ... " />
-            <marker date="1518181050494" expanded="true" signature="402:20543" ph="{...}" />
-            <marker date="1518181050494" expanded="true" signature="774:868" ph="{...}" />
-            <marker date="1518181050494" expanded="true" signature="938:1035" ph="{...}" />
-            <marker date="1518181050494" expanded="true" signature="1101:1189" ph="{...}" />
-            <marker date="1518181050494" expanded="true" signature="1261:1353" ph="{...}" />
-            <marker date="1518181050494" expanded="true" signature="1386:6098" ph="{...}" />
-            <marker date="1518181050494" expanded="true" signature="1513:1934" ph="/* { ... */" />
-            <marker date="1518181050494" expanded="true" signature="6108:6564" ph="/* public static void Patch_ThingDef_SpecialDisplayStats(ThingDef __instance, ref IEnumerable&lt;StatDrawEntry&gt; __re ... */" />
-            <marker date="1518181050494" expanded="true" signature="6674:6763" ph="{...}" />
-            <marker date="1518181050494" expanded="true" signature="6852:7183" ph="{...}" />
-            <marker date="1518181050494" expanded="true" signature="6948:7149" ph="{...}" />
-            <marker date="1518181050494" expanded="true" signature="7335:7534" ph="{...}" />
-            <marker date="1518181050494" expanded="true" signature="7687:11028" ph="{...}" />
-            <marker date="1518181050494" expanded="true" signature="8110:8232" ph="/* Log.Message(&quot;##1: desiredPosition is at: &quot; + desiredPosition); ... */" />
-            <marker date="1518181050494" expanded="true" signature="11148:11397" ph="{...}" />
-            <marker date="1518181050494" expanded="true" signature="11243:11387" ph="{...}" />
-            <marker date="1518181050494" expanded="true" signature="11556:14969" ph="{...}" />
-            <marker date="1518181050494" expanded="true" signature="12018:12162" ph="/* Log.Message(&quot;##1: desiredPosition is at: &quot; + desiredPosition); ... */" />
-            <marker date="1518181050494" expanded="true" signature="12489:12867" ph="{...}" />
-            <marker date="1518181050494" expanded="true" signature="12749:12853" ph="{...}" />
-            <marker date="1518181050494" expanded="true" signature="12916:13038" ph="/* Log.Message(&quot;##2: desiredPosition is at: &quot; + desiredPosition); ... */" />
-            <marker date="1518181050494" expanded="true" signature="15125:15635" ph="{...}" />
-            <marker date="1518181050494" expanded="true" signature="15297:15625" ph="{...}" />
-            <marker date="1518181050494" expanded="true" signature="15760:16683" ph="{...}" />
-            <marker date="1518181050494" expanded="true" signature="15870:16673" ph="{...}" />
-            <marker date="1518181050494" expanded="true" signature="16030:16659" ph="{...}" />
-            <marker date="1518181050494" expanded="true" signature="16272:16490" ph="{...}" />
-            <marker date="1518181050494" expanded="true" signature="16346:16468" ph="{...}" />
-            <marker date="1518181050494" expanded="true" signature="16515:16641" ph="{...}" />
-            <marker date="1518181050494" expanded="true" signature="16744:17199" ph="{...}" />
-            <marker date="1518181050494" expanded="true" signature="16899:17189" ph="{...}" />
-            <marker date="1518181050494" expanded="true" signature="17339:20537" ph="{...}" />
-            <marker date="1518181050494" expanded="true" signature="17870:17946" ph="/* Log.Message(&quot;Equipment got.&quot;); ... */" />
-            <marker date="1518181050494" expanded="true" signature="18455:18907" ph="{...}" />
-            <marker date="1518181050494" expanded="true" signature="18815:18893" ph="{...}" />
-            <marker date="1518181050494" expanded="true" signature="19095:19547" ph="{...}" />
-            <marker date="1518181050494" expanded="true" signature="19455:19533" ph="{...}" />
-            <marker date="1518181050494" expanded="true" signature="19738:19804" ph="{...}" />
-            <marker date="1518181050494" expanded="true" signature="19941:20444" ph="{...}" />
-            <marker date="1518181050494" expanded="true" signature="20103:20297" ph="{...}" />
-            <marker date="1518181050494" expanded="true" signature="20169:20279" ph="{...}" />
-            <marker date="1518181050494" expanded="true" signature="20318:20430" ph="{...}" />
+            <marker date="1517843814056" expanded="false" signature="6:222" ph="..." />
+            <marker date="1517843814056" expanded="true" signature="245:20545" ph="{...}" />
+            <marker date="1517843814056" expanded="true" signature="252:330" ph="/// Harmony patches, these aren't pretty. ... " />
+            <marker date="1517843814056" expanded="true" signature="402:20543" ph="{...}" />
+            <marker date="1517843814056" expanded="true" signature="774:868" ph="{...}" />
+            <marker date="1517843814056" expanded="true" signature="938:1035" ph="{...}" />
+            <marker date="1517843814056" expanded="true" signature="1101:1189" ph="{...}" />
+            <marker date="1517843814056" expanded="true" signature="1261:1353" ph="{...}" />
+            <marker date="1517843814056" expanded="true" signature="1386:6098" ph="{...}" />
+            <marker date="1517843814056" expanded="true" signature="1513:1934" ph="/* { ... */" />
+            <marker date="1517843814056" expanded="true" signature="6108:6564" ph="/* public static void Patch_ThingDef_SpecialDisplayStats(ThingDef __instance, ref IEnumerable&lt;StatDrawEntry&gt; __re ... */" />
+            <marker date="1517843814056" expanded="true" signature="6674:6763" ph="{...}" />
+            <marker date="1517843814056" expanded="true" signature="6852:7183" ph="{...}" />
+            <marker date="1517843814056" expanded="true" signature="6948:7149" ph="{...}" />
+            <marker date="1517843814056" expanded="true" signature="7335:7534" ph="{...}" />
+            <marker date="1517843814056" expanded="true" signature="7687:11028" ph="{...}" />
+            <marker date="1517843814056" expanded="true" signature="8110:8232" ph="/* Log.Message(&quot;##1: desiredPosition is at: &quot; + desiredPosition); ... */" />
+            <marker date="1517843814056" expanded="true" signature="11148:11397" ph="{...}" />
+            <marker date="1517843814056" expanded="true" signature="11243:11387" ph="{...}" />
+            <marker date="1517843814056" expanded="true" signature="11556:14969" ph="{...}" />
+            <marker date="1517843814056" expanded="true" signature="12018:12162" ph="/* Log.Message(&quot;##1: desiredPosition is at: &quot; + desiredPosition); ... */" />
+            <marker date="1517843814056" expanded="true" signature="12489:12867" ph="{...}" />
+            <marker date="1517843814056" expanded="true" signature="12749:12853" ph="{...}" />
+            <marker date="1517843814056" expanded="true" signature="12916:13038" ph="/* Log.Message(&quot;##2: desiredPosition is at: &quot; + desiredPosition); ... */" />
+            <marker date="1517843814056" expanded="true" signature="15125:15635" ph="{...}" />
+            <marker date="1517843814056" expanded="true" signature="15297:15625" ph="{...}" />
+            <marker date="1517843814056" expanded="true" signature="15760:16683" ph="{...}" />
+            <marker date="1517843814056" expanded="true" signature="15870:16673" ph="{...}" />
+            <marker date="1517843814056" expanded="true" signature="16030:16659" ph="{...}" />
+            <marker date="1517843814056" expanded="true" signature="16272:16490" ph="{...}" />
+            <marker date="1517843814056" expanded="true" signature="16346:16468" ph="{...}" />
+            <marker date="1517843814056" expanded="true" signature="16515:16641" ph="{...}" />
+            <marker date="1517843814056" expanded="true" signature="16744:17199" ph="{...}" />
+            <marker date="1517843814056" expanded="true" signature="16899:17189" ph="{...}" />
+            <marker date="1517843814056" expanded="true" signature="17339:20537" ph="{...}" />
+            <marker date="1517843814056" expanded="true" signature="17870:17946" ph="/* Log.Message(&quot;Equipment got.&quot;); ... */" />
+            <marker date="1517843814056" expanded="true" signature="18455:18907" ph="{...}" />
+            <marker date="1517843814056" expanded="true" signature="18815:18893" ph="{...}" />
+            <marker date="1517843814056" expanded="true" signature="19095:19547" ph="{...}" />
+            <marker date="1517843814056" expanded="true" signature="19455:19533" ph="{...}" />
+            <marker date="1517843814056" expanded="true" signature="19738:19804" ph="{...}" />
+            <marker date="1517843814056" expanded="true" signature="19941:20444" ph="{...}" />
+            <marker date="1517843814056" expanded="true" signature="20103:20297" ph="{...}" />
+            <marker date="1517843814056" expanded="true" signature="20169:20279" ph="{...}" />
+            <marker date="1517843814056" expanded="true" signature="20318:20430" ph="{...}" />
           </folding>
         </state>
       </provider>

@@ -18,6 +18,11 @@ namespace PawnShields
         public GraphicData wieldedGraphic;
 
         /// <summary>
+        /// If true it will attempt to use a colored version of the shield. e.g stuff
+        /// </summary>
+        public bool useColoredVersion = true;
+
+        /// <summary>
         /// Shield rendering properties.
         /// </summary>
         public ShieldRenderProperties renderProperties = new ShieldRenderProperties();

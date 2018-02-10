@@ -153,7 +153,10 @@ namespace PawnShields
                     if (ShieldProps.renderProperties.flipRotation)
                         angle = -angle;
 
-                    ShieldProps.wieldedGraphic.GraphicColoredFor(thing).Draw(loc, rot, thing, angle);
+                    if(ShieldProps.useColoredVersion)
+                        ShieldProps.wieldedGraphic.GraphicColoredFor(thing).Draw(loc, rot, thing, angle);
+                    else
+                        ShieldProps.wieldedGraphic.Graphic.Draw(loc, rot, thing, angle);
                 }
                 else if (rot == Rot4.South)
                 {
@@ -161,11 +164,17 @@ namespace PawnShields
                     if (ShieldProps.renderProperties.flipRotation)
                         angle = -angle;
 
-                    ShieldProps.wieldedGraphic.GraphicColoredFor(thing).Draw(loc, rot, thing, angle);
+                    if (ShieldProps.useColoredVersion)
+                        ShieldProps.wieldedGraphic.GraphicColoredFor(thing).Draw(loc, rot, thing, angle);
+                    else
+                        ShieldProps.wieldedGraphic.Graphic.Draw(loc, rot, thing, angle);
                 }
                 else
                 {
-                    ShieldProps.wieldedGraphic.GraphicColoredFor(thing).Draw(loc, rot, thing);
+                    if (ShieldProps.useColoredVersion)
+                        ShieldProps.wieldedGraphic.GraphicColoredFor(thing).Draw(loc, rot, thing);
+                    else
+                        ShieldProps.wieldedGraphic.Graphic.Draw(loc, rot, thing);
                 }
             }
             else
