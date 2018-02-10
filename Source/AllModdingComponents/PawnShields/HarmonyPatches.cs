@@ -431,6 +431,7 @@ namespace PawnShields
 
             CompShield shieldComp = shield.GetComp<CompShield>();
 
+            SoundDef shieldSound = shieldComp.BlockSound ?? shieldComp.ShieldProps.defaultSound;
             bool discardShield = false;
 
             //Determine if it is a melee or ranged attack.
@@ -441,8 +442,8 @@ namespace PawnShields
             {
                 //Ranged
                 absorbed = shieldComp.AbsorbDamage(pawn, dinfo, true);
-                if(absorbed)
-                    shieldComp.BlockSound.PlayOneShot(pawn);
+                if(absorbed && shieldSound != null)
+                    shieldSound.PlayOneShot(pawn);
                 //MoteMaker.ThrowText(dinfo.Instigator.DrawPos, dinfo.Instigator.Map, "Ranged absorbed=" + absorbed);
 
                 if (shieldComp.IsBroken)
@@ -456,8 +457,8 @@ namespace PawnShields
             {
                 //Melee
                 absorbed = shieldComp.AbsorbDamage(pawn, dinfo, false);
-                if (absorbed)
-                    shieldComp.BlockSound.PlayOneShot(pawn);
+                if (absorbed && shieldSound != null)
+                    shieldSound.PlayOneShot(pawn);
                 //MoteMaker.ThrowText(dinfo.Instigator.DrawPos, dinfo.Instigator.Map, "Melee absorbed=" + absorbed);
 
                 if (shieldComp.IsBroken)

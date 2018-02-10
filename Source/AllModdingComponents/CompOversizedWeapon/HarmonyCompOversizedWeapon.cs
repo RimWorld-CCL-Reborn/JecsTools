@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Harmony;
+using RimWorld;
 using UnityEngine;
 using Verse;
 
@@ -46,6 +47,7 @@ namespace CompOversizedWeapon
                 {
                     var flip = false;
                     var num = aimAngle - 90f;
+                    var pawn = Traverse.Create(__instance).Field("pawn").GetValue<Pawn>();
                     Mesh mesh;
                     if (aimAngle > 20f && aimAngle < 160f)
                     {
@@ -62,7 +64,35 @@ namespace CompOversizedWeapon
                     else
                     {
                         mesh = MeshPool.plane10;
-                        num += eq.def.equippedAngleOffset;
+                        var offsetAtPeace = eq.def.equippedAngleOffset;
+                        if (!pawn.IsFighting() && compOversizedWeapon.Props.verticalFlipOutsideCombat)
+                        {
+                            offsetAtPeace += 180f;
+                        }
+                        num += offsetAtPeace;
+                    }
+                    if (!pawn.IsFighting() && (compOversizedWeapon.Props.verticalFlipNorth && pawn.Rotation == Rot4.North))
+                    {
+                        num += 180f;
+                    }
+                    if (!pawn.IsFighting())
+                    {
+                        if (pawn.Rotation == Rot4.North)
+                        {
+                            num += compOversizedWeapon.Props.angleAdjustmentNorth;
+                        }
+                        else if (pawn.Rotation == Rot4.East)
+                        {
+                            num += compOversizedWeapon.Props.angleAdjustmentEast;                            
+                        }
+                        else if (pawn.Rotation == Rot4.West)
+                        {
+                            num += compOversizedWeapon.Props.angleAdjustmentWest;                            
+                        }
+                        else if (pawn.Rotation == Rot4.South)
+                        {
+                            num += compOversizedWeapon.Props.angleAdjustmentSouth;                            
+                        }
                     }
                     num %= 360f;
                     var graphic_StackCount = eq.Graphic as Graphic_StackCount;
@@ -74,7 +104,11 @@ namespace CompOversizedWeapon
 
                     var s = new Vector3(eq.def.graphicData.drawSize.x, 1f, eq.def.graphicData.drawSize.y);
                     var matrix = default(Matrix4x4);
-                    matrix.SetTRS(drawLoc + compOversizedWeapon.Props.offset, Quaternion.AngleAxis(num, Vector3.up), s);
+
+                    
+                    var curOffset = AdjustRenderOffsetFromDir(pawn, compOversizedWeapon);
+
+                    matrix.SetTRS(drawLoc + curOffset, Quaternion.AngleAxis(num, Vector3.up), s);
                     if (!flip) Graphics.DrawMesh(MeshPool.plane10, matrix, matSingle, 0);
                     else Graphics.DrawMesh(MeshPool.plane10Flip, matrix, matSingle, 0);
                     return false;
@@ -82,6 +116,25 @@ namespace CompOversizedWeapon
             }
             //}
             return true;
+        }
+
+        private static Vector3 AdjustRenderOffsetFromDir(Pawn pawn, CompOversizedWeapon compOversizedWeapon)
+        {
+            var curDir = pawn.Rotation;
+            Vector3 curOffset = compOversizedWeapon.Props.northOffset;
+            if (curDir == Rot4.East)
+            {
+                curOffset = compOversizedWeapon.Props.eastOffset;
+            }
+            else if (curDir == Rot4.South)
+            {
+                curOffset = compOversizedWeapon.Props.southOffset;
+            }
+            else if (curDir == Rot4.West)
+            {
+                curOffset = compOversizedWeapon.Props.westOffset;
+            }
+            return curOffset;
         }
 
 

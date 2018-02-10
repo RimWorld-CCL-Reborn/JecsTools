@@ -45,9 +45,11 @@ namespace PawnShields
         {
             get
             {
-                if(ShieldProps.stuffedSounds.Count > 0 && ShieldProps.stuffedSounds.ContainsKey(parent.Stuff?.stuffProps?.categories.FirstOrDefault()))
+                if (ShieldProps?.stuffedSounds != null && ShieldProps?.stuffedSounds?.Count > 0 && parent.Stuff?.stuffProps?.categories != null && ShieldProps.stuffedSounds.Count > 0 &&
+                    ShieldProps.stuffedSounds.ContainsKey(parent.Stuff?.stuffProps?.categories.FirstOrDefault()))
                 {
-                    return ShieldProps.stuffedSounds[parent.Stuff.stuffProps.categories.First()];
+                    if (ShieldProps.stuffedSounds[parent.Stuff.stuffProps.categories.First()] is SoundDef def)
+                        return def;
                 }
 
                 //Default sound
