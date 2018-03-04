@@ -18,10 +18,13 @@ namespace CompOversizedWeapon
         public Vector3 westOffset = new Vector3(0,0,0);
         public bool verticalFlipOutsideCombat = false;
         public bool verticalFlipNorth = false;
+        public bool isDualWeapon = false;
         public float angleAdjustmentEast = 0f;
         public float angleAdjustmentWest = 0f;
         public float angleAdjustmentNorth = 0f;
         public float angleAdjustmentSouth = 0f;
+
+        public GraphicData groundGraphic = null;
 
         public CompProperties_OversizedWeapon()
         {
