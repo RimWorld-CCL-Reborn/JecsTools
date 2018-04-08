@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Harmony;
 using RimWorld;
 using UnityEngine;
@@ -42,6 +44,141 @@ namespace AbilityUser
 
             harmony.Patch(AccessTools.Method(typeof(ShortHashGiver), "GiveShortHash"),
                 new HarmonyMethod(typeof(AbilityUserMod), nameof(GiveShortHash_PrePatch)), null);
+            
+            harmony.Patch(AccessTools.Method(typeof(PawnGroupKindWorker), "GeneratePawns", 
+                    new Type[]{typeof(PawnGroupMakerParms), typeof(PawnGroupMaker), typeof(bool)}), null,
+                new HarmonyMethod(typeof(AbilityUserMod), nameof(GeneratePawns_PostFix)));
+        }
+        
+        // RimWorld.PawnGroupKindWorker_Normal
+        public static void GeneratePawns_PostFix(PawnGroupMakerParms parms, PawnGroupMaker groupMaker, bool errorOnZeroResults, ref List<Pawn> __result)
+        {
+            //Anyone special?
+            if (__result.Any() && __result.FindAll(x => x.TryGetComp<CompAbilityUser>() is CompAbilityUser cu && cu.CombatPoints() > 0) is List<Pawn> specialPawns)
+            {
+                //Log.Message("Special Pawns Detected");
+                //Log.Message("------------------");
+                
+                //Points
+                var previousPoints = parms.points;
+                //Log.Message("Points: " +  previousPoints);
+                
+                //Log.Message("Average Characters");
+                //Log.Message("------------------");
+                
+                //Anyone average?
+                int avgPawns = 0;
+                var avgCombatPoints = new Dictionary<Pawn, float>();
+                if (__result.FindAll(x => x.TryGetComp<CompAbilityUser>() == null) is List<Pawn> averagePawns)
+                {
+                    avgPawns = averagePawns.Count;
+                    averagePawns.ForEach(x =>
+                    {
+                        avgCombatPoints.Add(x, x.kindDef.combatPower);
+                        //Log.Message(x.LabelShort + " : " + x.kindDef.combatPower);
+                    });
+                    
+                }
+                
+                //Log.Message("------------------");                                
+                //Log.Message("Special Characters");
+                //Log.Message("------------------");
+                
+                //What's your powers?
+                var specCombatPoints = new Dictionary<Pawn, float>();
+                specialPawns.ForEach(x =>
+                {
+                    var combatValue = x.kindDef.combatPower;
+                    foreach (var thingComp in x.AllComps.FindAll(y => y is CompAbilityUser))
+                    {
+                        //var compAbilityUser = (CompAbilityUser) thingComp;
+                        var val = Traverse.Create(thingComp).Method("CombatPoints").GetValue<float>();
+                        combatValue += val; //compAbilityUser.CombatPoints();
+                    }
+                    specCombatPoints.Add(x, combatValue);
+                    //Log.Message(x.LabelShort + " : " + combatValue);
+                });
+                
+                
+                //Special case -- single raider/character should not be special to avoid problems (e.g. Werewolf raid destroys everyone).
+                if (avgPawns == 0 && specCombatPoints.Sum(x => x.Value) > 0 && specialPawns.Count == 1)
+                {
+                    //Log.Message("Special case called: Single character");
+                    specialPawns.First().TryGetComp<CompAbilityUser>().DisableAbilityUser();
+                    return;
+                }
+                
+                //Should we rebalance?
+                int tryLimit = avgPawns + specialPawns.Count + 1;
+                int initTryLimit = tryLimit;
+                var tempAvgCombatPoints = new Dictionary<Pawn, float>(avgCombatPoints);
+                var tempSpecCombatPoints = new Dictionary<Pawn, float>(specCombatPoints);
+                var removedCharacters = new List<Pawn>();
+                while (previousPoints < tempAvgCombatPoints.Sum(x => x.Value) + tempSpecCombatPoints.Sum(x => x.Value))
+                {
+                    
+                    //Log.Message("------------------");                                
+                    //Log.Message("Rebalance Attempt # " + (initTryLimit - tryLimit + 1));
+                    //Log.Message("------------------");
+                    //Log.Message("Scenario Points: " + previousPoints + ". Total Points: " + tempAvgCombatPoints.Sum(x => x.Value) + tempSpecCombatPoints.Sum(x => x.Value));
+                    
+                    //In-case some stupid stuff occurs
+                    --tryLimit;
+                    if (tryLimit < 0)
+                        break;
+                    
+                    //If special characters outnumber the avg characters, try removing some of the special characters instead.
+                    if (tempSpecCombatPoints.Count >= tempAvgCombatPoints.Count)
+                    {
+                        var toRemove = tempSpecCombatPoints.Keys.RandomElement();
+                        //Log.Message("Removed: " + toRemove.LabelShort + " : " + tempSpecCombatPoints[toRemove]);
+                        removedCharacters.Add(toRemove);
+                        tempSpecCombatPoints.Remove(toRemove);
+                    }
+                    //If average characters outnumber special characters, then check if the combat value of avg is greater.
+                    else if (tempSpecCombatPoints.Count < tempAvgCombatPoints.Count)
+                    {
+                        //Remove a random average character if the average characters have more combat points for a score
+                        if (tempAvgCombatPoints.Sum(x => x.Value) > tempSpecCombatPoints.Sum(x => x.Value))
+                        {
+                            var toRemove = tempAvgCombatPoints.Keys.RandomElement();
+                            //Log.Message("Removed: " + toRemove.LabelShort + " : " + tempSpecCombatPoints[toRemove]);
+                            removedCharacters.Add(toRemove);
+                            tempAvgCombatPoints.Remove(toRemove);                           
+                        }
+                        else
+                        {
+                            var toRemove = tempSpecCombatPoints.Keys.RandomElement();
+                            //Log.Message("Removed: " + toRemove.LabelShort + " : " + tempSpecCombatPoints[toRemove]);
+                            removedCharacters.Add(toRemove);
+                            tempSpecCombatPoints.Remove(toRemove);
+                        }
+                    }
+                }
+                avgCombatPoints = tempAvgCombatPoints;
+                specCombatPoints = tempSpecCombatPoints;
+                
+//                Log.Message("------------");                                
+//                Log.Message("Final Report");
+//                Log.Message("------------");
+//                Log.Message("Scenario Points: " + previousPoints + ". Total Points: " + tempAvgCombatPoints.Sum(x => x.Value) + tempSpecCombatPoints.Sum(x => x.Value));
+//                Log.Message("------------");
+//                Log.Message("Characters");
+//                Log.Message("------------------");
+                __result.ForEach(x =>
+                {
+                    var combatValue = x.kindDef.combatPower + x?.TryGetComp<CompAbilityUser>()?.CombatPoints() ?? 0f;
+                    //Log.Message(x.LabelShort + " : " + combatValue);
+                });
+                foreach (var x in removedCharacters)
+                {
+                    if (x.TryGetComp<CompAbilityUser>() is CompAbilityUser cu && cu.CombatPoints() > 0) cu.DisableAbilityUser();
+                    else x.DestroyOrPassToWorld();
+                }
+                removedCharacters.Clear();
+                avgCombatPoints.Clear();
+                specCombatPoints.Clear();
+            }
         }
 
         //static HarmonyPatches()

@@ -73,6 +73,7 @@
     <Compile Include="CaravanJobs\WorldObjectRecipeDef.cs" />
     <Compile Include="CaravanJobs\WorldObject_ProgressBar.cs" />
     <None Include="CaravanJobs\WorldProgressBarDrawer.cs" />
+    <Compile Include="PatchOperationModLoaded.cs" />
     <Compile Include="Projectile_Laser.cs" />
     <Compile Include="DamageDefCleave.cs" />
     <Compile Include="DamageWorker_Cleave.cs" />

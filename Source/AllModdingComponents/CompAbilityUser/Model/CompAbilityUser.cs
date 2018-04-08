@@ -173,6 +173,19 @@ namespace AbilityUser
         {
             return false;
         }
+        
+        // Allows inherited classes to determine "true" combat points for characters that spawn with these components
+        public virtual float CombatPoints()
+        {
+            return 0;
+        }
+
+        //In some cases, a special ability user might spawn as a single character raid and cause havoc.
+        //To avoid this, a special check occurs to disable the ability user, should this situation occur.
+        public virtual void DisableAbilityUser()
+        {
+            
+        }
 
         #region virtual
 

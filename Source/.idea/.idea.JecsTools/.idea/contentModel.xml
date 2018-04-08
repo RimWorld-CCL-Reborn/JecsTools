@@ -290,6 +290,7 @@
         <e p="JobGiver_AIFirelessTrashColonyDistant.cs" t="Include" />
         <e p="ModCompatibilityUtility.cs" t="Include" />
         <e p="obj" t="ExcludeRecursive" />
+        <e p="PatchOperationModLoaded.cs" t="Include" />
         <e p="PlaceWorker_OnTopOfWalls.cs" t="Include" />
         <e p="PlaceWorker_Outline.cs" t="Include" />
         <e p="Projectile_Laser.cs" t="Include" />
