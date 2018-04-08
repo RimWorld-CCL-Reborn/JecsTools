@@ -710,12 +710,13 @@
         <entry file="file://$PROJECT_DIR$/AllModdingComponents/JecsTools/PatchOperationModLoaded.cs">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="114">
-              <caret line="6" column="0" lean-forward="false" selection-start-line="6" selection-start-column="0" selection-end-line="16" selection-end-column="5" />
+              <caret line="6" column="70" lean-forward="false" selection-start-line="6" selection-start-column="70" selection-end-line="6" selection-end-column="70" />
               <folding>
-                <marker date="1523173058721" expanded="true" signature="6:49" ph="..." />
-                <marker date="1523173058721" expanded="true" signature="70:433" ph="{...}" />
-                <marker date="1523173058721" expanded="true" signature="130:431" ph="{...}" />
-                <marker date="1523173058721" expanded="true" signature="294:425" ph="{...}" />
+                <marker date="1523178316070" expanded="true" signature="6:49" ph="..." />
+                <marker date="1523178316070" expanded="true" signature="70:736" ph="{...}" />
+                <marker date="1523178316070" expanded="true" signature="77:375" ph="/* Original code from NoImageAvailable's Combat Extended (You're a legend, sir) ... */" />
+                <marker date="1523178316070" expanded="true" signature="433:734" ph="{...}" />
+                <marker date="1523178316070" expanded="true" signature="597:728" ph="{...}" />
               </folding>
             </state>
           </provider>
@@ -912,8 +913,8 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="222" />
-    <option name="y" value="103" />
+    <option name="x" value="-455" />
+    <option name="y" value="80" />
     <option name="width" value="1599" />
     <option name="height" value="861" />
   </component>
@@ -1017,12 +1018,12 @@
       <workItem from="1521464823446" duration="11896000" />
       <workItem from="1521911514137" duration="2580000" />
       <workItem from="1522462232930" duration="641000" />
-      <workItem from="1523172891703" duration="1480000" />
+      <workItem from="1523172891703" duration="2245000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="119478000" />
+    <option name="totallyTimeSpent" value="120243000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -1034,7 +1035,8 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="222" y="103" width="1599" height="861" extended-state="0" />
+    <frame x="-455" y="80" width="1599" height="861" extended-state="0" />
+    <editor active="true" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Errors In Solution" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -2119,12 +2121,13 @@
     <entry file="file://$PROJECT_DIR$/AllModdingComponents/JecsTools/PatchOperationModLoaded.cs">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="114">
-          <caret line="6" column="0" lean-forward="false" selection-start-line="6" selection-start-column="0" selection-end-line="16" selection-end-column="5" />
+          <caret line="6" column="70" lean-forward="false" selection-start-line="6" selection-start-column="70" selection-end-line="6" selection-end-column="70" />
           <folding>
-            <marker date="1523173058721" expanded="true" signature="6:49" ph="..." />
-            <marker date="1523173058721" expanded="true" signature="70:433" ph="{...}" />
-            <marker date="1523173058721" expanded="true" signature="130:431" ph="{...}" />
-            <marker date="1523173058721" expanded="true" signature="294:425" ph="{...}" />
+            <marker date="1523178316070" expanded="true" signature="6:49" ph="..." />
+            <marker date="1523178316070" expanded="true" signature="70:736" ph="{...}" />
+            <marker date="1523178316070" expanded="true" signature="77:375" ph="/* Original code from NoImageAvailable's Combat Extended (You're a legend, sir) ... */" />
+            <marker date="1523178316070" expanded="true" signature="433:734" ph="{...}" />
+            <marker date="1523178316070" expanded="true" signature="597:728" ph="{...}" />
           </folding>
         </state>
       </provider>
