@@ -285,6 +285,9 @@
         <e p="HediffCompProperties_DamageSoak.cs" t="Include" />
         <e p="HediffCompProperties_ExtraMeleeDamages.cs" t="Include" />
         <e p="HediffCompProperties_Knockback.cs" t="Include" />
+        <e p="HediffExpandedDef.cs" t="Include" />
+        <e p="HediffGiver_StartWithHediff.cs" t="Include" />
+        <e p="HediffWithComps_Expanded.cs" t="Include" />
         <e p="JecsTools.csproj" t="IncludeRecursive" />
         <e p="JobGiver_AIFirelessTrashColonyClose.cs" t="Include" />
         <e p="JobGiver_AIFirelessTrashColonyDistant.cs" t="Include" />

@@ -31,6 +31,9 @@ namespace JecsTools
                 new HarmonyMethod(typeof(HarmonyPatches), nameof(ApplyProperDamage)), null);
             harmony.Patch(AccessTools.Method(typeof(ArmorUtility), "GetPostArmorDamage"), null,
                 new HarmonyMethod(typeof(HarmonyPatches), nameof(Post_GetPostArmorDamage)));
+            harmony.Patch(AccessTools.Method(typeof(PawnGenerator), "GeneratePawnInternal"), null,
+                new HarmonyMethod(typeof(HarmonyPatches), nameof(Post_GeneratePawnInternal)));
+            
             
 /*            harmony.Patch(
                 AccessTools.Method(typeof(DamageWorker_AddInjury), "FinalizeAndAddInjury",
@@ -43,6 +46,18 @@ namespace JecsTools
                     nameof(ApplyProperDamage)), null);*/
         }
 
+        public static void Post_GeneratePawnInternal(PawnGenerationRequest request, ref Pawn __result)
+        {
+            var hediffGiverSet = __result?.def?.race?.hediffGiverSets?.FirstOrDefault(
+                x => x.hediffGivers.Any(y => y is HediffGiver_StartWithHediff));
+            if (hediffGiverSet == null) return;
+
+            if (hediffGiverSet.hediffGivers.FirstOrDefault(x => x is HediffGiver_StartWithHediff) is HediffGiver_StartWithHediff hediffGiver)
+            {
+                hediffGiver.GiveHediff(__result);
+            }
+        }
+        
         //ArmorUtility
         public static void Post_GetPostArmorDamage(Pawn pawn, int amountInt, BodyPartRecord part, DamageDef damageDef)
         {

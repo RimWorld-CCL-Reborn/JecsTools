@@ -73,6 +73,9 @@
     <Compile Include="CaravanJobs\WorldObjectRecipeDef.cs" />
     <Compile Include="CaravanJobs\WorldObject_ProgressBar.cs" />
     <None Include="CaravanJobs\WorldProgressBarDrawer.cs" />
+    <Compile Include="HediffExpandedDef.cs" />
+    <Compile Include="HediffGiver_StartWithHediff.cs" />
+    <Compile Include="HediffWithComps_Expanded.cs" />
     <Compile Include="PatchOperationModLoaded.cs" />
     <Compile Include="Projectile_Laser.cs" />
     <Compile Include="DamageDefCleave.cs" />
