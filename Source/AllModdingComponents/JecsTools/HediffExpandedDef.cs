@@ -16,12 +16,12 @@ namespace JecsTools
         //public string description;
         
         /// <summary>
-        /// Text that appears before the list of modifiers.
+        /// Text key that appears before the list of modifiers.
         /// </summary>
         public string preListText;
         
         /// <summary>
-        /// Text that appears after the list of modifiers.
+        /// Text key that appears after the list of modifiers.
         /// </summary>
         public string postListText;
         

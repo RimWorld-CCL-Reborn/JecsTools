@@ -33,19 +33,54 @@ namespace JecsTools
                 new HarmonyMethod(typeof(HarmonyPatches), nameof(Post_GetPostArmorDamage)));
             harmony.Patch(AccessTools.Method(typeof(PawnGenerator), "GeneratePawnInternal"), null,
                 new HarmonyMethod(typeof(HarmonyPatches), nameof(Post_GeneratePawnInternal)));
+            harmony.Patch(AccessTools.Method(typeof(ApparelUtility), "CanWearTogether"), null,
+                new HarmonyMethod(typeof(HarmonyPatches), nameof(Post_CanWearTogether)));
             
-            
-/*            harmony.Patch(
-                AccessTools.Method(typeof(DamageWorker_AddInjury), "FinalizeAndAddInjury",
-                    new[]
-                    {
-                        typeof(Pawn), typeof(Hediff_Injury), typeof(DamageInfo),
-                        AccessTools.TypeByName("DamageResult").MakeByRefType()
-                    }),
-                new HarmonyMethod(typeof(HarmonyPatches),
-                    nameof(ApplyProperDamage)), null);*/
         }
 
+        /// <summary>
+        /// Using the new ApparelExtension, we can have a string based apparel check.
+        /// </summary>
+        /// <param name="A"></param>
+        /// <param name="B"></param>
+        /// <param name="body"></param>
+        /// <param name="__result"></param>
+        public static void Post_CanWearTogether(ThingDef A, ThingDef B, BodyDef body, ref bool __result)
+        {
+            var aHasExt = A.HasModExtension<ApparelExtension>();
+            var bHasExt = B.HasModExtension<ApparelExtension>();
+            if (aHasExt && bHasExt)
+            {
+                var aExt = A.GetModExtension<ApparelExtension>();
+                var bExt = B.GetModExtension<ApparelExtension>();
+                var check = new Dictionary<string, int>();
+                for (int i = 0; i < aExt.coverage.Count; i++)
+                {
+                    if (!check.ContainsKey(aExt.coverage[i]))
+                        check.Add(aExt.coverage[i].ToLowerInvariant(), 1);
+                    else
+                    {
+                        Log.Warning("JecsTools :: ApparelExtension :: Warning:: " + A.label + " has multiple of the same tags.");
+                        return;
+                    }
+                }
+                for (int j = 0; j < bExt.coverage.Count; j++)
+                {
+                    if (!check.ContainsKey(bExt.coverage[j]))
+                        check.Add(bExt.coverage[j].ToLowerInvariant(), 1);
+                    else
+                    {
+                        __result = false;
+                        break;
+                    }
+                }
+            }
+            else if ((aHasExt && !bHasExt) || (!aHasExt && bHasExt))
+            {
+                __result = true;
+            }
+        }
+        
         public static void Post_GeneratePawnInternal(PawnGenerationRequest request, ref Pawn __result)
         {
             var hediffGiverSet = __result?.def?.race?.hediffGiverSets?.FirstOrDefault(

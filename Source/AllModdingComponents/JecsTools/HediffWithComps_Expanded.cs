@@ -18,9 +18,9 @@ namespace JecsTools
                 {
                     s.AppendLine(def.description);
                 }
-                if (!string.IsNullOrEmpty(Def.preListText)) s.AppendLine(Def.preListText);
+                if (!string.IsNullOrEmpty(Def.preListText)) s.AppendLine(Def.preListText.Translate());
                 s.AppendLine(base.TipStringExtra);
-                if (!string.IsNullOrEmpty(Def.postListText)) s.AppendLine(Def.postListText);
+                if (!string.IsNullOrEmpty(Def.postListText)) s.AppendLine(Def.postListText.Translate());
                 return s.ToString();
             }
         }

@@ -90,9 +90,9 @@ namespace CompVehicle
             ///
 
             //harmony.Patch(AccessTools.)
-            harmony.Patch(AccessTools.Method(typeof(PawnUtility), "IsTravelingInTransportPodWorldObject"), null,
-                new HarmonyMethod(typeof(HarmonyCompVehicle),
-                    nameof(PreventAssigningRandomFaction)));
+//            harmony.Patch(AccessTools.Method(typeof(PawnUtility), "IsTravelingInTransportPodWorldObject"), null,
+//                new HarmonyMethod(typeof(HarmonyCompVehicle),
+//                    nameof(PreventAssigningRandomFaction)));
             harmony.Patch(AccessTools.Method(typeof(SocialCardUtility), "Recache"), new HarmonyMethod(
                 typeof(HarmonyCompVehicle),
                 nameof(SocialTabNullHandling)), null);
@@ -703,12 +703,6 @@ namespace CompVehicle
         // J This patch allows colonists to freely join vehicles 
         //   without having their factions randomly switched around.
         // RimWorld.PawnUtility
-        public static void PreventAssigningRandomFaction(ref bool __result, Pawn pawn)
-        {
-            var prevResult = __result;
-            //Check for vehicles...
-            __result = prevResult || ThingOwnerUtility.AnyParentIs<VehicleHandlerGroup>(pawn);
-        }
 
 
         //S Bug fixes social tab issue with vehicles
