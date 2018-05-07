@@ -10,6 +10,7 @@ using RimWorld;
 using RimWorld.BaseGen;
 using RimWorld.Planet;
 using UnityEngine;
+using UnityEngine.AI;
 using Verse;
 using Verse.AI;
 using Verse.AI.Group;
@@ -90,9 +91,9 @@ namespace CompVehicle
             ///
 
             //harmony.Patch(AccessTools.)
-//            harmony.Patch(AccessTools.Method(typeof(PawnUtility), "IsTravelingInTransportPodWorldObject"), null,
-//                new HarmonyMethod(typeof(HarmonyCompVehicle),
-//                    nameof(PreventAssigningRandomFaction)));
+            harmony.Patch(AccessTools.Method(typeof(PawnUtility), "IsTravelingInTransportPodWorldObject"), null,
+                new HarmonyMethod(typeof(HarmonyCompVehicle),
+                    nameof(PreventAssigningRandomFaction)));
             harmony.Patch(AccessTools.Method(typeof(SocialCardUtility), "Recache"), new HarmonyMethod(
                 typeof(HarmonyCompVehicle),
                 nameof(SocialTabNullHandling)), null);
@@ -288,7 +289,17 @@ namespace CompVehicle
         //}
 
 
-
+        // J This patch allows colonists to freely join vehicles 
+        //   without having their factions randomly switched around.
+        // RimWorld.PawnUtility
+        public static void PreventAssigningRandomFaction(ref bool __result, Pawn pawn)
+        {
+            bool prevResult = __result;
+            //Check for vehicles...
+            if (pawn?.Faction != null)
+                __result = prevResult || (ThingOwnerUtility.AnyParentIs<VehicleHandlerGroup>(pawn));
+        }
+        
 
         //S Temporary prefix patching solution until a transpiler is made
         //Patches Pawn_PathFollower to create custom pathing based off of a vehicles stats, i.e. boats can only be in water
@@ -1118,8 +1129,14 @@ namespace CompVehicle
                     Log.Warning("Tried to add a null or dead pawn to " + __instance);
                     return false;
                 }
-                if (__instance.pawns.TryAdd(p, true))
+                if (p.Spawned) p.DeSpawn();
+                if (p.holdingOwner != null)
                 {
+                    p.holdingOwner?.TryTransferToContainer(p, __instance.pawns);
+                }
+                else __instance.pawns.TryAdd(p);
+                //if (__instance.pawns.TryAdd(p, true))
+                //{
                     //Log.Message("AddVehicles2");
 
                     //All passengers in the vehicle go into the caravan.
@@ -1143,13 +1160,15 @@ namespace CompVehicle
                                 var innerPawn = group.handlers[i];
 
                                 //Remove the pawn from the vehicle and add it to the caravan
+                                if (innerPawn.Spawned) innerPawn.DeSpawn();
                                 if (innerPawn.holdingOwner != null)
                                 {
                                     //Log.Message("AddVehicles7a");
 
-                                    innerPawn.holdingOwner.Remove(innerPawn);
-                                    if (!__instance.pawns.TryAdd(innerPawn, true))
-                                        Log.Message("Failed to load caravan with vehicle pawn: " + innerPawn.Label);
+                                    innerPawn?.holdingOwner?.TryTransferToContainer(innerPawn, __instance.pawns);
+                                    //innerPawn.holdingOwner.Remove(innerPawn);
+                                    //if (!__instance.pawns.TryAdd(innerPawn, true))
+                                    //    Log.Message("Failed to load caravan with vehicle pawn: " + innerPawn.Label);
                                     //Log.Message("AddVehicles7b");
                                 }
                                 else
@@ -1165,7 +1184,7 @@ namespace CompVehicle
                                 //group.handlers.Remove(pawn);
                             }
                         }
-                    }
+                    //}
 
 
 #pragma warning disable IDE0019 // Use pattern matching
@@ -1856,7 +1875,7 @@ namespace CompVehicle
                 }
                 else
                 {
-                    stringBuilder.AppendLine("InfiniteDaysWorthOfFuelInfo".Translate());
+                    //stringBuilder.AppendLine("InfiniteDaysWorthOfFuelInfo".Translate());
                 }
             }
             __result = stringBuilder.ToString().TrimEndNewlines();
@@ -2611,7 +2630,7 @@ namespace CompVehicle
         //Improvements: Better ratios instead of 1 to 1 for fuel source refuel?
         private static float ApproxDaysWorthOfFuel(List<Pawn> pawns, IEnumerable<Thing> goods)
         {
-            var supplies = 0;
+            var supplies = 0f;
             float totalFuelUse = 0;
             var allowed = new List<ThingDef>();
             for (var i = 0; i < pawns.Count; i++)
@@ -2620,7 +2639,8 @@ namespace CompVehicle
                 foreach (var thing in refuel.Props.fuelFilter.AllowedThingDefs)
                     if (!allowed.Contains(thing))
                         allowed.Add(thing);
-                totalFuelUse += pawns[i].GetComp<CompRefuelable>().Props.fuelConsumptionRate / 60000;
+                totalFuelUse += refuel.Props.fuelConsumptionRate / 60000;
+                supplies += refuel.FuelPercentOfMax;
             }
             foreach (var item in goods)
                 if (allowed.Contains(item.def))
