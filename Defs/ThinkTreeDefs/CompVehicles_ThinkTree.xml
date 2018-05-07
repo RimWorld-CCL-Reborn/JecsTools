@@ -11,7 +11,14 @@
         <li Class="ThinkNode_Subtree">
           <treeDef>Downed</treeDef>
         </li>
-
+        <li Class="ThinkNode_Subtree">
+            <treeDef>LordDuty</treeDef>
+        </li>
+        <li Class="ThinkNode_Tagger">
+            <tagToGive>Idle</tagToGive>
+        </li>
+        <li Class="ThinkNode_QueuedJob" />
+        
 		<!-- Vehicle can take direct orders when drafted -->
         <li Class="ThinkNode_ConditionalOfPlayerFaction">
 					<subNodes>
@@ -24,43 +31,59 @@
           </subNodes>
         </li>
 
-  <!-- Vehicle joins auto joinable caravan -->
+        <!-- Vehicle joins auto joinable caravan -->
         <li Class="ThinkNode_Subtree">
           <treeDef>JoinAutoJoinableCaravan</treeDef>
         </li>
-
-  <li Class="ThinkNode_Tagger">
-    <tagToGive>Fieldwork</tagToGive>
-      <subNodes>
-        <li Class="JobGiver_Haul" />
-      </subNodes>
-    </li>
-
-   <!--Vehicle Unloads its own inventory, logical so long as someone is inside-->
-      <li Class="CompVehicle.ThinkNode_ConditionalCanManipulate">
-        <subNodes>
-          <li Class="ThinkNode_Tagger">
-            <tagToGive>UnloadingOwnInventory</tagToGive>
+        
+        <!--Mod determined, some mods may not want their vehicle to haul-->
+        
+        <li Class="ThinkNode_Tagger">
+            <tagToGive>Fieldwork</tagToGive>
             <subNodes>
-                <li Class="JobGiver_UnloadYourInventory" />
+                <li Class="JobGiver_Haul" />
             </subNodes>
-          </li>
-        </subNodes>
-      </li>
+        </li>
 
-  <!--  Lets you set vehicle "parking spots," places for vehicles to stay.  -->
-      <li Class="ThinkNode_ConditionalForcedGoto">
-          <subNodes>
-              <li Class="ThinkNode_Tagger">
-                  <tagToGive>Misc</tagToGive>
-                  <subNodes>
-                      <li Class="JobGiver_ForcedGoto" />
-                  </subNodes>
-              </li>
-          </subNodes>
-      </li>
-      <li Class="JobGiver_SeekAllowedArea" />
+        <!--Vehicle Unloads its own inventory, logical so long as someone is inside-->
+        <li Class="CompVehicle.ThinkNode_ConditionalCanManipulate">
+            <subNodes>
+                <li Class="ThinkNode_Tagger">
+                    <tagToGive>UnloadingOwnInventory</tagToGive>
+                    <subNodes>
+                        <li Class="JobGiver_UnloadYourInventory" />
+                    </subNodes>
+                </li>
+            </subNodes>
+        </li>
 
+        <!--  Lets you set vehicle "parking spots," places for vehicles to stay.  -->
+        <li Class="ThinkNode_ConditionalForcedGoto">
+            <subNodes>
+                <li Class="ThinkNode_Tagger">
+                    <tagToGive>Misc</tagToGive>
+                    <subNodes>
+                        <li Class="JobGiver_ForcedGoto" />
+                    </subNodes>
+                </li>
+            </subNodes>
+        </li>
+        <li Class="JobGiver_SeekAllowedArea" />
+        
+        <!--    Neutral Vehicles shouldn't be in the player map, get them out'-->
+        <li Class="ThinkNode_ConditionalNeutralFaction">
+            <subNodes>
+                <li Class="ThinkNode_Tagger">
+                    <tagToGive>Misc</tagToGive>
+                    <subNodes>
+                        <li Class="JobGiver_ExitMapBest">
+                            <defaultLocomotion>Walk</defaultLocomotion>
+                        </li>
+                    </subNodes>
+                </li>
+            </subNodes>
+        </li>
+        
 
         <li Class="ThinkNode_Subtree">
           <treeDef>LordDuty</treeDef>
