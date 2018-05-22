@@ -74,6 +74,12 @@
     <Compile Include="CaravanJobs\WorldObjectRecipeDef.cs" />
     <Compile Include="CaravanJobs\WorldObject_ProgressBar.cs" />
     <None Include="CaravanJobs\WorldProgressBarDrawer.cs" />
+    <Compile Include="FactionStuff\CompConsole.cs" />
+    <Compile Include="FactionStuff\CompProperties_Console.cs" />
+    <Compile Include="FactionStuff\FactionSettings.cs" />
+    <Compile Include="FactionStuff\JobDefMaker.cs" />
+    <Compile Include="FactionStuff\JobDriver_UseConsole.cs" />
+    <Compile Include="FactionStuff\JecsToolsFactionDialogMaker.cs" />
     <Compile Include="HediffExpandedDef.cs" />
     <Compile Include="HediffGiver_StartWithHediff.cs" />
     <Compile Include="HediffWithComps_Expanded.cs" />
@@ -105,7 +111,6 @@
     <Compile Include="CaravanJobs\QueuedCaravanJob.cs" />
     <Compile Include="TransformedPart.cs" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

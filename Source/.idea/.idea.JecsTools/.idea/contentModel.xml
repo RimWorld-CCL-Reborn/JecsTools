@@ -273,6 +273,14 @@
         </e>
         <e p="DamageDefCleave.cs" t="Include" />
         <e p="DamageWorker_Cleave.cs" t="Include" />
+        <e p="FactionStuff" t="Include">
+          <e p="CompConsole.cs" t="Include" />
+          <e p="CompProperties_Console.cs" t="Include" />
+          <e p="FactionSettings.cs" t="Include" />
+          <e p="JecsToolsFactionDialogMaker.cs" t="Include" />
+          <e p="JobDefMaker.cs" t="Include" />
+          <e p="JobDriver_UseConsole.cs" t="Include" />
+        </e>
         <e p="FirelessTrashUtility.cs" t="Include" />
         <e p="GrappleUtility.cs" t="Include" />
         <e p="HarmonyPatches.cs" t="Include" />

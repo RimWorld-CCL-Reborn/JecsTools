@@ -7,6 +7,7 @@ using Harmony;
 using RimWorld;
 using UnityEngine;
 using Verse;
+using Verse.Sound;
 
 namespace JecsTools
 {
@@ -15,9 +16,10 @@ namespace JecsTools
     {
         //For alternating fire on some weapons
         public static Dictionary<Thing, int> AlternatingFireTracker = new Dictionary<Thing, int>();
-        
+
         // Verse.Pawn_HealthTracker
         public static bool StopPreApplyDamageCheck;
+
         public static int? tempDamageAmount = null;
         public static int? tempDamageAbsorbed = null;
 
@@ -25,17 +27,130 @@ namespace JecsTools
         {
             var harmony = HarmonyInstance.Create("rimworld.jecrell.jecstools.main");
             //Allow fortitude to soak damage
+            var type = typeof(HarmonyPatches);
             harmony.Patch(AccessTools.Method(typeof(Pawn_HealthTracker), "PreApplyDamage"),
-                new HarmonyMethod(typeof(HarmonyPatches), nameof(PreApplyDamage_PrePatch)), null);
+                new HarmonyMethod(type, nameof(PreApplyDamage_PrePatch)), null);
             harmony.Patch(AccessTools.Method(typeof(ArmorUtility), "ApplyArmor"),
-                new HarmonyMethod(typeof(HarmonyPatches), nameof(ApplyProperDamage)), null);
+                new HarmonyMethod(type, nameof(ApplyProperDamage)), null);
             harmony.Patch(AccessTools.Method(typeof(ArmorUtility), "GetPostArmorDamage"), null,
-                new HarmonyMethod(typeof(HarmonyPatches), nameof(Post_GetPostArmorDamage)));
+                new HarmonyMethod(type, nameof(Post_GetPostArmorDamage)));
             harmony.Patch(AccessTools.Method(typeof(PawnGenerator), "GeneratePawnInternal"), null,
-                new HarmonyMethod(typeof(HarmonyPatches), nameof(Post_GeneratePawnInternal)));
+                new HarmonyMethod(type, nameof(Post_GeneratePawnInternal)));
             harmony.Patch(AccessTools.Method(typeof(ApparelUtility), "CanWearTogether"), null,
-                new HarmonyMethod(typeof(HarmonyPatches), nameof(Post_CanWearTogether)));
-            
+                new HarmonyMethod(type, nameof(Post_CanWearTogether)));
+            harmony.Patch(AccessTools.Method(typeof(Faction), "Notify_MemberDied"),
+                new HarmonyMethod(type, nameof(Notify_MemberDied)), null);
+            harmony.Patch(AccessTools.Method(typeof(PawnGroupMakerUtility), "GeneratePawns"), null,
+                new HarmonyMethod(type, nameof(GeneratePawns)), null);
+            //harmony.Patch(AccessTools.Method(AccessTools.TypeByName("PossibleApparelSet"), "IsNaked"), null,
+            //    new HarmonyMethod(type, nameof(IsNaked)), null);
+            harmony.Patch(AccessTools.Method(typeof(PawnApparelGenerator), "GenerateStartingApparelFor"), null,
+                new HarmonyMethod(type, nameof(GenerateStartingApparelFor)), null);
+        }
+
+
+        //PawnApparelGenerator
+        public static void GenerateStartingApparelFor(Pawn pawn, PawnGenerationRequest request)
+        {
+            var swappables = pawn?.apparel?.WornApparel?.FindAll(x => x.def.HasModExtension<ApparelExtension>());
+            if (swappables == null || swappables?.Count <= 0) return;
+            var destroyables = new HashSet<Apparel>();
+            foreach (var swap in swappables)
+            {
+                if (swap.def?.GetModExtension<ApparelExtension>()?.swapCondition is SwapCondition sc && sc?.swapWhenGender is Gender gen &&
+                    gen != Gender.None && gen == pawn.gender)
+                {
+                    Apparel apparel = (Apparel)ThingMaker.MakeThing(sc.swapTo, swap.Stuff);
+                    PawnGenerator.PostProcessGeneratedGear(apparel, pawn);
+                    if (ApparelUtility.HasPartsToWear(pawn, apparel.def))
+                    {
+                        pawn.apparel.Wear(apparel, false);
+                    }
+                    destroyables.Add(swap);
+                }
+            }
+            if (destroyables == null || destroyables?.Count <= 0) return;
+            while (destroyables?.Count > 0)
+            {
+                var first = destroyables.First();
+                    first.Destroy();
+                destroyables.Remove(first);
+
+            }
+        }
+
+//
+//        //PawnApparelGenerator
+//        public static void IsNaked(Gender gender, ref bool __result)
+//        {
+//            if (!__result) return;
+//            var aps = Traverse.Create(AccessTools.TypeByName("PossibleApparelSet")).Field("aps").GetValue<List<ThingStuffPair>>();
+//            if (aps == null || aps?.Count <= 0) return;
+//            for (int i = 0; i < aps.Count; i++)
+//            {
+//                if (!aps[i].thing.HasModExtension<ApparelExtension>())
+//                    continue;
+//                var aExt = aps[i].thing.GetModExtension<ApparelExtension>();
+//                if (aExt.forcedGender == Gender.None)
+//                    continue;
+//                if (aExt.forcedGender == gender) continue;
+//                __result = false;
+//                return;
+//            }
+//        }
+
+        public static Faction lastPhoneAideFaction = null;
+        public static int lastPhoneAideTick = 0;
+
+        //public class PawnGroupMakerUtility
+        //{
+        public static void GeneratePawns(PawnGroupKindDef groupKind, PawnGroupMakerParms parms,
+            bool warnOnZeroResults, ref IEnumerable<Pawn> __result)
+        {
+            if (__result?.Count() > 0 &&
+                parms.faction.def.GetModExtension<FactionSettings>() is FactionSettings settings)
+            {
+                settings.entrySoundDef?.PlayOneShotOnCamera();
+            }
+        }
+
+        //Faction
+        public static bool Notify_MemberDied(Faction __instance, Pawn member, DamageInfo? dinfo, bool wasWorldPawn,
+            Map map)
+        {
+            //Log.Message("1");
+            if (member?.Faction == null) return true;
+            if (!dinfo.HasValue) return true;
+            if (!(dinfo.Value.Instigator is Pawn instigator)) return true;
+            //Log.Message("2");
+
+
+            var notLeader = __instance?.leader != member;
+            //Log.Message("3");
+
+            var notPlayerKiller = instigator?.Faction != Faction.OfPlayerSilentFail;
+            //Log.Message("4");
+
+            //var notAttackingPlayer = member.LastAttackedTarget.IsValid && member?.LastAttackedTarget.Thing is Pawn p && p?.Faction != Faction.OfPlayerSilentFail;
+            //Log.Message("5");
+
+            var inTime = lastPhoneAideTick < (Find.TickManager?.TicksGame + GenDate.HoursPerDay ?? 0);
+            //Log.Message("6");
+
+
+            var isPhoneFaction = __instance == lastPhoneAideFaction;
+            //Log.Message("7");
+
+
+            if (isPhoneFaction &&
+                inTime &&
+                notLeader &&
+                notPlayerKiller) // && 
+                //notAttackingPlayer)
+            {
+                return false;
+            }
+            return true;
         }
 
         /// <summary>
@@ -60,7 +175,8 @@ namespace JecsTools
                         check.Add(aExt.coverage[i].ToLowerInvariant(), 1);
                     else
                     {
-                        Log.Warning("JecsTools :: ApparelExtension :: Warning:: " + A.label + " has multiple of the same tags.");
+                        Log.Warning("JecsTools :: ApparelExtension :: Warning:: " + A.label +
+                                    " has multiple of the same tags.");
                         return;
                     }
                 }
@@ -80,42 +196,42 @@ namespace JecsTools
                 __result = true;
             }
         }
-        
+
         public static void Post_GeneratePawnInternal(PawnGenerationRequest request, ref Pawn __result)
         {
             var hediffGiverSet = __result?.def?.race?.hediffGiverSets?.FirstOrDefault(
                 x => x.hediffGivers.Any(y => y is HediffGiver_StartWithHediff));
             if (hediffGiverSet == null) return;
 
-            if (hediffGiverSet.hediffGivers.FirstOrDefault(x => x is HediffGiver_StartWithHediff) is HediffGiver_StartWithHediff hediffGiver)
+            if (hediffGiverSet.hediffGivers.FirstOrDefault(x => x is HediffGiver_StartWithHediff) is
+                HediffGiver_StartWithHediff hediffGiver)
             {
                 hediffGiver.GiveHediff(__result);
             }
         }
-        
+
         //ArmorUtility
         public static void Post_GetPostArmorDamage(Pawn pawn, int amountInt, BodyPartRecord part, DamageDef damageDef)
         {
             if (tempDamageAbsorbed != null)
             {
-                
                 var hasFortitudeHediffs =
                     pawn?.health?.hediffSet?.hediffs?.Any(x => x.TryGetComp<HediffComp_DamageSoak>() != null);
                 if (hasFortitudeHediffs ?? false)
                 {
-                    DamageSoakedMote(pawn, tempDamageAbsorbed.Value);   
-  
+                    DamageSoakedMote(pawn, tempDamageAbsorbed.Value);
                 }
                 tempDamageAbsorbed = null;
             }
         }
-        
-        public static void ApplyProperDamage(ref float damAmount, float armorRating, Thing armorThing, DamageDef damageDef)
+
+        public static void ApplyProperDamage(ref float damAmount, float armorRating, Thing armorThing,
+            DamageDef damageDef)
         {
             if (tempDamageAmount != null && damAmount > 0)
             {
                 float damageDiff = Mathf.Clamp(damAmount - tempDamageAmount.Value, 0, damAmount);
-                
+
                 //Log.Message("Apply amount original: " + damAmount);
                 //Log.Message("Apply amount modified: " + tempDamageAmount.Value);
                 damAmount = GenMath.RoundRandom(tempDamageAmount.Value);
@@ -124,8 +240,9 @@ namespace JecsTools
                     tempDamageAbsorbed = GenMath.RoundRandom(damageDiff);
             }
         }
-        
-        public static bool PreApplyDamage_PrePatch(Pawn_HealthTracker __instance, ref DamageInfo dinfo, out bool absorbed)
+
+        public static bool PreApplyDamage_PrePatch(Pawn_HealthTracker __instance, ref DamageInfo dinfo,
+            out bool absorbed)
         {
             var pawn = (Pawn) AccessTools.Field(typeof(Pawn_HealthTracker), "pawn").GetValue(__instance);
             //Log.Message("Entry");
@@ -148,7 +265,6 @@ namespace JecsTools
                         }
                         catch (NullReferenceException e)
                         {
-                            
                         }
                     }
                     if (dinfo.Weapon is ThingDef weaponDef && !weaponDef.IsRangedWeapon)
@@ -160,7 +276,6 @@ namespace JecsTools
                             }
                             catch (NullReferenceException e)
                             {
-                                
                             }
 
                             try
@@ -169,7 +284,6 @@ namespace JecsTools
                             }
                             catch (NullReferenceException e)
                             {
-                                
                             }
                         }
                 }
@@ -245,7 +359,8 @@ namespace JecsTools
             return false;
         }
 
-        private static bool PreApplyDamage_ApplyDamageSoakers(ref DamageInfo dinfo, out bool absorbed, List<Hediff> fortitudeHediffs,
+        private static bool PreApplyDamage_ApplyDamageSoakers(ref DamageInfo dinfo, out bool absorbed,
+            List<Hediff> fortitudeHediffs,
             Pawn pawn)
         {
             //Log.Message("3");
@@ -278,7 +393,7 @@ namespace JecsTools
                     soakedDamage += dmgAmount;
                     if (dinfo.Amount > 0) continue;
                     //Log.Message("Hediff_A_Absorbed");
-                    DamageSoakedMote(pawn, soakedDamage);   
+                    DamageSoakedMote(pawn, soakedDamage);
                     absorbed = true;
                     return true;
                 }
@@ -295,7 +410,7 @@ namespace JecsTools
                         //So Null should pass this check.
                         if (soakSettings.damageType != null && soakSettings.damageType != info.Def) continue;
                         //Log.Message("Hediff_B1_Setting1");
-                        
+
                         // ReSharper disable once PossibleNullReferenceException
                         if (!soakSettings.damageTypesToExclude.NullOrEmpty() &&
                             soakSettings.damageTypesToExclude.Any(x => x == info.Def))
@@ -310,7 +425,7 @@ namespace JecsTools
                         //Log.Message("Total soaked: " + soakedDamage);
                         if (dinfo.Amount > 0) continue;
                         //Log.Message("Hediff_B_Setting_Absorbed");
-                        DamageSoakedMote(pawn, soakedDamage);   
+                        DamageSoakedMote(pawn, soakedDamage);
                         absorbed = true;
                         return true;
                     }
