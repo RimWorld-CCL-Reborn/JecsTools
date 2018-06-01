@@ -175,7 +175,8 @@ namespace PawnShields
 
         public static void Patch_PawnGenerator_GenerateGearFor(Pawn pawn, ref PawnGenerationRequest request)
         {
-            PawnShieldGenerator.TryGenerateShieldFor(pawn, request);
+            if (pawn != null)
+                PawnShieldGenerator.TryGenerateShieldFor(pawn, request);
         }
 
         public static float StatWorkerInjection_AddShieldValue(Pawn pawn, StatDef stat)

@@ -284,6 +284,7 @@
         <e p="FirelessTrashUtility.cs" t="Include" />
         <e p="GrappleUtility.cs" t="Include" />
         <e p="HarmonyPatches.cs" t="Include" />
+        <e p="HarmonyPatches_GUI.cs" t="Include" />
         <e p="Hediff_InjuryCustomLabel.cs" t="Include" />
         <e p="HediffComp_DamageSoak.cs" t="Include" />
         <e p="HediffComp_ExtraMeleeDamages.cs" t="Include" />
@@ -308,6 +309,7 @@
         <e p="Properties" t="Include">
           <e p="AssemblyInfo.cs" t="Include" />
         </e>
+        <e p="TexButton.cs" t="Include" />
         <e p="ThingDef_LaserProjectile.cs" t="Include" />
         <e p="TransformedPart.cs" t="Include" />
       </e>
@@ -344,6 +346,5 @@
       <e p="packages" t="ExcludeRecursive" />
     </e>
     <e p="C:\Users\mattw\.Rider2017.2\system\resharper-host\local\Transient\ReSharperHost\v10\SolutionCaches\_JecsTools.-286400281.00" t="ExcludeRecursive" />
-    <e p="D:\SteamLibrary\steamapps\common\RimWorld\ModsWorkspace\JecsTools\Assemblies" t="ExcludeRecursive" />
   </component>
 </project>

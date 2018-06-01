@@ -29,60 +29,70 @@ namespace PawnShields
         public static void TryGenerateShieldFor(Pawn pawn, PawnGenerationRequest request)
         {
             //Shield stuff.
-            ShieldPawnGeneratorProperties generatorProps = request.KindDef.GetModExtension<ShieldPawnGeneratorProperties>();
+            ShieldPawnGeneratorProperties generatorProps =
+                request.KindDef?.GetModExtension<ShieldPawnGeneratorProperties>();
 
             //Abort early if there is no mention at all of shield properties.
             if (generatorProps == null)
                 return;
 
-            workingShields.Clear();
+            workingShields = new List<ThingStuffPair>();
 
             //Initial filtering
-            if (generatorProps.shieldTags == null || generatorProps.shieldTags.Count == 0)
+            if (generatorProps.shieldTags == null || generatorProps.shieldTags?.Count == 0)
             {
-                return;
-            }
-            if (!pawn.RaceProps.ToolUser)
-            {
-                return;
-            }
-            if (!pawn.health.capacities.CapableOf(PawnCapacityDefOf.Manipulation))
-            {
-                return;
-            }
-            if (pawn.story != null && pawn.story.WorkTagIsDisabled(WorkTags.Violent))
-            {
+                Log.Warning("PawnShields :: XML element shieldTags is null or empty for " + request.KindDef.defName);
                 return;
             }
 
-            float randomInRange = generatorProps.shieldMoney.RandomInRange;
-            for (int i = 0; i < allShieldPairs.Count; i++)
+            if (!(pawn?.RaceProps?.ToolUser ?? false))
             {
-                ThingStuffPair w = allShieldPairs[i];
-                if (w.Price <= randomInRange)
+                Log.Warning("PawnShields :: " + request.KindDef.defName +
+                            " is not a ToolUser or Humanlike in RaceProps.");
+                return;
+            }
+            if (!(pawn.health?.capacities?.CapableOf(PawnCapacityDefOf.Manipulation) ?? false))
+            {
+                Log.Warning("PawnShields :: " + request.KindDef.defName + " is not capable of manipulation.");
+                return;
+            }
+            if (pawn.story != null && ((bool) pawn.story?.WorkTagIsDisabled(WorkTags.Violent)))
+                return;
+
+            var generatorPropsShieldMoney = generatorProps.shieldMoney;
+            float randomInRange = generatorPropsShieldMoney.RandomInRange;
+            if (allShieldPairs != null && allShieldPairs?.Count > 0)
+                foreach (var w in allShieldPairs)
                 {
-                    if (generatorProps.shieldTags.Any(tag => w.thing.weaponTags.Contains(tag)))
-                    {
-                        if (w.thing.generateAllowChance >= 1f || Rand.ValueSeeded(pawn.thingIDNumber ^ 28554824) <= w.thing.generateAllowChance)
+                    if (w.Price <= randomInRange)
+                        if (!w.thing.weaponTags.NullOrEmpty())
                         {
-                            workingShields.Add(w);
+                            if (generatorProps.shieldTags.Any(tag =>
+                                (w.thing.weaponTags.Contains(tag))))
+                            {
+                                if (w.thing.generateAllowChance >= 1f ||
+                                    Rand.ValueSeeded(pawn.thingIDNumber ^ 28554824) <= w.thing.generateAllowChance)
+                                {
+                                    workingShields.Add(w);
+                                }
+                                
+                            }   
                         }
-                    }
                 }
-            }
-            if (workingShields.Count == 0)
+            if (workingShields == null || workingShields?.Count == 0)
             {
+                Log.Warning("No working shields found for " + pawn.Label + "::" + pawn.KindLabel);
                 return;
             }
 
-            ThingStuffPair thingStuffPair;
-            if (workingShields.TryRandomElementByWeight((ThingStuffPair w) => w.Commonality * w.Price, out thingStuffPair))
+            if (workingShields.TryRandomElementByWeight(w => w.Commonality * w.Price, out var thingStuffPair))
             {
-                ThingWithComps thingWithComps = (ThingWithComps)ThingMaker.MakeThing(thingStuffPair.thing, thingStuffPair.stuff);
+                ThingWithComps thingWithComps =
+                    (ThingWithComps) ThingMaker.MakeThing(thingStuffPair.thing, thingStuffPair.stuff);
                 PawnGenerator.PostProcessGeneratedGear(thingWithComps, pawn);
-                pawn.equipment.AddEquipment(thingWithComps);
+                pawn.equipment?.AddEquipment(thingWithComps);
+                //Log.Message(pawn.Label + " added shield " + thingWithComps.Label);
             }
-            workingShields.Clear();
         }
 
         /// <summary>
@@ -90,29 +100,31 @@ namespace PawnShields
         /// </summary>
         public static void Reset()
         {
-            Predicate<ThingDef> isShield = (ThingDef td) => td.equipmentType != EquipmentType.Primary && td.canBeSpawningInventory && td.HasComp(typeof(CompShield));
-            allShieldPairs = ThingStuffPair.AllWith(isShield);
+            bool IsShield(ThingDef td) => td.equipmentType != EquipmentType.Primary && td.canBeSpawningInventory &&
+                                          td.HasComp(typeof(CompShield));
+
+            allShieldPairs = ThingStuffPair.AllWith(IsShield);
 
             using (IEnumerator<ThingDef> enumerator = (from td in DefDatabase<ThingDef>.AllDefs
-                                                       where isShield(td)
-                                                       select td).GetEnumerator())
+                where IsShield(td)
+                select td).GetEnumerator())
             {
                 while (enumerator.MoveNext())
                 {
                     ThingDef thingDef = enumerator.Current;
                     float num = (from pa in allShieldPairs
-                                 where pa.thing == thingDef
-                                 select pa).Sum((ThingStuffPair pa) => pa.Commonality);
+                        where pa.thing == thingDef
+                        select pa).Sum(pa => pa.Commonality);
+                    if (thingDef == null) continue;
                     float num2 = thingDef.generateCommonality / num;
-                    if (num2 != 1f)
+                    if (num2 == 1f) continue;
+                    for (int i = 0; i < allShieldPairs.Count; i++)
                     {
-                        for (int i = 0; i < allShieldPairs.Count; i++)
+                        ThingStuffPair thingStuffPair = allShieldPairs[i];
+                        if (thingStuffPair.thing == thingDef)
                         {
-                            ThingStuffPair thingStuffPair = allShieldPairs[i];
-                            if (thingStuffPair.thing == thingDef)
-                            {
-                                allShieldPairs[i] = new ThingStuffPair(thingStuffPair.thing, thingStuffPair.stuff, thingStuffPair.commonalityMultiplier * num2);
-                            }
+                            allShieldPairs[i] = new ThingStuffPair(thingStuffPair.thing, thingStuffPair.stuff,
+                                thingStuffPair.commonalityMultiplier * num2);
                         }
                     }
                 }

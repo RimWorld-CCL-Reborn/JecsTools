@@ -12,7 +12,7 @@ using Verse.Sound;
 namespace JecsTools
 {
     [StaticConstructorOnStartup]
-    public static class HarmonyPatches
+    public static partial class HarmonyPatches
     {
         //For alternating fire on some weapons
         public static Dictionary<Thing, int> AlternatingFireTracker = new Dictionary<Thing, int>();
@@ -46,6 +46,8 @@ namespace JecsTools
             //    new HarmonyMethod(type, nameof(IsNaked)), null);
             harmony.Patch(AccessTools.Method(typeof(PawnApparelGenerator), "GenerateStartingApparelFor"), null,
                 new HarmonyMethod(type, nameof(GenerateStartingApparelFor)), null);
+
+            //GUIPatches(harmony);
         }
 
 

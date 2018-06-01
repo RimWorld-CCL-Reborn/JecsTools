@@ -17,7 +17,7 @@
     <DebugSymbols>false</DebugSymbols>
     <DebugType>none</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>D:\SteamLibrary\steamapps\common\RimWorld\ModsWorkspace\JecsTools\Assemblies</OutputPath>
+    <OutputPath>C:\Program Files (x86)\Steam\steamapps\common\RimWorld\ModsWorkspace\JecsTools\Assemblies</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>

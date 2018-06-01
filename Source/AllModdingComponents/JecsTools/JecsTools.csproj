@@ -80,6 +80,7 @@
     <Compile Include="FactionStuff\JobDefMaker.cs" />
     <Compile Include="FactionStuff\JobDriver_UseConsole.cs" />
     <Compile Include="FactionStuff\JecsToolsFactionDialogMaker.cs" />
+    <Compile Include="HarmonyPatches_GUI.cs" />
     <Compile Include="HediffExpandedDef.cs" />
     <Compile Include="HediffGiver_StartWithHediff.cs" />
     <Compile Include="HediffWithComps_Expanded.cs" />
@@ -101,6 +102,7 @@
     <Compile Include="Hediff_InjuryCustomLabel.cs" />
     <Compile Include="PlaceWorker_OnTopOfWalls.cs" />
     <Compile Include="ModCompatibilityUtility.cs" />
+    <Compile Include="TexButton.cs" />
     <Compile Include="ThingDef_LaserProjectile.cs" />
     <Compile Include="_HumanlikeOrdersUtility.cs" />
     <Compile Include="JobGiver_AIFirelessTrashColonyClose.cs" />
