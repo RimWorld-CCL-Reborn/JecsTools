@@ -19,6 +19,11 @@ namespace CompOverlays
                 {
                     var o = Props.overlays[i];
                     var vec3 = drawPos + o.offset;
+                    if (o.usesStuff)
+                    {
+                        o.graphicData.GraphicColoredFor(this.parent).Draw(vec3, parent.Rotation, parent, 0f);
+                        continue;
+                    }
                     o.graphicData.Graphic.Draw(vec3, parent.Rotation, parent, 0f);
                 }
             }

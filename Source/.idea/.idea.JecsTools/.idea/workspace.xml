@@ -11,14 +11,13 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="375">
-      <file leaf-file-name="PawnShieldGenerator.cs" pinned="false" current-in-tab="true">
+      <file leaf-file-name="PawnShieldGenerator.cs" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/AllModdingComponents/PawnShields/Utility/PawnShieldGenerator.cs">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="19">
+            <state relative-caret-position="1653">
               <caret line="92" column="61" lean-forward="false" selection-start-line="92" selection-start-column="61" selection-end-line="92" selection-end-column="61" />
               <folding>
                 <marker date="1527775794059" expanded="false" signature="6:114" ph="..." />
-                <marker date="1527775794059" expanded="true" signature="137:5473" ph="{...}" />
                 <marker date="1527775794059" expanded="true" signature="144:225" ph="/// Assists in generating shields for pawns. ... " />
                 <marker date="1527775794059" expanded="true" signature="269:5471" ph="{...}" />
                 <marker date="1527775794059" expanded="true" signature="432:543" ph="/* static PawnShieldGenerator() ... */" />
@@ -47,7 +46,7 @@
       <file leaf-file-name="Def.cs" pinned="false" current-in-tab="false">
         <entry file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/765250CD-2B53-4903-8F57-1EFC3734D8FA/5b/16369b59/Def.cs">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
+            <state relative-caret-position="1767">
               <caret line="93" column="13" lean-forward="false" selection-start-line="93" selection-start-column="13" selection-end-line="93" selection-end-column="13" />
               <folding />
             </state>
@@ -57,10 +56,11 @@
       <file leaf-file-name="HarmonyPatches.cs" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/AllModdingComponents/JecsTools/HarmonyPatches.cs">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="969">
-              <caret line="51" column="0" lean-forward="false" selection-start-line="51" selection-start-column="0" selection-end-line="51" selection-end-column="0" />
+            <state relative-caret-position="286">
+              <caret line="173" column="46" lean-forward="false" selection-start-line="173" selection-start-column="46" selection-end-line="173" selection-end-column="46" />
               <folding>
-                <marker date="1527772210558" expanded="true" signature="6:196" ph="..." />
+                <marker date="1527772210558" expanded="false" signature="6:196" ph="..." />
+                <marker date="1527772210558" expanded="true" signature="217:22348" ph="{...}" />
                 <marker date="1527772210558" expanded="true" signature="299:22346" ph="{...}" />
                 <marker date="1527772210558" expanded="true" signature="681:2462" ph="{...}" />
                 <marker date="1527772210558" expanded="true" signature="2055:2220" ph="/* harmony.Patch(AccessTools.Method(AccessTools.TypeByName(&quot;PossibleApparelSet&quot;), &quot;IsNaked&quot;), null, ... */" />
@@ -130,6 +130,104 @@
                 <marker date="1527772210558" expanded="true" signature="20806:21049" ph="{...}" />
                 <marker date="1527772210558" expanded="true" signature="21272:22340" ph="{...}" />
                 <marker date="1527772210558" expanded="true" signature="21464:22281" ph="{...}" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="HarmonyPatches.cs" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/AllModdingComponents/CompAbilityUser/HarmonyPatches.cs">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="441">
+              <caret line="110" column="16" lean-forward="false" selection-start-line="110" selection-start-column="16" selection-end-line="110" selection-end-column="16" />
+              <folding>
+                <marker date="1528215630603" expanded="false" signature="6:148" ph="..." />
+                <marker date="1528215630603" expanded="true" signature="171:21966" ph="{...}" />
+                <marker date="1528215630603" expanded="true" signature="211:21964" ph="{...}" />
+                <marker date="1528215630603" expanded="true" signature="287:3059" ph="{...}" />
+                <marker date="1528215630603" expanded="true" signature="962:1083" ph="/* RimWorld.Targeter ... */" />
+                <marker date="1528215630603" expanded="true" signature="3272:10761" ph="{...}" />
+                <marker date="1528215630603" expanded="true" signature="3544:10751" ph="{...}" />
+                <marker date="1528215630603" expanded="true" signature="3575:3694" ph="/* Log.Message(&quot;Special Pawns Detected&quot;); ... */" />
+                <marker date="1528215630603" expanded="true" signature="3762:3948" ph="/* Log.Message(&quot;Points: &quot; +  previousPoints); ... */" />
+                <marker date="1528215630603" expanded="true" signature="4162:4497" ph="{...}" />
+                <marker date="1528215630603" expanded="true" signature="4277:4477" ph="{...}" />
+                <marker date="1528215630603" expanded="true" signature="4515:4728" ph="/* Log.Message(&quot;------------------&quot;); ... */" />
+                <marker date="1528215630603" expanded="true" signature="4840:5461" ph="{...}" />
+                <marker date="1528215630603" expanded="true" signature="5012:5314" ph="{...}" />
+                <marker date="1528215630603" expanded="true" signature="5722:5955" ph="{...}" />
+                <marker date="1528215630603" expanded="true" signature="6610:9451" ph="{...}" />
+                <marker date="1528215630603" expanded="true" signature="6649:7096" ph="/* Log.Message(&quot;------------------&quot;); ... */" />
+                <marker date="1528215630603" expanded="true" signature="7406:7879" ph="{...}" />
+                <marker date="1528215630603" expanded="true" signature="7558:7857" ph="{...}" />
+                <marker date="1528215630603" expanded="true" signature="8088:9433" ph="{...}" />
+                <marker date="1528215630603" expanded="true" signature="8340:8876" ph="{...}" />
+                <marker date="1528215630603" expanded="true" signature="8503:8849" ph="{...}" />
+                <marker date="1528215630603" expanded="true" signature="8905:9411" ph="{...}" />
+                <marker date="1528215630603" expanded="true" signature="9188:9384" ph="{...}" />
+                <marker date="1528215630603" expanded="true" signature="9565:10053" ph="/* Log.Message(&quot;------------&quot;); ... */" />
+                <marker date="1528215630603" expanded="true" signature="10091:10316" ph="{...}" />
+                <marker date="1528215630603" expanded="true" signature="10371:10611" ph="{...}" />
+                <marker date="1528215630603" expanded="true" signature="10771:10853" ph="/* static HarmonyPatches() ... */" />
+                <marker date="1528215630603" expanded="true" signature="10926:11228" ph="{...}" />
+                <marker date="1528215630603" expanded="true" signature="11339:12276" ph="{...}" />
+                <marker date="1528215630603" expanded="true" signature="11431:11698" ph="/* ((Pawn)__instance.ParentHolder).GetComps&lt;CompAbilityItem&gt;() ) ... */" />
+                <marker date="1528215630603" expanded="true" signature="12026:12266" ph="{...}" />
+                <marker date="1528215630603" expanded="true" signature="12389:13181" ph="{...}" />
+                <marker date="1528215630603" expanded="true" signature="12481:12748" ph="/* ((Pawn)__instance.ParentHolder).GetComps&lt;CompAbilityItem&gt;() ) ... */" />
+                <marker date="1528215630603" expanded="true" signature="13286:13789" ph="{...}" />
+                <marker date="1528215630603" expanded="true" signature="13601:13779" ph="{...}" />
+                <marker date="1528215630603" expanded="true" signature="13896:14317" ph="{...}" />
+                <marker date="1528215630603" expanded="true" signature="14413:16059" ph="{...}" />
+                <marker date="1528215630603" expanded="true" signature="14484:16024" ph="{...}" />
+                <marker date="1528215630603" expanded="true" signature="14946:15980" ph="{...}" />
+                <marker date="1528215630603" expanded="true" signature="15244:15340" ph="{...}" />
+                <marker date="1528215630603" expanded="true" signature="15365:15962" ph="{...}" />
+                <marker date="1528215630603" expanded="true" signature="15765:15940" ph="{...}" />
+                <marker date="1528215630603" expanded="true" signature="16164:20403" ph="{...}" />
+                <marker date="1528215630603" expanded="true" signature="16237:20368" ph="{...}" />
+                <marker date="1528215630603" expanded="true" signature="16348:16955" ph="{...}" />
+                <marker date="1528215630603" expanded="true" signature="17195:20354" ph="{...}" />
+                <marker date="1528215630603" expanded="true" signature="17758:20332" ph="/* if (__instance.targetingVerb is Verb_UseAbility) ... */" />
+                <marker date="1528215630603" expanded="true" signature="20475:21042" ph="{...}" />
+                <marker date="1528215630603" expanded="true" signature="20624:21032" ph="{...}" />
+                <marker date="1528215630603" expanded="true" signature="21121:21209" ph="{...}" />
+                <marker date="1528215630603" expanded="true" signature="21219:21657" ph="/* Catches loading of Pawns ... */" />
+                <marker date="1528215630603" expanded="true" signature="21721:21958" ph="{...}" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="CompOverlays.cs" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/AllModdingComponents/CompOverlays/CompOverlays.cs">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="380">
+              <caret line="21" column="36" lean-forward="true" selection-start-line="21" selection-start-column="36" selection-end-line="21" selection-end-column="36" />
+              <folding>
+                <marker date="1528524990469" expanded="false" signature="6:28" ph="..." />
+                <marker date="1528524990469" expanded="true" signature="52:1058" ph="{...}" />
+                <marker date="1528524990469" expanded="true" signature="96:1056" ph="{...}" />
+                <marker date="1528524990469" expanded="true" signature="225:1050" ph="{...}" />
+                <marker date="1528524990469" expanded="true" signature="421:1040" ph="{...}" />
+                <marker date="1528524990469" expanded="true" signature="584:1026" ph="{...}" />
+                <marker date="1528524990469" expanded="true" signature="737:925" ph="{...}" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="CompProperties_Overlays.cs" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/AllModdingComponents/CompOverlays/CompProperties_Overlays.cs">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="190">
+              <caret line="12" column="8" lean-forward="false" selection-start-line="12" selection-start-column="8" selection-end-line="12" selection-end-column="8" />
+              <folding>
+                <marker date="1528524981936" expanded="false" signature="6:65" ph="..." />
+                <marker date="1528524981936" expanded="true" signature="89:576" ph="{...}" />
+                <marker date="1528524981936" expanded="true" signature="123:278" ph="{...}" />
+                <marker date="1528524981936" expanded="true" signature="337:574" ph="{...}" />
+                <marker date="1528524981936" expanded="true" signature="502:568" ph="{...}" />
               </folding>
             </state>
           </provider>
@@ -245,22 +343,6 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Shields.cs" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/AllModdingComponents/PawnShields/Shields.cs">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="228">
-              <caret line="16" column="32" lean-forward="false" selection-start-line="16" selection-start-column="32" selection-end-line="16" selection-end-column="32" />
-              <folding>
-                <marker date="1525652642061" expanded="false" signature="6:98" ph="..." />
-                <marker date="1525652642061" expanded="true" signature="121:369" ph="{...}" />
-                <marker date="1525652642061" expanded="true" signature="128:204" ph="/// Entry class for the shields module. ... " />
-                <marker date="1525652642061" expanded="true" signature="269:367" ph="{...}" />
-                <marker date="1525652642061" expanded="true" signature="300:361" ph="{...}" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
     </leaf>
   </component>
   <component name="FindInProjectRecents">
@@ -291,6 +373,8 @@
       <find>Apparel</find>
       <find>apparel</find>
       <find>add</find>
+      <find>trader</find>
+      <find>overla</find>
     </findStrings>
     <replaceStrings>
       <replace>soakSetting</replace>
@@ -335,7 +419,7 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/765250CD-2B53-4903-8F57-1EFC3734D8FA/67/a0947aae/Toils_Combat.cs" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/AllModdingComponents/CompVehicle/Command_VehicleHandler.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AllModdingComponents/CompSlotLoadable/SlotLoadable.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/765250CD-2B53-4903-8F57-1EFC3734D8FA/5b/16369b59/Def.cs" root0="SKIP_INSPECTION" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/765250CD-2B53-4903-8F57-1EFC3734D8FA/5b/16369b59/Def.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AllModdingComponents/CompVehicle/JobDriver_AssembleVehicle.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AllModdingComponents/CompVehicle/Bill_LoadVehicle.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AllModdingComponents/CompVehicle/HarmonyCompVehicle.cs" root0="FORCE_HIGHLIGHTING" />
@@ -369,8 +453,10 @@
     <setting file="file://$PROJECT_DIR$/AllModdingComponents/JecsTools/FirelessTrashUtility.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AllModdingComponents/JecsTools/PatchOperationModLoaded.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AllModdingComponents/CompAbilityUser/HarmonyPatches.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/AllModdingComponents/CompOverlays/CompProperties_Overlays.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AllModdingComponents/JecsTools/HarmonyPatches.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AllModdingComponents/JecsTools/HediffComp_Knockback.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/AllModdingComponents/CompOverlays/CompOverlays.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AllModdingComponents/JecsTools/Hediff_InjuryCustomLabel.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AllModdingComponents/JecsTools/DamageDefCleave.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AllModdingComponents/CompActivatableEffect/CompActivatableEffect.cs" root0="FORCE_HIGHLIGHTING" />
@@ -397,7 +483,6 @@
         <option value="$PROJECT_DIR$/AllModdingComponents/CompOversizedWeapon/CompOversizedWeapon.cs" />
         <option value="$PROJECT_DIR$/AllModdingComponents/CompOversizedWeapon/HarmonyCompOversizedWeapon.cs" />
         <option value="$PROJECT_DIR$/AllModdingComponents/CompAbilityUser/Model/CompAbilityUser.cs" />
-        <option value="$PROJECT_DIR$/AllModdingComponents/CompAbilityUser/HarmonyPatches.cs" />
         <option value="$PROJECT_DIR$/AllModdingComponents/JecsTools/PatchOperationModLoaded.cs" />
         <option value="$PROJECT_DIR$/AllModdingComponents/JecsTools/HediffGiver_PostGenerated.cs" />
         <option value="$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/765250CD-2B53-4903-8F57-1EFC3734D8FA/84/ab2cd120/HediffGiver.cs" />
@@ -421,6 +506,9 @@
         <option value="$PROJECT_DIR$/AllModdingComponents/PawnShields/HarmonyPatches.cs" />
         <option value="$PROJECT_DIR$/AllModdingComponents/PawnShields/PawnShields.csproj" />
         <option value="$PROJECT_DIR$/AllModdingComponents/PawnShields/Utility/PawnShieldGenerator.cs" />
+        <option value="$PROJECT_DIR$/AllModdingComponents/CompAbilityUser/HarmonyPatches.cs" />
+        <option value="$PROJECT_DIR$/AllModdingComponents/CompOverlays/CompProperties_Overlays.cs" />
+        <option value="$PROJECT_DIR$/AllModdingComponents/CompOverlays/CompOverlays.cs" />
       </list>
     </option>
   </component>
@@ -431,8 +519,8 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="456" />
-    <option name="y" value="208" />
+    <option name="x" value="7" />
+    <option name="y" value="67" />
     <option name="width" value="1088" />
     <option name="height" value="797" />
   </component>
@@ -451,12 +539,18 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scratches" />
       <pane id="SolutionExplorer">
         <subPane>
           <expand>
             <path>
               <item name="" type="13324e5d:SolutionExplorerViewPane$ProjectViewPaneTreeStructure$createRoot$1" />
               <item name="JecsTools (16 projects)" type="977d5f41:SolutionExplorerNodeRider" />
+            </path>
+            <path>
+              <item name="" type="13324e5d:SolutionExplorerViewPane$ProjectViewPaneTreeStructure$createRoot$1" />
+              <item name="JecsTools (16 projects)" type="977d5f41:SolutionExplorerNodeRider" />
+              <item name="CompOverlays" type="977d5f41:SolutionExplorerNodeRider" />
             </path>
             <path>
               <item name="" type="13324e5d:SolutionExplorerViewPane$ProjectViewPaneTreeStructure$createRoot$1" />
@@ -468,19 +562,12 @@
               <item name="JecsTools (16 projects)" type="977d5f41:SolutionExplorerNodeRider" />
               <item name="PawnShields" type="977d5f41:SolutionExplorerNodeRider" />
             </path>
-            <path>
-              <item name="" type="13324e5d:SolutionExplorerViewPane$ProjectViewPaneTreeStructure$createRoot$1" />
-              <item name="JecsTools (16 projects)" type="977d5f41:SolutionExplorerNodeRider" />
-              <item name="PawnShields" type="977d5f41:SolutionExplorerNodeRider" />
-              <item name="Utility" type="977d5f41:SolutionExplorerNodeRider" />
-            </path>
           </expand>
           <select />
         </subPane>
         <option name="show-file-system" value="false" />
         <option name="show-all-items" value="false" />
       </pane>
-      <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -560,12 +647,14 @@
       <workItem from="1526976881618" duration="9676000" />
       <workItem from="1527075858195" duration="1703000" />
       <workItem from="1527696638784" duration="12760000" />
-      <workItem from="1527855393135" duration="376000" />
+      <workItem from="1527855393135" duration="1568000" />
+      <workItem from="1528209829568" duration="3760000" />
+      <workItem from="1528522404792" duration="2324000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="175708000" />
+    <option name="totallyTimeSpent" value="182984000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -578,16 +667,17 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-9" y="-9" width="1938" height="1098" extended-state="6" />
+    <editor active="true" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Errors In Solution" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Unit Tests" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.66918105" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.33297414" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="NuGet" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.18528464" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.19065522" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Build" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.375" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -619,11 +709,306 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/AllModdingComponents/PawnShields/Utility/PawnShieldGenerator.cs">
       <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1653">
+          <caret line="92" column="61" lean-forward="false" selection-start-line="92" selection-start-column="61" selection-end-line="92" selection-end-column="61" />
+          <folding>
+            <marker date="1527775794059" expanded="false" signature="6:114" ph="..." />
+            <marker date="1527775794059" expanded="true" signature="144:225" ph="/// Assists in generating shields for pawns. ... " />
+            <marker date="1527775794059" expanded="true" signature="269:5471" ph="{...}" />
+            <marker date="1527775794059" expanded="true" signature="432:543" ph="/* static PawnShieldGenerator() ... */" />
+            <marker date="1527775794059" expanded="true" signature="553:725" ph="/// Tries to generate a shield for the pawn. ... " />
+            <marker date="1527775794059" expanded="true" signature="815:3895" ph="{...}" />
+            <marker date="1527775794059" expanded="true" signature="1321:1491" ph="{...}" />
+            <marker date="1527775794059" expanded="true" signature="1547:1751" ph="{...}" />
+            <marker date="1527775794059" expanded="true" signature="1847:2010" ph="{...}" />
+            <marker date="1527775794059" expanded="true" signature="2397:3148" ph="{...}" />
+            <marker date="1527775794059" expanded="true" signature="2528:3130" ph="{...}" />
+            <marker date="1527775794059" expanded="true" signature="2692:3101" ph="{...}" />
+            <marker date="1527775794059" expanded="true" signature="2911:3038" ph="{...}" />
+            <marker date="1527775794059" expanded="true" signature="3218:3369" ph="{...}" />
+            <marker date="1527775794059" expanded="true" signature="3481:3885" ph="{...}" />
+            <marker date="1527775794059" expanded="true" signature="3905:3982" ph="/// Resets the shield generator. ... " />
+            <marker date="1527775794059" expanded="true" signature="4017:5465" ph="{...}" />
+            <marker date="1527775794059" expanded="true" signature="4457:5455" ph="{...}" />
+            <marker date="1527775794059" expanded="true" signature="4517:5441" ph="{...}" />
+            <marker date="1527775794059" expanded="true" signature="5001:5423" ph="{...}" />
+            <marker date="1527775794059" expanded="true" signature="5160:5401" ph="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/765250CD-2B53-4903-8F57-1EFC3734D8FA/5b/16369b59/Def.cs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1767">
+          <caret line="93" column="13" lean-forward="false" selection-start-line="93" selection-start-column="13" selection-end-line="93" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/AllModdingComponents/JecsTools/HarmonyPatches.cs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1843">
+          <caret line="106" column="44" lean-forward="false" selection-start-line="106" selection-start-column="44" selection-end-line="106" selection-end-column="44" />
+          <folding>
+            <marker date="1527772210558" expanded="false" signature="6:196" ph="..." />
+            <marker date="1527772210558" expanded="true" signature="217:22348" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="299:22346" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="681:2462" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="2055:2220" ph="/* harmony.Patch(AccessTools.Method(AccessTools.TypeByName(&quot;PossibleApparelSet&quot;), &quot;IsNaked&quot;), null, ... */" />
+            <marker date="1527772210558" expanded="true" signature="2591:3827" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="2885:3539" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="3101:3525" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="3360:3463" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="3657:3817" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="3829:4664" ph="/* PawnApparelGenerator ... */" />
+            <marker date="1527772210558" expanded="true" signature="4783:4831" ph="/* public class PawnGroupMakerUtility ... */" />
+            <marker date="1527772210558" expanded="true" signature="4995:5245" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="5144:5235" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="5401:6558" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="5841:6057" ph="/* Log.Message(&quot;4&quot;); ... */" />
+            <marker date="1527772210558" expanded="true" signature="6421:6465" ph="/* &amp;&amp; ... */" />
+            <marker date="1527772210558" expanded="true" signature="6465:6523" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="6568:6848" ph="/// Using the new ApparelExtension, we can have a string based apparel check. ... " />
+            <marker date="1527772210558" expanded="true" signature="6953:8367" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="7129:8227" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="7396:7836" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="7576:7818" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="7898:8213" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="8078:8195" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="8296:8357" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="8471:8944" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="8856:8934" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="9087:9531" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="9141:9521" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="9358:9464" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="9668:10251" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="9737:10241" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="9867:10003" ph="/* Log.Message(&quot;Apply amount original: &quot; + damAmount); ... */" />
+            <marker date="1527772210558" expanded="true" signature="10387:12547" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="10597:12375" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="10756:12361" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="10795:10855" ph="/* Log.Message(&quot;1&quot;); ... */" />
+            <marker date="1527772210558" expanded="true" signature="11074:11513" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="11168:11382" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="11439:11491" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="11667:12343" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="11725:11901" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="11962:12022" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="12055:12196" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="12257:12317" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="12634:14774" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="12999:14764" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="13075:14297" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="14387:14746" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="14883:15881" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="15252:15815" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="15378:15752" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="15464:15644" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="16051:19546" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="16190:19480" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="16484:17683" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="16523:16663" ph="/* Log.Message(&quot;Hediff_A1&quot;); ... */" />
+            <marker date="1527772210558" expanded="true" signature="17704:19466" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="17842:19448" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="17938:18172" ph="/* Log.Message(&quot;Hediff_B1_Setting&quot;); ... */" />
+            <marker date="1527772210558" expanded="true" signature="18307:18425" ph="/* Log.Message(&quot;Hediff_B1_Setting1&quot;); ... */" />
+            <marker date="1527772210558" expanded="true" signature="19041:19162" ph="/* Log.Message(&quot;New damage amt: &quot; + dinfo.Amount); ... */" />
+            <marker date="1527772210558" expanded="true" signature="19621:19953" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="20062:21159" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="20245:21081" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="20645:20722" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="20743:21067" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="20806:21049" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="21272:22340" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="21464:22281" ph="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/AllModdingComponents/PawnShields/HarmonyPatches.cs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="5795">
+          <caret line="315" column="13" lean-forward="false" selection-start-line="315" selection-start-column="13" selection-end-line="315" selection-end-column="13" />
+          <folding>
+            <marker date="1527773696540" expanded="false" signature="6:222" ph="..." />
+            <marker date="1527773696540" expanded="true" signature="245:20702" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="252:330" ph="/// Harmony patches, these aren't pretty. ... " />
+            <marker date="1527773696540" expanded="true" signature="402:20700" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="774:868" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="938:1035" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="1101:1189" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="1261:1353" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="1386:6098" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="1513:1934" ph="/* { ... */" />
+            <marker date="1527773696540" expanded="true" signature="6108:6564" ph="/* public static void Patch_ThingDef_SpecialDisplayStats(ThingDef __instance, ref IEnumerable&lt;StatDrawEntry&gt; __re ... */" />
+            <marker date="1527773696540" expanded="true" signature="6674:6797" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="6886:7217" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="6982:7183" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="7369:7568" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="7721:11062" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="8144:8266" ph="/* Log.Message(&quot;##1: desiredPosition is at: &quot; + desiredPosition); ... */" />
+            <marker date="1527773696540" expanded="true" signature="11182:11431" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="11277:11421" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="11590:15003" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="12052:12196" ph="/* Log.Message(&quot;##1: desiredPosition is at: &quot; + desiredPosition); ... */" />
+            <marker date="1527773696540" expanded="true" signature="12523:12901" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="12783:12887" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="12950:13072" ph="/* Log.Message(&quot;##2: desiredPosition is at: &quot; + desiredPosition); ... */" />
+            <marker date="1527773696540" expanded="true" signature="15159:15669" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="15331:15659" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="15794:16717" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="15904:16707" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="16064:16693" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="16306:16524" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="16380:16502" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="16549:16675" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="16778:17233" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="16933:17223" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="17373:20694" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="17904:17980" ph="/* Log.Message(&quot;Equipment got.&quot;); ... */" />
+            <marker date="1527773696540" expanded="true" signature="18586:19051" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="18959:19037" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="19239:19704" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="19612:19690" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="19895:19961" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="20098:20601" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="20260:20454" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="20326:20436" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="20475:20587" ph="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/AllModdingComponents/PawnShields/PawnShields.csproj">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="228">
+          <caret line="12" column="38" lean-forward="false" selection-start-line="12" selection-start-column="38" selection-end-line="12" selection-end-column="38" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/AllModdingComponents/JecsTools/HarmonyPatches_GUI.cs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="475">
+          <caret line="25" column="73" lean-forward="false" selection-start-line="25" selection-start-column="73" selection-end-line="25" selection-end-column="73" />
+          <folding>
+            <marker date="1527770466068" expanded="true" signature="6:226" ph="..." />
+            <marker date="1527770466068" expanded="true" signature="296:3890" ph="{...}" />
+            <marker date="1527770466068" expanded="true" signature="422:901" ph="{...}" />
+            <marker date="1527770466068" expanded="true" signature="1006:1076" ph="{...}" />
+            <marker date="1527770466068" expanded="true" signature="1194:1854" ph="{...}" />
+            <marker date="1527770466068" expanded="true" signature="1410:1844" ph="{...}" />
+            <marker date="1527770466068" expanded="true" signature="1509:1795" ph="{...}" />
+            <marker date="1527770466068" expanded="true" signature="2025:3509" ph="{...}" />
+            <marker date="1527770466068" expanded="true" signature="2188:2354" ph="{...}" />
+            <marker date="1527770466068" expanded="true" signature="2454:3290" ph="{...}" />
+            <marker date="1527770466068" expanded="true" signature="2592:3236" ph="{...}" />
+            <marker date="1527770466068" expanded="true" signature="2650:2713" ph="{...}" />
+            <marker date="1527770466068" expanded="true" signature="2755:2818" ph="{...}" />
+            <marker date="1527770466068" expanded="true" signature="2860:2923" ph="{...}" />
+            <marker date="1527770466068" expanded="true" signature="2965:3028" ph="{...}" />
+            <marker date="1527770466068" expanded="true" signature="3091:3170" ph="{...}" />
+            <marker date="1527770466068" expanded="true" signature="3323:3468" ph="{...}" />
+            <marker date="1527770466068" expanded="true" signature="3635:3873" ph="{...}" />
+            <marker date="1527770466068" expanded="true" signature="3698:3863" ph="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/AllModdingComponents/JecsTools/TexButton.cs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="247">
+          <caret line="13" column="0" lean-forward="false" selection-start-line="13" selection-start-column="0" selection-end-line="13" selection-end-column="0" />
+          <folding>
+            <marker date="1527770315920" expanded="true" signature="6:45" ph="..." />
+            <marker date="1527770315920" expanded="true" signature="66:255" ph="{...}" />
+            <marker date="1527770315920" expanded="true" signature="130:253" ph="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/AllModdingComponents/PawnShields/Shields.cs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="228">
+          <caret line="16" column="32" lean-forward="false" selection-start-line="16" selection-start-column="32" selection-end-line="16" selection-end-column="32" />
+          <folding>
+            <marker date="1525652642061" expanded="false" signature="6:98" ph="..." />
+            <marker date="1525652642061" expanded="true" signature="121:369" ph="{...}" />
+            <marker date="1525652642061" expanded="true" signature="128:204" ph="/// Entry class for the shields module. ... " />
+            <marker date="1525652642061" expanded="true" signature="269:367" ph="{...}" />
+            <marker date="1525652642061" expanded="true" signature="300:361" ph="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/AllModdingComponents/CompAbilityUser/HarmonyPatches.cs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1957">
+          <caret line="110" column="16" lean-forward="false" selection-start-line="110" selection-start-column="16" selection-end-line="110" selection-end-column="16" />
+          <folding>
+            <marker date="1528215630603" expanded="false" signature="6:148" ph="..." />
+            <marker date="1528215630603" expanded="true" signature="171:21966" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="211:21964" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="287:3059" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="962:1083" ph="/* RimWorld.Targeter ... */" />
+            <marker date="1528215630603" expanded="true" signature="3272:10761" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="3544:10751" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="3575:3694" ph="/* Log.Message(&quot;Special Pawns Detected&quot;); ... */" />
+            <marker date="1528215630603" expanded="true" signature="3762:3948" ph="/* Log.Message(&quot;Points: &quot; +  previousPoints); ... */" />
+            <marker date="1528215630603" expanded="true" signature="4162:4497" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="4277:4477" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="4515:4728" ph="/* Log.Message(&quot;------------------&quot;); ... */" />
+            <marker date="1528215630603" expanded="true" signature="4840:5461" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="5012:5314" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="5722:5955" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="6610:9451" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="6649:7096" ph="/* Log.Message(&quot;------------------&quot;); ... */" />
+            <marker date="1528215630603" expanded="true" signature="7406:7879" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="7558:7857" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="8088:9433" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="8340:8876" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="8503:8849" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="8905:9411" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="9188:9384" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="9565:10053" ph="/* Log.Message(&quot;------------&quot;); ... */" />
+            <marker date="1528215630603" expanded="true" signature="10091:10316" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="10371:10611" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="10771:10853" ph="/* static HarmonyPatches() ... */" />
+            <marker date="1528215630603" expanded="true" signature="10926:11228" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="11339:12276" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="11431:11698" ph="/* ((Pawn)__instance.ParentHolder).GetComps&lt;CompAbilityItem&gt;() ) ... */" />
+            <marker date="1528215630603" expanded="true" signature="12026:12266" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="12389:13181" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="12481:12748" ph="/* ((Pawn)__instance.ParentHolder).GetComps&lt;CompAbilityItem&gt;() ) ... */" />
+            <marker date="1528215630603" expanded="true" signature="13286:13789" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="13601:13779" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="13896:14317" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="14413:16059" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="14484:16024" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="14946:15980" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="15244:15340" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="15365:15962" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="15765:15940" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="16164:20403" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="16237:20368" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="16348:16955" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="17195:20354" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="17758:20332" ph="/* if (__instance.targetingVerb is Verb_UseAbility) ... */" />
+            <marker date="1528215630603" expanded="true" signature="20475:21042" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="20624:21032" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="21121:21209" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="21219:21657" ph="/* Catches loading of Pawns ... */" />
+            <marker date="1528215630603" expanded="true" signature="21721:21958" ph="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/AllModdingComponents/PawnShields/Utility/PawnShieldGenerator.cs">
+      <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <marker date="1527775794059" expanded="false" signature="6:114" ph="..." />
-            <marker date="1527775794059" expanded="true" signature="137:5473" ph="{...}" />
             <marker date="1527775794059" expanded="true" signature="144:225" ph="/// Assists in generating shields for pawns. ... " />
             <marker date="1527775794059" expanded="true" signature="269:5471" ph="{...}" />
             <marker date="1527775794059" expanded="true" signature="432:543" ph="/* static PawnShieldGenerator() ... */" />
@@ -661,7 +1046,242 @@
         <state relative-caret-position="969">
           <caret line="51" column="0" lean-forward="false" selection-start-line="51" selection-start-column="0" selection-end-line="51" selection-end-column="0" />
           <folding>
-            <marker date="1527772210558" expanded="true" signature="6:196" ph="..." />
+            <marker date="1527772210558" expanded="false" signature="6:196" ph="..." />
+            <marker date="1527772210558" expanded="true" signature="217:22348" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="299:22346" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="681:2462" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="2055:2220" ph="/* harmony.Patch(AccessTools.Method(AccessTools.TypeByName(&quot;PossibleApparelSet&quot;), &quot;IsNaked&quot;), null, ... */" />
+            <marker date="1527772210558" expanded="true" signature="2591:3827" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="2885:3539" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="3101:3525" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="3360:3463" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="3657:3817" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="3829:4664" ph="/* PawnApparelGenerator ... */" />
+            <marker date="1527772210558" expanded="true" signature="4783:4831" ph="/* public class PawnGroupMakerUtility ... */" />
+            <marker date="1527772210558" expanded="true" signature="4995:5245" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="5144:5235" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="5401:6558" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="5841:6057" ph="/* Log.Message(&quot;4&quot;); ... */" />
+            <marker date="1527772210558" expanded="true" signature="6421:6465" ph="/* &amp;&amp; ... */" />
+            <marker date="1527772210558" expanded="true" signature="6465:6523" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="6568:6848" ph="/// Using the new ApparelExtension, we can have a string based apparel check. ... " />
+            <marker date="1527772210558" expanded="true" signature="6953:8367" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="7129:8227" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="7396:7836" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="7576:7818" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="7898:8213" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="8078:8195" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="8296:8357" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="8471:8944" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="8856:8934" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="9087:9531" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="9141:9521" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="9358:9464" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="9668:10251" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="9737:10241" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="9867:10003" ph="/* Log.Message(&quot;Apply amount original: &quot; + damAmount); ... */" />
+            <marker date="1527772210558" expanded="true" signature="10387:12547" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="10597:12375" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="10756:12361" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="10795:10855" ph="/* Log.Message(&quot;1&quot;); ... */" />
+            <marker date="1527772210558" expanded="true" signature="11074:11513" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="11168:11382" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="11439:11491" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="11667:12343" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="11725:11901" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="11962:12022" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="12055:12196" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="12257:12317" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="12634:14774" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="12999:14764" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="13075:14297" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="14387:14746" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="14883:15881" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="15252:15815" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="15378:15752" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="15464:15644" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="16051:19546" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="16190:19480" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="16484:17683" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="16523:16663" ph="/* Log.Message(&quot;Hediff_A1&quot;); ... */" />
+            <marker date="1527772210558" expanded="true" signature="17704:19466" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="17842:19448" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="17938:18172" ph="/* Log.Message(&quot;Hediff_B1_Setting&quot;); ... */" />
+            <marker date="1527772210558" expanded="true" signature="18307:18425" ph="/* Log.Message(&quot;Hediff_B1_Setting1&quot;); ... */" />
+            <marker date="1527772210558" expanded="true" signature="19041:19162" ph="/* Log.Message(&quot;New damage amt: &quot; + dinfo.Amount); ... */" />
+            <marker date="1527772210558" expanded="true" signature="19621:19953" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="20062:21159" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="20245:21081" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="20645:20722" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="20743:21067" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="20806:21049" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="21272:22340" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="21464:22281" ph="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/AllModdingComponents/PawnShields/HarmonyPatches.cs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="5795">
+          <caret line="315" column="13" lean-forward="false" selection-start-line="315" selection-start-column="13" selection-end-line="315" selection-end-column="13" />
+          <folding>
+            <marker date="1527773696540" expanded="false" signature="6:222" ph="..." />
+            <marker date="1527773696540" expanded="true" signature="245:20702" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="252:330" ph="/// Harmony patches, these aren't pretty. ... " />
+            <marker date="1527773696540" expanded="true" signature="402:20700" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="774:868" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="938:1035" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="1101:1189" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="1261:1353" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="1386:6098" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="1513:1934" ph="/* { ... */" />
+            <marker date="1527773696540" expanded="true" signature="6108:6564" ph="/* public static void Patch_ThingDef_SpecialDisplayStats(ThingDef __instance, ref IEnumerable&lt;StatDrawEntry&gt; __re ... */" />
+            <marker date="1527773696540" expanded="true" signature="6674:6797" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="6886:7217" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="6982:7183" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="7369:7568" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="7721:11062" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="8144:8266" ph="/* Log.Message(&quot;##1: desiredPosition is at: &quot; + desiredPosition); ... */" />
+            <marker date="1527773696540" expanded="true" signature="11182:11431" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="11277:11421" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="11590:15003" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="12052:12196" ph="/* Log.Message(&quot;##1: desiredPosition is at: &quot; + desiredPosition); ... */" />
+            <marker date="1527773696540" expanded="true" signature="12523:12901" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="12783:12887" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="12950:13072" ph="/* Log.Message(&quot;##2: desiredPosition is at: &quot; + desiredPosition); ... */" />
+            <marker date="1527773696540" expanded="true" signature="15159:15669" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="15331:15659" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="15794:16717" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="15904:16707" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="16064:16693" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="16306:16524" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="16380:16502" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="16549:16675" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="16778:17233" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="16933:17223" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="17373:20694" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="17904:17980" ph="/* Log.Message(&quot;Equipment got.&quot;); ... */" />
+            <marker date="1527773696540" expanded="true" signature="18586:19051" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="18959:19037" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="19239:19704" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="19612:19690" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="19895:19961" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="20098:20601" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="20260:20454" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="20326:20436" ph="{...}" />
+            <marker date="1527773696540" expanded="true" signature="20475:20587" ph="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/AllModdingComponents/PawnShields/PawnShields.csproj">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="228">
+          <caret line="12" column="38" lean-forward="false" selection-start-line="12" selection-start-column="38" selection-end-line="12" selection-end-column="38" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/AllModdingComponents/JecsTools/HarmonyPatches_GUI.cs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="475">
+          <caret line="25" column="73" lean-forward="false" selection-start-line="25" selection-start-column="73" selection-end-line="25" selection-end-column="73" />
+          <folding>
+            <marker date="1527770466068" expanded="true" signature="6:226" ph="..." />
+            <marker date="1527770466068" expanded="true" signature="296:3890" ph="{...}" />
+            <marker date="1527770466068" expanded="true" signature="422:901" ph="{...}" />
+            <marker date="1527770466068" expanded="true" signature="1006:1076" ph="{...}" />
+            <marker date="1527770466068" expanded="true" signature="1194:1854" ph="{...}" />
+            <marker date="1527770466068" expanded="true" signature="1410:1844" ph="{...}" />
+            <marker date="1527770466068" expanded="true" signature="1509:1795" ph="{...}" />
+            <marker date="1527770466068" expanded="true" signature="2025:3509" ph="{...}" />
+            <marker date="1527770466068" expanded="true" signature="2188:2354" ph="{...}" />
+            <marker date="1527770466068" expanded="true" signature="2454:3290" ph="{...}" />
+            <marker date="1527770466068" expanded="true" signature="2592:3236" ph="{...}" />
+            <marker date="1527770466068" expanded="true" signature="2650:2713" ph="{...}" />
+            <marker date="1527770466068" expanded="true" signature="2755:2818" ph="{...}" />
+            <marker date="1527770466068" expanded="true" signature="2860:2923" ph="{...}" />
+            <marker date="1527770466068" expanded="true" signature="2965:3028" ph="{...}" />
+            <marker date="1527770466068" expanded="true" signature="3091:3170" ph="{...}" />
+            <marker date="1527770466068" expanded="true" signature="3323:3468" ph="{...}" />
+            <marker date="1527770466068" expanded="true" signature="3635:3873" ph="{...}" />
+            <marker date="1527770466068" expanded="true" signature="3698:3863" ph="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/AllModdingComponents/JecsTools/TexButton.cs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="247">
+          <caret line="13" column="0" lean-forward="false" selection-start-line="13" selection-start-column="0" selection-end-line="13" selection-end-column="0" />
+          <folding>
+            <marker date="1527770315920" expanded="true" signature="6:45" ph="..." />
+            <marker date="1527770315920" expanded="true" signature="66:255" ph="{...}" />
+            <marker date="1527770315920" expanded="true" signature="130:253" ph="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/AllModdingComponents/PawnShields/Shields.cs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="228">
+          <caret line="16" column="32" lean-forward="false" selection-start-line="16" selection-start-column="32" selection-end-line="16" selection-end-column="32" />
+          <folding>
+            <marker date="1525652642061" expanded="false" signature="6:98" ph="..." />
+            <marker date="1525652642061" expanded="true" signature="121:369" ph="{...}" />
+            <marker date="1525652642061" expanded="true" signature="128:204" ph="/// Entry class for the shields module. ... " />
+            <marker date="1525652642061" expanded="true" signature="269:367" ph="{...}" />
+            <marker date="1525652642061" expanded="true" signature="300:361" ph="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/AllModdingComponents/PawnShields/Utility/PawnShieldGenerator.cs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <marker date="1527775794059" expanded="false" signature="6:114" ph="..." />
+            <marker date="1527775794059" expanded="true" signature="144:225" ph="/// Assists in generating shields for pawns. ... " />
+            <marker date="1527775794059" expanded="true" signature="269:5471" ph="{...}" />
+            <marker date="1527775794059" expanded="true" signature="432:543" ph="/* static PawnShieldGenerator() ... */" />
+            <marker date="1527775794059" expanded="true" signature="553:725" ph="/// Tries to generate a shield for the pawn. ... " />
+            <marker date="1527775794059" expanded="true" signature="815:3895" ph="{...}" />
+            <marker date="1527775794059" expanded="true" signature="1321:1491" ph="{...}" />
+            <marker date="1527775794059" expanded="true" signature="1547:1751" ph="{...}" />
+            <marker date="1527775794059" expanded="true" signature="1847:2010" ph="{...}" />
+            <marker date="1527775794059" expanded="true" signature="2397:3148" ph="{...}" />
+            <marker date="1527775794059" expanded="true" signature="2528:3130" ph="{...}" />
+            <marker date="1527775794059" expanded="true" signature="2692:3101" ph="{...}" />
+            <marker date="1527775794059" expanded="true" signature="2911:3038" ph="{...}" />
+            <marker date="1527775794059" expanded="true" signature="3218:3369" ph="{...}" />
+            <marker date="1527775794059" expanded="true" signature="3481:3885" ph="{...}" />
+            <marker date="1527775794059" expanded="true" signature="3905:3982" ph="/// Resets the shield generator. ... " />
+            <marker date="1527775794059" expanded="true" signature="4017:5465" ph="{...}" />
+            <marker date="1527775794059" expanded="true" signature="4457:5455" ph="{...}" />
+            <marker date="1527775794059" expanded="true" signature="4517:5441" ph="{...}" />
+            <marker date="1527775794059" expanded="true" signature="5001:5423" ph="{...}" />
+            <marker date="1527775794059" expanded="true" signature="5160:5401" ph="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/765250CD-2B53-4903-8F57-1EFC3734D8FA/5b/16369b59/Def.cs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1767">
+          <caret line="93" column="13" lean-forward="false" selection-start-line="93" selection-start-column="13" selection-end-line="93" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/AllModdingComponents/JecsTools/HarmonyPatches.cs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="969">
+          <caret line="51" column="0" lean-forward="false" selection-start-line="51" selection-start-column="0" selection-end-line="51" selection-end-column="0" />
+          <folding>
+            <marker date="1527772210558" expanded="false" signature="6:196" ph="..." />
+            <marker date="1527772210558" expanded="true" signature="217:22348" ph="{...}" />
             <marker date="1527772210558" expanded="true" signature="299:22346" ph="{...}" />
             <marker date="1527772210558" expanded="true" signature="681:2462" ph="{...}" />
             <marker date="1527772210558" expanded="true" signature="2055:2220" ph="/* harmony.Patch(AccessTools.Method(AccessTools.TypeByName(&quot;PossibleApparelSet&quot;), &quot;IsNaked&quot;), null, ... */" />
@@ -905,88 +1525,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/AllModdingComponents/JecsTools/HarmonyPatches.cs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="969">
-          <caret line="51" column="0" lean-forward="false" selection-start-line="51" selection-start-column="0" selection-end-line="51" selection-end-column="0" />
-          <folding>
-            <marker date="1527772210558" expanded="true" signature="6:196" ph="..." />
-            <marker date="1527772210558" expanded="true" signature="299:22346" ph="{...}" />
-            <marker date="1527772210558" expanded="true" signature="681:2462" ph="{...}" />
-            <marker date="1527772210558" expanded="true" signature="2055:2220" ph="/* harmony.Patch(AccessTools.Method(AccessTools.TypeByName(&quot;PossibleApparelSet&quot;), &quot;IsNaked&quot;), null, ... */" />
-            <marker date="1527772210558" expanded="true" signature="2591:3827" ph="{...}" />
-            <marker date="1527772210558" expanded="true" signature="2885:3539" ph="{...}" />
-            <marker date="1527772210558" expanded="true" signature="3101:3525" ph="{...}" />
-            <marker date="1527772210558" expanded="true" signature="3360:3463" ph="{...}" />
-            <marker date="1527772210558" expanded="true" signature="3657:3817" ph="{...}" />
-            <marker date="1527772210558" expanded="true" signature="3829:4664" ph="/* PawnApparelGenerator ... */" />
-            <marker date="1527772210558" expanded="true" signature="4783:4831" ph="/* public class PawnGroupMakerUtility ... */" />
-            <marker date="1527772210558" expanded="true" signature="4995:5245" ph="{...}" />
-            <marker date="1527772210558" expanded="true" signature="5144:5235" ph="{...}" />
-            <marker date="1527772210558" expanded="true" signature="5401:6558" ph="{...}" />
-            <marker date="1527772210558" expanded="true" signature="5841:6057" ph="/* Log.Message(&quot;4&quot;); ... */" />
-            <marker date="1527772210558" expanded="true" signature="6421:6465" ph="/* &amp;&amp; ... */" />
-            <marker date="1527772210558" expanded="true" signature="6465:6523" ph="{...}" />
-            <marker date="1527772210558" expanded="true" signature="6568:6848" ph="/// Using the new ApparelExtension, we can have a string based apparel check. ... " />
-            <marker date="1527772210558" expanded="true" signature="6953:8367" ph="{...}" />
-            <marker date="1527772210558" expanded="true" signature="7129:8227" ph="{...}" />
-            <marker date="1527772210558" expanded="true" signature="7396:7836" ph="{...}" />
-            <marker date="1527772210558" expanded="true" signature="7576:7818" ph="{...}" />
-            <marker date="1527772210558" expanded="true" signature="7898:8213" ph="{...}" />
-            <marker date="1527772210558" expanded="true" signature="8078:8195" ph="{...}" />
-            <marker date="1527772210558" expanded="true" signature="8296:8357" ph="{...}" />
-            <marker date="1527772210558" expanded="true" signature="8471:8944" ph="{...}" />
-            <marker date="1527772210558" expanded="true" signature="8856:8934" ph="{...}" />
-            <marker date="1527772210558" expanded="true" signature="9087:9531" ph="{...}" />
-            <marker date="1527772210558" expanded="true" signature="9141:9521" ph="{...}" />
-            <marker date="1527772210558" expanded="true" signature="9358:9464" ph="{...}" />
-            <marker date="1527772210558" expanded="true" signature="9668:10251" ph="{...}" />
-            <marker date="1527772210558" expanded="true" signature="9737:10241" ph="{...}" />
-            <marker date="1527772210558" expanded="true" signature="9867:10003" ph="/* Log.Message(&quot;Apply amount original: &quot; + damAmount); ... */" />
-            <marker date="1527772210558" expanded="true" signature="10387:12547" ph="{...}" />
-            <marker date="1527772210558" expanded="true" signature="10597:12375" ph="{...}" />
-            <marker date="1527772210558" expanded="true" signature="10756:12361" ph="{...}" />
-            <marker date="1527772210558" expanded="true" signature="10795:10855" ph="/* Log.Message(&quot;1&quot;); ... */" />
-            <marker date="1527772210558" expanded="true" signature="11074:11513" ph="{...}" />
-            <marker date="1527772210558" expanded="true" signature="11168:11382" ph="{...}" />
-            <marker date="1527772210558" expanded="true" signature="11439:11491" ph="{...}" />
-            <marker date="1527772210558" expanded="true" signature="11667:12343" ph="{...}" />
-            <marker date="1527772210558" expanded="true" signature="11725:11901" ph="{...}" />
-            <marker date="1527772210558" expanded="true" signature="11962:12022" ph="{...}" />
-            <marker date="1527772210558" expanded="true" signature="12055:12196" ph="{...}" />
-            <marker date="1527772210558" expanded="true" signature="12257:12317" ph="{...}" />
-            <marker date="1527772210558" expanded="true" signature="12634:14774" ph="{...}" />
-            <marker date="1527772210558" expanded="true" signature="12999:14764" ph="{...}" />
-            <marker date="1527772210558" expanded="true" signature="13075:14297" ph="{...}" />
-            <marker date="1527772210558" expanded="true" signature="14387:14746" ph="{...}" />
-            <marker date="1527772210558" expanded="true" signature="14883:15881" ph="{...}" />
-            <marker date="1527772210558" expanded="true" signature="15252:15815" ph="{...}" />
-            <marker date="1527772210558" expanded="true" signature="15378:15752" ph="{...}" />
-            <marker date="1527772210558" expanded="true" signature="15464:15644" ph="{...}" />
-            <marker date="1527772210558" expanded="true" signature="16051:19546" ph="{...}" />
-            <marker date="1527772210558" expanded="true" signature="16190:19480" ph="{...}" />
-            <marker date="1527772210558" expanded="true" signature="16484:17683" ph="{...}" />
-            <marker date="1527772210558" expanded="true" signature="16523:16663" ph="/* Log.Message(&quot;Hediff_A1&quot;); ... */" />
-            <marker date="1527772210558" expanded="true" signature="17704:19466" ph="{...}" />
-            <marker date="1527772210558" expanded="true" signature="17842:19448" ph="{...}" />
-            <marker date="1527772210558" expanded="true" signature="17938:18172" ph="/* Log.Message(&quot;Hediff_B1_Setting&quot;); ... */" />
-            <marker date="1527772210558" expanded="true" signature="18307:18425" ph="/* Log.Message(&quot;Hediff_B1_Setting1&quot;); ... */" />
-            <marker date="1527772210558" expanded="true" signature="19041:19162" ph="/* Log.Message(&quot;New damage amt: &quot; + dinfo.Amount); ... */" />
-            <marker date="1527772210558" expanded="true" signature="19621:19953" ph="{...}" />
-            <marker date="1527772210558" expanded="true" signature="20062:21159" ph="{...}" />
-            <marker date="1527772210558" expanded="true" signature="20245:21081" ph="{...}" />
-            <marker date="1527772210558" expanded="true" signature="20645:20722" ph="{...}" />
-            <marker date="1527772210558" expanded="true" signature="20743:21067" ph="{...}" />
-            <marker date="1527772210558" expanded="true" signature="20806:21049" ph="{...}" />
-            <marker date="1527772210558" expanded="true" signature="21272:22340" ph="{...}" />
-            <marker date="1527772210558" expanded="true" signature="21464:22281" ph="{...}" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/765250CD-2B53-4903-8F57-1EFC3734D8FA/5b/16369b59/Def.cs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
+        <state relative-caret-position="1767">
           <caret line="93" column="13" lean-forward="false" selection-start-line="93" selection-start-column="13" selection-end-line="93" selection-end-column="13" />
           <folding />
         </state>
@@ -1056,11 +1597,10 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/AllModdingComponents/PawnShields/Utility/PawnShieldGenerator.cs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="19">
+        <state relative-caret-position="1653">
           <caret line="92" column="61" lean-forward="false" selection-start-line="92" selection-start-column="61" selection-end-line="92" selection-end-column="61" />
           <folding>
             <marker date="1527775794059" expanded="false" signature="6:114" ph="..." />
-            <marker date="1527775794059" expanded="true" signature="137:5473" ph="{...}" />
             <marker date="1527775794059" expanded="true" signature="144:225" ph="/// Assists in generating shields for pawns. ... " />
             <marker date="1527775794059" expanded="true" signature="269:5471" ph="{...}" />
             <marker date="1527775794059" expanded="true" signature="432:543" ph="/* static PawnShieldGenerator() ... */" />
@@ -1081,6 +1621,178 @@
             <marker date="1527775794059" expanded="true" signature="4517:5441" ph="{...}" />
             <marker date="1527775794059" expanded="true" signature="5001:5423" ph="{...}" />
             <marker date="1527775794059" expanded="true" signature="5160:5401" ph="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/AllModdingComponents/CompAbilityUser/HarmonyPatches.cs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="441">
+          <caret line="110" column="16" lean-forward="false" selection-start-line="110" selection-start-column="16" selection-end-line="110" selection-end-column="16" />
+          <folding>
+            <marker date="1528215630603" expanded="false" signature="6:148" ph="..." />
+            <marker date="1528215630603" expanded="true" signature="171:21966" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="211:21964" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="287:3059" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="962:1083" ph="/* RimWorld.Targeter ... */" />
+            <marker date="1528215630603" expanded="true" signature="3272:10761" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="3544:10751" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="3575:3694" ph="/* Log.Message(&quot;Special Pawns Detected&quot;); ... */" />
+            <marker date="1528215630603" expanded="true" signature="3762:3948" ph="/* Log.Message(&quot;Points: &quot; +  previousPoints); ... */" />
+            <marker date="1528215630603" expanded="true" signature="4162:4497" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="4277:4477" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="4515:4728" ph="/* Log.Message(&quot;------------------&quot;); ... */" />
+            <marker date="1528215630603" expanded="true" signature="4840:5461" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="5012:5314" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="5722:5955" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="6610:9451" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="6649:7096" ph="/* Log.Message(&quot;------------------&quot;); ... */" />
+            <marker date="1528215630603" expanded="true" signature="7406:7879" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="7558:7857" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="8088:9433" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="8340:8876" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="8503:8849" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="8905:9411" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="9188:9384" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="9565:10053" ph="/* Log.Message(&quot;------------&quot;); ... */" />
+            <marker date="1528215630603" expanded="true" signature="10091:10316" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="10371:10611" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="10771:10853" ph="/* static HarmonyPatches() ... */" />
+            <marker date="1528215630603" expanded="true" signature="10926:11228" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="11339:12276" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="11431:11698" ph="/* ((Pawn)__instance.ParentHolder).GetComps&lt;CompAbilityItem&gt;() ) ... */" />
+            <marker date="1528215630603" expanded="true" signature="12026:12266" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="12389:13181" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="12481:12748" ph="/* ((Pawn)__instance.ParentHolder).GetComps&lt;CompAbilityItem&gt;() ) ... */" />
+            <marker date="1528215630603" expanded="true" signature="13286:13789" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="13601:13779" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="13896:14317" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="14413:16059" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="14484:16024" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="14946:15980" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="15244:15340" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="15365:15962" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="15765:15940" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="16164:20403" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="16237:20368" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="16348:16955" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="17195:20354" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="17758:20332" ph="/* if (__instance.targetingVerb is Verb_UseAbility) ... */" />
+            <marker date="1528215630603" expanded="true" signature="20475:21042" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="20624:21032" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="21121:21209" ph="{...}" />
+            <marker date="1528215630603" expanded="true" signature="21219:21657" ph="/* Catches loading of Pawns ... */" />
+            <marker date="1528215630603" expanded="true" signature="21721:21958" ph="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/AllModdingComponents/JecsTools/HarmonyPatches.cs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="286">
+          <caret line="173" column="46" lean-forward="false" selection-start-line="173" selection-start-column="46" selection-end-line="173" selection-end-column="46" />
+          <folding>
+            <marker date="1527772210558" expanded="false" signature="6:196" ph="..." />
+            <marker date="1527772210558" expanded="true" signature="217:22348" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="299:22346" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="681:2462" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="2055:2220" ph="/* harmony.Patch(AccessTools.Method(AccessTools.TypeByName(&quot;PossibleApparelSet&quot;), &quot;IsNaked&quot;), null, ... */" />
+            <marker date="1527772210558" expanded="true" signature="2591:3827" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="2885:3539" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="3101:3525" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="3360:3463" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="3657:3817" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="3829:4664" ph="/* PawnApparelGenerator ... */" />
+            <marker date="1527772210558" expanded="true" signature="4783:4831" ph="/* public class PawnGroupMakerUtility ... */" />
+            <marker date="1527772210558" expanded="true" signature="4995:5245" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="5144:5235" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="5401:6558" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="5841:6057" ph="/* Log.Message(&quot;4&quot;); ... */" />
+            <marker date="1527772210558" expanded="true" signature="6421:6465" ph="/* &amp;&amp; ... */" />
+            <marker date="1527772210558" expanded="true" signature="6465:6523" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="6568:6848" ph="/// Using the new ApparelExtension, we can have a string based apparel check. ... " />
+            <marker date="1527772210558" expanded="true" signature="6953:8367" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="7129:8227" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="7396:7836" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="7576:7818" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="7898:8213" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="8078:8195" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="8296:8357" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="8471:8944" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="8856:8934" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="9087:9531" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="9141:9521" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="9358:9464" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="9668:10251" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="9737:10241" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="9867:10003" ph="/* Log.Message(&quot;Apply amount original: &quot; + damAmount); ... */" />
+            <marker date="1527772210558" expanded="true" signature="10387:12547" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="10597:12375" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="10756:12361" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="10795:10855" ph="/* Log.Message(&quot;1&quot;); ... */" />
+            <marker date="1527772210558" expanded="true" signature="11074:11513" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="11168:11382" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="11439:11491" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="11667:12343" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="11725:11901" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="11962:12022" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="12055:12196" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="12257:12317" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="12634:14774" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="12999:14764" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="13075:14297" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="14387:14746" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="14883:15881" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="15252:15815" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="15378:15752" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="15464:15644" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="16051:19546" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="16190:19480" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="16484:17683" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="16523:16663" ph="/* Log.Message(&quot;Hediff_A1&quot;); ... */" />
+            <marker date="1527772210558" expanded="true" signature="17704:19466" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="17842:19448" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="17938:18172" ph="/* Log.Message(&quot;Hediff_B1_Setting&quot;); ... */" />
+            <marker date="1527772210558" expanded="true" signature="18307:18425" ph="/* Log.Message(&quot;Hediff_B1_Setting1&quot;); ... */" />
+            <marker date="1527772210558" expanded="true" signature="19041:19162" ph="/* Log.Message(&quot;New damage amt: &quot; + dinfo.Amount); ... */" />
+            <marker date="1527772210558" expanded="true" signature="19621:19953" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="20062:21159" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="20245:21081" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="20645:20722" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="20743:21067" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="20806:21049" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="21272:22340" ph="{...}" />
+            <marker date="1527772210558" expanded="true" signature="21464:22281" ph="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/AllModdingComponents/CompOverlays/CompProperties_Overlays.cs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="190">
+          <caret line="12" column="8" lean-forward="false" selection-start-line="12" selection-start-column="8" selection-end-line="12" selection-end-column="8" />
+          <folding>
+            <marker date="1528524981936" expanded="false" signature="6:65" ph="..." />
+            <marker date="1528524981936" expanded="true" signature="89:576" ph="{...}" />
+            <marker date="1528524981936" expanded="true" signature="123:278" ph="{...}" />
+            <marker date="1528524981936" expanded="true" signature="337:574" ph="{...}" />
+            <marker date="1528524981936" expanded="true" signature="502:568" ph="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/AllModdingComponents/CompOverlays/CompOverlays.cs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="380">
+          <caret line="21" column="36" lean-forward="true" selection-start-line="21" selection-start-column="36" selection-end-line="21" selection-end-column="36" />
+          <folding>
+            <marker date="1528524990469" expanded="false" signature="6:28" ph="..." />
+            <marker date="1528524990469" expanded="true" signature="52:1058" ph="{...}" />
+            <marker date="1528524990469" expanded="true" signature="96:1056" ph="{...}" />
+            <marker date="1528524990469" expanded="true" signature="225:1050" ph="{...}" />
+            <marker date="1528524990469" expanded="true" signature="421:1040" ph="{...}" />
+            <marker date="1528524990469" expanded="true" signature="584:1026" ph="{...}" />
+            <marker date="1528524990469" expanded="true" signature="737:925" ph="{...}" />
           </folding>
         </state>
       </provider>
