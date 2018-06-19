@@ -71,7 +71,7 @@
         <li Class="JobGiver_SeekAllowedArea" />
         
         <!--    Neutral Vehicles shouldn't be in the player map, get them out'-->
-        <li Class="ThinkNode_ConditionalNeutralFaction">
+        <li Class="ThinkNode_ConditionalNonPlayerNonHostileFaction">
             <subNodes>
                 <li Class="ThinkNode_Tagger">
                     <tagToGive>Misc</tagToGive>

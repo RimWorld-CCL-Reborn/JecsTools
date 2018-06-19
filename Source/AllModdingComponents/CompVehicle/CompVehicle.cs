@@ -229,7 +229,7 @@ namespace CompVehicle
                 //Do not eject anyone from the vehicle for needs during combat.
                 //It's too dangerous to leave during combat.
                 if (this?.Pawn?.Map?.attackTargetsCache?.GetPotentialTargetsFor(Pawn)
-                        ?.FirstOrDefault(x => !x.ThreatDisabled()) == null)
+                        ?.FirstOrDefault(x => !x.ThreatDisabled(vehicle)) == null) //TODO May require further investigation for proper update
                     foreach (var group in handlers)
                     {
                         var toEject = group?.handlers?.InnerListForReading?.FirstOrDefault(x =>
@@ -334,7 +334,7 @@ namespace CompVehicle
 
             //Fixes bug where weapon tries to fire even after gunner is removed
             if (weaponStatus != WeaponState.able)
-                if (this?.Pawn?.CurJob?.def == JobDefOf.WaitCombat ||
+                if (this?.Pawn?.CurJob?.def == JobDefOf.Wait_Combat ||
                     this?.Pawn?.CurJob?.def == JobDefOf.AttackStatic ||
                     this?.Pawn?.CurJob?.def == JobDefOf.AttackMelee)
                     if (!this?.Pawn?.pather?.Moving ?? false)
@@ -630,7 +630,7 @@ namespace CompVehicle
                 : new List<Pawn>();
             if (canLoad && tempList.Count == 0)
             {
-                SoundDefOf.TickTiny.PlayOneShotOnCamera(null);
+                SoundDefOf.Tick_Tiny.PlayOneShotOnCamera(null);
                 //Additions by Swenzi 1/1/2018
                 //Allow animals to ride in vehicles or pull vehicles (animals only allowed to be in slots that allow movement)
                 if (Props.animalDrivers && (group.role.handlingTypes & HandlingTypeFlags.Movement) != HandlingTypeFlags.None)
@@ -638,7 +638,7 @@ namespace CompVehicle
                     Find.Targeter.BeginTargeting(
                         new TargetingParameters
                         {
-                            validator = ti => ti.Thing is Pawn p && p.Faction != null && p.Faction.IsPlayer && p.training != null && p.training.IsCompleted(DefDatabase<TrainableDef>.GetNamed("Haul")) && p.BodySize > Props.minBodySize
+                            validator = ti => ti.Thing is Pawn p && p.Faction != null && p.Faction.IsPlayer && p.training != null && p.training.HasLearned(DefDatabase<TrainableDef>.GetNamed("Haul")) && p.BodySize > Props.minBodySize
                         }, delegate (LocalTargetInfo target) { GiveLoadJob(target.Thing, group); }, null, null, null);
                 }else{
                     Find.Targeter.BeginTargeting(
@@ -660,19 +660,19 @@ namespace CompVehicle
                 if(Props.animalDrivers && (group.role.handlingTypes & HandlingTypeFlags.Movement) != HandlingTypeFlags.None){
                     list.Add(new FloatMenuOption(text, delegate
                     {
-                        SoundDefOf.TickTiny.PlayOneShotOnCamera(null);
+                        SoundDefOf.Tick_Tiny.PlayOneShotOnCamera(null);
                         Find.Targeter.BeginTargeting(
                             new TargetingParameters
                             {
                                 validator = ti =>
-                                ti.Thing is Pawn p && p.Faction != null && p.Faction.IsPlayer && p.training != null && p.training.IsCompleted(DefDatabase<TrainableDef>.GetNamed("Haul")) && p.BodySize > Props.minBodySize
+                                ti.Thing is Pawn p && p.Faction != null && p.Faction.IsPlayer && p.training != null && p.training.HasLearned(DefDatabase<TrainableDef>.GetNamed("Haul")) && p.BodySize > Props.minBodySize
                             }, delegate (LocalTargetInfo target) { GiveLoadJob(target.Thing, group); }, null, null, null);
                     }, MenuOptionPriority.Default, null, null, 29f, null, null));
                 }
                 else{
                     list.Add(new FloatMenuOption(text, delegate
                     {
-                        SoundDefOf.TickTiny.PlayOneShotOnCamera(null);
+                        SoundDefOf.Tick_Tiny.PlayOneShotOnCamera(null);
                         Find.Targeter.BeginTargeting(
                             new TargetingParameters
                             {
@@ -731,7 +731,7 @@ namespace CompVehicle
                                 {
                                     action = delegate
                                     {
-                                        SoundDefOf.TickTiny.PlayOneShotOnCamera(null);
+                                        SoundDefOf.Tick_Tiny.PlayOneShotOnCamera(null);
                                         GetVehicleButtonFloatMenu(group, loadable);
                                     },
                                     hotKey = KeyBindingDefOf.Misc1

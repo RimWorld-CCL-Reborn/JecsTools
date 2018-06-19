@@ -20,8 +20,8 @@ namespace JecsTools
         {
             //Allow fortitude to soak damage
             var type = typeof(HarmonyPatches);
-            harmony.Patch(AccessTools.Method(typeof(DebugWindowsOpener), "DrawButtons"), null,
-                null, new HarmonyMethod(type, nameof(DrawAdditionalButtons)));
+            //harmony.Patch(AccessTools.Method(typeof(DebugWindowsOpener), "DrawButtons"), null,
+            //    null, new HarmonyMethod(type, nameof(DrawAdditionalButtons)));
             harmony.Patch(AccessTools.Method(typeof(MoteMaker), "MakeMoodThoughtBubble"), null,
                 new HarmonyMethod(type, nameof(ToggleMoodThoughtBubble)),
                 null);
@@ -31,19 +31,19 @@ namespace JecsTools
         {
             if (!bubblesEnabled) __result = null;
         }
-
-        public static IEnumerable<CodeInstruction> DrawAdditionalButtons(IEnumerable<CodeInstruction> instructions) {
-            var instructionsArr = instructions.ToArray();
-            var widgetRowIndex = TryGetLocalIndexOfConstructedObject(instructionsArr, typeof(WidgetRow));
-            foreach (var inst in instructionsArr) {
-                if (!drawButtonsPatched && widgetRowIndex >= 0 && inst.opcode == OpCodes.Bne_Un) {
-                    yield return new CodeInstruction(OpCodes.Ldloc, widgetRowIndex);
-                    yield return new CodeInstruction(OpCodes.Call, ((Action<WidgetRow>)HarmonyPatches.DrawDebugToolbarButton).Method);
-                    drawButtonsPatched = true;
-                }
-                yield return inst;
-            }
-        }
+//
+//        public static IEnumerable<CodeInstruction> DrawAdditionalButtons(IEnumerable<CodeInstruction> instructions) {
+//            var instructionsArr = instructions.ToArray();
+//            var widgetRowIndex = TryGetLocalIndexOfConstructedObject(instructionsArr, typeof(WidgetRow));
+//            foreach (var inst in instructionsArr) {
+//                if (!drawButtonsPatched && widgetRowIndex >= 0 && inst.opcode == OpCodes.Bne_Un) {
+//                    yield return new CodeInstruction(OpCodes.Ldloc, widgetRowIndex);
+//                    yield return new CodeInstruction(OpCodes.Call, ((Action<WidgetRow>)HarmonyPatches.DrawDebugToolbarButton).Method);
+//                    drawButtonsPatched = true;
+//                }
+//                yield return inst;
+//            }
+//        }
         
         private static int TryGetLocalIndexOfConstructedObject(IEnumerable<CodeInstruction> instructions, Type constructedType, Type[] constructorParams = null) {
             var constructor = AccessTools.Constructor(constructedType, constructorParams);

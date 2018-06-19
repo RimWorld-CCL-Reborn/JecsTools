@@ -12,12 +12,13 @@ namespace PawnShields
     /// </summary>
     public class StatWorker_Shield : StatWorker
     {
-        public override bool ShouldShowFor(BuildableDef eDef)
+        public override bool ShouldShowFor(StatRequest req)
         {
-            if (eDef is ThingDef thingDef && thingDef.HasComp(typeof(CompShield)))
+            var def = req.Def as ThingDef; 
+            if (def != null && def.HasComp(typeof(CompShield)))
                 return true;
-
             return false;
         }
+        
     }
 }

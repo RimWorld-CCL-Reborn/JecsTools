@@ -34,8 +34,8 @@ namespace JecsTools
                 new HarmonyMethod(type, nameof(ApplyProperDamage)), null);
             harmony.Patch(AccessTools.Method(typeof(ArmorUtility), "GetPostArmorDamage"), null,
                 new HarmonyMethod(type, nameof(Post_GetPostArmorDamage)));
-            harmony.Patch(AccessTools.Method(typeof(PawnGenerator), "GeneratePawnInternal"), null,
-                new HarmonyMethod(type, nameof(Post_GeneratePawnInternal)));
+            harmony.Patch(AccessTools.Method(typeof(PawnGenerator), "GeneratePawn", new[] {typeof(PawnGenerationRequest)}), null,
+                new HarmonyMethod(type, nameof(Post_GeneratePawn)));
             harmony.Patch(AccessTools.Method(typeof(ApparelUtility), "CanWearTogether"), null,
                 new HarmonyMethod(type, nameof(Post_CanWearTogether)));
             harmony.Patch(AccessTools.Method(typeof(Faction), "Notify_MemberDied"),
@@ -106,7 +106,7 @@ namespace JecsTools
 
         //public class PawnGroupMakerUtility
         //{
-        public static void GeneratePawns(PawnGroupKindDef groupKind, PawnGroupMakerParms parms,
+        public static void GeneratePawns(PawnGroupMakerParms parms,
             bool warnOnZeroResults, ref IEnumerable<Pawn> __result)
         {
             if (__result?.Count() > 0 &&
@@ -199,7 +199,7 @@ namespace JecsTools
             }
         }
 
-        public static void Post_GeneratePawnInternal(PawnGenerationRequest request, ref Pawn __result)
+        public static void Post_GeneratePawn(PawnGenerationRequest request, ref Pawn __result)
         {
             var hediffGiverSet = __result?.def?.race?.hediffGiverSets?.FirstOrDefault(
                 x => x.hediffGivers.Any(y => y is HediffGiver_StartWithHediff));
@@ -213,7 +213,7 @@ namespace JecsTools
         }
 
         //ArmorUtility
-        public static void Post_GetPostArmorDamage(Pawn pawn, int amountInt, BodyPartRecord part, DamageDef damageDef)
+        public static void Post_GetPostArmorDamage(Pawn pawn, float amount, BodyPartRecord part, DamageDef damageDef, ref float __result)
         {
             if (tempDamageAbsorbed != null)
             {
@@ -228,7 +228,7 @@ namespace JecsTools
         }
 
         public static void ApplyProperDamage(ref float damAmount, float armorRating, Thing armorThing,
-            DamageDef damageDef)
+            DamageDef damageDef, Pawn pawn, ref bool deflectedByMetalArmor)
         {
             if (tempDamageAmount != null && damAmount > 0)
             {
@@ -290,7 +290,7 @@ namespace JecsTools
                         }
                 }
             }
-            tempDamageAmount = dinfo.Amount;
+            tempDamageAmount = (int)dinfo.Amount;
             absorbed = false;
             //Log.Message("Current Damage :" + dinfo.Amount);
             return true;
@@ -323,13 +323,13 @@ namespace JecsTools
                         explosion.postExplosionSpawnThingCount = 1;
                         explosion.applyDamageToExplosionCellsNeighbors = false;
                         explosion.chanceToStartFire = 0f;
-                        explosion.dealMoreDamageAtCenter = false;
+                        explosion.damageFalloff = false;// dealMoreDamageAtCenter = false;
                         explosion.StartExplosion(null);
                     }
                     if (pawn != instigator && !pawn.Dead && !pawn.Downed && pawn.Spawned)
                     {
                         if (knocker.Props.stunChance > -1 && knocker.Props.stunChance >= Rand.Value)
-                            pawn.stances.stunner.StunFor(knocker.Props.stunTicks);
+                            pawn.stances.stunner.StunFor(knocker.Props.stunTicks, instigator);
                         PushEffect(instigator, pawn, knocker.Props.knockDistance.RandomInRange,
                             true);
                     }
@@ -392,7 +392,7 @@ namespace JecsTools
                     //Log.Message(dinfo.Amount + " - " + soakSetting.damageToSoak + " = " + dmgAmount);
                     dinfo.SetAmount(dmgAmount);
                     //Log.Message("New damage amt: " + dinfo.Amount);
-                    soakedDamage += dmgAmount;
+                    soakedDamage += (int)dmgAmount;
                     if (dinfo.Amount > 0) continue;
                     //Log.Message("Hediff_A_Absorbed");
                     DamageSoakedMote(pawn, soakedDamage);
@@ -421,7 +421,7 @@ namespace JecsTools
 
                         var dmgAmount = Mathf.Clamp(dinfo.Amount - soakSettings.damageToSoak, 0, dinfo.Amount);
                         //Log.Message(dinfo.Amount + " - " + soakSettings.damageToSoak + " = " + dmgAmount);
-                        soakedDamage += dmgAmount;
+                        soakedDamage += (int)dmgAmount;
                         dinfo.SetAmount(dmgAmount);
                         //Log.Message("New damage amt: " + dinfo.Amount);
                         //Log.Message("Total soaked: " + soakedDamage);

@@ -85,14 +85,14 @@ namespace CompVehicle
             rect2.width -= 24f;
             if (pawn != null && !pawn.Dead)
             {
-                CaravanPeopleAndItemsTabUtility.DoOpenSpecificTabButton(rect2, pawn, ref specificNeedsTabForPawn);
+                //CaravanPeopleAndItemsTabUtility.DoOpenSpecificTabButton(rect2, pawn, ref specificNeedsTabForPawn);
                 rect2.width -= 24f;
             }
             if (pawn == null)
             {
                 var rect3 = rect2;
                 rect3.xMin = rect3.xMax - 60f;
-                CaravanPeopleAndItemsTabUtility.TryDrawMass(thing, rect3);
+                //CaravanPeopleAndItemsTabUtility.TryDrawMass(thing, rect3);
                 rect2.width -= 60f;
             }
             if (Mouse.IsOver(rect2))

@@ -46,7 +46,7 @@ namespace AbilityUser
 
         public override void ProcessInput(Event ev)
         {
-            SoundDefOf.TickTiny.PlayOneShotOnCamera();
+            SoundDefOf.Tick_Tiny.PlayOneShotOnCamera();
 
             Find.Targeter.StopTargeting();
             BeginTargetingWithVerb(verb, verb.verbProps.targetParams, delegate(LocalTargetInfo info)
@@ -65,9 +65,9 @@ namespace AbilityUser
         //    return false;
         //}
 
-        public override GizmoResult GizmoOnGUI(Vector2 topLeft)
+        public override GizmoResult GizmoOnGUI(Vector2 topLeft, float maxWidth)
         {
-            var rect = new Rect(topLeft.x, topLeft.y, Width, 75f);
+            var rect = new Rect(topLeft.x, topLeft.y, maxWidth, 75f);
             var isMouseOver = false;
             if (Mouse.IsOver(rect))
             {
@@ -78,7 +78,7 @@ namespace AbilityUser
             if (badTex == null) badTex = BaseContent.BadTex;
 
             GUI.DrawTexture(rect, BGTex);
-            MouseoverSounds.DoRegion(rect, SoundDefOf.MouseoverCommand);
+            MouseoverSounds.DoRegion(rect, SoundDefOf.Mouseover_Command);
             GUI.color = IconDrawColor;
             Widgets.DrawTextureFitted(new Rect(rect), badTex, iconDrawScale * 0.85f, iconProportions, iconTexCoords);
             GUI.color = Color.white;

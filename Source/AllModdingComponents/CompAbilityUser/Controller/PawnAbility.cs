@@ -242,12 +242,12 @@ namespace AbilityUser
             if (Verb.CasterPawn.story.WorkTagIsDisabled(WorkTags.Violent) &&
                 powerdef.MainVerb.isViolent)
             {
-                reason = "IsIncapableOfViolence".Translate(Verb.CasterPawn.NameStringShort);
+                reason = "IsIncapableOfViolence".Translate(Verb.CasterPawn.Name.ToStringShort);
                 return false;
             }
             if (CooldownTicksLeft > 0)
             {
-                reason = "AU_PawnAbilityRecharging".Translate(Verb.CasterPawn.NameStringShort);
+                reason = "AU_PawnAbilityRecharging".Translate(Verb.CasterPawn.Name.ToStringShort);
                 return false;
             }
             //else if (!Verb.CasterPawn.drafter.Drafted)

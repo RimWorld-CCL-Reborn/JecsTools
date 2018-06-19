@@ -95,7 +95,7 @@ namespace JecsTools
         /// <param name="ticks"></param>
         public static void ApplyGrappleEffect(Pawn grappler, Pawn victim, int ticks = 600)
         {
-            victim.stances.stunner.StunFor(ticks);
+            victim.stances.stunner.StunFor(ticks, grappler);
             PawnUtility.ForceWait(victim, ticks, grappler);
         }
 
@@ -164,8 +164,8 @@ namespace JecsTools
         {
             BodyPartRecord result = null;
             if (grappler.health.hediffSet.GetNotMissingParts().ToList().FindAll(x =>
-                        x.def.tags.Contains("ManipulationLimbSegment") ||
-                        x.def.tags.Contains("ManipulationLimbCore")) is
+                        x.def.tags.Contains(BodyPartTagDefOf.ManipulationLimbSegment) ||
+                        x.def.tags.Contains(BodyPartTagDefOf.ManipulationLimbCore)) is
                     List<BodyPartRecord> recs && !recs.NullOrEmpty())
                 result = recs.RandomElement();
             bodyPartRec = result;
@@ -297,7 +297,7 @@ namespace JecsTools
             {
                 Find.BattleLog.Add(
                     new BattleLogEntry_StateTransition(victim,
-                        RulePackDef.Named("JT_GrappleSuccess"), grappler, null, grapplingPart.def)
+                        RulePackDef.Named("JT_GrappleSuccess"), grappler, null, grapplingPart)
                 );
                 return true;
             }

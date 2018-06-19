@@ -105,8 +105,8 @@ namespace AbilityUser
 			        (searcher.drafter == null || searcher.drafter.FireAtWill))
 			    {
 				    bool allowManualCastWeapons = !searcher.IsColonist;
-				    Verb verb = searcher.TryGetAttackVerb(allowManualCastWeapons);
-				    if (verb != null && !verb.verbProps.MeleeRange)
+				    Verb verb = searcher.TryGetAttackVerb(null,allowManualCastWeapons);
+				    if (verb != null && !verb.verbProps.CanBeUsedInMelee)
 				    {
 					    TargetScanFlags targetScanFlags = TargetScanFlags.NeedLOSToPawns | TargetScanFlags.NeedLOSToNonPawns |
 					                                      TargetScanFlags.NeedThreat;

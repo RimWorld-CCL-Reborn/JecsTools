@@ -93,14 +93,14 @@ namespace JecsTools
 			var opt = new DiaOption("(Debug) Goodwill +10");
 			opt.action = delegate
 			{
-				faction.AffectGoodwillWith(Faction.OfPlayer, 10f);
+				faction.TryAffectGoodwillWith(Faction.OfPlayer, 10, false, true, null, null);
 			};
 			opt.linkLateBind = (() => FactionDialogFor(negotiator, faction));
 			yield return opt;
 			var opt2 = new DiaOption("(Debug) Goodwill -10");
 			opt2.action = delegate
 			{
-				faction.AffectGoodwillWith(Faction.OfPlayer, -10f);
+				faction.TryAffectGoodwillWith(Faction.OfPlayer, -10, false, true, null, null);
 			};
 			opt2.linkLateBind = (() => FactionDialogFor(negotiator, faction));
 			yield return opt2;
@@ -116,7 +116,7 @@ namespace JecsTools
 
 		private static int AmountSendableSilver(Map map)
 		{
-			return (from t in TradeUtility.AllLaunchableThings(map)
+			return (from t in TradeUtility.AllLaunchableThingsForTrade(map)
 			where t.def == ThingDefOf.Silver
 			select t).Sum((Thing t) => t.stackCount);
 		}
@@ -174,7 +174,7 @@ namespace JecsTools
 			diaOption2.action = delegate
 			{
 				TradeUtility.LaunchThingsOfType(ThingDefOf.Silver, 300, map, null);
-				faction.AffectGoodwillWith(Faction.OfPlayer, goodwillDelta);
+				faction.TryAffectGoodwillWith(Faction.OfPlayer, (int)goodwillDelta);
 				PlaySoundFor(faction);
 			};
 			var text = "SilverGiftSent".Translate(new object[]
@@ -219,7 +219,7 @@ namespace JecsTools
 				var diaOption3 = new DiaOption(text);
 				diaOption3.Disable("WaitTime".Translate(new object[]
 				{
-					num.ToStringTicksToPeriod(true, false, true)
+					num.ToStringTicksToPeriod()
 				}));
 				return diaOption3;
 			}
@@ -335,7 +335,7 @@ namespace JecsTools
 		private static void CallForAid(Map map)
 		{
 			PlaySoundFor(faction);
-			faction.AffectGoodwillWith(Faction.OfPlayer, -25f);
+			faction.TryAffectGoodwillWith(Faction.OfPlayer, -25);
 			var incidentParms = new IncidentParms
 			{
 				target = map,

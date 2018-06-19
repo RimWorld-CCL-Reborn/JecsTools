@@ -100,7 +100,7 @@ namespace PawnShields
         /// </summary>
         public static void Reset()
         {
-            bool IsShield(ThingDef td) => td.equipmentType != EquipmentType.Primary && td.canBeSpawningInventory &&
+            bool IsShield(ThingDef td) => td.equipmentType != EquipmentType.Primary &&
                                           td.HasComp(typeof(CompShield));
 
             allShieldPairs = ThingStuffPair.AllWith(IsShield);

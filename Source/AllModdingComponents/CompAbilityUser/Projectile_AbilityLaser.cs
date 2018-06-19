@@ -250,7 +250,7 @@ namespace AbilityUser
             base.Impact_Override(hitThing);
             if (hitThing != null)
             {
-                var damageAmountBase = def.projectile.damageAmountBase;
+                var damageAmountBase = def.projectile.DamageAmount;
                 var dinfo = new DamageInfo(def.projectile.damageDef, damageAmountBase, ExactRotation.eulerAngles.y,
                     launcher, null, equipmentDef);
                 hitThing.TakeDamage(dinfo);
@@ -267,7 +267,7 @@ namespace AbilityUser
             else
             {
                 var info = SoundInfo.InMap(new TargetInfo(Position, Map, false), MaintenanceType.None);
-                SoundDefOf.BulletImpactGround.PlayOneShot(info);
+                SoundDefOf.BulletImpact_Ground.PlayOneShot(info);
                 MoteMaker.MakeStaticMote(ExactPosition, Map, ThingDefOf.Mote_ShotHit_Dirt, 1f);
                 MoteMaker.ThrowMicroSparks(ExactPosition, Map);
             }

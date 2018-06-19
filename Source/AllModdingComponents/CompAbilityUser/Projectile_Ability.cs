@@ -46,7 +46,7 @@ namespace AbilityUser
             base.Impact_Override(hitThing);
             if (hitThing != null)
             {
-                var damageAmountBase = def.projectile.damageAmountBase;
+                var damageAmountBase = def.projectile.DamageAmount;
                 var equipmentDef = this.equipmentDef;
                 var dinfo = new DamageInfo(def.projectile.damageDef, damageAmountBase, ExactRotation.eulerAngles.y,
                     launcher, null, equipmentDef);

@@ -43,18 +43,18 @@ namespace CompVehicle
             //this.handlers = newHandlers;
         }
 
-        public List<BodyPartRecord> OccupiedParts
-        {
-            get
-            {
-                if (occupiedParts == null)
-                    occupiedParts = new List<BodyPartRecord>(vehicle.health.hediffSet.GetNotMissingParts(
-                        BodyPartHeight.Undefined,
-                        BodyPartDepth.Undefined
-                    ).ToList().FindAll(x => x.def.tags.Contains(role.slotTag)));
-                return occupiedParts;
-            }
-        }
+//        public List<BodyPartRecord> OccupiedParts
+//        {
+//            get
+//            {
+//                if (occupiedParts == null)
+//                    occupiedParts = new List<BodyPartRecord>(vehicle.health.hediffSet.GetNotMissingParts(
+//                        BodyPartHeight.Undefined,
+//                        BodyPartDepth.Undefined
+//                    ).ToList().FindAll(x => x.def.tags.Contains(role.slotTag)));
+//                return occupiedParts;
+//            }
+//        }
 
         public bool AreSlotsAvailable
         {

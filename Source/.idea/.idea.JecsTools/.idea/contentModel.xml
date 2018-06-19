@@ -42,6 +42,7 @@
         </e>
       </e>
       <e p="AllModdingComponents\CompAbilityUser" t="IncludeRecursive">
+        <e p="_HarmonyPatches.cs" t="Include" />
         <e p="AbilityButtons.cs" t="Include" />
         <e p="AbilityDefOf.cs" t="Include" />
         <e p="AbilityUserUtility.cs" t="Include" />
@@ -63,7 +64,6 @@
         <e p="ExtraDamage.cs" t="Include" />
         <e p="FlyingObject.cs" t="Include" />
         <e p="FlyingObject_Equipable.cs" t="Include" />
-        <e p="HarmonyPatches.cs" t="Include" />
         <e p="Model" t="Include">
           <e p="AbilityData.cs" t="Include" />
           <e p="AbilityDef.cs" t="Include" />
@@ -183,13 +183,13 @@
         </e>
       </e>
       <e p="AllModdingComponents\CompSlotLoadable" t="IncludeRecursive">
+        <e p="_HarmonyCompSlotLoadable.cs" t="Include" />
         <e p="CompProperties_SlotLoadable.cs" t="Include" />
         <e p="CompProperties_SlottedBonus.cs" t="Include" />
         <e p="CompSlotLoadable.cs" t="Include" />
         <e p="CompSlotLoadable.csproj" t="IncludeRecursive" />
         <e p="CompSlotLoadableDefOf.cs" t="Include" />
         <e p="CompSlottedBonus.cs" t="Include" />
-        <e p="HarmonyCompSlotLoadable.cs" t="Include" />
         <e p="JobDriver_GatherSlotItem.cs" t="Include" />
         <e p="obj" t="ExcludeRecursive" />
         <e p="Properties" t="Include">

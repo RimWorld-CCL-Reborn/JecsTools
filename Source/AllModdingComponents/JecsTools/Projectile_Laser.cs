@@ -10,16 +10,18 @@ namespace JecsTools
     {
         public Vector3 offset;
     }
-    
+
     public class Projectile_Laser : Projectile
     {
         // Variables.
         public int tickCounter = 0;
+
         public Thing hitThing = null;
 
 
         // Custom XML variables.
         public float preFiringInitialIntensity = 0f;
+
         public float preFiringFinalIntensity = 0f;
         public float postFiringInitialIntensity = 0f;
         public float postFiringFinalIntensity = 0f;
@@ -27,46 +29,55 @@ namespace JecsTools
         public int postFiringDuration = 0;
         public float startFireChance = 0;
         public bool canStartFire = false;
-        
+
         // Draw variables.
         public Material preFiringTexture;
+
         public Material postFiringTexture;
+
         public List<Matrix4x4> drawingMatrix = null;
+
         //public Vector3 drawingScale;
         //public Vector3 drawingPosition;
         public float drawingIntensity = 0f;
+
         public Material drawingTexture;
 
-        
 
-		protected virtual void Explode(Thing hitThing, bool destroy = false)
-		{
-			Map map = base.Map;
-		    IntVec3 targetPosition = hitThing?.PositionHeld ?? this.destination.ToIntVec3();
-			if (destroy) this.Destroy(DestroyMode.Vanish);
-			if (this.def.projectile.explosionEffect != null)
-			{
-				Effecter effecter = this.def.projectile.explosionEffect.Spawn();
-				effecter.Trigger(new TargetInfo(targetPosition, map, false), new TargetInfo(targetPosition, map, false));
-				effecter.Cleanup();
-			}
-			IntVec3 position = targetPosition;
-			Map map2 = map;
-			float explosionRadius = this.def.projectile.explosionRadius;
-			DamageDef damageDef = this.def.projectile.damageDef;
-			Thing launcher = this.launcher;
-			int damageAmountBase = this.def.projectile.damageAmountBase;
-			SoundDef soundExplode = this.def.projectile.soundExplode;
-			ThingDef equipmentDef = this.equipmentDef;
-			ThingDef def = this.def;
-			ThingDef postExplosionSpawnThingDef = this.def.projectile.postExplosionSpawnThingDef;
-			float postExplosionSpawnChance = this.def.projectile.postExplosionSpawnChance;
-			int postExplosionSpawnThingCount = this.def.projectile.postExplosionSpawnThingCount;
-			ThingDef preExplosionSpawnThingDef = this.def.projectile.preExplosionSpawnThingDef;
-			GenExplosion.DoExplosion(position, map2, explosionRadius, damageDef, launcher, damageAmountBase, soundExplode, equipmentDef, def, postExplosionSpawnThingDef, postExplosionSpawnChance, postExplosionSpawnThingCount, this.def.projectile.applyDamageToExplosionCellsNeighbors, preExplosionSpawnThingDef, this.def.projectile.preExplosionSpawnChance, this.def.projectile.preExplosionSpawnThingCount, this.def.projectile.explosionChanceToStartFire, this.def.projectile.explosionDealMoreDamageAtCenter);
-		}
+        protected virtual void Explode(Thing hitThing, bool destroy = false)
+        {
+            Map map = base.Map;
+            IntVec3 targetPosition = hitThing?.PositionHeld ?? this.destination.ToIntVec3();
+            if (destroy) this.Destroy(DestroyMode.Vanish);
+            if (this.def.projectile.explosionEffect != null)
+            {
+                Effecter effecter = this.def.projectile.explosionEffect.Spawn();
+                effecter.Trigger(new TargetInfo(targetPosition, map, false),
+                    new TargetInfo(targetPosition, map, false));
+                effecter.Cleanup();
+            }
+            IntVec3 position = targetPosition;
+            Map map2 = map;
+            float explosionRadius = this.def.projectile.explosionRadius;
+            DamageDef damageDef = this.def.projectile.damageDef;
+            Thing launcher = this.launcher;
+            int damageAmountBase = this.def.projectile.DamageAmount;
+            SoundDef soundExplode = this.def.projectile.soundExplode;
+            ThingDef equipmentDef = this.equipmentDef;
+            ThingDef def = this.def;
+            ThingDef postExplosionSpawnThingDef = this.def.projectile.postExplosionSpawnThingDef;
+            float postExplosionSpawnChance = this.def.projectile.postExplosionSpawnChance;
+            int postExplosionSpawnThingCount = this.def.projectile.postExplosionSpawnThingCount;
+            ThingDef preExplosionSpawnThingDef = this.def.projectile.preExplosionSpawnThingDef;
+            GenExplosion.DoExplosion(position, map2, explosionRadius, damageDef, launcher, damageAmountBase,
+                soundExplode, equipmentDef, def, null, postExplosionSpawnThingDef, postExplosionSpawnChance,
+                postExplosionSpawnThingCount, this.def.projectile.applyDamageToExplosionCellsNeighbors,
+                preExplosionSpawnThingDef, this.def.projectile.preExplosionSpawnChance,
+                this.def.projectile.preExplosionSpawnThingCount, this.def.projectile.explosionChanceToStartFire,
+                this.def.projectile.explosionDamageFalloff);
+        }
 
-		private int ticksToDetonation;
+        private int ticksToDetonation;
 
         public override void SpawnSetup(Map map, bool blabla)
         {
@@ -112,13 +123,11 @@ namespace JecsTools
         /// </summary>
         public override void Tick()
         {
-            
             //  Log.Message("Tickng Ma Lazor");
             // Directly call the Projectile base Tick function (we want to completely override the Projectile Tick() function).
             //((ThingWithComponents)this).Tick(); // Does not work...
             try
             {
-
                 if (tickCounter == 0)
                 {
                     GetParametersFromXml();
@@ -162,7 +171,6 @@ namespace JecsTools
             {
                 this.Destroy(DestroyMode.Vanish);
             }
-
         }
 
         /// <summary>
@@ -174,13 +182,15 @@ namespace JecsTools
             Vector3 cannonMouthOffset = ((this.destination - this.origin).normalized * 0.9f);
             if (this.Def.graphicSettings.NullOrEmpty())
             {
-                var drawingScale = new Vector3(1f, 1f, (this.destination - this.origin).magnitude - cannonMouthOffset.magnitude);
-                var drawingPosition = this.origin + (cannonMouthOffset / 2) + ((this.destination - this.origin) / 2) + Vector3.up * this.def.Altitude;
+                var drawingScale = new Vector3(1f, 1f,
+                    (this.destination - this.origin).magnitude - cannonMouthOffset.magnitude);
+                var drawingPosition = this.origin + (cannonMouthOffset / 2) + ((this.destination - this.origin) / 2) +
+                                      Vector3.up * this.def.Altitude;
                 drawingMatrix = new List<Matrix4x4>();
                 var drawing = default(Matrix4x4);
-                drawing.SetTRS(drawingPosition, this.ExactRotation, drawingScale);     
+                drawing.SetTRS(drawingPosition, this.ExactRotation, drawingScale);
                 drawingMatrix.Add(drawing);
-            }    
+            }
             else
             {
                 drawingMatrix = new List<Matrix4x4>();
@@ -189,7 +199,7 @@ namespace JecsTools
                     foreach (var setting in this.Def.graphicSettings)
                     {
                         AddLaserGraphicUsing(setting);
-                    }   
+                    }
                 }
                 else
                 {
@@ -204,7 +214,7 @@ namespace JecsTools
                     {
                         HarmonyPatches.AlternatingFireTracker.Add(this.launcher, curIndex);
                     }
-                    AddLaserGraphicUsing(this.Def.graphicSettings[curIndex]);   
+                    AddLaserGraphicUsing(this.Def.graphicSettings[curIndex]);
                 }
             }
         }
@@ -212,7 +222,8 @@ namespace JecsTools
         private void AddLaserGraphicUsing(Projectile_LaserConfig setting)
         {
             var curCannonMouthOffset = ((this.destination - this.origin).normalized * 0.9f);
-            var drawingScale = new Vector3(1f, 1f, (this.destination - this.origin).magnitude - curCannonMouthOffset.magnitude);
+            var drawingScale = new Vector3(1f, 1f,
+                (this.destination - this.origin).magnitude - curCannonMouthOffset.magnitude);
             var drawingPosition = this.origin + (curCannonMouthOffset / 2) + ((this.destination - this.origin) / 2) +
                                   Vector3.up * this.def.Altitude;
             float num = 0f;
@@ -227,7 +238,10 @@ namespace JecsTools
             drawingMatrix.Add(drawing);
         }
 
-        public ThingDef_LaserProjectile Def { get => def as ThingDef_LaserProjectile; }
+        public ThingDef_LaserProjectile Def
+        {
+            get => def as ThingDef_LaserProjectile;
+        }
 
         /// <summary>
         /// Gets the prefiring drawing parameters.
@@ -236,7 +250,8 @@ namespace JecsTools
         {
             if (preFiringDuration != 0)
             {
-                drawingIntensity = preFiringInitialIntensity + (preFiringFinalIntensity - preFiringInitialIntensity) * (float)tickCounter / (float)preFiringDuration;
+                drawingIntensity = preFiringInitialIntensity + (preFiringFinalIntensity - preFiringInitialIntensity) *
+                                   (float) tickCounter / (float) preFiringDuration;
             }
         }
 
@@ -247,7 +262,9 @@ namespace JecsTools
         {
             if (postFiringDuration != 0)
             {
-                drawingIntensity = postFiringInitialIntensity + (postFiringFinalIntensity - postFiringInitialIntensity) * (((float)tickCounter - (float)preFiringDuration) / (float)postFiringDuration);
+                drawingIntensity = postFiringInitialIntensity +
+                                   (postFiringFinalIntensity - postFiringInitialIntensity) *
+                                   (((float) tickCounter - (float) preFiringDuration) / (float) postFiringDuration);
             }
         }
 
@@ -258,10 +275,11 @@ namespace JecsTools
         {
             // We split the trajectory into small segments of approximatively 1 cell size.
             Vector3 trajectory = (this.destination - this.origin);
-            int numberOfSegments = (int)trajectory.magnitude;
+            int numberOfSegments = (int) trajectory.magnitude;
             Vector3 trajectorySegment = (trajectory / trajectory.magnitude);
 
-            Vector3 temporaryDestination = this.origin; // Last valid tested position in case of an out of boundaries shot.
+            Vector3
+                temporaryDestination = this.origin; // Last valid tested position in case of an out of boundaries shot.
             Vector3 exactTestedPosition = this.origin;
             IntVec3 testedPosition = exactTestedPosition.ToIntVec3();
 
@@ -286,7 +304,8 @@ namespace JecsTools
                         // Check impact on a wall.
                         if (current.def.Fillage == FillCategory.Full)
                         {
-                            this.destination = testedPosition.ToVector3Shifted() + new Vector3(Rand.Range(-0.3f, 0.3f), 0f, Rand.Range(-0.3f, 0.3f));
+                            this.destination = testedPosition.ToVector3Shifted() +
+                                               new Vector3(Rand.Range(-0.3f, 0.3f), 0f, Rand.Range(-0.3f, 0.3f));
                             this.hitThing = current;
                             break;
                         }
@@ -323,8 +342,9 @@ namespace JecsTools
 
                             if (Rand.Value < chanceToHitCollateralTarget)
                             {
-                                this.destination = testedPosition.ToVector3Shifted() + new Vector3(Rand.Range(-0.3f, 0.3f), 0f, Rand.Range(-0.3f, 0.3f));
-                                this.hitThing = (Thing)pawn;
+                                this.destination = testedPosition.ToVector3Shifted() +
+                                                   new Vector3(Rand.Range(-0.3f, 0.3f), 0f, Rand.Range(-0.3f, 0.3f));
+                                this.hitThing = (Thing) pawn;
                                 break;
                             }
                         }
@@ -370,22 +390,23 @@ namespace JecsTools
                 RoofDef roofDef = this.Map.roofGrid.RoofAt(this.DestinationCell);
                 if (roofDef != null && roofDef.isThickRoof)
                 {
-                    SoundInfo info = SoundInfo.InMap(new TargetInfo(this.DestinationCell, this.Map, false), MaintenanceType.None);
+                    SoundInfo info = SoundInfo.InMap(new TargetInfo(this.DestinationCell, this.Map, false),
+                        MaintenanceType.None);
                     this.def.projectile.soundHitThickRoof.PlayOneShot(info);
                     return;
                 }
             }
 
             // Impact the initial targeted pawn.
-            if (this.assignedTarget != null)
+            if (this.usedTarget != null)
             {
-                Pawn pawn = this.assignedTarget as Pawn;
+                Pawn pawn = this.usedTarget.Thing as Pawn;
                 if (pawn != null && pawn.Downed && (this.origin - this.destination).magnitude > 5f && Rand.Value < 0.2f)
                 {
                     this.Impact(null);
                     return;
                 }
-                this.Impact(this.assignedTarget);
+                this.Impact(this.usedTarget.Thing);
                 return;
             }
             else
@@ -419,35 +440,28 @@ namespace JecsTools
             if (this.Def.createsExplosion)
             {
                 this.Explode(hitThing, false);
-                GenExplosion.NotifyNearbyPawnsOfDangerousExplosive(this, this.def.projectile.damageDef, this.launcher.Faction);   
-            }            
-            
+                GenExplosion.NotifyNearbyPawnsOfDangerousExplosive(this, this.def.projectile.damageDef,
+                    this.launcher.Faction);
+            }
+
             if (hitThing != null)
             {
                 Map map = base.Map;
-                BattleLogEntry_RangedImpact battleLogEntry_RangedImpact = new BattleLogEntry_RangedImpact(this.launcher, hitThing, this.intendedTarget, this.equipmentDef, this.def);
+                BattleLogEntry_RangedImpact battleLogEntry_RangedImpact = new BattleLogEntry_RangedImpact(this.launcher,
+                    hitThing, this.intendedTarget.Thing, this.equipmentDef, this.def, this.targetCoverDef);
                 Find.BattleLog.Add(battleLogEntry_RangedImpact);
-                if (hitThing != null)
-                {
-                    int damageAmountBase = this.def.projectile.damageAmountBase;
+                
+                    int damageAmountBase = this.def.projectile.DamageAmount;
                     DamageDef damageDef = this.def.projectile.damageDef;
                     int amount = damageAmountBase;
                     float y = this.ExactRotation.eulerAngles.y;
                     Thing launcher = this.launcher;
                     ThingDef equipmentDef = this.equipmentDef;
-                    DamageInfo dinfo = new DamageInfo(damageDef, amount, y, launcher, null, equipmentDef, DamageInfo.SourceCategory.ThingOrUnknown);
-                    hitThing.TakeDamage(dinfo).InsertIntoLog(battleLogEntry_RangedImpact);
-                }
-                else
-                {
-                    SoundDefOf.BulletImpactGround.PlayOneShot(new TargetInfo(base.Position, map, false));
-                    MoteMaker.MakeStaticMote(this.ExactPosition, map, ThingDefOf.Mote_ShotHit_Dirt, 1f);
-                    if (base.Position.GetTerrain(map).takeSplashes)
-                    {
-                        MoteMaker.MakeWaterSplash(this.ExactPosition, map, Mathf.Sqrt((float)this.def.projectile.damageAmountBase) * 1f, 4f);
-                    }
-                }
-                //int damageAmountBase = this.def.projectile.damageAmountBase;
+                    DamageInfo dinfo = new DamageInfo(damageDef, amount, y, launcher, null, equipmentDef,
+                        DamageInfo.SourceCategory.ThingOrUnknown);
+                    hitThing.TakeDamage(dinfo).AssociateWithLog(battleLogEntry_RangedImpact);
+                
+                //int damageAmountBase = this.def.projectile.DamageAmount;
                 //DamageInfo dinfo = new DamageInfo(this.def.projectile.damageDef, damageAmountBase, this.ExactRotation.eulerAngles.y, this.launcher, null, equipmentDef);
                 //hitThing.TakeDamage(dinfo);
                 //hitThing.TakeDamage(dinfo);
@@ -466,7 +480,7 @@ namespace JecsTools
             else
             {
                 SoundInfo info = SoundInfo.InMap(new TargetInfo(base.Position, this.Map, false), MaintenanceType.None);
-                SoundDefOf.BulletImpactGround.PlayOneShot(info);
+                SoundDefOf.BulletImpact_Ground.PlayOneShot(info);
                 MoteMaker.MakeStaticMote(this.ExactPosition, this.Map, ThingDefOf.Mote_ShotHit_Dirt, 1f);
                 MoteMaker.ThrowMicroSparks(this.ExactPosition, this.Map);
             }
@@ -479,7 +493,6 @@ namespace JecsTools
         /// <param name="hitTarget"></param>
         public virtual void PostImpactEffects(Pawn launcher, Pawn hitTarget)
         {
-
         }
 
         /// <summary>
@@ -492,7 +505,8 @@ namespace JecsTools
             {
                 foreach (var drawing in drawingMatrix)
                 {
-                    UnityEngine.Graphics.DrawMesh(MeshPool.plane10, drawing, FadedMaterialPool.FadedVersionOf(drawingTexture, drawingIntensity), 0);
+                    UnityEngine.Graphics.DrawMesh(MeshPool.plane10, drawing,
+                        FadedMaterialPool.FadedVersionOf(drawingTexture, drawingIntensity), 0);
                 }
             }
         }

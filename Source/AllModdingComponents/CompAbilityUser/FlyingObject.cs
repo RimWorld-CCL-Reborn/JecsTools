@@ -11,7 +11,7 @@ namespace AbilityUser
     /// </summary>
     public class FlyingObject : ThingWithComps
     {
-        protected Thing assignedTarget;
+        protected Thing usedTarget;
 
         public bool damageLaunched = true;
         protected Vector3 destination;
@@ -60,7 +60,7 @@ namespace AbilityUser
             Scribe_Values.Look(ref timesToDamage, "timesToDamage", 0, false);
             Scribe_Values.Look(ref damageLaunched, "damageLaunched", true);
             Scribe_Values.Look(ref explosion, "explosion", false);
-            Scribe_References.Look(ref assignedTarget, "assignedTarget", false);
+            Scribe_References.Look(ref usedTarget, "usedTarget", false);
             Scribe_References.Look(ref launcher, "launcher", false);
             Scribe_References.Look(ref flyingThing, "flyingThing");
         }
@@ -86,7 +86,7 @@ namespace AbilityUser
             impactDamage = newDamageInfo;
             this.flyingThing = flyingThing;
             if (targ.Thing != null)
-                assignedTarget = targ.Thing;
+                usedTarget = targ.Thing;
             destination = targ.Cell.ToVector3Shifted() +
                           new Vector3(Rand.Range(-0.3f, 0.3f), 0f, Rand.Range(-0.3f, 0.3f));
             ticksToImpact = StartingTicksToImpact;
@@ -136,16 +136,16 @@ namespace AbilityUser
 
         private void ImpactSomething()
         {
-            if (assignedTarget != null)
+            if (usedTarget != null)
             {
-                var pawn = assignedTarget as Pawn;
+                var pawn = usedTarget as Pawn;
                 if (pawn != null && pawn.GetPosture() != PawnPosture.Standing &&
                     (origin - destination).MagnitudeHorizontalSquared() >= 20.25f && Rand.Value > 0.2f)
                 {
                     Impact(null);
                     return;
                 }
-                Impact(assignedTarget);
+                Impact(usedTarget);
             }
             else
             {
@@ -156,7 +156,7 @@ namespace AbilityUser
         protected virtual void Impact(Thing hitThing)
         {
             if (hitThing == null)
-                if (Position.GetThingList(Map).FirstOrDefault(x => x == assignedTarget) is Pawn p)
+                if (Position.GetThingList(Map).FirstOrDefault(x => x == usedTarget) is Pawn p)
                     hitThing = p;
 
 

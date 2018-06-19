@@ -59,7 +59,7 @@ namespace JecsTools
 
         public bool overeat;
 
-        public List<ThingStackPartClass> placedThings;
+        public List<ListerMergeables> placedThings;
 
         public ThingDef plantDefToSow;
 

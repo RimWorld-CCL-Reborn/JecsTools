@@ -46,22 +46,23 @@ namespace PawnShields
 
         static HarmonyPatches()
         {
+            //HarmonyInstance.DEBUG = true;
             HarmonyInstance harmony = HarmonyInstance.Create("chjees.shields");
 
             //ThingDef
-            /*{
-                Type type = typeof(ThingDef);
+//            {
+//                Type type = typeof(ThingDef);
+//
+//                MethodInfo patchMethod = type.GetMethod("SpecialDisplayStats");
+//                MethodInfo patchCustomMethod = typeof(HarmonyPatches).GetMethod(nameof(Patch_ThingDef_SpecialDisplayStats));
+//
+//                harmony.Patch(
+//                    patchMethod,
+//                    null,
+//                    new HarmonyMethod(patchCustomMethod));
+//            }
 
-                MethodInfo patchMethod = type.GetMethod("SpecialDisplayStats");
-                MethodInfo patchCustomMethod = typeof(HarmonyPatches).GetMethod(nameof(Patch_ThingDef_SpecialDisplayStats));
-
-                harmony.Patch(
-                    patchMethod,
-                    null,
-                    new HarmonyMethod(patchCustomMethod));
-            }*/
-
-            //Pawn
+//            //Pawn
             {
                 Type type = typeof(Pawn);
 
@@ -73,8 +74,8 @@ namespace PawnShields
                     null,
                     new HarmonyMethod(patchCustomMethod));
             }
-
-            //PawnGenerator
+//
+//            //PawnGenerator
             {
                 Type type = typeof(PawnGenerator);
 
@@ -86,8 +87,8 @@ namespace PawnShields
                     null,
                     new HarmonyMethod(patchCustomMethod));
             }
-
-            //PawnRenderer
+//
+//            //PawnRenderer
             {
                 Type type = typeof(PawnRenderer);
 
@@ -132,7 +133,7 @@ namespace PawnShields
                     new HarmonyMethod(patchCustomMethod));
             }
 
-            //StatWorker
+            //StatWorker //TODO - Needs fixing for 1.0
             {
                 Type type = typeof(StatWorker);
 
@@ -160,18 +161,18 @@ namespace PawnShields
                     new HarmonyMethod(patchCustomMethod));
             }
         }
-
-        /*public static void Patch_ThingDef_SpecialDisplayStats(ThingDef __instance, ref IEnumerable<StatDrawEntry> __result)
-        {
-            if(__instance.HasComp(typeof(CompShield)))
-            {
-                List<StatDrawEntry> result = new List<StatDrawEntry>(__result);
-
-                new StatDrawEntry(StatCategoryDefOf.Apparel, "Covers".Translate(), coveredParts, 100, string.Empty);
-
-                __result = result;
-            }
-        }*/
+//
+//        public static void Patch_ThingDef_SpecialDisplayStats(ThingDef __instance, ref IEnumerable<StatDrawEntry> __result)
+//        {
+//            if(__instance.HasComp(typeof(CompShield)))
+//            {
+//                List<StatDrawEntry> result = new List<StatDrawEntry>(__result);
+//
+//                new StatDrawEntry(StatCategoryDefOf.Apparel, "Covers".Translate(), coveredParts, 100, string.Empty);
+//
+//                __result = result;
+//            }
+//        }
 
         public static void Patch_PawnGenerator_GenerateGearFor(Pawn pawn, ref PawnGenerationRequest request)
         {
@@ -197,7 +198,7 @@ namespace PawnShields
             if(pawn != null)
                 __result += StatWorkerInjection_AddShieldValue(pawn, StatDefField_StatWorker(__instance));
         }
-
+//
         public static IEnumerable<CodeInstruction> Transpiler_StatWorker_GetValueUnfinalized(IEnumerable<CodeInstruction> instructions, ILGenerator il)
         {
             List<CodeInstruction> instructionList = new List<CodeInstruction>(instructions);
@@ -389,7 +390,7 @@ namespace PawnShields
 
         public static void Patch_Pawn_Tick(Pawn __instance)
         {
-            if (__instance.equipment != null && (__instance.ParentHolder != null && !ThingOwnerUtility.ContentsFrozen(__instance.ParentHolder)))
+            if (__instance.equipment != null && (__instance.ParentHolder != null && !ThingOwnerUtility.ContentsSuspended(__instance.ParentHolder)))
             {
                 //Tick shield.
                 ThingWithComps shield = __instance.GetShield();

@@ -8,6 +8,13 @@ using Verse.AI;
 
 namespace JecsTools
 {
+    public enum LayingDownState
+    {
+        NotLaying,
+        LayingSurface,
+        LayingInBed
+    }
+    
     public abstract class CaravanJobDriver : ICaravanJobEndable, IExposable
     {
         public bool asleep;
@@ -67,7 +74,7 @@ namespace JecsTools
         }
 
         public virtual PawnPosture Posture =>
-            layingDown == LayingDownState.NotLaying ? PawnPosture.Standing : PawnPosture.LayingAny;
+            layingDown == LayingDownState.NotLaying ? PawnPosture.Standing : PawnPosture.LayingOnGroundNormal;
 
         public int CurToilIndex => curToilIndex;
 

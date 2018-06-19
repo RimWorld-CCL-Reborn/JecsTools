@@ -23,8 +23,8 @@ namespace JecsTools
                     if (edifice != null && FirelessTrashUtility.ShouldTrashBuilding(pawn, edifice) &&
                         GenSight.LineOfSight(pawn.Position, randomCell, pawn.Map, false, null, 0, 0))
                     {
-                        if (DebugViewSettings.drawDestSearch && Find.VisibleMap == pawn.Map)
-                            Find.VisibleMap.debugDrawer.FlashCell(randomCell, 1f, "trash bld");
+                        if (DebugViewSettings.drawDestSearch && Find.CurrentMap == pawn.Map)
+                            Find.CurrentMap.debugDrawer.FlashCell(randomCell, 1f, "trash bld");
                         return FirelessTrashUtility.TrashJob(pawn, edifice);
                     }
                     if (flag)
@@ -33,13 +33,13 @@ namespace JecsTools
                         if (plant != null && FirelessTrashUtility.ShouldTrashPlant(pawn, plant) &&
                             GenSight.LineOfSight(pawn.Position, randomCell, pawn.Map, false, null, 0, 0))
                         {
-                            if (DebugViewSettings.drawDestSearch && Find.VisibleMap == pawn.Map)
-                                Find.VisibleMap.debugDrawer.FlashCell(randomCell, 0.5f, "trash plant");
+                            if (DebugViewSettings.drawDestSearch && Find.CurrentMap == pawn.Map)
+                                Find.CurrentMap.debugDrawer.FlashCell(randomCell, 0.5f, "trash plant");
                             return FirelessTrashUtility.TrashJob(pawn, plant);
                         }
                     }
-                    if (DebugViewSettings.drawDestSearch && Find.VisibleMap == pawn.Map)
-                        Find.VisibleMap.debugDrawer.FlashCell(randomCell, 0f, "trash no");
+                    if (DebugViewSettings.drawDestSearch && Find.CurrentMap == pawn.Map)
+                        Find.CurrentMap.debugDrawer.FlashCell(randomCell, 0f, "trash no");
                 }
             }
             return null;

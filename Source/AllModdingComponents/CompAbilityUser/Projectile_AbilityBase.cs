@@ -92,15 +92,15 @@ namespace AbilityUser
             }
 
             // Impact the initial targeted pawn.
-            if (assignedTarget != null)
+            if (usedTarget != null)
             {
-                if (assignedTarget is Pawn pawn && pawn.Downed && (origin - destination).magnitude > 5f &&
+                if (usedTarget.Thing is Pawn pawn && pawn.Downed && (origin - destination).magnitude > 5f &&
                     Rand.Value < 0.2f)
                 {
                     Impact(null);
                     return;
                 }
-                Impact(assignedTarget);
+                Impact(usedTarget.Thing);
             }
             else
             {
@@ -225,7 +225,7 @@ namespace AbilityUser
             newPawn.Temporary = spawnables.temporary;
             if (newPawn.Faction != Faction.OfPlayerSilentFail && this?.Caster?.Faction is Faction f)
                 newPawn.SetFaction(f);
-            GenSpawn.Spawn(newPawn, PositionHeld, Find.VisibleMap);
+            GenSpawn.Spawn(newPawn, PositionHeld, Find.CurrentMap);
             if (faction != null && faction != Faction.OfPlayer)
             {
                 Lord lord = null;
@@ -239,7 +239,7 @@ namespace AbilityUser
                 if (lord == null)
                 {
                     var lordJob = new LordJob_DefendPoint(newPawn.Position);
-                    lord = LordMaker.MakeNewLord(faction, lordJob, Find.VisibleMap, null);
+                    lord = LordMaker.MakeNewLord(faction, lordJob, Find.CurrentMap, null);
                 }
                 lord.AddPawn(newPawn);
             }
@@ -307,7 +307,7 @@ namespace AbilityUser
         }
 
         public void Launch(Thing launcher, AbilityDef abilityDef, Vector3 origin, LocalTargetInfo targ,
-            Thing equipment = null, List<ApplyHediffs> applyHediffs = null,
+            ProjectileHitFlags hitFlags, Thing equipment = null, List<ApplyHediffs> applyHediffs = null,
             List<ApplyMentalStates> applyMentalStates = null, List<SpawnThings> spawnThings = null)
         {
             //Log.Message("Projectile_AbilityBase");
@@ -315,7 +315,7 @@ namespace AbilityUser
             localApplyMentalStates = applyMentalStates;
             localSpawnThings = spawnThings;
             localAbilityDef = abilityDef;
-            base.Launch(launcher, origin, targ, equipment);
+            base.Launch(launcher, usedTarget, targ, hitFlags, equipment); //TODO
         }
 
         protected override void Impact(Thing hitThing)

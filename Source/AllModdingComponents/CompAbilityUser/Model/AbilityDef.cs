@@ -124,10 +124,10 @@ namespace AbilityUser
                 if (def.tooltipShowProjectileDamage)
                     if (def.defaultProjectile != null)
                         if (def.defaultProjectile.projectile != null)
-                            if (def.defaultProjectile.projectile.damageAmountBase > 0)
+                            if (def.defaultProjectile.projectile.DamageAmount > 0)
                             {
                                 s.AppendLine("Damage".Translate() + ": " +
-                                             def.defaultProjectile.projectile.damageAmountBase);
+                                             def.defaultProjectile.projectile.DamageAmount);
                                 s.AppendLine("Damage".Translate() + " " + StringsToTranslate.AU_Type +
                                              def.defaultProjectile.projectile.damageDef.LabelCap);
                             }

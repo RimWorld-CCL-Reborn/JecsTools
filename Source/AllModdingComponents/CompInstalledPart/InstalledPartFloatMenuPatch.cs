@@ -39,7 +39,7 @@ namespace CompInstalledPart
                                 if (props != null)
                                     if (props.allowedToInstallOn != null && props.allowedToInstallOn.Count > 0)
                                     {
-                                        SoundDefOf.TickTiny.PlayOneShotOnCamera(null);
+                                        SoundDefOf.Tick_Tiny.PlayOneShotOnCamera(null);
                                         Find.Targeter.BeginTargeting(new TargetingParameters
                                         {
                                             canTargetPawns = true,

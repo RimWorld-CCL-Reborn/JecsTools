@@ -8,11 +8,11 @@ namespace CompVehicle
     {
         public Action action;
 
-        public override float Width => NewWidth();
+        public override float GetWidth(float maxWidth) => NewWidth(maxWidth);
 
-        public float NewWidth()
+        public float NewWidth(float maxWidth)
         {
-            return base.Width * 0.75f;
+            return base.GetWidth(maxWidth) * 0.75f;
         }
 
         public override void ProcessInput(Event ev)

@@ -234,7 +234,7 @@ namespace JecsTools
 
         public void StopAll(bool ifLayingKeepLaying = false)
         {
-            if (ifLayingKeepLaying && curJob != null && curDriver.layingDown != LayingDownState.NotLaying)
+            if (ifLayingKeepLaying && curJob != null && curDriver.layingDown == LayingDownState.LayingInBed)
                 return;
             CleanupCurrentJob(JobCondition.InterruptForced, true, true);
             jobQueue.Clear();

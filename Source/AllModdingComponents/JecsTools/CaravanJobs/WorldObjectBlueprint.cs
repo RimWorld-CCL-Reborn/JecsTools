@@ -263,8 +263,8 @@ namespace JecsTools
                 if (!Recipe.costList.NullOrEmpty())
                     foreach (var t in Recipe.costList)
                     {
-                        var amtFilled = resourcesSupplied ? t.count.ToString() : "0";
-                        s.AppendLine(t.thingDef.LabelCap + ": " + amtFilled + " / " + t.count);
+                        var amtFilled = resourcesSupplied ? t.Count.ToString() : "0";
+                        s.AppendLine(t.thing.def.LabelCap + ": " + amtFilled + " / " + t.Count);
                     }
                 if (Recipe.stuffCategories != null && Recipe.costStuffCount > 0)
                 {

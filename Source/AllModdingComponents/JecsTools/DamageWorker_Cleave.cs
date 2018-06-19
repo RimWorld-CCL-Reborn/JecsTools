@@ -35,7 +35,7 @@ namespace JecsTools
             float maxDist;
             int cleaveAttacks;
 
-            if (!dinfo.InstantOldInjury)
+            if (!dinfo.InstantPermanentInjury)
                 if (dinfo.Instigator != null)
                 {
                     maxDist = 4;

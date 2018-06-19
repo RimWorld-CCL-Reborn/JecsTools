@@ -258,7 +258,7 @@ namespace CompSlotLoadable
         public virtual string SlotDesc(SlotLoadable slot)
         {
             var s = new StringBuilder();
-            s.AppendLine(slot.GetDescription());
+            s.AppendLine(slot.def.description); //TODO
             if (!slot.IsEmpty())
             {
                 s.AppendLine();

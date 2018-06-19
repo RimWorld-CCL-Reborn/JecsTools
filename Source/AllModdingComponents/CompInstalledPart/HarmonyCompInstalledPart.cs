@@ -107,7 +107,7 @@ namespace CompInstalledPart
                         if (props != null)
                             if (props.allowedToInstallOn != null && props.allowedToInstallOn.Count > 0)
                             {
-                                SoundDefOf.TickTiny.PlayOneShotOnCamera(null);
+                                SoundDefOf.Tick_Tiny.PlayOneShotOnCamera(null);
                                 Find.Targeter.BeginTargeting(new TargetingParameters
                                 {
                                     canTargetPawns = true,
@@ -148,7 +148,7 @@ namespace CompInstalledPart
                                     .LabelShort);
                                 opts.Add(new FloatMenuOption(text, delegate
                                 {
-                                    SoundDefOf.TickTiny.PlayOneShotOnCamera(null);
+                                    SoundDefOf.Tick_Tiny.PlayOneShotOnCamera(null);
                                     installedEq.GiveUninstallJob(pawn, targetPawn);
                                 }, MenuOptionPriority.Default, null, null, 29f, null, null));
                             }
@@ -167,7 +167,7 @@ namespace CompInstalledPart
                                 var text = "CompInstalledPart_Uninstall".Translate(ap.LabelShort);
                                 opts.Add(new FloatMenuOption(text, delegate
                                 {
-                                    SoundDefOf.TickTiny.PlayOneShotOnCamera(null);
+                                    SoundDefOf.Tick_Tiny.PlayOneShotOnCamera(null);
                                     ap.GetComp<CompInstalledPart>().GiveUninstallJob(pawn, targetPawn);
                                 }, MenuOptionPriority.Default, null, null, 29f, null, null));
                             }

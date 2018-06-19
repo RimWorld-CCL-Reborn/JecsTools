@@ -13,8 +13,6 @@
     <deathMessage>{0} has been shot to death.</deathMessage>
     <hediff>Burn</hediff>
     <armorCategory>Heat</armorCategory>
-    <spreadOut>false</spreadOut>
-    <explosionDamage>10</explosionDamage>
     <explosionHeatEnergyPerCell>15</explosionHeatEnergyPerCell>
     <explosionCellMote>Mote_BlastFlame</explosionCellMote>
     <explosionColorCenter>(1, 0.7, 0.7)</explosionColorCenter>

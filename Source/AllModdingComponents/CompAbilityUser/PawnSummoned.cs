@@ -71,10 +71,10 @@ namespace AbilityUser
             }
         }
 
-        public override void DeSpawn()
+        public override void DeSpawn(DestroyMode mode = DestroyMode.Vanish)
         {
             if (effecter != null) effecter.Cleanup();
-            base.DeSpawn();
+            base.DeSpawn(mode);
         }
 
         public override void ExposeData()

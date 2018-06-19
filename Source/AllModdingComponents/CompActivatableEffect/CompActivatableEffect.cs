@@ -267,7 +267,7 @@ namespace CompActivatableEffect
                 Graphic = new Graphic_RandomRotated(Graphic, 35f);
                 //}
 
-                Graphic.Draw(Gen.TrueCenter(parent.Position, parent.Rotation, parent.def.size, Props.Altitude),
+                Graphic.Draw(GenThing.TrueCenter(parent.Position, parent.Rotation, parent.def.size, Props.Altitude),
                     parent.Rotation, parent);
             }
         }

@@ -19,29 +19,19 @@ namespace CompSlotLoadable
         {
             var harmony = HarmonyInstance.Create("rimworld.jecrell.comps.slotloadable");
 
-            harmony.Patch(AccessTools.Method(typeof(Pawn), "GetGizmos"), null,
-                new HarmonyMethod(typeof(HarmonyCompSlotLoadable).GetMethod("GetGizmos_PostFix")));
-            //harmony.Patch(AccessTools.Method(typeof(Thing), "get_Graphic"), null, new HarmonyMethod(typeof(HarmonyCompSlotLoadable).GetMethod("get_Graphic_PostFix")));
-            harmony.Patch(AccessTools.Method(typeof(StatExtension), "GetStatValue"), null,
-                new HarmonyMethod(typeof(HarmonyCompSlotLoadable).GetMethod("GetStatValue_PostFix")));
-            //harmony.Patch(AccessTools.Method(typeof(FloatMenuMakerMap), "AddHumanlikeOrders"), null, new HarmonyMethod(typeof(HarmonyCompSlotLoadable), nameof(AddHumanlikeOrders_PostFix));
-            harmony.Patch(AccessTools.Method(typeof(Verb_MeleeAttack), "DamageInfosToApply"), null,
-                new HarmonyMethod(typeof(HarmonyCompSlotLoadable).GetMethod("DamageInfosToApply_PostFix")), null);
+            var type = typeof(HarmonyCompSlotLoadable);
+            harmony.Patch(AccessTools.Method(typeof(Pawn), nameof(Pawn.GetGizmos)), null,
+                new HarmonyMethod(type, nameof(GetGizmos_PostFix)));
+            harmony.Patch(AccessTools.Method(typeof(StatExtension), nameof(StatExtension.GetStatValue)), null,
+                new HarmonyMethod(type, nameof(GetStatValue_PostFix)));
+            harmony.Patch(AccessTools.Method(typeof(Verb_MeleeAttackDamage), "DamageInfosToApply"), null,
+                new HarmonyMethod(type, nameof(DamageInfosToApply_PostFix)), null);
             harmony.Patch(AccessTools.Method(typeof(ITab_Pawn_Gear), "DrawThingRow"), null,
-                new HarmonyMethod(typeof(HarmonyCompSlotLoadable).GetMethod("DrawThingRow_PostFix")), null);
-            harmony.Patch(AccessTools.Method(typeof(Pawn), "PostApplyDamage"), null,
-                new HarmonyMethod(typeof(HarmonyCompSlotLoadable).GetMethod("PostApplyDamage_PostFix")), null);
-
-
+                new HarmonyMethod(type, nameof(DrawThingRow_PostFix)), null);
+            harmony.Patch(AccessTools.Method(typeof(Pawn), nameof(Pawn.PostApplyDamage)), null,
+                new HarmonyMethod(type, nameof(PostApplyDamage_PostFix)), null);
             harmony.Patch(AccessTools.Method(typeof(StatWorker), "StatOffsetFromGear"), null,
-                new HarmonyMethod(typeof(HarmonyCompSlotLoadable).GetMethod("StatOffsetFromGear_PostFix")));
-
-            // Test
-            //harmony.Patch(AccessTools.Method(typeof(Pawn),"TicksPerMove"), null,new HarmonyMethod(typeof(HarmonyCompSlotLoadable).GetMethod("TicksPerMove_PostFix")) );
-
-            //Color postfixes
-            //harmony.Patch(typeof(ThingWithComps).GetMethod("get_DrawColor"), null, new HarmonyMethod(typeof(HarmonyCompSlotLoadable).GetMethod("DrawColorPostFix")));
-            //harmony.Patch(typeof(Thing).GetMethod("get_DrawColorTwo"), null, new HarmonyMethod(typeof(HarmonyCompSlotLoadable).GetMethod("DrawColorTwoPostFix")));
+                new HarmonyMethod(type, nameof(StatOffsetFromGear_PostFix)));
         }
 
         // debugging
@@ -117,8 +107,7 @@ namespace CompSlotLoadable
                                 select injury)
                             //if (maxInjuriesPerBodypart > 0)
                             //{
-                            if (current.CanHealNaturally() && !current.IsOld()
-                            ) // basically check for scars and old wounds
+                            if (current.CanHealNaturally() && !current.IsPermanent()) // isOld // basically check for scars and old wounds
                             {
                                 current.Heal((int) current.Severity + 1);
                                 maxInjuries--;

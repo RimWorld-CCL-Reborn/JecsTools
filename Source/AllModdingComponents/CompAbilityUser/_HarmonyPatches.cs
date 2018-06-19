@@ -14,38 +14,35 @@ namespace AbilityUser
         public AbilityUserMod(ModContentPack content) : base(content)
         {
             var harmony = HarmonyInstance.Create("rimworld.jecrell.abilityuser");
-            harmony.Patch(AccessTools.Method(typeof(Targeter), "TargeterUpdate"), null,
-                new HarmonyMethod(typeof(AbilityUserMod).GetMethod("TargeterUpdate_PostFix")), null);
-            harmony.Patch(AccessTools.Method(typeof(Targeter), "ProcessInputEvents"),
-                new HarmonyMethod(typeof(AbilityUserMod).GetMethod("ProcessInputEvents_PreFix")), null);
+            harmony.Patch(AccessTools.Method(typeof(Targeter), nameof(Targeter.TargeterUpdate)), null,
+                new HarmonyMethod(typeof(AbilityUserMod), nameof(TargeterUpdate_PostFix)), null);
+            harmony.Patch(AccessTools.Method(typeof(Targeter), nameof(Targeter.ProcessInputEvents)),
+                new HarmonyMethod(typeof(AbilityUserMod), nameof(ProcessInputEvents_PreFix)), null);
             harmony.Patch(AccessTools.Method(typeof(Targeter), "ConfirmStillValid"),
-                new HarmonyMethod(typeof(AbilityUserMod).GetMethod(nameof(ConfirmStillValid))), null);
-
-            // RimWorld.Targeter
-            //private void ConfirmStillValid()
+                new HarmonyMethod(typeof(AbilityUserMod), nameof(ConfirmStillValid)), null);
 
             // Initializes the AbilityUsers on Pawns
-            harmony.Patch(AccessTools.Method(typeof(ThingWithComps), "InitializeComps"), null,
-                new HarmonyMethod(typeof(AbilityUserMod).GetMethod("InitializeComps_PostFix")), null);
+            harmony.Patch(AccessTools.Method(typeof(ThingWithComps), nameof(ThingWithComps.InitializeComps)), null,
+                new HarmonyMethod(typeof(AbilityUserMod), nameof(InitializeComps_PostFix)), null);
 
             // when the Pawn_EquipmentTracker is notified of a new item, see if that has CompAbilityItem.
-            harmony.Patch(AccessTools.Method(typeof(Pawn_EquipmentTracker), "Notify_EquipmentAdded"), null,
-                new HarmonyMethod(typeof(AbilityUserMod).GetMethod("Notify_EquipmentAdded_PostFix")), null);
+            harmony.Patch(AccessTools.Method(typeof(Pawn_EquipmentTracker), nameof(Pawn_EquipmentTracker.Notify_EquipmentAdded)), null,
+                new HarmonyMethod(typeof(AbilityUserMod), nameof(Notify_EquipmentAdded_PostFix)), null);
             // when the Pawn_EquipmentTracker is notified of one less item, see if that has CompAbilityItem.
-            harmony.Patch(AccessTools.Method(typeof(Pawn_EquipmentTracker), "Notify_EquipmentRemoved"), null,
-                new HarmonyMethod(typeof(AbilityUserMod).GetMethod("Notify_EquipmentRemoved_PostFix")), null);
+            harmony.Patch(AccessTools.Method(typeof(Pawn_EquipmentTracker), nameof(Pawn_EquipmentTracker.Notify_EquipmentRemoved)), null,
+                new HarmonyMethod(typeof(AbilityUserMod), nameof(Notify_EquipmentRemoved_PostFix)), null);
 
             // when the Pawn_ApparelTracker is notified of a new item, see if that has CompAbilityItem.
-            harmony.Patch(AccessTools.Method(typeof(Pawn_ApparelTracker), "Notify_ApparelAdded"), null,
-                new HarmonyMethod(typeof(AbilityUserMod).GetMethod("Notify_ApparelAdded_PostFix")), null);
+            harmony.Patch(AccessTools.Method(typeof(Pawn_ApparelTracker), nameof(Pawn_ApparelTracker.Notify_ApparelAdded)), null,
+                new HarmonyMethod(typeof(AbilityUserMod), nameof(Notify_ApparelAdded_PostFix)), null);
             // when the Pawn_ApparelTracker is notified of one less item, see if that has CompAbilityItem.
-            harmony.Patch(AccessTools.Method(typeof(Pawn_ApparelTracker), "Notify_ApparelRemoved"), null,
-                new HarmonyMethod(typeof(AbilityUserMod).GetMethod("Notify_ApparelRemoved_PostFix")), null);
+            harmony.Patch(AccessTools.Method(typeof(Pawn_ApparelTracker), nameof(Pawn_ApparelTracker.Notify_ApparelRemoved)), null,
+                new HarmonyMethod(typeof(AbilityUserMod), nameof(Notify_ApparelRemoved_PostFix)), null);
 
             harmony.Patch(AccessTools.Method(typeof(ShortHashGiver), "GiveShortHash"),
                 new HarmonyMethod(typeof(AbilityUserMod), nameof(GiveShortHash_PrePatch)), null);
 
-            harmony.Patch(AccessTools.Method(typeof(PawnGroupKindWorker), "GeneratePawns",
+            harmony.Patch(AccessTools.Method(typeof(PawnGroupKindWorker), nameof(PawnGroupKindWorker.GeneratePawns),
                     new Type[] {typeof(PawnGroupMakerParms), typeof(PawnGroupMaker), typeof(bool)}), null,
                 new HarmonyMethod(typeof(AbilityUserMod), nameof(GeneratePawns_PostFix)));
         }
@@ -271,14 +268,14 @@ namespace AbilityUser
             {
                 var caster = Traverse.Create(__instance).Field("caster").GetValue<Pawn>();
 
-                if (caster != null && (caster.Map != Find.VisibleMap || caster.Destroyed ||
+                if (caster != null && (caster.Map != Find.CurrentMap || caster.Destroyed ||
                                        !Find.Selector.IsSelected(caster) ||
                                        caster.Faction != Faction.OfPlayerSilentFail))
                     __instance.StopTargeting();
                 if (__instance.targetingVerb != null)
                 {
                     var selector = Find.Selector;
-                    if (__instance.targetingVerb.caster.Map != Find.VisibleMap ||
+                    if (__instance.targetingVerb.caster.Map != Find.CurrentMap ||
                         __instance.targetingVerb.caster.Destroyed ||
                         !selector.IsSelected(__instance.targetingVerb.caster))
                     {
@@ -312,7 +309,7 @@ namespace AbilityUser
                     var caster = (Pawn) __instance.targetingVerb.caster;
                     v.Ability.TryCastAbility(AbilityContext.Player,
                         caster); // caster, source.First<LocalTargetInfo>(), caster.GetComp<CompAbilityUser>(), (Verb_UseAbility)__instance.targetingVerb, ((Verb_UseAbility)(__instance.targetingVerb)).ability.powerdef as AbilityDef)?.Invoke();
-                    SoundDefOf.TickHigh.PlayOneShotOnCamera();
+                    SoundDefOf.Tick_High.PlayOneShotOnCamera();
                     __instance.StopTargeting();
                     Event.current.Use();
                     return false;
@@ -325,7 +322,7 @@ namespace AbilityUser
                             .Invoke(__instance, new object[] {false});
                         if (obj.IsValid)
                             v.Ability.TryCastAbility(AbilityContext.Player, obj);
-                        SoundDefOf.TickHigh.PlayOneShotOnCamera(null);
+                        SoundDefOf.Tick_High.PlayOneShotOnCamera(null);
                         __instance.StopTargeting();
                         Event.current.Use();
                         return false;
@@ -347,7 +344,7 @@ namespace AbilityUser
 
                         //                    Pawn caster = (Pawn)__instance.targetingVerb.caster;
                         //                    abilityVerb.Ability.TryCastAbility(AbilityContext.Player, source.First<LocalTargetInfo>());// caster, source.First<LocalTargetInfo>(), caster.GetComp<CompAbilityUser>(), (Verb_UseAbility)__instance.targetingVerb, ((Verb_UseAbility)(__instance.targetingVerb)).ability.powerdef as AbilityDef)?.Invoke();
-                        //                    SoundDefOf.TickHigh.PlayOneShotOnCamera();
+                        //                    SoundDefOf.Tick_High.PlayOneShotOnCamera();
                         //                    __instance.StopTargeting();
                         //                    Event.current.Use();
                         //                    return false;
@@ -359,7 +356,7 @@ namespace AbilityUser
                         //    {
                         //        Pawn caster = (Pawn)__instance.targetingVerb.caster;
                         //        abilityVerb.Ability.TryCastAbility(AbilityContext.Player, null);// caster.GetComp<CompAbilityUser>(), (Verb_UseAbility)__instance.targetingVerb, ((Verb_UseAbility)(__instance.targetingVerb)).ability.powerdef as AbilityDef)?.Invoke();
-                        //        SoundDefOf.TickHigh.PlayOneShotOnCamera();
+                        //        SoundDefOf.Tick_High.PlayOneShotOnCamera();
                         //        __instance.StopTargeting();
                         //        Event.current.Use();
                         //        return false;
@@ -378,7 +375,7 @@ namespace AbilityUser
             {
                 if (tVerbProps?.range > 0)
                     GenDraw.DrawRadiusRing(tVerb.CasterPawn.PositionHeld, tVerbProps.range);
-                if (tVerbProps?.TargetAoEProperties?.range > 0 && Find.VisibleMap is Map map &&
+                if (tVerbProps?.TargetAoEProperties?.range > 0 && Find.CurrentMap is Map map &&
                     UI.MouseCell().InBounds(map))
                     GenDraw.DrawRadiusRing(UI.MouseCell(), tVerbProps.TargetAoEProperties.range);
             }
