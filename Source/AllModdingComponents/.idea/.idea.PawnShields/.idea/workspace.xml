@@ -8,19 +8,19 @@
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
-  </component>
+  </ComponentIndustrial>
   <component name="JsBuildToolGruntFileManager" detection-done="true" sorting="DEFINITION_ORDER" />
   <component name="JsBuildToolPackageJson" detection-done="true" sorting="DEFINITION_ORDER" />
   <component name="JsGulpfileManager">
     <detection-done>true</detection-done>
     <sorting>DEFINITION_ORDER</sorting>
-  </component>
+  </ComponentIndustrial>
   <component name="ProjectFrameBounds">
     <option name="x" value="599" />
     <option name="y" value="69" />
     <option name="width" value="1163" />
     <option name="height" value="824" />
-  </component>
+  </ComponentIndustrial>
   <component name="ProjectView">
     <navigator currentView="SolutionExplorer" proportions="" version="1">
       <flattenPackages />
@@ -51,10 +51,10 @@
       </pane>
       <pane id="Scratches" />
     </panes>
-  </component>
+  </ComponentIndustrial>
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
-  </component>
+  </ComponentIndustrial>
   <component name="RunDashboard">
     <option name="ruleStates">
       <list>
@@ -66,7 +66,7 @@
         </RuleState>
       </list>
     </option>
-  </component>
+  </ComponentIndustrial>
   <component name="RunManager" selected=".NET Project.Default">
     <configuration name="Default" type="DotNetProject" factoryName=".NET Project">
       <option name="EXE_PATH" value="" />
@@ -81,10 +81,10 @@
       <option name="PROJECT_KIND" value="None" />
       <option name="PROJECT_TFM" value="" />
     </configuration>
-  </component>
+  </ComponentIndustrial>
   <component name="ShelveChangesManager" show_recycled="false">
     <option name="remove_strategy" value="false" />
-  </component>
+  </ComponentIndustrial>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="e25c83a0-1594-4460-94f5-e69c535c3579" name="Default" comment="" />
@@ -95,10 +95,10 @@
       <workItem from="1518187961325" duration="23000" />
     </task>
     <servers />
-  </component>
+  </ComponentIndustrial>
   <component name="TimeTrackingManager">
     <option name="totallyTimeSpent" value="23000" />
-  </component>
+  </ComponentIndustrial>
   <component name="TodoView">
     <todo-panel id="selected-file">
       <is-autoscroll-to-source value="true" />
@@ -107,7 +107,7 @@
       <are-packages-shown value="true" />
       <is-autoscroll-to-source value="true" />
     </todo-panel>
-  </component>
+  </ComponentIndustrial>
   <component name="ToolWindowManager">
     <frame x="599" y="69" width="1163" height="824" extended-state="0" />
     <layout>
@@ -133,15 +133,15 @@
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
-  </component>
+  </ComponentIndustrial>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
-  </component>
+  </ComponentIndustrial>
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
-  </component>
+  </ComponentIndustrial>
   <component name="XDebuggerManager">
     <breakpoint-manager />
     <watches-manager />
-  </component>
+  </ComponentIndustrial>
 </project>

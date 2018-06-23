@@ -133,8 +133,8 @@ namespace AbilityUser
 
         public override void PostExposeData()
         {
-            Scribe_Values.Look(ref IsInitialized, "IsInitialized", false);
-            Scribe_Deep.Look(ref abilityData, "abilityData", this);
+            Scribe_Values.Look(ref IsInitialized, "abilityUserIsInitialized" + this.GetType().ToString(), false);
+            Scribe_Deep.Look(ref abilityData, "abilityData" + this.GetType().ToString(), this);
 
             if (Scribe.mode == LoadSaveMode.PostLoadInit)
             {

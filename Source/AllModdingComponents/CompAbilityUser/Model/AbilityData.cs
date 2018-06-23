@@ -54,9 +54,9 @@ namespace AbilityUser
 
         public void ExposeData()
         {
-            Scribe_References.Look(ref pawn, "pawn");
-            Scribe_Values.Look(ref abilityClass, "abilityClass", null);
-            Scribe_Collections.Look(ref powers, "Powers", LookMode.Deep, this);
+            Scribe_References.Look(ref pawn, "abilityDataPawn" + this.GetType().ToString());
+            Scribe_Values.Look(ref abilityClass, "abilityDataClass" + this.GetType().ToString(), null);
+            Scribe_Collections.Look(ref powers, "abilityDataPowers" + this.GetType().ToString(), LookMode.Deep, this);
         }
     }
 }

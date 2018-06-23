@@ -67,7 +67,7 @@ namespace AbilityUser
 
         public override GizmoResult GizmoOnGUI(Vector2 topLeft, float maxWidth)
         {
-            var rect = new Rect(topLeft.x, topLeft.y, maxWidth, 75f);
+            var rect = new Rect(topLeft.x, topLeft.y, this.GetWidth(maxWidth), 75f);
             var isMouseOver = false;
             if (Mouse.IsOver(rect))
             {

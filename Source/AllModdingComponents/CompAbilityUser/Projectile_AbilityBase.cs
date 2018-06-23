@@ -34,10 +34,10 @@ namespace AbilityUser
         public override void ExposeData()
         {
             base.ExposeData();
-            Scribe_Collections.Look(ref extraDamages, "extraDamages", LookMode.Deep);
-            Scribe_Collections.Look(ref localApplyMentalStates, "localApplyMentalStates", LookMode.Deep);
-            Scribe_Collections.Look(ref localApplyHediffs, "localApplyHediffs", LookMode.Deep);
-            Scribe_Defs.Look(ref localAbilityDef, "localAbilityDef");
+            Scribe_Collections.Look(ref extraDamages, "projAbilityExtraDamages", LookMode.Deep);
+            Scribe_Collections.Look(ref localApplyMentalStates, "projAbilityLocalApplyMentalStates", LookMode.Deep);
+            Scribe_Collections.Look(ref localApplyHediffs, "projAbilityLocalApplyHediffs", LookMode.Deep);
+            Scribe_Defs.Look(ref localAbilityDef, "projAbilityLocalAbilityDef");
         }
 
         // Verse.Projectile
@@ -92,15 +92,15 @@ namespace AbilityUser
             }
 
             // Impact the initial targeted pawn.
-            if (usedTarget != null)
+            if (intendedTarget != null)
             {
-                if (usedTarget.Thing is Pawn pawn && pawn.Downed && (origin - destination).magnitude > 5f &&
+                if (intendedTarget.Thing is Pawn pawn && pawn.Downed && (origin - destination).magnitude > 5f &&
                     Rand.Value < 0.2f)
                 {
                     Impact(null);
                     return;
                 }
-                Impact(usedTarget.Thing);
+                Impact(intendedTarget.Thing);
             }
             else
             {
@@ -315,7 +315,7 @@ namespace AbilityUser
             localApplyMentalStates = applyMentalStates;
             localSpawnThings = spawnThings;
             localAbilityDef = abilityDef;
-            base.Launch(launcher, usedTarget, targ, hitFlags, equipment); //TODO
+            base.Launch(launcher, targ, targ, hitFlags, equipment); //TODO
         }
 
         protected override void Impact(Thing hitThing)

@@ -36,5 +36,5 @@
       <e p="PawnShields.sln" t="IncludeFlat" />
     </e>
     <e p="D:\SteamLibrary\steamapps\common\RimWorld\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\ShieldsCore\Assemblies" t="ExcludeRecursive" />
-  </component>
+  </ComponentIndustrial>
 </project>

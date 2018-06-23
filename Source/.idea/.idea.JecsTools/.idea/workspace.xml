@@ -8,7 +8,7 @@
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
-  </component>
+  </ComponentIndustrial>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="375">
       <file leaf-file-name="Caravan_JobTracker.cs" pinned="false" current-in-tab="false">
@@ -813,7 +813,7 @@
         </entry>
       </file>
     </leaf>
-  </component>
+  </ComponentIndustrial>
   <component name="FindInProjectRecents">
     <findStrings>
       <find>Addvehicle</find>
@@ -855,7 +855,7 @@
       <replace>TryGetAttackVerb(null</replace>
       <replace>NameStringShort</replace>
     </replaceStrings>
-  </component>
+  </ComponentIndustrial>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/AllModdingComponents/JecsTools/FirelessTrashUtility.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AllModdingComponents/JecsTools/PatchOperationModLoaded.cs" root0="FORCE_HIGHLIGHTING" />
@@ -965,7 +965,7 @@
     <setting file="file://$PROJECT_DIR$/AllModdingComponents/JecsTools/HediffComp_ExtraMeleeDamages.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AllModdingComponents/JecsTools/GrappleUtility.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AllModdingComponents/JecsTools/HediffGiver_StartWithHediff.cs" root0="FORCE_HIGHLIGHTING" />
-  </component>
+  </ComponentIndustrial>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
@@ -1022,19 +1022,19 @@
         <option value="$PROJECT_DIR$/AllModdingComponents/PawnShields/HarmonyPatches.cs" />
       </list>
     </option>
-  </component>
+  </ComponentIndustrial>
   <component name="JsBuildToolGruntFileManager" detection-done="true" sorting="DEFINITION_ORDER" />
   <component name="JsBuildToolPackageJson" detection-done="true" sorting="DEFINITION_ORDER" />
   <component name="JsGulpfileManager">
     <detection-done>true</detection-done>
     <sorting>DEFINITION_ORDER</sorting>
-  </component>
+  </ComponentIndustrial>
   <component name="ProjectFrameBounds" extendedState="7">
-    <option name="x" value="-620" />
-    <option name="y" value="22" />
-    <option name="width" value="1560" />
+    <option name="x" value="5" />
+    <option name="y" value="187" />
+    <option name="width" value="1088" />
     <option name="height" value="797" />
-  </component>
+  </ComponentIndustrial>
   <component name="ProjectView">
     <navigator currentView="SolutionExplorer" proportions="" version="1">
       <flattenPackages />
@@ -1070,12 +1070,12 @@
       </pane>
       <pane id="Scratches" />
     </panes>
-  </component>
+  </ComponentIndustrial>
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="SearchEverywhereHistoryKey" value="HideyHole&#9;null&#9;null" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/Dependencies/Assembly-CSharp.dll" />
-  </component>
+  </ComponentIndustrial>
   <component name="RunDashboard">
     <option name="ruleStates">
       <list>
@@ -1087,7 +1087,7 @@
         </RuleState>
       </list>
     </option>
-  </component>
+  </ComponentIndustrial>
   <component name="RunManager" selected=".NET Executable.Deployer">
     <configuration name="Attach to Unity Editor" type="UNITY_DEBUG_RUN_CONFIGURATION" factoryName="Unity Debug" />
     <configuration name="Deployer" type="RunExe" factoryName=".NET Executable">
@@ -1103,13 +1103,13 @@
       <item index="0" class="java.lang.String" itemvalue=".NET Executable.Deployer" />
       <item index="1" class="java.lang.String" itemvalue="Unity Debug.Attach to Unity Editor" />
     </list>
-  </component>
+  </ComponentIndustrial>
   <component name="ShelveChangesManager" show_recycled="false">
     <option name="remove_strategy" value="false" />
-  </component>
+  </ComponentIndustrial>
   <component name="SvnConfiguration">
     <configuration />
-  </component>
+  </ComponentIndustrial>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="3b8d0058-e00a-492d-8cec-ff28db9b1fc8" name="Default" comment="" />
@@ -1153,13 +1153,13 @@
       <workItem from="1528522404792" duration="2324000" />
       <workItem from="1529225471158" duration="5547000" />
       <workItem from="1529234085386" duration="15743000" />
-      <workItem from="1529418515550" duration="7008000" />
+      <workItem from="1529418515550" duration="7267000" />
     </task>
     <servers />
-  </component>
+  </ComponentIndustrial>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="211282000" />
-  </component>
+    <option name="totallyTimeSpent" value="211541000" />
+  </ComponentIndustrial>
   <component name="TodoView">
     <todo-panel id="selected-file">
       <is-autoscroll-to-source value="true" />
@@ -1168,7 +1168,7 @@
       <are-packages-shown value="true" />
       <is-autoscroll-to-source value="true" />
     </todo-panel>
-  </component>
+  </ComponentIndustrial>
   <component name="ToolWindowManager">
     <frame x="-9" y="-9" width="1938" height="1048" extended-state="7" />
     <layout>
@@ -1196,19 +1196,19 @@
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
-  </component>
+  </ComponentIndustrial>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
-  </component>
+  </ComponentIndustrial>
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
-  </component>
+  </ComponentIndustrial>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <option name="time" value="2" />
     </breakpoint-manager>
     <watches-manager />
-  </component>
+  </ComponentIndustrial>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/AllModdingComponents/AbilityUserAI/AI/JobGiver_AIAbilityUser.cs">
       <provider selected="true" editor-type-id="text-editor">
@@ -2313,5 +2313,5 @@
         </state>
       </provider>
     </entry>
-  </component>
+  </ComponentIndustrial>
 </project>

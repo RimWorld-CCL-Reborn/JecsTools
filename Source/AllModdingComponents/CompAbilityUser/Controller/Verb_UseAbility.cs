@@ -164,65 +164,77 @@ namespace AbilityUser
             //return result;
         }
 
+        private bool debugMode = false;
+        private void DebugMessage(string s)
+        {
+            if(debugMode)Log.Message(s);
+        }
+
+        
         protected bool? TryLaunchProjectile(ThingDef projectileDef, LocalTargetInfo launchTarget)
         {
+            DebugMessage(launchTarget.ToString());
             var flag = TryFindShootLineFromTo(caster.Position, launchTarget, out var shootLine);
             if (verbProps.stopBurstWithoutLos && !flag)
+            {
+                DebugMessage("Targeting cancelled");
                 return false;
+            }
             var drawPos = caster.DrawPos;
             var projectile = (Projectile_AbilityBase) GenSpawn.Spawn(projectileDef, shootLine.Source, caster.Map);
             projectile.extraDamages = UseAbilityProps.extraDamages;
             projectile.localSpawnThings = UseAbilityProps.thingsToSpawn;
+            
             //projectile. FreeIntercept = canFreeInterceptNow && !projectile.def.projectile.flyOverhead;
             var shotReport = ShotReport.HitReportFor(caster, this, launchTarget);
             verbProps.soundCast?.PlayOneShot(new TargetInfo(caster.Position, caster.Map, false));
             verbProps.soundCastTail?.PlayOneShotOnCamera();
-            if (!UseAbilityProps.AlwaysHits)
-            {
-                Thing randomCoverToMissInto = shotReport.GetRandomCoverToMissInto();
-                ThingDef targetCoverDef = (randomCoverToMissInto == null) ? null : randomCoverToMissInto.def;
-                if (!Rand.Chance(shotReport.ChanceToNotGoWild_IgnoringPosture))
-                {
-                    if (DebugViewSettings.drawShooting)
-                        MoteMaker.ThrowText(caster.DrawPos, caster.Map, "ToWild", -1f);
-                    shootLine.ChangeDestToMissWild();
-                    ProjectileHitFlags projectileHitFlags2;
-                    if (Rand.Chance(0.5f))
-                    {
-                        projectileHitFlags2 = ProjectileHitFlags.NonTargetWorld;
-                    }
-                    else
-                    {
-                        projectileHitFlags2 = ProjectileHitFlags.NonTargetWorld;
-                        if (this.canHitNonTargetPawnsNow)
-                        {
-                            projectileHitFlags2 |= ProjectileHitFlags.NonTargetPawns;
-                        }
-                    }
-                    projectile.Launch(caster, Ability.Def, drawPos, shootLine.Dest, projectileHitFlags2, ownerEquipment,
-                        UseAbilityProps.hediffsToApply, UseAbilityProps.mentalStatesToApply,
-                        UseAbilityProps.thingsToSpawn);
-                    return true;
-                }
-                if (!Rand.Chance(shotReport.ChanceToNotHitCover))
-                {
-                    if (DebugViewSettings.drawShooting)
-                        MoteMaker.ThrowText(caster.DrawPos, caster.Map, "ToCover", -1f);
-                    if (launchTarget.Thing != null && launchTarget.Thing.def.category == ThingCategory.Pawn)
-                    {
-                        randomCoverToMissInto = shotReport.GetRandomCoverToMissInto();
-                        ProjectileHitFlags projectileHitFlags3 = ProjectileHitFlags.NonTargetWorld;
-                        if (this.canHitNonTargetPawnsNow)
-                        {
-                            projectileHitFlags3 |= ProjectileHitFlags.NonTargetPawns;
-                        }
-                        projectile.Launch(caster, Ability.Def, drawPos, randomCoverToMissInto, projectileHitFlags3, null,
-                            UseAbilityProps.hediffsToApply, UseAbilityProps.mentalStatesToApply,
-                            UseAbilityProps.thingsToSpawn);
-                        return true;
-                    }
-                }
-            }
+//            if (!UseAbilityProps.AlwaysHits)
+//            {
+//                Thing randomCoverToMissInto = shotReport.GetRandomCoverToMissInto();
+//                ThingDef targetCoverDef = (randomCoverToMissInto == null) ? null : randomCoverToMissInto.def;
+//                if (!Rand.Chance(shotReport.ChanceToNotGoWild_IgnoringPosture))
+//                {
+//                    if (DebugViewSettings.drawShooting)
+//                        MoteMaker.ThrowText(caster.DrawPos, caster.Map, "ToWild", -1f);
+//                    shootLine.ChangeDestToMissWild();
+//                    ProjectileHitFlags projectileHitFlags2;
+//                    if (Rand.Chance(0.5f))
+//                    {
+//                        projectileHitFlags2 = ProjectileHitFlags.NonTargetWorld;
+//                    }
+//                    else
+//                    {
+//                        projectileHitFlags2 = ProjectileHitFlags.NonTargetWorld;
+//                        if (this.canHitNonTargetPawnsNow)
+//                        {
+//                            projectileHitFlags2 |= ProjectileHitFlags.NonTargetPawns;
+//                        }
+//                    }
+//                    projectile.Launch(caster, Ability.Def, drawPos, shootLine.Dest, projectileHitFlags2, ownerEquipment,
+//                        UseAbilityProps.hediffsToApply, UseAbilityProps.mentalStatesToApply,
+//                        UseAbilityProps.thingsToSpawn);
+//                    return true;
+//                }
+//                if (!Rand.Chance(shotReport.ChanceToNotHitCover))
+//                {
+//                    if (DebugViewSettings.drawShooting)
+//                        MoteMaker.ThrowText(caster.DrawPos, caster.Map, "ToCover", -1f);
+//                    if (launchTarget.Thing != null && launchTarget.Thing.def.category == ThingCategory.Pawn)
+//                    {
+//                        randomCoverToMissInto = shotReport.GetRandomCoverToMissInto();
+//                        ProjectileHitFlags projectileHitFlags3 = ProjectileHitFlags.NonTargetWorld;
+//                        if (this.canHitNonTargetPawnsNow)
+//                        {
+//                            projectileHitFlags3 |= ProjectileHitFlags.NonTargetPawns;
+//                        }
+//                        projectile.Launch(caster, Ability.Def, drawPos, randomCoverToMissInto, projectileHitFlags3, null,
+//                            UseAbilityProps.hediffsToApply, UseAbilityProps.mentalStatesToApply,
+//                            UseAbilityProps.thingsToSpawn);
+//                        return true;
+//                    }
+//                }
+//            }
             if (DebugViewSettings.drawShooting)
                 MoteMaker.ThrowText(caster.DrawPos, caster.Map, "ToHit", -1f);
             ProjectileHitFlags projectileHitFlags4 = ProjectileHitFlags.IntendedTarget;
@@ -234,6 +246,7 @@ namespace AbilityUser
             {
                 projectileHitFlags4 |= ProjectileHitFlags.NonTargetWorld;
             }
+            DebugMessage(launchTarget.ToString());
             projectile.Launch(caster, Ability.Def, drawPos, launchTarget, projectileHitFlags4, null, UseAbilityProps.hediffsToApply,
                 UseAbilityProps.mentalStatesToApply, UseAbilityProps.thingsToSpawn);
             return true;

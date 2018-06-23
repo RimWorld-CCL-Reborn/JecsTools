@@ -122,9 +122,9 @@ namespace AbilityUser
         public void ExposeData()
         {
             //base.ExposeData();
-            Scribe_Values.Look(ref TicksUntilCasting, "TicksUntilcasting", -1);
-            Scribe_References.Look(ref pawn, "pawn");
-            Scribe_Defs.Look(ref powerdef, "powerdef");
+            Scribe_Values.Look(ref TicksUntilCasting, "pawnAbilityTicksUntilcasting", -1);
+            Scribe_References.Look(ref pawn, "pawnAbilityPawn");
+            Scribe_Defs.Look(ref powerdef, "pawnAbilityPowerDef");
         }
 
         public void Tick()
