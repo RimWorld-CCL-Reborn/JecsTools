@@ -2,7 +2,7 @@
 
 namespace CompOversizedWeapon
 {
-    internal class CompOversizedWeapon : ThingComp
+    public class CompOversizedWeapon : ThingComp
     {
         public CompProperties_OversizedWeapon Props => props as CompProperties_OversizedWeapon;
 

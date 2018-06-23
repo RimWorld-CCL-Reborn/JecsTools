@@ -22,9 +22,9 @@ namespace CompActivatableEffect
 
         public CompEquippable GetEquippable => parent.GetComp<CompEquippable>();
 
-        public Pawn GetPawn => GetEquippable.verbTracker.PrimaryVerb.CasterPawn;
+        public Pawn GetPawn =>  GetEquippable.verbTracker.PrimaryVerb.CasterPawn;
 
-        public List<Verb> GetVerbs => GetEquippable.verbTracker.AllVerbs;
+        //public List<Verb> GetVerbs => GetEquippable.verbTracker.AllVerbs;
 
         public bool GizmosOnEquip => Props.gizmosOnEquip;
         public State CurrentState => currentState;
@@ -68,7 +68,7 @@ namespace CompActivatableEffect
             else
                 info = SoundInfo.InMap(new TargetInfo(parent.PositionHeld, parent.MapHeld, false),
                     MaintenanceType.None);
-            soundToPlay.PlayOneShot(info);
+            soundToPlay?.PlayOneShot(info);
         }
 
         private void StartSustainer()
@@ -133,7 +133,7 @@ namespace CompActivatableEffect
         public IEnumerable<Gizmo> EquippedGizmos()
         {
             //Add
-            if (Props.draftToUseGizmos && GetPawn.Drafted || !Props.draftToUseGizmos)
+            if (Props.draftToUseGizmos && (GetPawn != null && GetPawn.Drafted) || !Props.draftToUseGizmos)
                 if (currentState == State.Activated)
                     yield return new Command_Action
                     {
@@ -266,6 +266,7 @@ namespace CompActivatableEffect
                 //{
                 Graphic = new Graphic_RandomRotated(Graphic, 35f);
                 //}
+
 
                 Graphic.Draw(GenThing.TrueCenter(parent.Position, parent.Rotation, parent.def.size, Props.Altitude),
                     parent.Rotation, parent);

@@ -56,6 +56,12 @@
     <Compile Include="HarmonyCompActivatableEffect.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CompOversizedWeapon\CompOversizedWeapon.csproj">
+      <Project>{08e20d0e-4493-4dfe-9212-dec323f26e89}</Project>
+      <Name>CompOversizedWeapon</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

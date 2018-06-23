@@ -133,15 +133,15 @@ namespace JecsTools
                     if (!pair.Value.NullOrEmpty())
                     {
                         var passers = things.FindAll(x => pair.Key.Passes(x));
-                        if (!passers.NullOrEmpty())
-                            foreach (var passer in passers)
-                            foreach (var func in pair.Value)
-                                if (func.Invoke(clickPos, pawn, passer) is List<FloatMenuOption> newOpts &&
-                                    !newOpts.NullOrEmpty())
-                                {
-                                    opts.AddRange(newOpts);
-                                    savedList.AddRange(newOpts);
-                                }
+                        if (passers.NullOrEmpty()) continue;
+                        foreach (var passer in passers)
+                        foreach (var func in pair.Value)
+                            if (func.Invoke(clickPos, pawn, passer) is List<FloatMenuOption> newOpts &&
+                                !newOpts.NullOrEmpty())
+                            {
+                                opts?.AddRange(newOpts);
+                                savedList.AddRange(newOpts);
+                            }
                     }
         }
     }
@@ -178,19 +178,20 @@ namespace JecsTools
 
         public bool Passes(object toCheck)
         {
+            Log.Message(toCheck.GetType().ToString());
+            Log.Message(Data.ToString());
+
             switch (Condition)
             {
                 case _ConditionType.IsType:
-                    //Log.Message(toCheck.GetType().ToString());
-                    //Log.Message(Data.ToString());
-
                     //////////////////////////
                     ///PSYCHOLOGY SPECIAL CASE
                     if (toCheck.GetType().ToString() == "Psychology.PsychologyPawn" && Data.ToString() == "Verse.Pawn")
                         return true;
                     //////////////////////////
-                    if (toCheck.GetType() == Data.GetType() || toCheck.GetType() == Data ||
-                        Data.GetType().IsAssignableFrom(toCheck.GetType()))
+                    if (toCheck.GetType() == Data.GetType() || Equals(toCheck.GetType(), Data) ||
+                        toCheck.GetType() == Data || toCheck.GetType().ToString() == Data.ToString() ||
+                        Data.GetType().IsInstanceOfType(toCheck))
                         return true;
                     break;
                 case _ConditionType.IsTypeStringMatch:
@@ -198,8 +199,10 @@ namespace JecsTools
                         return true;
                     break;
                 case _ConditionType.ThingHasComp:
-                    var dataType = Data.GetType();
-                    if (toCheck is ThingWithComps t && t.AllComps.FirstOrDefault(x => x.GetType() == dataType) != null)
+                    var dataType = Data;
+                    if (toCheck is ThingWithComps t && Enumerable.Any(t.AllComps, comp =>
+                            comp.props.compClass.ToString() == dataType.ToString() ||
+                            comp.props.compClass.BaseType.ToString() == dataType.ToString()))
                         return true;
                     break;
             }

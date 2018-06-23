@@ -16,21 +16,28 @@ namespace CompSlotLoadable
         {
             var FloatMenus = new List<KeyValuePair<_Condition, Func<Vector3, Pawn, Thing, List<FloatMenuOption>>>>();
 
-            var curCondition = new _Condition(_ConditionType.IsType, typeof(ThingWithComps));
-            Func<Vector3, Pawn, Thing, List<FloatMenuOption>> curFunc =
-                delegate(Vector3 clickPos, Pawn pawn, Thing curThing)
+            var curCondition = new _Condition(_ConditionType.ThingHasComp, typeof(CompSlottedBonus));
+
+            List<FloatMenuOption> CurFunc(Vector3 clickPos, Pawn pawn, Thing curThing)
+            {
+                //Log.Message("Patch is loaded");
+                var opts = new List<FloatMenuOption>();
+                List<IThingHolder> holders = new List<IThingHolder>();
+                pawn.GetChildHolders(holders);
+                var allThings = new List<Thing>();
+                holders.ForEach(x => allThings.AddRange(x.GetDirectlyHeldThings().ToList()));
+                foreach (var item in allThings)
                 {
-                    var opts = new List<FloatMenuOption>();
-                    var slotLoadable = curThing as ThingWithComps;
-                    if (slotLoadable != null &&
-                        slotLoadable.GetComp<CompSlotLoadable>() is CompSlotLoadable compSlotLoadable)
+                    if (item is ThingWithComps slotLoadable &&
+                        slotLoadable.AllComps.FirstOrDefault(x => x is CompSlotLoadable) is CompSlotLoadable
+                            compSlotLoadable)
                     {
                         var c = clickPos.ToIntVec3();
-                        var thingList = c.GetThingList(pawn.Map);
+                        //var thingList = c.GetThingList(pawn.Map);
 
                         foreach (var slot in compSlotLoadable.Slots)
                         {
-                            var loadableThing = thingList.FirstOrDefault(y => slot.CanLoad(y.def));
+                            var loadableThing = (slot.CanLoad(curThing.def)) ? curThing : null ;
                             if (loadableThing != null)
                             {
                                 FloatMenuOption itemSlotLoadable;
@@ -39,7 +46,8 @@ namespace CompSlotLoadable
                                 {
                                     itemSlotLoadable = new FloatMenuOption(
                                         "CannotEquip".Translate(labelShort) + " (" + "Incapable".Translate() + ")",
-                                        null, MenuOptionPriority.Default, null, null, 0f, null, null);
+                                        null,
+                                        MenuOptionPriority.Default, null, null, 0f, null, null);
                                 }
                                 else if (!pawn.CanReach(loadableThing, PathEndMode.ClosestTouch, Danger.Deadly))
                                 {
@@ -61,8 +69,9 @@ namespace CompSlotLoadable
                                     itemSlotLoadable = new FloatMenuOption(text2, delegate
                                     {
                                         loadableThing.SetForbidden(false, true);
-                                        pawn.jobs.TryTakeOrderedJob(
-                                            new Job(DefDatabase<JobDef>.GetNamed("GatherSlotItem"), loadableThing));
+                                        pawn.jobs.TryTakeOrderedJob(new Job(
+                                            DefDatabase<JobDef>.GetNamed("GatherSlotItem"),
+                                            loadableThing));
                                         MoteMaker.MakeStaticMote(loadableThing.DrawPos, loadableThing.Map,
                                             ThingDefOf.Mote_FeedbackEquip, 1f);
                                         //PlayerKnowledgeDatabase.KnowledgeDemonstrated(ConceptDefOf.EquippingWeapons, KnowledgeAmount.Total);
@@ -71,11 +80,14 @@ namespace CompSlotLoadable
                                 opts.Add(itemSlotLoadable);
                             }
                         }
+                        return opts;
                     }
-                    return opts;
-                };
-            var curSec =
-                new KeyValuePair<_Condition, Func<Vector3, Pawn, Thing, List<FloatMenuOption>>>(curCondition, curFunc);
+                }
+                return opts;
+            }
+
+            KeyValuePair<_Condition, Func<Vector3, Pawn, Thing, List<FloatMenuOption>>> curSec =
+                new KeyValuePair<_Condition, Func<Vector3, Pawn, Thing, List<FloatMenuOption>>>(curCondition, CurFunc);
             FloatMenus.Add(curSec);
             return FloatMenus;
         }
