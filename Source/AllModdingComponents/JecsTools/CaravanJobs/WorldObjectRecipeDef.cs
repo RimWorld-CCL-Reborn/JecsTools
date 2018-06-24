@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using RimWorld;
 using Verse;
 
 namespace JecsTools
@@ -7,9 +6,8 @@ namespace JecsTools
     public class WorldObjectRecipeDef : Def
     {
         public List<ThingCountClass> costList;
-        public int costStuffCount = -1;
         public List<ResearchProjectDef> researchPrerequisites;
-        public List<StuffCategoryDef> stuffCategories;
+        public List<StuffCategoryCountClass> stuffCostList;
         public List<string> tags = new List<string>();
         public int workToMake = -1;
         public virtual Def FinishedThing { get; }

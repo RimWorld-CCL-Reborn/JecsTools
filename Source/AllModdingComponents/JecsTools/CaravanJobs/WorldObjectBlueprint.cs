@@ -167,6 +167,63 @@ namespace JecsTools
                 };
         }
 
+        public void AddNumOfCheapestThings(List<Thing> allItems, Dictionary<Thing, int> toBeConsumed,
+            ThingCountClass thingCount)
+        {
+            var matchingItemsPriceSorted = allItems.Where(thing => thing.def == thingCount.thing.def
+                                                                   && (!toBeConsumed.TryGetValue(thing,
+                                                                           out int value) || thing.stackCount > value))
+                .OrderBy(thing => thing.GetStatValue(StatDefOf.MarketValue));
+            int remainingCount = thingCount.Count;
+            foreach (var thing in matchingItemsPriceSorted)
+            {
+                toBeConsumed.TryGetValue(thing, out int currentTaken);
+                int numberToTake = Math.Min(thing.stackCount - currentTaken, remainingCount);
+                if (currentTaken != 0)
+                    toBeConsumed[thing] += numberToTake;
+                else
+                    toBeConsumed.Add(thing, numberToTake);
+                remainingCount -= numberToTake;
+                if (remainingCount <= 0)
+                    break;
+            }
+
+            if (remainingCount > 0)
+                Log.ErrorOnce(
+                    "JecsTools.WorldObjectBluePrint.AddNumOfCheapestThings: ran out of items before finding required amount. This should be checked before",
+                    9534712);
+        }
+
+        public void AddNumOfCheapestStuff(List<Thing> allItems, Dictionary<Thing, int> toBeConsumed,
+            StuffCategoryCountClass stuffCount)
+        {
+            var matchingItemsPriceSorted = allItems.Where(thing => ((thing?.Stuff?.stuffProps ?? thing.def.stuffProps)
+                                                                    ?.categories?.Contains(stuffCount.stuffCatDef) ??
+                                                                    false)
+                                                                   && (toBeConsumed.TryGetValue(thing, out int value)
+                                                                       ? thing.stackCount > value
+                                                                       : true))
+                .OrderBy(thing => thing.GetStatValue(StatDefOf.MarketValue));
+            int remainingCount = stuffCount.count;
+            foreach (var thing in matchingItemsPriceSorted)
+            {
+                toBeConsumed.TryGetValue(thing, out int currentTaken);
+                int numberToTake = Math.Min(thing.stackCount - currentTaken, remainingCount);
+                if (currentTaken != 0)
+                    toBeConsumed[thing] += numberToTake;
+                else
+                    toBeConsumed.Add(thing, numberToTake);
+                remainingCount -= numberToTake;
+                if (remainingCount <= 0)
+                    break;
+            }
+
+            if (remainingCount > 0)
+                Log.ErrorOnce(
+                    "JecsTools.WorldObjectBluePrint.AddNumOfCheapestStuff: ran out of items before finding required amount. This should be checked before",
+                    9534713);
+        }
+
 
         public virtual bool CheckAndConsumeResources(Caravan c, WorldObjectRecipeDef recipe,
             bool consumeResources = true)
@@ -178,50 +235,81 @@ namespace JecsTools
             if (caravanInv == null || caravanInv.Count() == 0)
                 return false;
 
-            if (!recipe.stuffCategories.NullOrEmpty() && recipe.costStuffCount > 0)
-            {
-                var passed = false;
-                foreach (var t in recipe.stuffCategories)
-                {
-                    var yy = CaravanInventoryUtility.AllInventoryItems(c)
-                        .FindAll(x => x?.def?.stuffProps?.categories?.Contains(t) ?? false);
-                    if (!yy.NullOrEmpty())
-                    {
-                        var totalCount = yy.Sum(x => x.stackCount);
-                        if (totalCount - recipe.costStuffCount >= 0)
-                        {
-                            totalCount -= totalCount - recipe.costStuffCount;
-                            passed = true;
-                            foreach (var y in yy)
-                            {
-                                if (totalCount > 0)
-                                {
-                                    var math = Math.Min(y.stackCount, totalCount);
-                                    toBeConsumed.Add(y, math);
-                                    //Log.Message(y + " x" + math);
-                                }
-                                totalCount -= y.stackCount;
-                            }
-                        }
-                    }
-                }
-                if (!passed && consumeResources)
-                {
-                    var categories = new string[recipe.stuffCategories.Count];
-                    for (var i = 0; i < recipe.stuffCategories.Count; i++)
-                        categories[i] = recipe.stuffCategories[i].label;
+            var passed = true;
+            var allItems = CaravanInventoryUtility.AllInventoryItems(c);
+            var missingResourcesMessage = new StringBuilder();
 
-                    Messages.Message(
-                        "JecsTools_WorldObjectConst_NotEnoughStuff".Translate(string.Join(", ", categories),
-                            recipe.costStuffCount), MessageTypeDefOf.RejectInput);
-                    return false;
+            foreach (var thingCount in recipe?.costList ?? Enumerable.Empty<ThingCountClass>())
+            {
+//<<<<<<< Previous code before merging with Pull Request #23
+//                var passed = false;
+//                foreach (var t in recipe.stuffCategories)
+//                {
+//                    var yy = CaravanInventoryUtility.AllInventoryItems(c)
+//                        .FindAll(x => x?.def?.stuffProps?.categories?.Contains(t) ?? false);
+//                    if (!yy.NullOrEmpty())
+//                    {
+//                        var totalCount = yy.Sum(x => x.stackCount);
+//                        if (totalCount - recipe.costStuffCount >= 0)
+//                        {
+//                            totalCount -= totalCount - recipe.costStuffCount;
+//                            passed = true;
+//                            foreach (var y in yy)
+//                            {
+//                                if (totalCount > 0)
+//                                {
+//                                    var math = Math.Min(y.stackCount, totalCount);
+//                                    toBeConsumed.Add(y, math);
+//                                    //Log.Message(y + " x" + math);
+//                                }
+//                                totalCount -= y.stackCount;
+//                            }
+//                        }
+//                    }
+//=======
+                int thingsFound = allItems.Where(thing => thing.def == thingCount.thing.def)
+                    .Sum(thing => thing.stackCount);
+                if (thingsFound >= thingCount.Count)
+                    AddNumOfCheapestThings(allItems, toBeConsumed, thingCount);
+                else
+                {
+                    missingResourcesMessage.AppendLine("JecsTools_WorldObjectConst_NotEnoughThings"
+                        .Translate(thingsFound, thingCount.Count, thingCount.thing.def.LabelCap));
+                    passed = false;
+//>>>>>>> pr/23
                 }
             }
-            if (consumeResources)
+
+            foreach (var stuffCount in recipe?.stuffCostList ?? Enumerable.Empty<StuffCategoryCountClass>())
+            {
+                //Ensure I find stuffProps either under Stuff or def if any
+                int stuffFound = allItems.Where(thing => (thing?.Stuff?.stuffProps ?? thing.def.stuffProps)
+                                                         ?.categories?.Contains(stuffCount.stuffCatDef) ?? false)
+                    .Sum(thing => thing.stackCount -
+                                  (toBeConsumed.TryGetValue(thing, out int value) ? value : 0));
+                if (stuffFound >= stuffCount.count)
+                    AddNumOfCheapestStuff(allItems, toBeConsumed, stuffCount);
+                else
+                {
+                    missingResourcesMessage.AppendLine("JecsTools_WorldObjectConst_NotEnoughStuff"
+                        .Translate(stuffFound, stuffCount.count, stuffCount.stuffCatDef.LabelCap));
+                    passed = false;
+                }
+            }
+
+            if (!passed && consumeResources)
+            {
+                missingResourcesMessage.Insert(0, "JecsTools_WorldObjectConst_NotEnoughResources"
+                                                      .Translate(recipe.LabelCap) + Environment.NewLine);
+                Messages.Message(missingResourcesMessage.ToString(), MessageTypeDefOf.RejectInput);
+                return false;
+            }
+
+            if (passed && consumeResources)
                 if (!ConsumeResources(c, toBeConsumed))
                     return false;
 
-            return true;
+            return passed;
         }
 
         public bool ConsumeResources(Caravan c, Dictionary<Thing, int> toBeConsumed)
@@ -266,16 +354,12 @@ namespace JecsTools
                         var amtFilled = resourcesSupplied ? t.Count.ToString() : "0";
                         s.AppendLine(t.thing.def.LabelCap + ": " + amtFilled + " / " + t.Count);
                     }
-                if (Recipe.stuffCategories != null && Recipe.costStuffCount > 0)
-                {
-                    var categories = new string[Recipe.stuffCategories.Count];
-                    for (var i = 0; i < Recipe.stuffCategories.Count; i++)
-                        categories[i] = Recipe.stuffCategories[i].LabelCap;
-                    var amtFilled = resourcesSupplied ? Recipe.costStuffCount.ToString() : "0";
-                    s.AppendLine(string.Join(", ", categories) + " " +
-                                 "JecsTools_WorldObjectConst_ResourcesNeeded".Translate(
-                                     amtFilled + " / " + Recipe.costStuffCount));
-                }
+                if (!Recipe.stuffCostList.NullOrEmpty())
+                    foreach (var stuffCat in Recipe.stuffCostList)
+                    {
+                        var amtFilled = resourcesSupplied ? stuffCat.count.ToString() : "0";
+                        s.AppendLine(stuffCat.stuffCatDef.LabelCap + ": " + amtFilled + " / " + stuffCat.count);
+                    }
             }
             return s.ToString().TrimEndNewlines();
         }

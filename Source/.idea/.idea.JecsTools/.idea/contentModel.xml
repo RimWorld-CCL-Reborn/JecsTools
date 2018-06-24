@@ -262,6 +262,8 @@
           <e p="CaravanToils_GoTo.cs" t="Include" />
           <e p="HarmonyCaravanJobs.cs" t="Include" />
           <e p="QueuedCaravanJob.cs" t="Include" />
+          <e p="StuffCategoryCountClass.cs" t="Include" />
+          <e p="StuffDefCount.cs" t="Include" />
           <e p="WorldEffecter.cs" t="Include" />
           <e p="WorldMote.cs" t="Include" />
           <e p="WorldObject_ProgressBar.cs" t="Include" />

@@ -69,6 +69,8 @@
     <None Include="CaravanJobs\WorldEffecter.cs" />
     <None Include="CaravanJobs\WorldMote.cs" />
     <Compile Include="CaravanJobs\HarmonyCaravanJobs.cs" />
+    <Compile Include="CaravanJobs\StuffCategoryCountClass.cs" />
+    <Compile Include="CaravanJobs\StuffDefCount.cs" />
     <Compile Include="CaravanJobs\WorldObjectBlueprint.cs" />
     <None Include="CaravanJobs\WorldSubEffecter.cs" />
     <None Include="CaravanJobs\WorldSubEffecter_ProgressBar.cs" />
