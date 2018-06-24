@@ -44,7 +44,7 @@ namespace JecsTools
 
         public Caravan_JobTracker(Caravan newCaravan)
         {
-            Log.Message("JecsTools :: CaravanJobTracker :: JobTracker Created");
+            //Log.Message("JecsTools :: CaravanJobTracker :: JobTracker Created");
             caravan = newCaravan;
         }
 
@@ -115,7 +115,7 @@ namespace JecsTools
             ThinkNode jobGiver = null, bool resumeCurJobAfterwards = false, bool cancelBusyStances = true,
             ThinkTreeDef thinkTree = null, JobTag? tag = null)
         {
-            Log.Message("JecsTools :: CaravanJobTracker :: JobTracker StartJob :: " + newJob.def.label);
+            //Log.Message("JecsTools :: CaravanJobTracker :: JobTracker StartJob :: " + newJob.def.label);
             if (!Find.TickManager.Paused || lastJobGivenAtFrame == RealTime.frameCount)
             {
                 jobsGivenThisTick++;
@@ -274,7 +274,7 @@ namespace JecsTools
             var result = DetermineNextJob();
             if (result != null && result.CanBeginNow(caravan))
             {
-                Log.Message("JecsTools :: CaravanJobTracker :: JobTracker StartJob :: " + result.def.label);
+                //Log.Message("JecsTools :: CaravanJobTracker :: JobTracker StartJob :: " + result.def.label);
                 StartJob(result, JobCondition.None, null, false, false, null, null);
             }
         }

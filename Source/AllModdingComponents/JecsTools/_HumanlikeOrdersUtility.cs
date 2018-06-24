@@ -178,8 +178,8 @@ namespace JecsTools
 
         public bool Passes(object toCheck)
         {
-            Log.Message(toCheck.GetType().ToString());
-            Log.Message(Data.ToString());
+            //Log.Message(toCheck.GetType().ToString());
+            //Log.Message(Data.ToString());
 
             switch (Condition)
             {
@@ -200,9 +200,9 @@ namespace JecsTools
                     break;
                 case _ConditionType.ThingHasComp:
                     var dataType = Data;
-                    if (toCheck is ThingWithComps t && Enumerable.Any(t.AllComps, comp =>
-                            comp.props.compClass.ToString() == dataType.ToString() ||
-                            comp.props.compClass.BaseType.ToString() == dataType.ToString()))
+                    if (toCheck is ThingWithComps t && t?.AllComps?.Count > 0 && Enumerable.Any(t.AllComps, comp =>
+                            comp?.props?.compClass?.ToString() == dataType?.ToString() ||
+                            comp?.props?.compClass?.BaseType?.ToString() == dataType?.ToString()))
                         return true;
                     break;
             }

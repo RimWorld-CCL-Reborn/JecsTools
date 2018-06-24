@@ -198,7 +198,7 @@ namespace JecsTools
                                 {
                                     var math = Math.Min(y.stackCount, totalCount);
                                     toBeConsumed.Add(y, math);
-                                    Log.Message(y + " x" + math);
+                                    //Log.Message(y + " x" + math);
                                 }
                                 totalCount -= y.stackCount;
                             }
