@@ -229,8 +229,8 @@ namespace CompSlotLoadable
                     if (isGathering)
                         yield return new Command_Action
                         {
-                            defaultLabel = "DesignatorCancel".Translate(),
-                            defaultDesc = "DesignatorCancelDesc".Translate(),
+                            defaultLabel = "Designator_Cancel".Translate(),
+                            defaultDesc = "Designator_CancelDesc".Translate(),
                             icon = ContentFinder<Texture2D>.Get("UI/Designators/Cancel", true),
                             action = delegate { TryCancel(); }
                         };

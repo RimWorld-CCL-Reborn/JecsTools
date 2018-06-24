@@ -79,13 +79,13 @@ namespace CompDeflector
             var shotReport = ShotReport.HitReportFor(caster, this, currentTarget);
             Thing randomCoverToMissInto = shotReport.GetRandomCoverToMissInto();
             ThingDef targetCoverDef = (randomCoverToMissInto == null) ? null : randomCoverToMissInto.def;
-            if (!Rand.Chance(shotReport.ChanceToNotGoWild_IgnoringPosture))
+            if (!Rand.Chance(shotReport.AimOnTargetChance_IgnoringPosture))
             {
                 if (DebugViewSettings.drawShooting)
                 {
                     MoteMaker.ThrowText(this.caster.DrawPos, this.caster.Map, "ToWild", -1f);
                 }
-                shootLine.ChangeDestToMissWild();
+                shootLine.ChangeDestToMissWild(shotReport.AimOnTargetChance_StandardTarget);
                 ProjectileHitFlags projectileHitFlags2;
                 if (Rand.Chance(0.5f))
                 {
@@ -102,7 +102,7 @@ namespace CompDeflector
                 projectile.Launch(caster, currentTarget, shootLine.Dest, projectileHitFlags2, ownerEquipment); //TODO
                 return true;
             }
-            if (!Rand.Chance(shotReport.ChanceToNotHitCover))
+            if (this.currentTarget.Thing != null && this.currentTarget.Thing.def.category == ThingCategory.Pawn && !Rand.Chance(shotReport.PassCoverChance))
             {
                 if (DebugViewSettings.drawShooting)
                     MoteMaker.ThrowText(caster.DrawPos, caster.Map, "ToCover", -1f);
@@ -114,12 +114,12 @@ namespace CompDeflector
                         projectileHitFlags5 |= ProjectileHitFlags.NonTargetPawns;
                     }
                     projectile.Launch(caster, currentTarget, randomCoverToMissInto, projectileHitFlags5, ownerEquipment);
-                    result = true;
+                    return true;
                 }
             }
             else
             {
-                if (!Rand.Chance(shotReport.ChanceToNotHitCover))
+                if (!Rand.Chance(shotReport.PassCoverChance))
                 {
                     if (DebugViewSettings.drawShooting)
                     {

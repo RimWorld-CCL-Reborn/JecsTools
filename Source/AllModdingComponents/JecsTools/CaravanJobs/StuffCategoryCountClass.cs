@@ -41,7 +41,7 @@ namespace JecsTools
 
         public void ExposeData()
         {
-            Scribe_Defs.Look<StuffCategoryDef>(ref this.stuffCatDef, "stuffDef");
+            Scribe_Defs.Look<StuffCategoryDef>(ref this.stuffCatDef, "stuffCatDef");
             Scribe_Values.Look<int>(ref this.count, "count", 1, false);
         }
 
@@ -53,7 +53,7 @@ namespace JecsTools
             }
             else
             {
-                DirectXmlCrossRefLoader.RegisterObjectWantsCrossRef(this, "stuffDef", xmlRoot.Name);
+                DirectXmlCrossRefLoader.RegisterObjectWantsCrossRef(this, "stuffCatDef", xmlRoot.Name);
                 this.count = (int)ParseHelper.FromString(xmlRoot.FirstChild.Value, typeof(int));
             }
         }

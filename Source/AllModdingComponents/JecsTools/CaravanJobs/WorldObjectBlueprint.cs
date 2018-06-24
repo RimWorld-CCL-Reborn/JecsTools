@@ -168,13 +168,13 @@ namespace JecsTools
         }
 
         public void AddNumOfCheapestThings(List<Thing> allItems, Dictionary<Thing, int> toBeConsumed,
-            ThingCountClass thingCount)
+            ThingDefCountClass thingCount)
         {
-            var matchingItemsPriceSorted = allItems.Where(thing => thing.def == thingCount.thing.def
+            var matchingItemsPriceSorted = allItems.Where(thing => thing.def == thingCount.thingDef
                                                                    && (!toBeConsumed.TryGetValue(thing,
                                                                            out int value) || thing.stackCount > value))
                 .OrderBy(thing => thing.GetStatValue(StatDefOf.MarketValue));
-            int remainingCount = thingCount.Count;
+            int remainingCount = thingCount.count;
             foreach (var thing in matchingItemsPriceSorted)
             {
                 toBeConsumed.TryGetValue(thing, out int currentTaken);
@@ -239,7 +239,7 @@ namespace JecsTools
             var allItems = CaravanInventoryUtility.AllInventoryItems(c);
             var missingResourcesMessage = new StringBuilder();
 
-            foreach (var thingCount in recipe?.costList ?? Enumerable.Empty<ThingCountClass>())
+            foreach (var thingCount in recipe?.costList ?? Enumerable.Empty<ThingDefCountClass>())
             {
 //<<<<<<< Previous code before merging with Pull Request #23
 //                var passed = false;
@@ -267,14 +267,14 @@ namespace JecsTools
 //                        }
 //                    }
 //=======
-                int thingsFound = allItems.Where(thing => thing.def == thingCount.thing.def)
+                int thingsFound = allItems.Where(thing => thing.def == thingCount.thingDef)
                     .Sum(thing => thing.stackCount);
-                if (thingsFound >= thingCount.Count)
+                if (thingsFound >= thingCount.count)
                     AddNumOfCheapestThings(allItems, toBeConsumed, thingCount);
                 else
                 {
                     missingResourcesMessage.AppendLine("JecsTools_WorldObjectConst_NotEnoughThings"
-                        .Translate(thingsFound, thingCount.Count, thingCount.thing.def.LabelCap));
+                        .Translate(thingsFound, thingCount.count, thingCount.thingDef.LabelCap));
                     passed = false;
 //>>>>>>> pr/23
                 }
@@ -351,8 +351,8 @@ namespace JecsTools
                 if (!Recipe.costList.NullOrEmpty())
                     foreach (var t in Recipe.costList)
                     {
-                        var amtFilled = resourcesSupplied ? t.Count.ToString() : "0";
-                        s.AppendLine(t.thing.def.LabelCap + ": " + amtFilled + " / " + t.Count);
+                        var amtFilled = resourcesSupplied ? t.count.ToString() : "0";
+                        s.AppendLine(t.thingDef.LabelCap + ": " + amtFilled + " / " + t.count);
                     }
                 if (!Recipe.stuffCostList.NullOrEmpty())
                     foreach (var stuffCat in Recipe.stuffCostList)

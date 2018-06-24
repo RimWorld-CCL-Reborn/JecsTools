@@ -254,7 +254,7 @@ namespace AbilityUser
             //{
             //    reason = "IsNotDrafted".Translate(new object[]
             //    {
-            //        Verb.CasterPawn.NameStringShort
+            //        Verb.CasterPawn.Name.ToStringShort
             //    });
             //}
 

@@ -2450,7 +2450,7 @@ namespace CompVehicle
                             .Invoke(__instance, new object[]
                             {
                                 ownerThing, (from v in verbs
-                                    where v.verbProps.CanBeUsedInMelee
+                                    where v.verbProps.IsMeleeAttack
                                     select v).FirstOrDefault<Verb>()
                             });
                     }
