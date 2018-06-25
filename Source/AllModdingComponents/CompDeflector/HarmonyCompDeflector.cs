@@ -13,44 +13,11 @@ namespace CompDeflector
         {
             var harmony = HarmonyInstance.Create("rimworld.jecrell.comps.deflector");
 
-            harmony.Patch(typeof(Thing).GetMethod("TakeDamage"),
-                new HarmonyMethod(typeof(HarmonyCompDeflector).GetMethod("TakeDamage_PreFix")), null);
-            harmony.Patch(typeof(PawnRenderer).GetMethod("DrawEquipmentAiming"), null,
-                new HarmonyMethod(typeof(HarmonyCompDeflector).GetMethod("DrawEquipmentAimingPostFix")), null);
+            harmony.Patch(AccessTools.Method(typeof(Thing), nameof(Thing.TakeDamage)),
+                new HarmonyMethod(typeof(HarmonyCompDeflector), nameof(TakeDamage_PreFix)), null);
+            harmony.Patch(AccessTools.Method(typeof(PawnRenderer), nameof(PawnRenderer.DrawEquipmentAiming)), null,
+                new HarmonyMethod(typeof(HarmonyCompDeflector), nameof(DrawEquipmentAimingPostFix)), null);
         }
-
-
-        //=================================== COMPDEFLECTOR
-
-        //public static void SpecialDisplayStatsPostFix(Thing __instance, ref IEnumerable<StatDrawEntry> __result)
-        //{
-        //    ////Log.Message("3");
-        //    ThingWithComps thingWithComps = __instance as ThingWithComps;
-        //    if (thingWithComps != null)
-        //    {
-        //        CompDeflector compDeflector = thingWithComps.GetComp<CompDeflector>();
-        //        if (compDeflector != null)
-        //        {
-        //            List<StatDrawEntry> origin = new List<StatDrawEntry>();
-        //            foreach (StatDrawEntry entry in __result)
-        //            {
-        //                //Log.Message("Entry");
-        //                origin.Add(entry);
-        //            }
-
-        //            List<StatDrawEntry> entries = new List<StatDrawEntry>();
-        //            foreach (StatDrawEntry entry in compDeflector.PostSpecialDisplayStats())
-        //            {
-        //                //Log.Message("Hey!");
-        //                entries.Add(entry);
-        //            }
-
-        //            origin.Concat(entries);
-
-        //            __result = origin;
-        //        }
-        //    }
-        //}
 
         public static void DrawEquipmentAimingPostFix(PawnRenderer __instance, Thing eq, Vector3 drawLoc,
             float aimAngle)
@@ -131,37 +98,34 @@ namespace CompDeflector
                 if (__instance is Pawn pawn)
                 {
                     var pawn_EquipmentTracker = pawn.equipment;
-                    if (pawn_EquipmentTracker != null)
-                        if (pawn_EquipmentTracker.AllEquipmentListForReading != null &&
-                            pawn_EquipmentTracker.AllEquipmentListForReading.Count > 0)
-                            foreach (var thingWithComps in pawn_EquipmentTracker.AllEquipmentListForReading)
-                                if (thingWithComps != null)
+                    if (pawn_EquipmentTracker?.AllEquipmentListForReading.Count > 0)
+                        foreach (var thingWithComps in pawn_EquipmentTracker.AllEquipmentListForReading)
+                        {
+                            ////Log.Message("3");
+                            var compDeflector = thingWithComps?.GetComp<CompDeflector>();
+                            if (compDeflector == null) continue;
+                            if (dinfo.Def == DamageDefOf.Bomb) continue;
+                            if (dinfo.Def == DamageDefOf.Flame) continue;
+                            if (dinfo.Def.isExplosive) continue;
+                            if (!dinfo.Weapon.IsMeleeWeapon)
+                            {
+                                compDeflector.PostPreApplyDamage(dinfo, out var newAbsorbed);
+                                if (newAbsorbed)
                                 {
-                                    ////Log.Message("3");
-                                    var compDeflector = thingWithComps.GetComp<CompDeflector>();
-                                    if (compDeflector != null)
-                                        if (dinfo.Def != DamageDefOf.Bomb)
-                                            if (dinfo.Def != DamageDefOf.Flame)
-                                                if (!dinfo.Def.isExplosive)
-                                                    if (!dinfo.Weapon.IsMeleeWeapon)
-                                                    {
-                                                        compDeflector.PostPreApplyDamage(dinfo, out var newAbsorbed);
-                                                        if (newAbsorbed)
-                                                        {
-                                                            compDeflector.AnimationDeflectionTicks = 1200;
-                                                            dinfo.SetAmount(0);
-                                                            return false;
-                                                        }
-                                                    }
-                                                    else
-                                                    {
-                                                        if (compDeflector.TrySpecialMeleeBlock())
-                                                        {
-                                                            dinfo.SetAmount(0);
-                                                            return false;
-                                                        }
-                                                    }
+                                    compDeflector.AnimationDeflectionTicks = 1200;
+                                    dinfo.SetAmount(0);
+                                    return false;
                                 }
+                            }
+                            else
+                            {
+                                if (compDeflector.TrySpecialMeleeBlock())
+                                {
+                                    dinfo.SetAmount(0);
+                                    return false;
+                                }
+                            }
+                        }
                 }
             }
             catch (NullReferenceException)

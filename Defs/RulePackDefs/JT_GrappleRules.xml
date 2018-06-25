@@ -7,7 +7,7 @@
     </include>
     <rulePack>
       <rulesStrings>
-        <li>logentry->[initiator_nameShortDefinite] [grappled] [subject_definite].</li>
+        <li>r_logentry->[INITIATOR_nameDef] [grappled] [SUBJECT_definite].</li>
 
         <li>grappled->grappled</li>
         <li>grappled->seized</li>
@@ -23,7 +23,7 @@
     </include>
     <rulePack>
       <rulesStrings>
-        <li>logentry->[initiator_nameShortDefinite] [triedtograpple] [subject_definite], [but] [failedmeta].</li>
+        <li>r_logentry->[INITIATOR_nameDef] [triedtograpple] [SUBJECT_definite], [but] [failedmeta].</li>
 
 		<li>tried->tried</li>
 		<li>tried->attempted</li>
@@ -45,9 +45,9 @@
 		<li>spectacularly->miserably</li>
 		<li>spectacularly->completely</li>
 		<li>spectacularly->utterly</li>
-		<li>failedmeta->[initiator_pronoun] [failed]</li>
-		<li>failedmeta->[initiator_pronoun] [failed] [spectacularly]</li>
-		<li>failedmeta->[subject_definite] [dodged]</li>
+		<li>failedmeta->[INITIATOR_pronoun] [failed]</li>
+		<li>failedmeta->[INITIATOR_pronoun] [failed] [spectacularly]</li>
+		<li>failedmeta->[SUBJECT_definite] [dodged]</li>
       </rulesStrings>
     </rulePack>
   </RulePackDef>

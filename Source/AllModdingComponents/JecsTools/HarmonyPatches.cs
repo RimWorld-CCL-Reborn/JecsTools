@@ -28,31 +28,31 @@ namespace JecsTools
             var harmony = HarmonyInstance.Create("rimworld.jecrell.jecstools.main");
             //Allow fortitude to soak damage
             var type = typeof(HarmonyPatches);
-            harmony.Patch(AccessTools.Method(typeof(Pawn_HealthTracker), "PreApplyDamage"),
+            harmony.Patch(AccessTools.Method(typeof(Pawn_HealthTracker), nameof(Pawn_HealthTracker.PreApplyDamage)),
                 new HarmonyMethod(type, nameof(PreApplyDamage_PrePatch)), null);
             harmony.Patch(AccessTools.Method(typeof(ArmorUtility), "ApplyArmor"),
                 new HarmonyMethod(type, nameof(ApplyProperDamage)), null);
-            harmony.Patch(AccessTools.Method(typeof(ArmorUtility), "GetPostArmorDamage"), null,
+            harmony.Patch(AccessTools.Method(typeof(ArmorUtility), nameof(ArmorUtility.GetPostArmorDamage)), null,
                 new HarmonyMethod(type, nameof(Post_GetPostArmorDamage)));
             harmony.Patch(AccessTools.Method(typeof(PawnGenerator), "GeneratePawn", new[] {typeof(PawnGenerationRequest)}), null,
                 new HarmonyMethod(type, nameof(Post_GeneratePawn)));
-            harmony.Patch(AccessTools.Method(typeof(ApparelUtility), "CanWearTogether"), null,
+            harmony.Patch(AccessTools.Method(typeof(ApparelUtility), nameof(ApparelUtility.CanWearTogether)), null,
                 new HarmonyMethod(type, nameof(Post_CanWearTogether)));
-            harmony.Patch(AccessTools.Method(typeof(Faction), "Notify_MemberDied"),
+            harmony.Patch(AccessTools.Method(typeof(Faction), nameof(Faction.Notify_MemberDied)),
                 new HarmonyMethod(type, nameof(Notify_MemberDied)), null);
-            harmony.Patch(AccessTools.Method(typeof(PawnGroupMakerUtility), "GeneratePawns"), null,
+            harmony.Patch(AccessTools.Method(typeof(PawnGroupMakerUtility), nameof(PawnGroupMakerUtility.GeneratePawns)), null,
                 new HarmonyMethod(type, nameof(GeneratePawns)), null);
             //harmony.Patch(AccessTools.Method(AccessTools.TypeByName("PossibleApparelSet"), "IsNaked"), null,
             //    new HarmonyMethod(type, nameof(IsNaked)), null);
-            harmony.Patch(AccessTools.Method(typeof(PawnApparelGenerator), "GenerateStartingApparelFor"), null,
-                new HarmonyMethod(type, nameof(GenerateStartingApparelFor)), null);
+            harmony.Patch(AccessTools.Method(typeof(PawnApparelGenerator), nameof(PawnApparelGenerator.GenerateStartingApparelFor)), null,
+                new HarmonyMethod(type, nameof(GenerateStartingApparelFor_PostFix)), null);
 
             //GUIPatches(harmony);
         }
 
 
         //PawnApparelGenerator
-        public static void GenerateStartingApparelFor(Pawn pawn, PawnGenerationRequest request)
+        public static void GenerateStartingApparelFor_PostFix(Pawn pawn, PawnGenerationRequest request)
         {
             var swappables = pawn?.apparel?.WornApparel?.FindAll(x => x.def.HasModExtension<ApparelExtension>());
             if (swappables == null || swappables?.Count <= 0) return;
