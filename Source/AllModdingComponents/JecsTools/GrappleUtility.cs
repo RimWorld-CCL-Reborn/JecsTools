@@ -65,7 +65,7 @@ namespace JecsTools
 
             //Throw a mental warning
             if (victim?.mindState is Pawn_MindState mind)
-                mind.Notify_DamageTaken(new DamageInfo(DamageDefOf.Bite, -1, -1, grappler));
+                mind.Notify_DamageTaken(new DamageInfo(DamageDefOf.Bite, -1, 0f, -1, grappler));
 
             //Determine success of grapples
             if (rollGrappler + modifierGrappler > rollVictim + modifierVictim)

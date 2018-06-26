@@ -69,7 +69,7 @@ namespace JecsTools
             float postExplosionSpawnChance = this.def.projectile.postExplosionSpawnChance;
             int postExplosionSpawnThingCount = this.def.projectile.postExplosionSpawnThingCount;
             ThingDef preExplosionSpawnThingDef = this.def.projectile.preExplosionSpawnThingDef;
-            GenExplosion.DoExplosion(position, map2, explosionRadius, damageDef, launcher, damageAmountBase,
+            GenExplosion.DoExplosion(position, map2, explosionRadius, damageDef, launcher, damageAmountBase, 0f,
                 soundExplode, equipmentDef, def, null, postExplosionSpawnThingDef, postExplosionSpawnChance,
                 postExplosionSpawnThingCount, this.def.projectile.applyDamageToExplosionCellsNeighbors,
                 preExplosionSpawnThingDef, this.def.projectile.preExplosionSpawnChance,
@@ -457,7 +457,7 @@ namespace JecsTools
                     float y = this.ExactRotation.eulerAngles.y;
                     Thing launcher = this.launcher;
                     ThingDef equipmentDef = this.equipmentDef;
-                    DamageInfo dinfo = new DamageInfo(damageDef, amount, y, launcher, null, equipmentDef,
+                    DamageInfo dinfo = new DamageInfo(damageDef, amount, this.def.projectile.ArmorPenetration, y, launcher, null, equipmentDef,
                         DamageInfo.SourceCategory.ThingOrUnknown);
                     hitThing.TakeDamage(dinfo).AssociateWithLog(battleLogEntry_RangedImpact);
                 

@@ -126,7 +126,8 @@ namespace CompSlotLoadable
                         if (maxInjuriesToMake > 0)
                         {
                             vampiricPawn.TakeDamage(new DamageInfo(DamageDefOf.Burn, new IntRange(5, 10).RandomInRange,
-                                -1, vampiricPawn, rec));
+                                1f, 1, vampiricPawn, rec));
+                            
                             maxInjuriesToMake--;
                         }
                 }
@@ -238,7 +239,7 @@ namespace CompSlotLoadable
                                         //Log.Message("12");
                                         var newdamage = GenMath.RoundRandom(num);
 //                                        Log.Message("applying damage "+newdamage+" out of "+num);
-                                        var damageInfo = new DamageInfo(slotBonus.Props.damageDef, newdamage, -1f,
+                                        var damageInfo = new DamageInfo(slotBonus.Props.damageDef, newdamage, slotBonus.Props.armorPenetration, -1f,
                                             caster, null, def2);
                                         damageInfo.SetBodyRegion(BodyPartHeight.Undefined, BodyPartDepth.Outside);
                                         damageInfo.SetWeaponBodyPartGroup(weaponBodyPartGroup);

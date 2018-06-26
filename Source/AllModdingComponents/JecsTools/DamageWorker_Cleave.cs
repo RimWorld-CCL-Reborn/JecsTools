@@ -53,7 +53,7 @@ namespace JecsTools
                                     --cleaveAttacks;
                                     var p = (Pawn) pawnsInCell[k];
                                     p.TakeDamage(new DamageInfo(Def.cleaveDamage,
-                                        (int) (dinfo.Amount * Def.cleaveFactor), -1, dinfo.Instigator));
+                                        (int) (dinfo.Amount * Def.cleaveFactor), Def.armorPenetration, -1, dinfo.Instigator));
                                 }
                             }
                         }

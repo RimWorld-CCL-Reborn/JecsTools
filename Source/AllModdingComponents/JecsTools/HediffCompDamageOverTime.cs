@@ -21,7 +21,7 @@ namespace JecsTools
 
         public DamageInfo GetDamageInfo()
         {
-            return new DamageInfo(Props.cycleDamage, Props.cycleDamageAmt, -1, parent.pawn, parent.Part, null,
+            return new DamageInfo(Props.cycleDamage, Props.cycleDamageAmt, Props.armorPenetration, -1, parent.pawn, parent.Part, null,
                 DamageInfo.SourceCategory.ThingOrUnknown);
         }
 

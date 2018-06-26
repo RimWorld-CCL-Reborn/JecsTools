@@ -228,7 +228,7 @@ namespace JecsTools
         }
 
         public static void ApplyProperDamage(ref float damAmount, float armorRating, Thing armorThing,
-            DamageDef damageDef, Pawn pawn, ref bool deflectedByMetalArmor)
+            DamageDef damageDef, Pawn pawn, ref bool metalArmor)
         {
             if (tempDamageAmount != null && damAmount > 0)
             {
@@ -353,7 +353,7 @@ namespace JecsTools
                         StopPreApplyDamageCheck = false;
                         return true;
                     }
-                    pawn.TakeDamage(new DamageInfo(dmg.def, dmg.amount, -1, instigator));
+                    pawn.TakeDamage(new DamageInfo(dmg.def, dmg.amount, dmg.armorPenetration, -1, instigator));
                 }
                 StopPreApplyDamageCheck = false;
             }

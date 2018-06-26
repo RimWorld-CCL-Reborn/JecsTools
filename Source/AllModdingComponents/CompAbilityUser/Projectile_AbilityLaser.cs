@@ -258,9 +258,9 @@ namespace AbilityUser
                 //Log.Message("Hit thing found: " + hitThing.ToString() );
 
                 var damageAmountBase = def.projectile.DamageAmount;
-                var dinfo = new DamageInfo(def.projectile.damageDef, damageAmountBase, ExactRotation.eulerAngles.y,
+                var dinfo = new DamageInfo(def.projectile.damageDef, damageAmountBase, this.def.projectile.ArmorPenetration, ExactRotation.eulerAngles.y,
                     launcher, null, equipmentDef, DamageInfo.SourceCategory.ThingOrUnknown, hitThing);
-                BattleLogEntry_RangedImpact battleLogEntry_RangedImpact = new BattleLogEntry_RangedImpact(this.launcher, hitThing, this.intendedTarget.Thing, null, this.def, this.targetCoverDef);
+                BattleLogEntry_RangedImpact battleLogEntry_RangedImpact = new BattleLogEntry_RangedImpact(this.launcher, hitThing, this.intendedTarget.Thing, this.launcher.def, this.def, this.targetCoverDef);
                 Find.BattleLog.Add(battleLogEntry_RangedImpact);
                 hitThing.TakeDamage(dinfo).AssociateWithLog(battleLogEntry_RangedImpact);
                 //Log.Message("Hit thing taken damage: " + dinfo.Amount.ToString() + " " + dinfo.Def.label);

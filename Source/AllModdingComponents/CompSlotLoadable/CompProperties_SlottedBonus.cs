@@ -13,6 +13,8 @@ namespace CompSlotLoadable
 
         public DamageDef damageDef = null;
 
+        public float armorPenetration = 0f;
+
         public SlotBonusProps_DefensiveHealChance defensiveHealChance = null;
 
         public float muzzleFlashMod = 0.0f;
