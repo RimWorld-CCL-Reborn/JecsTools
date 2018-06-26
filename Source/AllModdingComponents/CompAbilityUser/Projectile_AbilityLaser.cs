@@ -157,8 +157,6 @@ namespace AbilityUser
         /// </summary>
         protected void DetermineImpactExactPosition()
         {
-            if (hitThing != null) Log.Message("Hit thig = " + hitThing.ToString());
-
             // We split the trajectory into small segments of approximatively 1 cell size.
             var trajectory = destination - origin;
             var numberOfSegments = (int) trajectory.magnitude;
