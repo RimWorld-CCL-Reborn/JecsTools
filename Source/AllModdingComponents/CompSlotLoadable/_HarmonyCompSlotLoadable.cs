@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Harmony;
 using RimWorld;
@@ -46,7 +47,16 @@ namespace CompSlotLoadable
         //try to extend this
         public static void StatOffsetFromGear_PostFix(ref float __result, Thing gear, StatDef stat)
         {
-            __result += CompSlotLoadable.CheckThingSlotsForStatAugment(gear, stat);
+            var retValue = 0.0f;
+            try
+            {
+                retValue = SlotLoadableUtility.CheckThingSlotsForStatAugment(gear, stat);
+            }
+            catch (Exception e)
+            {
+                Log.Warning("Failed to add stats for " + gear.Label + "\n" + e.ToString());
+            }
+            __result += retValue;
         }
 
 
@@ -335,7 +345,16 @@ namespace CompSlotLoadable
 
         public static void GetStatValue_PostFix(ref float __result, Thing thing, StatDef stat, bool applyPostProcess)
         {
-            __result += CompSlotLoadable.CheckThingSlotsForStatAugment(thing, stat);
+            var retValue = 0.0f;
+            try
+            {
+                retValue = SlotLoadableUtility.CheckThingSlotsForStatAugment(thing, stat);
+            }
+            catch (Exception e)
+            {
+                Log.Warning("Failed to add stats for " + thing.Label + "\n" + e.ToString());
+            }
+            __result += retValue;
         }
 
         public static void Get_Graphic_PostFix(Thing __instance, ref Graphic __result)

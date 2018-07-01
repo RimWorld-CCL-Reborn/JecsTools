@@ -200,6 +200,7 @@
         <e p="SlotLoadable.cs" t="Include" />
         <e p="SlotLoadableDef.cs" t="Include" />
         <e p="SlotLoadableFloatMenuPatch.cs" t="Include" />
+        <e p="SlotLoadableUtility.cs" t="Include" />
         <e p="StringOf.cs" t="Include" />
       </e>
       <e p="AllModdingComponents\CompToggleDef" t="IncludeRecursive">

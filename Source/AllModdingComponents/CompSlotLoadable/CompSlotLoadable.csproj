@@ -61,6 +61,7 @@
     <Compile Include="CompSlotLoadable.cs" />
     <Compile Include="CompSlotLoadableDefOf.cs" />
     <Compile Include="CompSlottedBonus.cs" />
+    <Compile Include="SlotLoadableUtility.cs" />
     <Compile Include="_HarmonyCompSlotLoadable.cs" />
     <Compile Include="SlotBonusProps_DefensiveHealChance.cs" />
     <Compile Include="JobDriver_GatherSlotItem.cs" />
