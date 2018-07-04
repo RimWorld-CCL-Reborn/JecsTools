@@ -206,7 +206,7 @@ namespace CompVehicle
                 new HarmonyMethod(typeof(HarmonyCompVehicle),
                     nameof(GiveVehiclesLoadItemToil)), null);
 
-            harmony.Patch(AccessTools.Method(typeof(CaravanPawnsNeedsUtility), "TrySatisfyPawnNeeds"),
+            harmony.Patch(AccessTools.Method(typeof(Caravan_NeedsTracker), "TrySatisfyPawnNeeds"),
                 new HarmonyMethod(typeof(HarmonyCompVehicle),
                     nameof(TrySatisfyFuelNeeds)), null);
             //Reminder to check this code....
@@ -1099,7 +1099,7 @@ namespace CompVehicle
         //Logic: If the vehicle is using fuel, it needs to refuel while on caravan trips
         //Improvements: Effects of different fuel sources on vehicle performance or effectiveness of fuel source?
         //RimWorld.Planet.CaravanPawnsNeedsUtility
-        public static bool TrySatisfyFuelNeeds(Pawn pawn, Caravan caravan)
+        public static bool TrySatisfyFuelNeeds(Caravan_NeedsTracker __instance, Pawn pawn)
         {
             //If the pawn's dead, not a vehicle, or doesn't need fuel, it's a regular pawn and has needs
             var refuelable = pawn.GetComp<CompRefuelable>();
@@ -1112,7 +1112,7 @@ namespace CompVehicle
             {
                 var num = refuelable.GetFuelCountToFullyRefuel();
                 //Call the private function TryGetFuel to find fuel for the vehicle
-                if (TryGetFuel(caravan, pawn, refuelable, out var thing, out var pawn2))
+                if (TryGetFuel(__instance.caravan, pawn, refuelable, out var thing, out var pawn2))
                 {
                     //Fuel the Vehicle
                     refuelable.Refuel(num);
