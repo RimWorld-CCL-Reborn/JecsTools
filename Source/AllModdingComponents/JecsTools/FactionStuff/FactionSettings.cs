@@ -5,7 +5,7 @@ namespace JecsTools
 {
     public class FactionSettings : DefModExtension
     {
-        public SoundDef entrySoundDef = SoundDefOf.ExecuteTrade;
+        public SoundDef entrySoundDef = null;
         public string greetingHostileKey = "FactionGreetingHostile";
         public string greetingWaryKey = "FactionGreetingWary";
         public string greetingWarmKey = "FactionGreetingWarm";

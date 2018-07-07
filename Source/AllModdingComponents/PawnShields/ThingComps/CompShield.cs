@@ -53,7 +53,7 @@ namespace PawnShields
                 }
 
                 //Default sound
-                return ShieldProps.defaultSound;
+                return ShieldProps?.defaultSound ?? SoundDefOf.MetalHitImportant;
             }
         }
 

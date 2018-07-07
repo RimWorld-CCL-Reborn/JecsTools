@@ -351,7 +351,7 @@ namespace JecsTools
 		{
 			if (faction.def.GetModExtension<FactionSettings>() is FactionSettings fs)
 			{
-				fs.entrySoundDef.PlayOneShotOnCamera();
+				fs?.entrySoundDef?.PlayOneShotOnCamera();
 			}
 		}
 

@@ -88,7 +88,8 @@ namespace PawnShields
         /// <summary>
         /// Default blocking sound if no sounds are defined.
         /// </summary>
-        public SoundDef defaultSound = SoundDefOf.MetalHitImportant;
+        public SoundDef defaultSound = null;
+//SoundDefOf.MetalHitImportant;
 
         /// <summary>
         /// Helps fetching sounds easier.

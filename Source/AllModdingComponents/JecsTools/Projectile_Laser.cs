@@ -61,7 +61,7 @@ namespace JecsTools
             float explosionRadius = this.def.projectile.explosionRadius;
             DamageDef damageDef = this.def.projectile.damageDef;
             Thing launcher = this.launcher;
-            int damageAmountBase = this.def.projectile.DamageAmount;
+            int damageAmountBase = this.def.projectile.GetDamageAmount(1f);
             SoundDef soundExplode = this.def.projectile.soundExplode;
             ThingDef equipmentDef = this.equipmentDef;
             ThingDef def = this.def;
@@ -451,13 +451,13 @@ namespace JecsTools
                     hitThing, this.intendedTarget.Thing, this.equipmentDef, this.def, this.targetCoverDef);
                 Find.BattleLog.Add(battleLogEntry_RangedImpact);
                 
-                    int damageAmountBase = this.def.projectile.DamageAmount;
+                    int damageAmountBase = this.def.projectile.GetDamageAmount(1f);
                     DamageDef damageDef = this.def.projectile.damageDef;
                     int amount = damageAmountBase;
                     float y = this.ExactRotation.eulerAngles.y;
                     Thing launcher = this.launcher;
                     ThingDef equipmentDef = this.equipmentDef;
-                    DamageInfo dinfo = new DamageInfo(damageDef, amount, this.def.projectile.ArmorPenetration, y, launcher, null, equipmentDef,
+                    DamageInfo dinfo = new DamageInfo(damageDef, amount, this.def.projectile.GetArmorPenetration(1f), y, launcher, null, equipmentDef,
                         DamageInfo.SourceCategory.ThingOrUnknown);
                     hitThing.TakeDamage(dinfo).AssociateWithLog(battleLogEntry_RangedImpact);
                 

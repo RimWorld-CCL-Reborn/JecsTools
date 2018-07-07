@@ -326,7 +326,7 @@ namespace AbilityUser
                 if (extraDamages != null && extraDamages.Count > 0)
                     foreach (var damage in extraDamages)
                     {
-                        var extraDinfo = new DamageInfo(damage.damageDef, damage.damage, this.def.projectile.ArmorPenetration, ExactRotation.eulerAngles.y,
+                        var extraDinfo = new DamageInfo(damage.damageDef, damage.damage, this.def.projectile.GetArmorPenetration(1f), ExactRotation.eulerAngles.y,
                             launcher, null, equipmentDef);
                         hitThing.TakeDamage(extraDinfo);
                     }
