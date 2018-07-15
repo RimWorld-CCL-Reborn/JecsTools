@@ -188,11 +188,11 @@ namespace CompSlotLoadable
         {
             var newList = new List<DamageInfo>();
             //__result = null;
-            var ownerEquipment = __instance.ownerEquipment;
-            if (ownerEquipment != null)
+            var EquipmentSource = __instance.EquipmentSource;
+            if (EquipmentSource != null)
             {
                 //Log.Message("1");
-                var comp = ownerEquipment.AllComps.FirstOrDefault(x => x is CompSlotLoadable);
+                var comp = EquipmentSource.AllComps.FirstOrDefault(x => x is CompSlotLoadable);
                 if (comp != null)
                 {
                     //Log.Message("2");
@@ -215,7 +215,7 @@ namespace CompSlotLoadable
                                     {
                                         //Log.Message("7");
                                         var num = __instance.verbProps.AdjustedMeleeDamageAmount(__instance,
-                                            __instance.CasterPawn, __instance.ownerEquipment);
+                                            __instance.CasterPawn);
                                         var def = __instance.verbProps.meleeDamageDef;
                                         BodyPartGroupDef weaponBodyPartGroup = null;
                                         HediffDef weaponHediff = null;
@@ -223,8 +223,8 @@ namespace CompSlotLoadable
                                             if (num >= 1f)
                                             {
                                                 weaponBodyPartGroup = __instance.verbProps.linkedBodyPartsGroup;
-                                                if (__instance.ownerHediffComp != null)
-                                                    weaponHediff = __instance.ownerHediffComp.Def;
+                                                if (__instance.HediffCompSource != null)
+                                                    weaponHediff = __instance.HediffCompSource.Def;
                                             }
                                             else
                                             {
@@ -234,8 +234,8 @@ namespace CompSlotLoadable
 
                                         //Log.Message("9");
                                         ThingDef def2;
-                                        if (__instance.ownerEquipment != null)
-                                            def2 = __instance.ownerEquipment.def;
+                                        if (__instance.EquipmentSource != null)
+                                            def2 = __instance.EquipmentSource.def;
                                         else
                                             def2 = __instance.CasterPawn.def;
 

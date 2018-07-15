@@ -211,7 +211,7 @@ namespace AbilityUser
 //                            projectileHitFlags2 |= ProjectileHitFlags.NonTargetPawns;
 //                        }
 //                    }
-//                    projectile.Launch(caster, Ability.Def, drawPos, shootLine.Dest, projectileHitFlags2, ownerEquipment,
+//                    projectile.Launch(caster, Ability.Def, drawPos, shootLine.Dest, projectileHitFlags2, EquipmentSource,
 //                        UseAbilityProps.hediffsToApply, UseAbilityProps.mentalStatesToApply,
 //                        UseAbilityProps.thingsToSpawn);
 //                    return true;

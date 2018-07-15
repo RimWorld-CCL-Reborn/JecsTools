@@ -88,7 +88,7 @@ namespace CompActivatableEffect
                         //Log.Message("3");
                         var compActivatableEffect = thingWithComps.GetComp<CompActivatableEffect>();
                         if (compActivatableEffect != null)
-                            if (__instance.ownerEquipment == thingWithComps)
+                            if (__instance.EquipmentSource == thingWithComps)
                                 if (compActivatableEffect.CurrentState != CompActivatableEffect.State.Activated)
                                 {
                                     if (Find.TickManager.TicksGame % 250 == 0)
