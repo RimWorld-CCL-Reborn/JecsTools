@@ -26,17 +26,24 @@ namespace AbilityUser
                 new HarmonyMethod(typeof(AbilityUserMod), nameof(InitializeComps_PostFix)), null);
 
             // when the Pawn_EquipmentTracker is notified of a new item, see if that has CompAbilityItem.
-            harmony.Patch(AccessTools.Method(typeof(Pawn_EquipmentTracker), nameof(Pawn_EquipmentTracker.Notify_EquipmentAdded)), null,
+            harmony.Patch(
+                AccessTools.Method(typeof(Pawn_EquipmentTracker), nameof(Pawn_EquipmentTracker.Notify_EquipmentAdded)),
+                null,
                 new HarmonyMethod(typeof(AbilityUserMod), nameof(Notify_EquipmentAdded_PostFix)), null);
             // when the Pawn_EquipmentTracker is notified of one less item, see if that has CompAbilityItem.
-            harmony.Patch(AccessTools.Method(typeof(Pawn_EquipmentTracker), nameof(Pawn_EquipmentTracker.Notify_EquipmentRemoved)), null,
+            harmony.Patch(
+                AccessTools.Method(typeof(Pawn_EquipmentTracker),
+                    nameof(Pawn_EquipmentTracker.Notify_EquipmentRemoved)), null,
                 new HarmonyMethod(typeof(AbilityUserMod), nameof(Notify_EquipmentRemoved_PostFix)), null);
 
             // when the Pawn_ApparelTracker is notified of a new item, see if that has CompAbilityItem.
-            harmony.Patch(AccessTools.Method(typeof(Pawn_ApparelTracker), nameof(Pawn_ApparelTracker.Notify_ApparelAdded)), null,
+            harmony.Patch(
+                AccessTools.Method(typeof(Pawn_ApparelTracker), nameof(Pawn_ApparelTracker.Notify_ApparelAdded)), null,
                 new HarmonyMethod(typeof(AbilityUserMod), nameof(Notify_ApparelAdded_PostFix)), null);
             // when the Pawn_ApparelTracker is notified of one less item, see if that has CompAbilityItem.
-            harmony.Patch(AccessTools.Method(typeof(Pawn_ApparelTracker), nameof(Pawn_ApparelTracker.Notify_ApparelRemoved)), null,
+            harmony.Patch(
+                AccessTools.Method(typeof(Pawn_ApparelTracker), nameof(Pawn_ApparelTracker.Notify_ApparelRemoved)),
+                null,
                 new HarmonyMethod(typeof(AbilityUserMod), nameof(Notify_ApparelRemoved_PostFix)), null);
 
             harmony.Patch(AccessTools.Method(typeof(ShortHashGiver), "GiveShortHash"),
@@ -45,6 +52,50 @@ namespace AbilityUser
             harmony.Patch(AccessTools.Method(typeof(PawnGroupKindWorker), nameof(PawnGroupKindWorker.GeneratePawns),
                     new Type[] {typeof(PawnGroupMakerParms), typeof(PawnGroupMaker), typeof(bool)}), null,
                 new HarmonyMethod(typeof(AbilityUserMod), nameof(GeneratePawns_PostFix)));
+
+            //RimWorld v1.0.1964
+            harmony.Patch(AccessTools.Property(typeof(Verb), nameof(Verb.UIIcon)).GetGetMethod(),
+                new HarmonyMethod(typeof(AbilityUserMod), nameof(get_UIIcon)), null);
+
+            harmony.Patch(
+                AccessTools.Property(typeof(Verb_LaunchProjectile), nameof(Verb_LaunchProjectile.Projectile))
+                    .GetGetMethod(),
+                new HarmonyMethod(typeof(AbilityUserMod), nameof(get_Projectile_Prefix)), null);
+            
+            harmony.Patch(
+                AccessTools.Property(typeof(Verb), nameof(Verb.DirectOwner))
+                    .GetGetMethod(),
+                new HarmonyMethod(typeof(AbilityUserMod), nameof(get_DirectOwner_Prefix)), null);
+        }
+
+        public static bool get_DirectOwner_Prefix(Verb __instance, ref IVerbOwner __result)
+        {
+            if (__instance is Verb_UseAbility vua)
+            {
+                __result = __instance.CasterPawn;
+                return false;
+            }
+            return true;
+        }
+        public static bool get_Projectile_Prefix(Verb_LaunchProjectile __instance, ref ThingDef __result)
+        {
+            if (__instance is Verb_UseAbility vua)
+            {
+                __result = __instance.verbProps.defaultProjectile;
+                return false;
+            }
+            return true;
+        }
+
+        //Verb
+        public static bool get_UIIcon(Verb __instance, ref Texture2D __result)
+        {
+            if (__instance is Verb_UseAbility abilityVerb && abilityVerb.Ability.PowerButton is Texture2D tex)
+            {
+                __result = tex;
+                return false;
+            }
+            return true;
         }
 
         // RimWorld.PawnGroupKindWorker_Normal
@@ -97,7 +148,7 @@ namespace AbilityUser
                     specCombatPoints.Add(x, combatValue);
                     //Log.Message(x.LabelShort + " : " + combatValue);
                 });
-                
+
                 //Special case -- single raider/character should not be special to avoid problems (e.g. Werewolf raid destroys everyone).
                 if (avgPawns == 0 && specCombatPoints.Sum(x => x.Value) > 0 && specialPawns.Count == 1)
                 {
@@ -105,7 +156,7 @@ namespace AbilityUser
                     specialPawns.First().TryGetComp<CompAbilityUser>().DisableAbilityUser();
                     return;
                 }
-                
+
                 //Special case -- no special characters.
                 if (specialPawns?.Count <= 0)
                     return;
@@ -147,12 +198,11 @@ namespace AbilityUser
                         {
                             var toRemove = tempAvgCombatPoints?.Keys?.RandomElement();
                             if (toRemove != null)
-                            {                            
+                            {
                                 //Log.Message("Removed: " + toRemove.LabelShort + " : " + tempSpecCombatPoints[toRemove]);
                                 removedCharacters.Add(toRemove);
                                 tempAvgCombatPoints.Remove(toRemove);
                             }
-
                         }
                         else
                         {
@@ -163,7 +213,6 @@ namespace AbilityUser
                                 removedCharacters.Add(toRemove);
                                 tempSpecCombatPoints.Remove(toRemove);
                             }
-
                         }
                     }
                 }

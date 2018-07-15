@@ -28,8 +28,10 @@ namespace AbilityUser
                 }
             }
 
-            if (Context == AbilityContext.Player)
-                Find.Targeter.targetingVerb = verb;
+	        if (Context == AbilityContext.Player)
+	        {
+		        Find.Targeter.targetingVerb = verb;
+	        }
 
             yield return new Toil
             {
