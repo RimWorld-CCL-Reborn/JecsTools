@@ -165,7 +165,7 @@ namespace JecsTools
 				}));
 				return diaOption;
 			}
-			var goodwillDelta = 12f * negotiator.GetStatValue(StatDefOf.DiplomacyPower, true);
+			var goodwillDelta = 12f * negotiator.GetStatValue(StatDefOf.NegotiationAbility, true);
 			var diaOption2 = new DiaOption("OfferGift".Translate() + " (" + "SilverForGoodwill".Translate(new object[]
 			{
 				300,
