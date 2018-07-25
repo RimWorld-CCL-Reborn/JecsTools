@@ -12,7 +12,7 @@ namespace CompSlotLoadable
      */
     public class JobDriver_GatherSlotItem : JobDriver
     {
-        public override bool TryMakePreToilReservations()
+        public override bool TryMakePreToilReservations(bool errorOnFailed)
         {
             return true;
         }

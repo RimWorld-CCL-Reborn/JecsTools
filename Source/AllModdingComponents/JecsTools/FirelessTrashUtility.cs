@@ -57,7 +57,7 @@ namespace JecsTools
                 if (!Rand.ChanceSeeded(0.008f, specialSeed))
                     return false;
             }
-            return (!b.def.building.isTrap || !((Building_Trap) b).Armed) && CanTrash(pawn, b) && pawn.HostileTo(b);
+            return (!b.def.building.isTrap && pawn.HostileTo(b));
         }
 
 

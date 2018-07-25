@@ -9,7 +9,7 @@ namespace AbilityUser
     {
         public AbilityContext Context => job.count == 1 ? AbilityContext.Player : AbilityContext.AI;
 
-        public override bool TryMakePreToilReservations()
+        public override bool TryMakePreToilReservations(bool errorOnFailed)
         {
             return true;
         }
