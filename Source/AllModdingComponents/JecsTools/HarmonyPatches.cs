@@ -28,26 +28,51 @@ namespace JecsTools
             var harmony = HarmonyInstance.Create("rimworld.jecrell.jecstools.main");
             //Allow fortitude to soak damage
             var type = typeof(HarmonyPatches);
+            
+            //Debug Line
+            //------------
+            harmony.Patch(
+                AccessTools.Method(typeof(PawnGroupKindWorker_Normal),
+                    nameof(PawnGroupKindWorker_Normal.MinPointsToGenerateAnything)),
+                new HarmonyMethod(type, nameof(MinPointsTest)), null);
+            //------------
             harmony.Patch(AccessTools.Method(typeof(Pawn_HealthTracker), nameof(Pawn_HealthTracker.PreApplyDamage)),
                 new HarmonyMethod(type, nameof(PreApplyDamage_PrePatch)), null);
             harmony.Patch(AccessTools.Method(typeof(ArmorUtility), "ApplyArmor"),
                 new HarmonyMethod(type, nameof(ApplyProperDamage)), null);
             harmony.Patch(AccessTools.Method(typeof(ArmorUtility), nameof(ArmorUtility.GetPostArmorDamage)), null,
                 new HarmonyMethod(type, nameof(Post_GetPostArmorDamage)));
-            harmony.Patch(AccessTools.Method(typeof(PawnGenerator), "GeneratePawn", new[] {typeof(PawnGenerationRequest)}), null,
+            harmony.Patch(
+                AccessTools.Method(typeof(PawnGenerator), "GeneratePawn", new[] {typeof(PawnGenerationRequest)}), null,
                 new HarmonyMethod(type, nameof(Post_GeneratePawn)));
             harmony.Patch(AccessTools.Method(typeof(ApparelUtility), nameof(ApparelUtility.CanWearTogether)), null,
                 new HarmonyMethod(type, nameof(Post_CanWearTogether)));
             harmony.Patch(AccessTools.Method(typeof(Faction), nameof(Faction.Notify_MemberDied)),
                 new HarmonyMethod(type, nameof(Notify_MemberDied)), null);
-            harmony.Patch(AccessTools.Method(typeof(PawnGroupMakerUtility), nameof(PawnGroupMakerUtility.GeneratePawns)), null,
+            harmony.Patch(
+                AccessTools.Method(typeof(PawnGroupMakerUtility), nameof(PawnGroupMakerUtility.GeneratePawns)), null,
                 new HarmonyMethod(type, nameof(GeneratePawns)), null);
             //harmony.Patch(AccessTools.Method(AccessTools.TypeByName("PossibleApparelSet"), "IsNaked"), null,
             //    new HarmonyMethod(type, nameof(IsNaked)), null);
-            harmony.Patch(AccessTools.Method(typeof(PawnApparelGenerator), nameof(PawnApparelGenerator.GenerateStartingApparelFor)), null,
+            harmony.Patch(
+                AccessTools.Method(typeof(PawnApparelGenerator),
+                    nameof(PawnApparelGenerator.GenerateStartingApparelFor)), null,
                 new HarmonyMethod(type, nameof(GenerateStartingApparelFor_PostFix)), null);
 
             //GUIPatches(harmony);
+        }
+
+        public static void MinPointsTest(PawnGroupKindWorker_Normal __instance, PawnGroupMaker groupMaker)
+        {
+            if (groupMaker?.options?.Count == null ||
+                groupMaker.options.Count <= 0)
+            {
+                Log.Message("No options available.");
+            }
+            foreach (var x in groupMaker.options)
+            {
+                Log.Message(x.kind.defName + " " + x.kind.isFighter.ToString() +  " " + x.Cost);
+            }
         }
 
 
@@ -59,10 +84,11 @@ namespace JecsTools
             var destroyables = new HashSet<Apparel>();
             foreach (var swap in swappables)
             {
-                if (swap.def?.GetModExtension<ApparelExtension>()?.swapCondition is SwapCondition sc && sc?.swapWhenGender is Gender gen &&
+                if (swap.def?.GetModExtension<ApparelExtension>()?.swapCondition is SwapCondition sc &&
+                    sc?.swapWhenGender is Gender gen &&
                     gen != Gender.None && gen == pawn.gender)
                 {
-                    Apparel apparel = (Apparel)ThingMaker.MakeThing(sc.swapTo, swap.Stuff);
+                    Apparel apparel = (Apparel) ThingMaker.MakeThing(sc.swapTo, swap.Stuff);
                     PawnGenerator.PostProcessGeneratedGear(apparel, pawn);
                     if (ApparelUtility.HasPartsToWear(pawn, apparel.def))
                     {
@@ -75,9 +101,8 @@ namespace JecsTools
             while (destroyables?.Count > 0)
             {
                 var first = destroyables.First();
-                    first.Destroy();
+                first.Destroy();
                 destroyables.Remove(first);
-
             }
         }
 
@@ -213,7 +238,8 @@ namespace JecsTools
         }
 
         //ArmorUtility
-        public static void Post_GetPostArmorDamage(Pawn pawn, float amount, BodyPartRecord part, DamageDef damageDef, ref float __result)
+        public static void Post_GetPostArmorDamage(Pawn pawn, float amount, BodyPartRecord part, DamageDef damageDef,
+            ref float __result)
         {
             if (tempDamageAbsorbed != null)
             {
@@ -290,7 +316,7 @@ namespace JecsTools
                         }
                 }
             }
-            tempDamageAmount = (int)dinfo.Amount;
+            tempDamageAmount = (int) dinfo.Amount;
             absorbed = false;
             //Log.Message("Current Damage :" + dinfo.Amount);
             return true;
@@ -323,7 +349,7 @@ namespace JecsTools
                         explosion.postExplosionSpawnThingCount = 1;
                         explosion.applyDamageToExplosionCellsNeighbors = false;
                         explosion.chanceToStartFire = 0f;
-                        explosion.damageFalloff = false;// dealMoreDamageAtCenter = false;
+                        explosion.damageFalloff = false; // dealMoreDamageAtCenter = false;
                         explosion.StartExplosion(null);
                     }
                     if (pawn != instigator && !pawn.Dead && !pawn.Downed && pawn.Spawned)
@@ -392,7 +418,7 @@ namespace JecsTools
                     //Log.Message(dinfo.Amount + " - " + soakSetting.damageToSoak + " = " + dmgAmount);
                     dinfo.SetAmount(dmgAmount);
                     //Log.Message("New damage amt: " + dinfo.Amount);
-                    soakedDamage += (int)dmgAmount;
+                    soakedDamage += (int) dmgAmount;
                     if (dinfo.Amount > 0) continue;
                     //Log.Message("Hediff_A_Absorbed");
                     DamageSoakedMote(pawn, soakedDamage);
@@ -421,7 +447,7 @@ namespace JecsTools
 
                         var dmgAmount = Mathf.Clamp(dinfo.Amount - soakSettings.damageToSoak, 0, dinfo.Amount);
                         //Log.Message(dinfo.Amount + " - " + soakSettings.damageToSoak + " = " + dmgAmount);
-                        soakedDamage += (int)dmgAmount;
+                        soakedDamage += (int) dmgAmount;
                         dinfo.SetAmount(dmgAmount);
                         //Log.Message("New damage amt: " + dinfo.Amount);
                         //Log.Message("Total soaked: " + soakedDamage);

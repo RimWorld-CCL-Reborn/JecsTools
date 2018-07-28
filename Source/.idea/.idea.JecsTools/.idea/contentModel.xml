@@ -308,6 +308,7 @@
         <e p="PatchOperationModLoaded.cs" t="Include" />
         <e p="PlaceWorker_OnTopOfWalls.cs" t="Include" />
         <e p="PlaceWorker_Outline.cs" t="Include" />
+        <e p="PlaceWorker_UnderCeiling.cs" t="Include" />
         <e p="Projectile_Laser.cs" t="Include" />
         <e p="Properties" t="Include">
           <e p="AssemblyInfo.cs" t="Include" />
