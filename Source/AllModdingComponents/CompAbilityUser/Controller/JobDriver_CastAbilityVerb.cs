@@ -116,8 +116,8 @@ namespace AbilityUser
 					    {
 						    targetScanFlags |= TargetScanFlags.NeedNonBurning;
 					    }
-					    Thing thing = (Thing) AttackTargetFinder.BestShootTargetFromCurrentPosition(searcher, null,
-						    verb.verbProps.range, verb.verbProps.minRange, targetScanFlags);
+					    Thing thing = (Thing) AttackTargetFinder.BestShootTargetFromCurrentPosition(searcher,targetScanFlags, null,
+						    verb.verbProps.minRange, verb.verbProps.range);
 					    if (thing != null)
 					    {
 						    searcher.TryStartAttack(thing);

@@ -24,7 +24,8 @@ namespace CompVehicle
         static HarmonyCompVehicle()
         {
             var harmony = HarmonyInstance.Create("rimworld.jecrell.comps.vehicle");
-
+            HarmonyInstance.DEBUG = true;
+            
             #region Functions
 
             ///
@@ -53,9 +54,10 @@ namespace CompVehicle
             harmony.Patch(AccessTools.Method(typeof(HealthUtility), nameof(HealthUtility.GetGeneralConditionLabel)),
                 new HarmonyMethod(typeof(HarmonyCompVehicle),
                     nameof(ReplaceConditionLabel)), null);
-            harmony.Patch(AccessTools.Method(typeof(HealthCardUtility), "DrawOverviewTab"),
-                new HarmonyMethod(typeof(HarmonyCompVehicle),
-                    nameof(DisplayOperationalSystems)), null);
+            //TODO: Fix for 1.0
+            //harmony.Patch(AccessTools.Method(typeof(HealthCardUtility), "DrawOverviewTab"),
+            //    new HarmonyMethod(typeof(HarmonyCompVehicle),
+            //        nameof(DisplayOperationalSystems)), null);
             harmony.Patch(
                 AccessTools.Property(typeof(MapPawns), nameof(MapPawns.FreeColonistsSpawnedCount)).GetGetMethod(), null,
                 new HarmonyMethod(typeof(HarmonyCompVehicle),
@@ -118,10 +120,11 @@ namespace CompVehicle
                 new HarmonyMethod(
                     typeof(HarmonyCompVehicle),
                     nameof(DraftedVehiclesCanMove)), null);
-            harmony.Patch(AccessTools.Method(typeof(Pawn_PathFollower), nameof(Pawn_PathFollower.StartPath)),
-                new HarmonyMethod(
-                    typeof(HarmonyCompVehicle),
-                    nameof(CanVehicleMove)), null);
+            //TODO: Fix for 1.0
+            //harmony.Patch(AccessTools.Method(typeof(Pawn_PathFollower), nameof(Pawn_PathFollower.StartPath)),
+            //    new HarmonyMethod(
+            //        typeof(HarmonyCompVehicle),
+            //        nameof(CanVehicleMove)), null);
             harmony.Patch(AccessTools.Method(typeof(Verb_Shoot), "TryCastShot"), new HarmonyMethod(
                 typeof(HarmonyCompVehicle),
                 nameof(CanVehicleShoot)), null);
@@ -408,25 +411,25 @@ namespace CompVehicle
 
         //S Patches FloatingMenuMakerMap so that null reference errors don't occur when generating the GUI for 
         //pawns that don't have worksettings
-        public static IEnumerable<CodeInstruction> AddUndraftedOrders_Transpiler(
-            IEnumerable<CodeInstruction> instructions)
-        {
-            var instructionList = instructions.ToList();
-            var workSettings = AccessTools.Field(typeof(Pawn), nameof(Pawn.workSettings));
-            for (var i = 0; i < instructionList.Count; i++)
-            {
-                var instruction = instructionList[i];
-
-                yield return instruction;
-                if (instruction.operand == workSettings)
-                {
-                    yield return new CodeInstruction(OpCodes.Brfalse_S, instructionList[i + 3].operand);
-                    yield return new CodeInstruction(instructionList[i - 2]) {labels = new List<Label>()};
-                    yield return new CodeInstruction(instructionList[i - 1]);
-                    yield return new CodeInstruction(instruction);
-                }
-            }
-        }
+//        public static IEnumerable<CodeInstruction> AddUndraftedOrders_Transpiler(
+//            IEnumerable<CodeInstruction> instructions)
+//        {
+//            var instructionList = instructions.ToList();
+//            var workSettings = AccessTools.Field(typeof(Pawn), nameof(Pawn.workSettings));
+//            for (var i = 0; i < instructionList.Count; i++)
+//            {
+//                var instruction = instructionList[i];
+//
+//                yield return instruction;
+//                if (instruction.operand == workSettings)
+//                {
+//                    yield return new CodeInstruction(OpCodes.Brfalse_S, instructionList[i + 3].operand);
+//                    yield return new CodeInstruction(instructionList[i - 2]) {labels = new List<Label>()};
+//                    yield return new CodeInstruction(instructionList[i - 1]);
+//                    yield return new CodeInstruction(instruction);
+//                }
+//            }
+//        }
 
         //S Patches JobGiver_Haul so that jobs aren't assigned to vehicles that can't move so that a better suited pawn can take the job
         //Couldn't get a transpiler to work for this one
@@ -627,7 +630,7 @@ namespace CompVehicle
 
         //J Changes the CompVehicle health card to display which systems are operational rather than standard pawn capacities.
         // RimWorld.HealthCardUtility
-        public static bool DisplayOperationalSystems(ref float __result, Rect leftRect, Pawn pawn, float curY)
+        public static bool DisplayOperationalSystems(Rect leftRect, Pawn pawn, float curY, ref float __result)
         {
             if (pawn != null)
             {
@@ -735,29 +738,29 @@ namespace CompVehicle
         }
 
         //E Right click attack options allowed.
-        public static IEnumerable<CodeInstruction> FightActionTranspiler(IEnumerable<CodeInstruction> instructions,
-            ILGenerator il)
-        {
-            var storyInfo = AccessTools.Field(typeof(Pawn), nameof(Pawn.story));
-            var done = false;
-            var instructionList = instructions.ToList();
-            for (var i = 0; i < instructionList.Count; i++)
-            {
-                var instruction = instructionList[i];
-
-                if (!done && instruction.operand == storyInfo)
-                {
-                    yield return instruction;
-                    yield return new CodeInstruction(instructionList[i + 3]);
-                    yield return new CodeInstruction(instructionList[i - 2]) {labels = new List<Label>()};
-                    yield return new CodeInstruction(instructionList[i - 1]);
-                    instruction = new CodeInstruction(instruction);
-                    done = true;
-                }
-
-                yield return instruction;
-            }
-        }
+//        public static IEnumerable<CodeInstruction> FightActionTranspiler(IEnumerable<CodeInstruction> instructions,
+//            ILGenerator il)
+//        {
+//            var storyInfo = AccessTools.Field(typeof(Pawn), nameof(Pawn.story));
+//            var done = false;
+//            var instructionList = instructions.ToList();
+//            for (var i = 0; i < instructionList.Count; i++)
+//            {
+//                var instruction = instructionList[i];
+//
+//                if (!done && instruction.operand == storyInfo)
+//                {
+//                    yield return instruction;
+//                    yield return new CodeInstruction(instructionList[i + 3]);
+//                    yield return new CodeInstruction(instructionList[i - 2]) {labels = new List<Label>()};
+//                    yield return new CodeInstruction(instructionList[i - 1]);
+//                    instruction = new CodeInstruction(instruction);
+//                    done = true;
+//                }
+//
+//                yield return instruction;
+//            }
+//        }
 
         #endregion FunctionsMethods
 
@@ -890,62 +893,62 @@ namespace CompVehicle
 
         //E Stops verb exceptions.
         //Logic: Checks for NREs that can result from the original method's check for a StoryTracker.
-        public static IEnumerable<CodeInstruction> CheckForAutoAttackTranspiler(
-            IEnumerable<CodeInstruction> instructions)
-        {
-            var playerFactionInfo = AccessTools.Property(typeof(Faction), nameof(Faction.OfPlayer)).GetGetMethod();
-            var done = false;
-            var instructionList = instructions.ToList();
-            for (var i = 0; i < instructionList.Count; i++)
-            {
-                var instruction = instructionList[i];
+//        public static IEnumerable<CodeInstruction> CheckForAutoAttackTranspiler(
+//            IEnumerable<CodeInstruction> instructions)
+//        {
+//            var playerFactionInfo = AccessTools.Property(typeof(Faction), nameof(Faction.OfPlayer)).GetGetMethod();
+//            var done = false;
+//            var instructionList = instructions.ToList();
+//            for (var i = 0; i < instructionList.Count; i++)
+//            {
+//                var instruction = instructionList[i];
+//
+//                if (!done && instruction.operand == playerFactionInfo)
+//                {
+//                    done = true;
+//                    yield return instruction;
+//                    yield return instructionList[i + 1];
+//                    yield return instructionList[i + 2];
+//                    yield return instructionList[i + 3];
+//                    yield return instructionList[i + 4];
+//                    instruction = new CodeInstruction(OpCodes.Brfalse_S, instructionList[i + 1].operand);
+//                    i++;
+//                }
+//
+//                yield return instruction;
+//            }
+//        }
 
-                if (!done && instruction.operand == playerFactionInfo)
-                {
-                    done = true;
-                    yield return instruction;
-                    yield return instructionList[i + 1];
-                    yield return instructionList[i + 2];
-                    yield return instructionList[i + 3];
-                    yield return instructionList[i + 4];
-                    instruction = new CodeInstruction(OpCodes.Brfalse_S, instructionList[i + 1].operand);
-                    i++;
-                }
-
-                yield return instruction;
-            }
-        }
-
-        public static IEnumerable<CodeInstruction> GetVerbsCommandsTranspiler(IEnumerable<CodeInstruction> instructions)
-        {
-            var storyInfo = AccessTools.Field(typeof(Pawn), nameof(Pawn.story));
-            Log.Error(storyInfo.ToString());
-            var done = false;
-            var instructionList = instructions.ToList();
-            for (var i = 0; i < instructionList.Count; i++)
-            {
-                var instruction = instructionList[i];
-                Log.Error(instruction.ToString());
-                if (!done && instruction.operand == storyInfo)
-                {
-                    Log.Error("Patching");
-                    Log.Error(instruction.ToString());
-                    Log.Error(instructionList[i + 3].operand.ToString());
-                    Log.Error(instructionList[i - 3].ToString());
-                    Log.Error(instructionList[i - 2].ToString());
-                    Log.Error(instructionList[i - 1].ToString());
-                    yield return instruction;
-                    yield return new CodeInstruction(OpCodes.Brfalse_S, instructionList[i + 3].operand);
-                    yield return new CodeInstruction(instructionList[i - 3]);
-                    yield return new CodeInstruction(instructionList[i - 2]);
-                    yield return new CodeInstruction(instructionList[i - 1]);
-                    instruction = new CodeInstruction(instruction);
-                    done = true;
-                }
-
-                yield return instruction;
-            }
-        }
+//        public static IEnumerable<CodeInstruction> GetVerbsCommandsTranspiler(IEnumerable<CodeInstruction> instructions)
+//        {
+//            var storyInfo = AccessTools.Field(typeof(Pawn), nameof(Pawn.story));
+//            Log.Error(storyInfo.ToString());
+//            var done = false;
+//            var instructionList = instructions.ToList();
+//            for (var i = 0; i < instructionList.Count; i++)
+//            {
+//                var instruction = instructionList[i];
+//                Log.Error(instruction.ToString());
+//                if (!done && instruction.operand == storyInfo)
+//                {
+//                    Log.Error("Patching");
+//                    Log.Error(instruction.ToString());
+//                    Log.Error(instructionList[i + 3].operand.ToString());
+//                    Log.Error(instructionList[i - 3].ToString());
+//                    Log.Error(instructionList[i - 2].ToString());
+//                    Log.Error(instructionList[i - 1].ToString());
+//                    yield return instruction;
+//                    yield return new CodeInstruction(OpCodes.Brfalse_S, instructionList[i + 3].operand);
+//                    yield return new CodeInstruction(instructionList[i - 3]);
+//                    yield return new CodeInstruction(instructionList[i - 2]);
+//                    yield return new CodeInstruction(instructionList[i - 1]);
+//                    instruction = new CodeInstruction(instruction);
+//                    done = true;
+//                }
+//
+//                yield return instruction;
+//            }
+//        }
 
         //J Vehicles with a movement handler are considered colonists.
         //public class ThinkNode_ConditionalColonist : ThinkNode_Conditional
