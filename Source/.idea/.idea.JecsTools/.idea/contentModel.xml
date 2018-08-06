@@ -108,6 +108,15 @@
           <e p="AssemblyInfo.cs" t="Include" />
         </e>
       </e>
+      <e p="AllModdingComponents\CompBalloon" t="IncludeRecursive">
+        <e p="CompBalloon.cs" t="Include" />
+        <e p="CompBalloon.csproj" t="IncludeRecursive" />
+        <e p="CompProperties_Balloon.cs" t="Include" />
+        <e p="obj" t="ExcludeRecursive" />
+        <e p="Properties" t="Include">
+          <e p="AssemblyInfo.cs" t="Include" />
+        </e>
+      </e>
       <e p="AllModdingComponents\CompDeflector" t="IncludeRecursive">
         <e p="CompDeflector.cs" t="Include" />
         <e p="CompDeflector.csproj" t="IncludeRecursive" />

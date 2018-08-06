@@ -35,6 +35,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompAnimated", "AllModdingC
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PawnShields", "AllModdingComponents\PawnShields\PawnShields.csproj", "{9A3BF1D4-6693-481F-BBF1-3D66AFD8BE6C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompBalloon", "AllModdingComponents\CompBalloon\CompBalloon.csproj", "{CE293DBE-D76A-4F24-A086-42051996698D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -105,6 +107,10 @@ Global
 		{9A3BF1D4-6693-481F-BBF1-3D66AFD8BE6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9A3BF1D4-6693-481F-BBF1-3D66AFD8BE6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9A3BF1D4-6693-481F-BBF1-3D66AFD8BE6C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CE293DBE-D76A-4F24-A086-42051996698D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CE293DBE-D76A-4F24-A086-42051996698D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CE293DBE-D76A-4F24-A086-42051996698D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CE293DBE-D76A-4F24-A086-42051996698D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
