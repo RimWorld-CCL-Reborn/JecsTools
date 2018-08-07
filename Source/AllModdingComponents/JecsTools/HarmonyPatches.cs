@@ -31,10 +31,10 @@ namespace JecsTools
             
             //Debug Line
             //------------
-            harmony.Patch(
-                AccessTools.Method(typeof(PawnGroupKindWorker_Normal),
-                    nameof(PawnGroupKindWorker_Normal.MinPointsToGenerateAnything)),
-                new HarmonyMethod(type, nameof(MinPointsTest)), null);
+//            harmony.Patch(
+//                AccessTools.Method(typeof(PawnGroupKindWorker_Normal),
+//                    nameof(PawnGroupKindWorker_Normal.MinPointsToGenerateAnything)),
+//                new HarmonyMethod(type, nameof(MinPointsTest)), null);
             //------------
             harmony.Patch(AccessTools.Method(typeof(Pawn_HealthTracker), nameof(Pawn_HealthTracker.PreApplyDamage)),
                 new HarmonyMethod(type, nameof(PreApplyDamage_PrePatch)), null);
@@ -64,15 +64,15 @@ namespace JecsTools
 
         public static void MinPointsTest(PawnGroupKindWorker_Normal __instance, PawnGroupMaker groupMaker)
         {
-            if (groupMaker?.options?.Count == null ||
-                groupMaker.options.Count <= 0)
-            {
-                Log.Message("No options available.");
-            }
-            foreach (var x in groupMaker.options)
-            {
-                Log.Message(x.kind.defName + " " + x.kind.isFighter.ToString() +  " " + x.Cost);
-            }
+//            if (groupMaker?.options?.Count == null ||
+//                groupMaker.options.Count <= 0)
+//            {
+//                Log.Message("No options available.");
+//            }
+//            foreach (var x in groupMaker.options)
+//            {
+//                Log.Message(x.kind.defName + " " + x.kind.isFighter.ToString() +  " " + x.Cost);
+//            }
         }
 
 
