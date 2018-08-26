@@ -8,6 +8,7 @@ namespace AbilityUser
     public class JobDriver_CastAbilityVerb : JobDriver
     {
         public AbilityContext Context => job.count == 1 ? AbilityContext.Player : AbilityContext.AI;
+	    public Verb_UseAbility Verb => pawn.CurJob.verbToUse as Verb_UseAbility;
 
         public override bool TryMakePreToilReservations(bool errorOnFailed)
         {
@@ -17,11 +18,9 @@ namespace AbilityUser
         protected override IEnumerable<Toil> MakeNewToils()
         {
             yield return Toils_Misc.ThrowColonistAttackingMote(TargetIndex.A);
-
-            var verb = pawn.CurJob.verbToUse as Verb_UseAbility;
             if (TargetA.HasThing)
             {
-                if (!GetActor().IsFighting() || !verb.UseAbilityProps.canCastInMelee)
+                if (!GetActor().IsFighting() || !Verb.UseAbilityProps.canCastInMelee)
                 {
                     var getInRangeToil = Toils_Combat.GotoCastPosition(TargetIndex.A, false);
                     yield return getInRangeToil;
@@ -30,12 +29,12 @@ namespace AbilityUser
 
 	        if (Context == AbilityContext.Player)
 	        {
-		        Find.Targeter.targetingVerb = verb;
+		        Find.Targeter.targetingVerb = Verb;
 	        }
 
             yield return new Toil
             {
-                initAction = delegate { verb.Ability.PostAbilityAttempt(); },
+                initAction = delegate { Verb.Ability.PostAbilityAttempt(); },
                 defaultCompleteMode = ToilCompleteMode.Instant
             };
             yield return Toils_Combat.CastVerb(TargetIndex.A, false);
@@ -43,7 +42,7 @@ namespace AbilityUser
             {
                 initAction = delegate
                 {
-                    if (verb.UseAbilityProps.isViolent)
+                    if (Verb?.UseAbilityProps?.isViolent == true)
                     {
                     	CheckForAutoAttack(this.pawn);
                     }
