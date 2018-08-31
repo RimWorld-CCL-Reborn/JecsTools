@@ -24,7 +24,7 @@ namespace CompVehicle
         static HarmonyCompVehicle()
         {
             var harmony = HarmonyInstance.Create("rimworld.jecrell.comps.vehicle");
-            HarmonyInstance.DEBUG = true;
+            //HarmonyInstance.DEBUG = true;
             
             #region Functions
 
