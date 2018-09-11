@@ -325,6 +325,7 @@
         <e p="TexButton.cs" t="Include" />
         <e p="ThingDef_LaserProjectile.cs" t="Include" />
         <e p="TransformedPart.cs" t="Include" />
+        <e p="WeaponStuff" t="Include" />
       </e>
       <e p="AllModdingComponents\PawnShields" t="IncludeRecursive">
         <e p="HarmonyPatches.cs" t="Include" />
