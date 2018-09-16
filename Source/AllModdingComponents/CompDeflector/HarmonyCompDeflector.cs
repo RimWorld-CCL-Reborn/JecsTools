@@ -114,7 +114,7 @@ namespace CompDeflector
                                 {
                                     compDeflector.AnimationDeflectionTicks = 1200;
                                     dinfo.SetAmount(0);
-                                    return false;
+                                    return true;
                                 }
                             }
                             else
@@ -122,7 +122,7 @@ namespace CompDeflector
                                 if (compDeflector.TrySpecialMeleeBlock())
                                 {
                                     dinfo.SetAmount(0);
-                                    return false;
+                                    return true;
                                 }
                             }
                         }

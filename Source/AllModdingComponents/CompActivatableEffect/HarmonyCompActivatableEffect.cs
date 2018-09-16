@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Harmony;
 using RimWorld;
@@ -17,9 +18,9 @@ namespace CompActivatableEffect
             harmony.Patch(typeof(Pawn).GetMethod("GetGizmos"), null,
                 new HarmonyMethod(typeof(HarmonyCompActivatableEffect).GetMethod("GetGizmosPrefix")));
             harmony.Patch(typeof(PawnRenderer).GetMethod("DrawEquipmentAiming"), null,
-                new HarmonyMethod(typeof(HarmonyCompActivatableEffect).GetMethod("DrawEquipmentAimingPostFix")));
+                new HarmonyMethod(typeof(HarmonyCompActivatableEffect), nameof(DrawEquipmentAimingPostFix)));
             harmony.Patch(typeof(Verb).GetMethod("TryStartCastOn"),
-                new HarmonyMethod(typeof(HarmonyCompActivatableEffect).GetMethod("TryStartCastOnPrefix")), null);
+                new HarmonyMethod(typeof(HarmonyCompActivatableEffect), nameof(TryStartCastOnPrefix)), null);
             harmony.Patch(typeof(Pawn_DraftController).GetMethod("set_Drafted"), null,
                 new HarmonyMethod(typeof(HarmonyCompActivatableEffect).GetMethod("set_Drafted_PostFix")));
             harmony.Patch(typeof(Pawn).GetMethod("ExitMap"),
@@ -74,31 +75,33 @@ namespace CompActivatableEffect
         {
             if (__instance.caster is Pawn pawn)
             {
-                var pawn_EquipmentTracker = pawn.equipment;
-                if (pawn_EquipmentTracker != null)
-                {
-                    //Log.Message("2");
-                    //ThingWithComps thingWithComps = (ThingWithComps)AccessTools.Field(typeof(Pawn_EquipmentTracker), "primaryInt").GetValue(pawn_EquipmentTracker);
-                    var thingWithComps =
-                        pawn_EquipmentTracker
-                            .Primary; //(ThingWithComps)AccessTools.Field(typeof(Pawn_EquipmentTracker), "primaryInt").GetValue(pawn_EquipmentTracker);
+                var pawn_EquipmentTracker = pawn?.equipment;
+                if (pawn_EquipmentTracker == null) return true;
 
-                    if (thingWithComps != null)
-                    {
-                        //Log.Message("3");
-                        var compActivatableEffect = thingWithComps.GetComp<CompActivatableEffect>();
-                        if (compActivatableEffect != null)
-                            if (__instance.EquipmentSource == thingWithComps)
-                                if (compActivatableEffect.CurrentState != CompActivatableEffect.State.Activated)
-                                {
-                                    if (Find.TickManager.TicksGame % 250 == 0)
-                                        Messages.Message("DeactivatedWarning".Translate(pawn.Label),
-                                            MessageTypeDefOf.RejectInput);
-                                    __result = false;
-                                    return false;
-                                }
-                    }
+                var thingWithComps =
+                    pawn_EquipmentTracker?.Primary; //(ThingWithComps)AccessTools.Field(typeof(Pawn_EquipmentTracker), "primaryInt").GetValue(pawn_EquipmentTracker);
+
+                var compActivatableEffect = thingWithComps?.GetComp<CompActivatableEffect>();
+                if (compActivatableEffect == null) return true;
+
+                //Equipment source throws errors when checked while casting abilities with a weapon equipped.
+                // to avoid this error preventing our code from executing, we do a try/catch.
+                try
+                {
+                    if (__instance?.EquipmentSource != thingWithComps)
+                        return true;
                 }
+                catch (Exception e)
+                {
+                }
+
+                if (compActivatableEffect.CurrentState == CompActivatableEffect.State.Activated) return true;
+                
+                if (Find.TickManager.TicksGame % 250 == 0)
+                    Messages.Message("DeactivatedWarning".Translate(pawn.Label),
+                        MessageTypeDefOf.RejectInput);
+                __result = false;
+                return false;
             }
             return true;
         }

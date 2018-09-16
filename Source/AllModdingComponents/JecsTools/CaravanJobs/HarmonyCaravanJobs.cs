@@ -13,6 +13,7 @@ namespace JecsTools
         static HarmonyCaravanPatches()
         {
             var harmony = HarmonyInstance.Create("rimworld.jecrell.caravanjobs");
+
             harmony.Patch(AccessTools.Method(typeof(Caravan), "GetInspectString"), null,
                 new HarmonyMethod(typeof(HarmonyCaravanPatches), nameof(GetInspectString_Jobs)), null);
             harmony.Patch(AccessTools.Method(typeof(WorldSelector), "AutoOrderToTileNow"), null,

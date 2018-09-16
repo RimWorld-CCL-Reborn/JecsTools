@@ -11,7 +11,6 @@ namespace AbilityUser
     {
         public List<LocalTargetInfo> TargetsAoE = new List<LocalTargetInfo>();
         public Action<Thing> timeSavingActionVariable = null;
-
         public PawnAbility Ability { get; set; } = null;
 
         public VerbProperties_Ability UseAbilityProps => (VerbProperties_Ability) verbProps;
@@ -165,12 +164,13 @@ namespace AbilityUser
         }
 
         private bool debugMode = false;
+
         private void DebugMessage(string s)
         {
-            if(debugMode)Log.Message(s);
+            if (debugMode) Log.Message(s);
         }
 
-        
+
         protected bool? TryLaunchProjectile(ThingDef projectileDef, LocalTargetInfo launchTarget)
         {
             DebugMessage(launchTarget.ToString());
@@ -184,9 +184,9 @@ namespace AbilityUser
             var projectile = (Projectile_AbilityBase) GenSpawn.Spawn(projectileDef, shootLine.Source, caster.Map);
             projectile.extraDamages = UseAbilityProps.extraDamages;
             projectile.localSpawnThings = UseAbilityProps.thingsToSpawn;
-            
+
             //projectile. FreeIntercept = canFreeInterceptNow && !projectile.def.projectile.flyOverhead;
-            var shotReport = ShotReport.HitReportFor(caster, this, launchTarget);
+            //var shotReport = ShotReport.HitReportFor(caster, this, launchTarget);
             verbProps.soundCast?.PlayOneShot(new TargetInfo(caster.Position, caster.Map, false));
             verbProps.soundCastTail?.PlayOneShotOnCamera();
 //            if (!UseAbilityProps.AlwaysHits)
@@ -247,16 +247,23 @@ namespace AbilityUser
                 projectileHitFlags4 |= ProjectileHitFlags.NonTargetWorld;
             }
             DebugMessage(launchTarget.ToString());
-            projectile.Launch(caster, Ability.Def, drawPos, launchTarget, projectileHitFlags4, null, UseAbilityProps.hediffsToApply,
+            projectile.Launch(caster, Ability.Def, drawPos, launchTarget, projectileHitFlags4, null,
+                UseAbilityProps.hediffsToApply,
                 UseAbilityProps.mentalStatesToApply, UseAbilityProps.thingsToSpawn);
             return true;
         }
 
         public override void WarmupComplete()
         {
+            if (verbTracker == null)
+                verbTracker = CasterPawn.verbTracker;
             burstShotsLeft = ShotsPerBurst;
             state = VerbState.Bursting;
             TryCastNextBurstShot();
+            //Find.BattleLog.Add(new BattleLogEntry_RangedFire(this.caster,
+            //    (!this.currentTarget.HasThing) ? null : this.currentTarget.Thing,
+            //    (base.EquipmentSource == null) ? null : base.EquipmentSource.def, this.Projectile,
+            //    this.ShotsPerBurst > 1));
         }
     }
 }

@@ -325,6 +325,7 @@
         <e p="TexButton.cs" t="Include" />
         <e p="ThingDef_LaserProjectile.cs" t="Include" />
         <e p="TransformedPart.cs" t="Include" />
+        <e p="WeaponStuff" t="Include" />
       </e>
       <e p="AllModdingComponents\PawnShields" t="IncludeRecursive">
         <e p="HarmonyPatches.cs" t="Include" />
@@ -358,6 +359,7 @@
       <e p="JecsTools.sln" t="IncludeFlat" />
       <e p="packages" t="ExcludeRecursive" />
     </e>
-    <e p="C:\Users\mattw\.Rider2017.2\system\resharper-host\local\Transient\ReSharperHost\v10\SolutionCaches\_JecsTools.-286400281.00" t="ExcludeRecursive" />
+    <e p="C:\Users\mattw\.Rider2018.2\system\extResources" t="IncludeRecursive" />
+    <e p="C:\Users\mattw\.Rider2018.2\system\resharper-host\local\Transient\ReSharperHost\v182\SolutionCaches\_JecsTools.-286400281.00" t="ExcludeRecursive" />
   </component>
 </project>
