@@ -76,29 +76,28 @@ namespace CompDeflector
                         {
                             var skillToCheck = Props.deflectSkill;
                             if (skillToCheck != null)
-                                if (pawn.skills != null)
+                            {
+                                var skillRecord = pawn.skills?.GetSkill(skillToCheck);
+                                if (skillRecord != null)
                                 {
-                                    var skillRecord = pawn.skills.GetSkill(skillToCheck);
-                                    if (skillRecord != null)
-                                    {
-                                        var param = Props.deflectRatePerSkillPoint;
-                                        if (param != 0)
-                                            calc += skillRecord.Level * param; //Makes the skill into float percent
-                                        else
-                                            Log.Error(
-                                                "CompDeflector :: deflectRatePerSkillPoint is set to 0, but useSkillInCalc is set to true.");
-                                    }
+                                    var param = Props.deflectRatePerSkillPoint;
+                                    if (param != 0)
+                                        calc += skillRecord.Level * param; //Makes the skill into float percent
+                                    else
+                                        Log.Error(
+                                            "CompDeflector :: deflectRatePerSkillPoint is set to 0, but useSkillInCalc is set to true.");
                                 }
+                            }
                         }
 
                         calc = DeflectionChance_InFix(calc);
 
                         //This handles if manipulation needs to be checked.
-                        if (Props.useManipulationInCalc)
-                            if (pawn.health.capacities.CapableOf(PawnCapacityDefOf.Manipulation))
-                                calc *= pawn.health.capacities.GetLevel(PawnCapacityDefOf.Manipulation);
-                            else
-                                calc = 0f;
+                        if (!Props.useManipulationInCalc) return Mathf.Clamp(calc, 0, 1.0f);
+                        if (pawn.health.capacities.CapableOf(PawnCapacityDefOf.Manipulation))
+                            calc *= pawn.health.capacities.GetLevel(PawnCapacityDefOf.Manipulation);
+                        else
+                            calc = 0f;
                     }
                 return Mathf.Clamp(calc, 0, 1.0f);
             }
@@ -111,15 +110,13 @@ namespace CompDeflector
 
         public void DeflectionSkillGain(SkillRecord skill)
         {
-            if (GetPawn.skills != null)
-                GetPawn.skills.Learn(Props.deflectSkill, Props.deflectSkillLearnRate, false);
+            GetPawn.skills?.Learn(Props.deflectSkill, Props.deflectSkillLearnRate, false);
         }
 
 
         public void ReflectionSkillGain(SkillRecord skill)
         {
-            if (GetPawn.skills != null)
-                GetPawn.skills.Learn(Props.reflectSkill, Props.reflectSkillLearnRate, false);
+            GetPawn.skills?.Learn(Props.reflectSkill, Props.reflectSkillLearnRate, false);
         }
 
         //Accuracy Roll Calculator
@@ -129,20 +126,19 @@ namespace CompDeflector
             var modifier = 0;
             var difficulty = 80;
             var thisPawn = GetPawn;
-            if (thisPawn != null)
-                if (thisPawn.skills != null)
-                    if (Props != null)
-                        if (Props.reflectSkill != null)
-                        {
-                            var skill = thisPawn.skills.GetSkill(Props.reflectSkill);
-                            if (skill != null)
-                                if (skill.Level > 0)
-                                {
-                                    modifier += (int) (Props.deflectRatePerSkillPoint * skill.Level);
-                                    //Log.Message("Deflection mod: " + modifier.ToString());
-                                    ReflectionSkillGain(skill);
-                                }
-                        }
+            if (thisPawn?.skills != null)
+            {
+                if (Props?.reflectSkill != null)
+                {
+                    var skill = thisPawn.skills.GetSkill(Props.reflectSkill);
+                    if (skill?.Level > 0)
+                    {
+                        modifier += (int) (Props.deflectRatePerSkillPoint * skill.Level);
+                        //Log.Message("Deflection mod: " + modifier.ToString());
+                        ReflectionSkillGain(skill);
+                    }
+                }
+            }
             ReflectionAccuracy_InFix(ref modifier, ref difficulty);
 
             var subtotal = d100 + modifier;
@@ -278,12 +274,10 @@ namespace CompDeflector
             }
             else
             {
-                if (deflectVerb == null)
-                {
-                    deflectVerb = (Verb_Deflected) Activator.CreateInstance(typeof(Verb_Deflected));
-                    deflectVerb.caster = GetPawn;
-                    deflectVerb.verbProps = Props.DeflectVerb;
-                }
+                if (deflectVerb != null) return deflectVerb;
+                deflectVerb = (Verb_Deflected) Activator.CreateInstance(typeof(Verb_Deflected));
+                deflectVerb.caster = GetPawn;
+                deflectVerb.verbProps = Props.DeflectVerb;
             }
             return deflectVerb;
         }
@@ -295,79 +289,59 @@ namespace CompDeflector
 
         public virtual Pawn ResolveDeflectionTarget(Pawn defaultTarget = null)
         {
-            if (lastAccuracyRoll == AccuracyRoll.CritialFailure)
+            if (lastAccuracyRoll != AccuracyRoll.CritialFailure) return defaultTarget;
+            var thisPawn = GetPawn;
+            if (thisPawn == null || thisPawn.Dead) return defaultTarget;
+
+            bool Validator(Thing t)
             {
-                var thisPawn = GetPawn;
-                if (thisPawn != null && !thisPawn.Dead)
-                {
-                    Predicate<Thing> validator = delegate(Thing t)
-                    {
-                        var pawn3 = t as Pawn;
-                        return pawn3 != null && pawn3 != thisPawn;
-                    };
-                    var closestPawn = (Pawn) GenClosest.ClosestThingReachable(thisPawn.Position, thisPawn.Map,
-                        ThingRequest.ForGroup(ThingRequestGroup.Pawn), PathEndMode.InteractionCell,
-                        TraverseParms.For(thisPawn, Danger.Deadly, TraverseMode.ByPawn, false), 9999f, validator, null,
-                        0, -1, false, RegionType.Set_Passable, false);
-                    if (closestPawn != null)
-                    {
-                        if (closestPawn == defaultTarget) return thisPawn;
-                        return closestPawn;
-                    }
-                }
+                return t is Pawn pawn3 && pawn3 != thisPawn;
             }
-            return defaultTarget;
+
+            var closestPawn = (Pawn) GenClosest.ClosestThingReachable(thisPawn.Position, thisPawn.Map,
+                ThingRequest.ForGroup(ThingRequestGroup.Pawn), PathEndMode.InteractionCell,
+                TraverseParms.For(thisPawn, Danger.Deadly, TraverseMode.ByPawn, false), 9999f, Validator, null,
+                0, -1, false, RegionType.Set_Passable, false);
+            if (closestPawn == null) return defaultTarget;
+            return closestPawn == defaultTarget ? thisPawn : closestPawn;
         }
 
         public virtual void CriticalFailureHandler(DamageInfo dinfo, Pawn newTarget, out bool shouldContinue)
         {
             shouldContinue = true;
-            if (lastAccuracyRoll == AccuracyRoll.CritialFailure)
-            {
-                var thisPawn = GetPawn;
-                if (thisPawn != null && !thisPawn.Dead)
-                {
-                    //If the target isn't the old target, then get out of this
-                    if (newTarget != dinfo.Instigator as Pawn)
-                        return;
-                    shouldContinue = false;
-                    GetPawn.TakeDamage(new DamageInfo(dinfo.Def, dinfo.Amount));
-                }
-            }
+            if (lastAccuracyRoll != AccuracyRoll.CritialFailure) return;
+            var thisPawn = GetPawn;
+            if (thisPawn == null || thisPawn.Dead) return;
+            //If the target isn't the old target, then get out of this
+            if (newTarget != dinfo.Instigator as Pawn)
+                return;
+            shouldContinue = false;
+            GetPawn.TakeDamage(new DamageInfo(dinfo.Def, dinfo.Amount));
         }
 
         public virtual void GiveDeflectJob(DamageInfo dinfo)
         {
             try
             {
-                if (dinfo.Instigator is Pawn pawn2)
+                if (!(dinfo.Instigator is Pawn pawn2)) return;
+                var job = new Job(CompDeflectorDefOf.CastDeflectVerb)
                 {
-                    var job = new Job(CompDeflectorDefOf.CastDeflectVerb)
-                    {
-                        playerForced = true,
-                        locomotionUrgency = LocomotionUrgency.Sprint
-                    };
-                    if (pawn2.equipment != null)
-                    {
-                        var compEquip = pawn2.equipment.PrimaryEq;
-                        if (compEquip != null)
-                            if (compEquip.PrimaryVerb != null)
-                            {
-                                var verbToUse = (Verb_Deflected) CopyAndReturnNewVerb(compEquip.PrimaryVerb);
-                                verbToUse = (Verb_Deflected) ReflectionHandler(deflectVerb);
-                                verbToUse.lastShotReflected = lastShotReflected;
-                                pawn2 = ResolveDeflectionTarget(pawn2);
-                                CriticalFailureHandler(dinfo, pawn2, out var shouldContinue);
-                                if (shouldContinue)
-                                {
-                                    job.targetA = pawn2;
-                                    job.verbToUse = verbToUse;
-                                    job.killIncappedTarget = pawn2.Downed;
-                                    GetPawn.jobs.TryTakeOrderedJob(job);
-                                }
-                            }
-                    }
-                }
+                    playerForced = true,
+                    locomotionUrgency = LocomotionUrgency.Sprint
+                };
+                var compEquip = pawn2.equipment?.PrimaryEq;
+                if (compEquip?.PrimaryVerb == null) return;
+                var verbToUse = (Verb_Deflected) CopyAndReturnNewVerb(compEquip.PrimaryVerb);
+                verbToUse = (Verb_Deflected) ReflectionHandler(deflectVerb);
+                verbToUse.lastShotReflected = lastShotReflected;
+                verbToUse.verbTracker = GetPawn.VerbTracker;
+                pawn2 = ResolveDeflectionTarget(pawn2);
+                CriticalFailureHandler(dinfo, pawn2, out var shouldContinue);
+                if (!shouldContinue) return;
+                job.targetA = pawn2;
+                job.verbToUse = verbToUse;
+                job.killIncappedTarget = pawn2.Downed;
+                GetPawn.jobs.TryTakeOrderedJob(job);
             }
             catch (NullReferenceException)
             {
