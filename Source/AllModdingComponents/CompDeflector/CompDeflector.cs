@@ -187,7 +187,7 @@ namespace CompDeflector
             if (Props.canReflect)
             {
                 lastAccuracyRoll = ReflectionAccuracy();
-                var deflectVerb = newVerb;
+                var deflectVerbX = newVerb;
 
                 //Initialize VerbProperties
                 var newVerbProps = new VerbProperties
@@ -237,8 +237,8 @@ namespace CompDeflector
                         break;
                 }
                 //Apply values
-                deflectVerb.verbProps = newVerbProps;
-                return deflectVerb;
+                deflectVerbX.verbProps = newVerbProps;
+                return deflectVerbX;
             }
             return newVerb;
         }
