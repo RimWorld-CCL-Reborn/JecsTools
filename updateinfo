@@ -4,9 +4,9 @@
 
 JecsTools Update
 ====================
-Version: B19.642
-Updated: 09-14-2018
-Description: Fixed issue where CompDeflector was preventing code from executing.
+Version: 1.1.0.2
+Updated: 09-16-2018
+Description: Fixed the second error caused by deflection systems (from Xen)
 ====================
 
 Download now on...
@@ -25,11 +25,9 @@ Discuss the mod on...
 [img width=260]https://raw.githubusercontent.com/jecrell/JecsTools/master/About/Preview.png[/img]
 [hr]
 [b]JecsTools
-Version: B19.642
-Updated: 09-14-2018
-Description: [color=orange]Fixed issue where CompDeflector was preventing code from executing.[/color]
-[hr][b]Notes from Jec:[/b][/center]
-
+Version: 1.1.0.2
+Updated: 09-16-2018
+Description: [color=orange]Fixed the second error caused by deflection systems (from Xen)[/color]
 [hr]
 [b]Download now on...[/b]
 [url=https://www.patreon.com/posts/jecstools-for-0-21059900]Patreon[/url]
