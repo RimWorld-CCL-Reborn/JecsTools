@@ -20,7 +20,8 @@ namespace AbilityUser
             yield return Toils_Misc.ThrowColonistAttackingMote(TargetIndex.A);
             if (TargetA.HasThing)
             {
-                if (!GetActor().IsFighting() || !Verb.UseAbilityProps.canCastInMelee)
+	            // !GetActor().IsFighting() || - removed from below "If" by xen for melee casting fix
+                if (!Verb.UseAbilityProps.canCastInMelee)
                 {
                     var getInRangeToil = Toils_Combat.GotoCastPosition(TargetIndex.A, false);
                     yield return getInRangeToil;
