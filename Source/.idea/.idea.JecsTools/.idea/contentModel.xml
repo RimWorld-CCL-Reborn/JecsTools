@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ContentModelStore">
-    <e p="C:\Users\cloud\.Rider2017.2\system\resharper-host\local\Transient\ReSharperHost\v10\SolutionCaches\_JecsTools.1408684828.00" t="ExcludeRecursive" />
-    <e p="H:\SteamSSD\steamapps\common\RimWorld\Mods\JecsTools - master\Source" t="IncludeFlat">
+    <e p="C:\Program Files (x86)\Steam\steamapps\common\RimWorld\ModsWorkspace\JecsTools\Assemblies" t="ExcludeRecursive" />
+    <e p="C:\Program Files (x86)\Steam\steamapps\common\RimWorld\ModsWorkspace\JecsTools\Source" t="IncludeFlat">
       <e p="AllModdingComponents\AbilityUserAI" t="IncludeRecursive">
         <e p="AbilityUserAI.csproj" t="IncludeRecursive" />
         <e p="AI" t="Include">
@@ -49,7 +49,6 @@
         <e p="AoEProperties.cs" t="Include" />
         <e p="ApplyHediffs.cs" t="Include" />
         <e p="ApplyMentalStates.cs" t="Include" />
-        <e p="bin" t="ExcludeRecursive" />
         <e p="CompAbilityItem.cs" t="Include" />
         <e p="CompAbilityUser.csproj" t="IncludeRecursive" />
         <e p="CompProperties_AbilityItem.cs" t="Include" />
@@ -91,7 +90,6 @@
         </e>
       </e>
       <e p="AllModdingComponents\CompActivatableEffect" t="IncludeRecursive">
-        <e p="bin" t="ExcludeRecursive" />
         <e p="CompActivatableEffect.cs" t="Include" />
         <e p="CompActivatableEffect.csproj" t="IncludeRecursive" />
         <e p="CompProperties_ActivatableEffect.cs" t="Include" />
@@ -102,7 +100,6 @@
         </e>
       </e>
       <e p="AllModdingComponents\CompAnimated" t="IncludeRecursive">
-        <e p="bin" t="ExcludeRecursive" />
         <e p="CompAnimated.cs" t="Include" />
         <e p="CompAnimated.csproj" t="IncludeRecursive" />
         <e p="CompProperties_Animated.cs" t="Include" />
@@ -112,7 +109,6 @@
         </e>
       </e>
       <e p="AllModdingComponents\CompBalloon" t="IncludeRecursive">
-        <e p="bin" t="ExcludeRecursive" />
         <e p="CompBalloon.cs" t="Include" />
         <e p="CompBalloon.csproj" t="IncludeRecursive" />
         <e p="CompProperties_Balloon.cs" t="Include" />
@@ -122,7 +118,6 @@
         </e>
       </e>
       <e p="AllModdingComponents\CompDeflector" t="IncludeRecursive">
-        <e p="bin" t="ExcludeRecursive" />
         <e p="CompDeflector.cs" t="Include" />
         <e p="CompDeflector.csproj" t="IncludeRecursive" />
         <e p="CompDeflectorDefOf.cs" t="Include" />
@@ -137,7 +132,6 @@
         <e p="Verb_Deflected.cs" t="Include" />
       </e>
       <e p="AllModdingComponents\CompDelayedSpawner" t="IncludeRecursive">
-        <e p="bin" t="ExcludeRecursive" />
         <e p="CompDelayedSpawner.cs" t="Include" />
         <e p="CompDelayedSpawner.csproj" t="IncludeRecursive" />
         <e p="CompProperties_DelayedSpawner.cs" t="Include" />
@@ -147,7 +141,6 @@
         </e>
       </e>
       <e p="AllModdingComponents\CompExtraSounds" t="IncludeRecursive">
-        <e p="bin" t="ExcludeRecursive" />
         <e p="CompExtraSounds.cs" t="Include" />
         <e p="CompExtraSounds.csproj" t="IncludeRecursive" />
         <e p="CompProperties_ExtraSounds.cs" t="Include" />
@@ -158,7 +151,6 @@
         </e>
       </e>
       <e p="AllModdingComponents\CompInstalledPart" t="IncludeRecursive">
-        <e p="bin" t="ExcludeRecursive" />
         <e p="CompInstalledPart.cs" t="Include" />
         <e p="CompInstalledPart.csproj" t="IncludeRecursive" />
         <e p="CompProperties_InstalledPart.cs" t="Include" />
@@ -172,7 +164,6 @@
         </e>
       </e>
       <e p="AllModdingComponents\CompLumbering" t="IncludeRecursive">
-        <e p="bin" t="ExcludeRecursive" />
         <e p="CompLumbering.cs" t="Include" />
         <e p="CompLumbering.csproj" t="IncludeRecursive" />
         <e p="CompProperties_Lumbering.cs" t="Include" />
@@ -182,7 +173,6 @@
         </e>
       </e>
       <e p="AllModdingComponents\CompOverlays" t="IncludeRecursive">
-        <e p="bin" t="ExcludeRecursive" />
         <e p="CompOverlays.cs" t="Include" />
         <e p="CompOverlays.csproj" t="IncludeRecursive" />
         <e p="CompProperties_Overlays.cs" t="Include" />
@@ -192,7 +182,6 @@
         </e>
       </e>
       <e p="AllModdingComponents\CompOversizedWeapon" t="IncludeRecursive">
-        <e p="bin" t="ExcludeRecursive" />
         <e p="CompOversizedWeapon.cs" t="Include" />
         <e p="CompOversizedWeapon.csproj" t="IncludeRecursive" />
         <e p="CompProperties_OversizedWeapon.cs" t="Include" />
@@ -224,7 +213,6 @@
         <e p="StringOf.cs" t="Include" />
       </e>
       <e p="AllModdingComponents\CompToggleDef" t="IncludeRecursive">
-        <e p="bin" t="ExcludeRecursive" />
         <e p="CompProperties_ToggleDef.cs" t="Include" />
         <e p="CompToggleDef.cs" t="Include" />
         <e p="CompToggleDef.csproj" t="IncludeRecursive" />
@@ -238,7 +226,6 @@
       <e p="AllModdingComponents\CompVehicle" t="IncludeRecursive">
         <e p="AbandonedVehicleContentsComp.cs" t="Include" />
         <e p="Bill_LoadVehicle.cs" t="Include" />
-        <e p="bin" t="ExcludeRecursive" />
         <e p="Command_VehicleHandler.cs" t="Include" />
         <e p="CompProperties_Vehicle.cs" t="Include" />
         <e p="CompProperties_VehicleSpawner.cs" t="Include" />
@@ -272,7 +259,6 @@
       <e p="AllModdingComponents\JecsTools" t="IncludeRecursive">
         <e p="_HumanlikeOrdersUtility.cs" t="Include" />
         <e p="ApparelExtension.cs" t="Include" />
-        <e p="bin" t="ExcludeRecursive" />
         <e p="CaravanJobs" t="Include">
           <e p="Caravan_JobTracker.cs" t="Include" />
           <e p="CaravanJob.cs" t="Include" />
@@ -370,11 +356,11 @@
           <e p="StatWorker_Shield.cs" t="Include" />
         </e>
       </e>
-      <e p="Assemblies" t="ExcludeRecursive" />
       <e p="JecsTools.sln" t="IncludeFlat" />
       <e p="packages" t="ExcludeRecursive" />
     </e>
-    <e p="H:\SteamSSD\steamapps\common\RimWorld\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\LotRDev\Assemblies" t="ExcludeRecursive" />
-    <e p="H:\SteamSSD\steamapps\common\RimWorld\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\ShieldsCore\Assemblies" t="ExcludeRecursive" />
+    <e p="C:\Users\mattw\.Rider2018.2\config\extensions" t="IncludeRecursive" />
+    <e p="C:\Users\mattw\.Rider2018.2\system\extResources" t="IncludeRecursive" />
+    <e p="C:\Users\mattw\.Rider2018.2\system\resharper-host\local\Transient\ReSharperHost\v182\SolutionCaches\_JecsTools.-286400281.00" t="ExcludeRecursive" />
   </component>
 </project>
