@@ -28,7 +28,7 @@ namespace JecsTools
             var harmony = HarmonyInstance.Create("rimworld.jecrell.jecstools.main");
             //Allow fortitude to soak damage
             var type = typeof(HarmonyPatches);
-            
+
             //Debug Line
             //------------
 //            harmony.Patch(
@@ -94,9 +94,11 @@ namespace JecsTools
                     {
                         pawn.apparel.Wear(apparel, false);
                     }
+
                     destroyables.Add(swap);
                 }
             }
+
             if (destroyables == null || destroyables?.Count <= 0) return;
             while (destroyables?.Count > 0)
             {
@@ -177,6 +179,7 @@ namespace JecsTools
             {
                 return false;
             }
+
             return true;
         }
 
@@ -189,38 +192,49 @@ namespace JecsTools
         /// <param name="__result"></param>
         public static void Post_CanWearTogether(ThingDef A, ThingDef B, BodyDef body, ref bool __result)
         {
-            var aHasExt = A.HasModExtension<ApparelExtension>();
-            var bHasExt = B.HasModExtension<ApparelExtension>();
-            if (aHasExt && bHasExt)
+            try
             {
-                var aExt = A.GetModExtension<ApparelExtension>();
-                var bExt = B.GetModExtension<ApparelExtension>();
-                var check = new Dictionary<string, int>();
-                for (int i = 0; i < aExt.coverage.Count; i++)
+                if (A == null || B == null || body == null || __result == true) return;
+                var aHasExt = A.HasModExtension<ApparelExtension>();
+                var bHasExt = B.HasModExtension<ApparelExtension>();
+                if (aHasExt && bHasExt)
                 {
-                    if (!check.ContainsKey(aExt.coverage[i]))
-                        check.Add(aExt.coverage[i].ToLowerInvariant(), 1);
-                    else
-                    {
-                        Log.Warning("JecsTools :: ApparelExtension :: Warning:: " + A.label +
-                                    " has multiple of the same tags.");
-                        return;
-                    }
+                    var aExt = A.GetModExtension<ApparelExtension>();
+                    var bExt = B.GetModExtension<ApparelExtension>();
+                    var check = new Dictionary<string, int>();
+                    if (aExt.coverage?.Count > 0)
+                        for (int i = 0; i < aExt.coverage.Count; i++)
+                        {
+                            if (!check.ContainsKey(aExt.coverage[i]))
+                                check.Add(aExt.coverage[i].ToLowerInvariant(), 1);
+                            else
+                            {
+                                Log.Warning("JecsTools :: ApparelExtension :: Warning:: " + A.label +
+                                            " has multiple of the same tags.");
+                                return;
+                            }
+                        }
+
+                    if (bExt.coverage?.Count > 0)
+                        for (int j = 0; j < bExt.coverage.Count; j++)
+                        {
+                            if (!check.ContainsKey(bExt.coverage[j]))
+                                check.Add(bExt.coverage[j].ToLowerInvariant(), 1);
+                            else
+                            {
+                                __result = false;
+                                break;
+                            }
+                        }
                 }
-                for (int j = 0; j < bExt.coverage.Count; j++)
+                else if ((aHasExt && !bHasExt) || (!aHasExt && bHasExt))
                 {
-                    if (!check.ContainsKey(bExt.coverage[j]))
-                        check.Add(bExt.coverage[j].ToLowerInvariant(), 1);
-                    else
-                    {
-                        __result = false;
-                        break;
-                    }
+                    __result = true;
                 }
             }
-            else if ((aHasExt && !bHasExt) || (!aHasExt && bHasExt))
+            catch (Exception e)
             {
-                __result = true;
+                Log.Message(e.ToString());
             }
         }
 
@@ -249,6 +263,7 @@ namespace JecsTools
                 {
                     DamageSoakedMote(pawn, tempDamageAbsorbed.Value);
                 }
+
                 tempDamageAbsorbed = null;
             }
         }
@@ -295,6 +310,7 @@ namespace JecsTools
                         {
                         }
                     }
+
                     if (dinfo.Weapon is ThingDef weaponDef && !weaponDef.IsRangedWeapon)
                         if (dinfo.Instigator is Pawn instigator)
                         {
@@ -316,6 +332,7 @@ namespace JecsTools
                         }
                 }
             }
+
             tempDamageAmount = (int) dinfo.Amount;
             absorbed = false;
             //Log.Message("Current Damage :" + dinfo.Amount);
@@ -352,6 +369,7 @@ namespace JecsTools
                         explosion.damageFalloff = false; // dealMoreDamageAtCenter = false;
                         explosion.StartExplosion(null);
                     }
+
                     if (pawn != instigator && !pawn.Dead && !pawn.Downed && pawn.Spawned)
                     {
                         if (knocker.Props.stunChance > -1 && knocker.Props.stunChance >= Rand.Value)
@@ -379,10 +397,13 @@ namespace JecsTools
                         StopPreApplyDamageCheck = false;
                         return true;
                     }
+
                     pawn.TakeDamage(new DamageInfo(dmg.def, dmg.amount, dmg.armorPenetration, -1, instigator));
                 }
+
                 StopPreApplyDamageCheck = false;
             }
+
             absorbed = false;
             return false;
         }
@@ -459,6 +480,7 @@ namespace JecsTools
                     }
                 }
             }
+
             absorbed = false;
             return false;
         }
@@ -497,6 +519,7 @@ namespace JecsTools
                     }
                 }
             }
+
             collision = collisionResult;
             return result;
         }
