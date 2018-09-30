@@ -259,6 +259,7 @@
       <e p="AllModdingComponents\JecsTools" t="IncludeRecursive">
         <e p="_HumanlikeOrdersUtility.cs" t="Include" />
         <e p="ApparelExtension.cs" t="Include" />
+        <e p="BuildingExtension.cs" t="Include" />
         <e p="CaravanJobs" t="Include">
           <e p="Caravan_JobTracker.cs" t="Include" />
           <e p="CaravanJob.cs" t="Include" />

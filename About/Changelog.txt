@@ -1,0 +1,4 @@
+1.1.0.6 (09-30-2018)
+===================
+Adds new BuildingExtension class to allow for bypasses to SpawningWipes. Perfect for adding furniture on top of existing tables.
+

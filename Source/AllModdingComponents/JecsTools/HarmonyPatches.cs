@@ -7,6 +7,7 @@ using Harmony;
 using RimWorld;
 using UnityEngine;
 using Verse;
+using Verse.AI;
 using Verse.Sound;
 
 namespace JecsTools
@@ -36,30 +37,141 @@ namespace JecsTools
 //                    nameof(PawnGroupKindWorker_Normal.MinPointsToGenerateAnything)),
 //                new HarmonyMethod(type, nameof(MinPointsTest)), null);
             //------------
+            
+            //Adds HediffCompProperties_DamageSoak checks to damage
             harmony.Patch(AccessTools.Method(typeof(Pawn_HealthTracker), nameof(Pawn_HealthTracker.PreApplyDamage)),
                 new HarmonyMethod(type, nameof(PreApplyDamage_PrePatch)), null);
+            
+            //Applies cached armor damage and absorption
             harmony.Patch(AccessTools.Method(typeof(ArmorUtility), "ApplyArmor"),
                 new HarmonyMethod(type, nameof(ApplyProperDamage)), null);
+            
+            //Applies damage soak motes
             harmony.Patch(AccessTools.Method(typeof(ArmorUtility), nameof(ArmorUtility.GetPostArmorDamage)), null,
                 new HarmonyMethod(type, nameof(Post_GetPostArmorDamage)));
+            
+            //Allows for adding additional HediffSets when characters spawn using the StartWithHediff class. 
             harmony.Patch(
                 AccessTools.Method(typeof(PawnGenerator), "GeneratePawn", new[] {typeof(PawnGenerationRequest)}), null,
                 new HarmonyMethod(type, nameof(Post_GeneratePawn)));
+            
+            //Checks apparel that uses the ApparelExtension
             harmony.Patch(AccessTools.Method(typeof(ApparelUtility), nameof(ApparelUtility.CanWearTogether)), null,
                 new HarmonyMethod(type, nameof(Post_CanWearTogether)));
+            
+            //Handles special cases of faction disturbances
             harmony.Patch(AccessTools.Method(typeof(Faction), nameof(Faction.Notify_MemberDied)),
                 new HarmonyMethod(type, nameof(Notify_MemberDied)), null);
+            
+            //Handles FactionSettings extension to allow for fun effects when factions arrive.
             harmony.Patch(
                 AccessTools.Method(typeof(PawnGroupMakerUtility), nameof(PawnGroupMakerUtility.GeneratePawns)), null,
                 new HarmonyMethod(type, nameof(GeneratePawns)), null);
-            //harmony.Patch(AccessTools.Method(AccessTools.TypeByName("PossibleApparelSet"), "IsNaked"), null,
-            //    new HarmonyMethod(type, nameof(IsNaked)), null);
+            
+            //Handles cases where gendered apparel swaps out for individual genders.
             harmony.Patch(
                 AccessTools.Method(typeof(PawnApparelGenerator),
                     nameof(PawnApparelGenerator.GenerateStartingApparelFor)), null,
                 new HarmonyMethod(type, nameof(GenerateStartingApparelFor_PostFix)), null);
 
-            //GUIPatches(harmony);
+            //BuildingExtension prevents some things from wiping other things when spawned.
+            harmony.Patch(
+                AccessTools.Method(typeof(GenSpawn),
+                    nameof(GenSpawn.SpawningWipes)), null,
+                new HarmonyMethod(type, nameof(SpawningWipes_PostFix)), null);
+//            harmony.Patch(
+//                AccessTools.Method(typeof(GenConstruct),
+//                    nameof(GenConstruct.HandleBlockingThingJob)), null,
+//                new HarmonyMethod(type, nameof(HandleBlockingThingJob_PostFix)), null);
+            harmony.Patch(
+                AccessTools.Method(typeof(GenConstruct),
+                    nameof(GenConstruct.BlocksConstruction)), null,
+                new HarmonyMethod(type, nameof(BlocksConstruction_PostFix)), null);
+        }
+
+        public static void BlocksConstruction_PostFix(Thing constructible, Thing t, ref bool __result)
+        {
+            ThingDef thingDef = constructible.def;
+            ThingDef thingDef2 = t.def;
+            if (thingDef == null || thingDef2 == null)
+                return;
+            if (thingDef.HasModExtension<BuildingExtension>() || thingDef2.HasModExtension<BuildingExtension>())
+            {
+                BuildableDef buildableDef = GenConstruct.BuiltDefOf(thingDef);
+                BuildableDef buildableDef2 = GenConstruct.BuiltDefOf(thingDef2);
+                __result = ShouldWipe(buildableDef, buildableDef2, t.PositionHeld, t.MapHeld);   
+            }
+        }
+
+        public static void SpawningWipes_PostFix(BuildableDef newEntDef, BuildableDef oldEntDef, ref bool __result)
+        {
+            ThingDef thingDef = newEntDef as ThingDef;
+            ThingDef thingDef2 = oldEntDef as ThingDef;
+            if (thingDef == null || thingDef2 == null)
+                return;
+            if (thingDef.HasModExtension<BuildingExtension>() || thingDef2.HasModExtension<BuildingExtension>())
+            {
+                BuildableDef buildableDef = GenConstruct.BuiltDefOf(thingDef);
+                BuildableDef buildableDef2 = GenConstruct.BuiltDefOf(thingDef2);
+                __result = ShouldWipe(buildableDef, buildableDef2, IntVec3.Invalid, null);   
+            }
+        }
+
+        private static bool ShouldWipe(BuildableDef newEntDef, BuildableDef oldEntDef, IntVec3 loc, Map map)
+        {
+            if (map == null || loc == null || !loc.IsValid)
+            {
+                var buildingExtensionA = newEntDef?.GetModExtension<BuildingExtension>();
+                var buildingExtensionB = oldEntDef?.GetModExtension<BuildingExtension>();
+                if (buildingExtensionB == null && buildingExtensionA == null)
+                {
+                    //Log.Message("Both null");
+                    return true;
+                }
+
+                //Log.Message("A: " + newEntDef.label);
+                //Log.Message("B: " + oldEntDef.label);
+                if (buildingExtensionA != null && buildingExtensionB == null &&
+                    buildingExtensionA.wipeCategories?.Count > 0)
+                {
+                    //Log.Message("B null");
+
+                    return false;
+                }
+
+                if (buildingExtensionB != null && buildingExtensionA == null &&
+                    buildingExtensionB.wipeCategories?.Count > 0)
+                {
+                    //Log.Message("A null");
+
+                    return false;
+                }
+
+                if (buildingExtensionA != null && buildingExtensionB != null &&
+                    buildingExtensionA.wipeCategories?.Count > 0 &&
+                    buildingExtensionB.wipeCategories?.Count > 0)
+                {
+                    var hashes = new HashSet<string>();
+                    foreach (var str in buildingExtensionA.wipeCategories)
+                        hashes.Add(str);
+                    foreach (var strB in buildingExtensionB.wipeCategories)
+                    {
+                        if (!hashes.Contains(strB)) continue;
+                        //Log.Message("ShouldWipe");
+                        return true;
+                    }
+                }
+                return true;
+            }
+            var locThings = loc.GetThingList(map);
+            for (var index = 0; index < locThings.Count; index++)
+            {
+                var thing = locThings[index];
+                if (thing.def is ThingDef thingDef && ShouldWipe(newEntDef, GenConstruct.BuiltDefOf(thingDef), IntVec3.Invalid, null))
+                    return true;
+            }
+
+            return true;
         }
 
         public static void MinPointsTest(PawnGroupKindWorker_Normal __instance, PawnGroupMaker groupMaker)

@@ -4,7 +4,7 @@
   <author>jecrell</author>
   <url>https://discord.gg/AaVFA7V</url>
   <targetVersion>0.19.0</targetVersion>
-  <description>1.1.0.5
+  <description>1.1.0.6 (09-30-2018)
 
 Adds modding components to RimWorld: vehicles, spell casting, weapon slots, oversized weapons, and more!
 
@@ -53,5 +53,13 @@ Additions by Swenzi
 Additions and transpilers by Erdelf
 Extensive hours of testing, debugging, and fixes by Xen.
 "Hey, should we make this into a public toolset for people to take advantage of all this cool stuff?" - Jecrell
-"Hell yes - this is awesome stuff - people will love it!" - Xen</description>
+"Hell yes - this is awesome stuff - people will love it!" - Xen
+===================
+Changelog
+===================
+1.1.0.6 (09-30-2018)
+===================
+Adds new BuildingExtension class to allow for bypasses to SpawningWipes. Perfect for adding furniture on top of existing tables.
+
+</description>
 </ModMetaData>
