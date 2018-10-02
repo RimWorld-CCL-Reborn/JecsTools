@@ -4,9 +4,9 @@
 
 JecsTools Update
 ====================
-Version: 1.1.0.5
-Updated: 09-22-2018
-Description: Added a max range check to make GetInRangeToil fire for pawns who target enemies outside of max range.
+Version: 1.1.0.6
+Updated: 09-30-2018
+Description: Adds new BuildingExtension class to allow for bypasses to SpawningWipes. Perfect for adding furniture on top of existing tables.
 ====================
 
 Download now on...
@@ -25,9 +25,9 @@ Discuss the mod on...
 [img width=260]https://raw.githubusercontent.com/jecrell/JecsTools/master/About/Preview.png[/img]
 [hr]
 [b]JecsTools
-Version: 1.1.0.5
-Updated: 09-22-2018
-Description: [color=orange]Added a max range check to make GetInRangeToil fire for pawns who target enemies outside of max range.[/color]
+Version: 1.1.0.6
+Updated: 09-30-2018
+Description: [color=orange]Adds new BuildingExtension class to allow for bypasses to SpawningWipes. Perfect for adding furniture on top of existing tables.[/color]
 [hr]
 [b]Download now on...[/b]
 [url=https://www.patreon.com/posts/jecstools-for-0-21059900]Patreon[/url]
