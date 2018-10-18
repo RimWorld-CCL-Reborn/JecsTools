@@ -35,9 +35,8 @@ namespace CompDeflector
             yield break;
         }
 
-
         [DebuggerHidden]
-        public override IEnumerable<StatDrawEntry> SpecialDisplayStats()
+        public override IEnumerable<StatDrawEntry> SpecialDisplayStats(StatRequest req)
         {
             if (!useSkillInCalc)
             {

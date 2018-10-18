@@ -37,37 +37,37 @@ namespace JecsTools
 //                    nameof(PawnGroupKindWorker_Normal.MinPointsToGenerateAnything)),
 //                new HarmonyMethod(type, nameof(MinPointsTest)), null);
             //------------
-            
+
             //Adds HediffCompProperties_DamageSoak checks to damage
             harmony.Patch(AccessTools.Method(typeof(Pawn_HealthTracker), nameof(Pawn_HealthTracker.PreApplyDamage)),
                 new HarmonyMethod(type, nameof(PreApplyDamage_PrePatch)), null);
-            
+
             //Applies cached armor damage and absorption
             harmony.Patch(AccessTools.Method(typeof(ArmorUtility), "ApplyArmor"),
                 new HarmonyMethod(type, nameof(ApplyProperDamage)), null);
-            
+
             //Applies damage soak motes
             harmony.Patch(AccessTools.Method(typeof(ArmorUtility), nameof(ArmorUtility.GetPostArmorDamage)), null,
                 new HarmonyMethod(type, nameof(Post_GetPostArmorDamage)));
-            
+
             //Allows for adding additional HediffSets when characters spawn using the StartWithHediff class. 
             harmony.Patch(
                 AccessTools.Method(typeof(PawnGenerator), "GeneratePawn", new[] {typeof(PawnGenerationRequest)}), null,
                 new HarmonyMethod(type, nameof(Post_GeneratePawn)));
-            
+
             //Checks apparel that uses the ApparelExtension
             harmony.Patch(AccessTools.Method(typeof(ApparelUtility), nameof(ApparelUtility.CanWearTogether)), null,
                 new HarmonyMethod(type, nameof(Post_CanWearTogether)));
-            
+
             //Handles special cases of faction disturbances
             harmony.Patch(AccessTools.Method(typeof(Faction), nameof(Faction.Notify_MemberDied)),
                 new HarmonyMethod(type, nameof(Notify_MemberDied)), null);
-            
+
             //Handles FactionSettings extension to allow for fun effects when factions arrive.
             harmony.Patch(
                 AccessTools.Method(typeof(PawnGroupMakerUtility), nameof(PawnGroupMakerUtility.GeneratePawns)), null,
                 new HarmonyMethod(type, nameof(GeneratePawns)), null);
-            
+
             //Handles cases where gendered apparel swaps out for individual genders.
             harmony.Patch(
                 AccessTools.Method(typeof(PawnApparelGenerator),
@@ -79,14 +79,61 @@ namespace JecsTools
                 AccessTools.Method(typeof(GenSpawn),
                     nameof(GenSpawn.SpawningWipes)), null,
                 new HarmonyMethod(type, nameof(SpawningWipes_PostFix)), null);
-//            harmony.Patch(
-//                AccessTools.Method(typeof(GenConstruct),
-//                    nameof(GenConstruct.HandleBlockingThingJob)), null,
-//                new HarmonyMethod(type, nameof(HandleBlockingThingJob_PostFix)), null);
+            //BuildingExtension is also checked here to make sure things do not block construction.
             harmony.Patch(
                 AccessTools.Method(typeof(GenConstruct),
                     nameof(GenConstruct.BlocksConstruction)), null,
                 new HarmonyMethod(type, nameof(BlocksConstruction_PostFix)), null);
+            //
+            harmony.Patch(
+                AccessTools.Method(typeof(Projectile),
+                    "CanHit"), null,
+                new HarmonyMethod(type, nameof(CanHit_PostFix)), null);
+            harmony.Patch(
+                AccessTools.Method(typeof(Verb),
+                    "CanHitCellFromCellIgnoringRange"),
+                new HarmonyMethod(type, nameof(CanHitCellFromCellIgnoringRange_Prefix)), null);
+        }
+        
+        //Added B19, Oct 2019
+        //ProjectileExtension check
+        //Allows a bullet to pass through walls when fired.
+        public static bool CanHitCellFromCellIgnoringRange_Prefix(Verb __instance, IntVec3 sourceSq, IntVec3 targetLoc, bool includeCorners, ref bool __result)
+        {
+            if (__instance?.EquipmentCompSource?.PrimaryVerb?.verbProps?.defaultProjectile is ThingDef proj &&
+                proj?.HasModExtension<ProjectileExtension>() == true &&
+                proj.GetModExtension<ProjectileExtension>() is ProjectileExtension ext)
+            {
+                if (ext.passesWalls)
+                    __result = true;
+                return false;
+            }
+
+            return true;
+        }
+
+        //Added B19, Oct 2019
+        //ProjectileExtension check
+        //Ignores all structures as part of objects that disallow being fired through.
+        public static void CanHit_PostFix(Projectile __instance, Thing thing, ref bool __result)
+        {
+            if (!__result && __instance?.def?.HasModExtension<ProjectileExtension>() == true &&
+                __instance.def.GetModExtension<ProjectileExtension>() is ProjectileExtension ext)
+            {
+                //Mods will often have their own walls, so we cannot do a def check for 
+                //ThingDefOf.Wall
+                //Most "walls" should either be in the structure category or be able to hold walls.
+                if (thing?.def?.designationCategory == DesignationCategoryDefOf.Structure ||
+                    thing?.def?.holdsRoof == true)
+                {
+                    if (ext.passesWalls)
+                    {
+                        __result = false;
+                        return;
+                    }
+                }
+                
+            }
         }
 
         public static void BlocksConstruction_PostFix(Thing constructible, Thing t, ref bool __result)
@@ -99,7 +146,7 @@ namespace JecsTools
             {
                 BuildableDef buildableDef = GenConstruct.BuiltDefOf(thingDef);
                 BuildableDef buildableDef2 = GenConstruct.BuiltDefOf(thingDef2);
-                __result = ShouldWipe(buildableDef, buildableDef2, t.PositionHeld, t.MapHeld);   
+                __result = ShouldWipe(buildableDef, buildableDef2, t.PositionHeld, t.MapHeld);
             }
         }
 
@@ -113,7 +160,7 @@ namespace JecsTools
             {
                 BuildableDef buildableDef = GenConstruct.BuiltDefOf(thingDef);
                 BuildableDef buildableDef2 = GenConstruct.BuiltDefOf(thingDef2);
-                __result = ShouldWipe(buildableDef, buildableDef2, IntVec3.Invalid, null);   
+                __result = ShouldWipe(buildableDef, buildableDef2, IntVec3.Invalid, null);
             }
         }
 
@@ -161,13 +208,16 @@ namespace JecsTools
                         return true;
                     }
                 }
+
                 return true;
             }
+
             var locThings = loc.GetThingList(map);
             for (var index = 0; index < locThings.Count; index++)
             {
                 var thing = locThings[index];
-                if (thing.def is ThingDef thingDef && ShouldWipe(newEntDef, GenConstruct.BuiltDefOf(thingDef), IntVec3.Invalid, null))
+                if (thing.def is ThingDef thingDef &&
+                    ShouldWipe(newEntDef, GenConstruct.BuiltDefOf(thingDef), IntVec3.Invalid, null))
                     return true;
             }
 

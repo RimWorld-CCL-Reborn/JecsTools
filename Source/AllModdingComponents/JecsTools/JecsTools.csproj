@@ -109,6 +109,7 @@
     <Compile Include="ModCompatibilityUtility.cs" />
     <Compile Include="TexButton.cs" />
     <Compile Include="ThingDef_LaserProjectile.cs" />
+    <Compile Include="ProjectileExtension.cs" />
     <Compile Include="_HumanlikeOrdersUtility.cs" />
     <Compile Include="JobGiver_AIFirelessTrashColonyClose.cs" />
     <Compile Include="JobGiver_AIFirelessTrashColonyDistant.cs" />

@@ -1,3 +1,7 @@
+1.1.0.8 (10-18-2018)
+========================
+Changed very few issues to allow for the update for RimWorld 1.0.
+
 1.1.0.7 (10-02-2018)
 ========================
 The wall placeworker now also allows other types of walls.
