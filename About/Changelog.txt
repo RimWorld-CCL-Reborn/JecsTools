@@ -1,3 +1,7 @@
+1.1.0.9 (10-19-2018)
+========================
+Added a try and catch to the ProjectileExtension Harmony patch for CanHitCellFromCellIgnoringRange. This should allow for proper ability casting again.
+
 1.1.0.8 (10-18-2018)
 ========================
 Changed very few issues to allow for the update for RimWorld 1.0.

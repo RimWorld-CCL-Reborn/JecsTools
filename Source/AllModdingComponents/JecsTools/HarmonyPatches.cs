@@ -100,15 +100,23 @@ namespace JecsTools
         //Allows a bullet to pass through walls when fired.
         public static bool CanHitCellFromCellIgnoringRange_Prefix(Verb __instance, IntVec3 sourceSq, IntVec3 targetLoc, bool includeCorners, ref bool __result)
         {
-            if (__instance?.EquipmentCompSource?.PrimaryVerb?.verbProps?.defaultProjectile is ThingDef proj &&
-                proj?.HasModExtension<ProjectileExtension>() == true &&
-                proj.GetModExtension<ProjectileExtension>() is ProjectileExtension ext)
+            try
             {
-                if (ext.passesWalls)
-                    __result = true;
-                return false;
-            }
 
+                if (__instance?.EquipmentCompSource?.PrimaryVerb?.verbProps?.defaultProjectile is ThingDef proj &&
+                    proj?.HasModExtension<ProjectileExtension>() == true &&
+                    proj?.GetModExtension<ProjectileExtension>() is ProjectileExtension ext)
+                {
+                    if (ext.passesWalls)
+                        __result = true;
+                    return false;
+                }
+
+            }
+            catch (Exception e)
+            {
+
+            }
             return true;
         }
 
