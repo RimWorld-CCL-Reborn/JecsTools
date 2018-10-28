@@ -22,6 +22,9 @@ namespace CompAnimated
             return asPawn;
         }
         
+        /**
+        * render over thing when not a pawn; rather than use as base layer like the PawnGraphicSet does for the pawns graphics managment
+        */
         public override void PostDraw()
         {
             if (parent is Pawn) return;
@@ -43,7 +46,7 @@ namespace CompAnimated
         {
             get
             {
-                if (curGraphic == null || dirty || !(parent is Pawn))
+                if (curGraphic == null || dirty || !(parent is Pawn)) //Buildings and the like use us as a renderer.
                 {
                     var resolveCurGraphic = DefaultGraphic();
                     curGraphic = resolveCurGraphic;
@@ -91,6 +94,12 @@ namespace CompAnimated
             return result;
         }
 
+        /** Primary call to above */
+        private Graphic DefaultGraphic()
+        {
+            return ResolveCurGraphic(parent, Props, ref curGraphic, ref curIndex, ref ticksToCycle, ref dirty);
+        }
+        
         public static Graphic ResolveCycledGraphic(ThingWithComps pAnimatee, CompProperties_Animated pProps, int pCurIndex)
         {
             Graphic result = null;
@@ -99,6 +108,7 @@ namespace CompAnimated
                 AsPawn(pAnimatee, out var pPawn) &&
                 pPawn.Drawer?.renderer?.graphics is PawnGraphicSet pawnGraphicSet)
             {
+                /*Start Pawn*/
                 pawnGraphicSet.ClearCache();
                 
                 if (haveMovingFrames && AsPawn(pAnimatee, out var p) && (p?.pather?.MovingNow ?? false))
@@ -115,7 +125,7 @@ namespace CompAnimated
                 {
                     result = pProps.movingFrames[pCurIndex].Graphic;
                 }
-            } else if (!pProps.stillFrames.NullOrEmpty())
+            } /*Start Non Pawn*/ else if (!pProps.stillFrames.NullOrEmpty())
             {
                 result = pProps.stillFrames[pCurIndex].Graphic;
             }
@@ -158,15 +168,10 @@ namespace CompAnimated
             }
             return result;
         }
-        
-        private Graphic DefaultGraphic()
-        {
-            return ResolveCurGraphic(parent, Props, ref curGraphic, ref curIndex, ref ticksToCycle, ref dirty);
-        }
 
         public override void CompTick()
         {
-            curGraphic = DefaultGraphic();
+            curGraphic = DefaultGraphic(); //update cache on tick as well
         }
 
         public override void PostExposeData()
