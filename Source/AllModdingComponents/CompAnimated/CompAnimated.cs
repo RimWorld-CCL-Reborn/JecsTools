@@ -15,34 +15,60 @@ namespace CompAnimated
         public int MaxFrameIndexMoving => Props.movingFrames.Count();
         public int MaxFrameIndexStill => Props.stillFrames.Count();
 
-        public Pawn Animatee => parent as Pawn;
+        private static bool AsPawn(ThingWithComps pAnimatee, out Pawn pawn)
+        {
+            bool asPawn = pAnimatee is Pawn;
+            pawn = asPawn? (Pawn) pAnimatee : null;
+            return asPawn;
+        }
+        
+        /**
+        * render over thing when not a pawn; rather than use as base layer like the PawnGraphicSet does for the pawns graphics managment
+        */
+        public override void PostDraw()
+        {
+            if (parent is Pawn) return;
 
+            Log.Message("Post");
+            base.PostDraw();
+            if (curGraphic == null)
+                return;
+            
+            Log.Message("Overlay");
+            Vector3 drawPos = this.parent.DrawPos;
+
+            curGraphic.Draw(drawPos, Rot4.North, this.parent, 0f);
+        }
+        
         public CompProperties_Animated Props => (CompProperties_Animated) props;
 
         public Graphic CurGraphic
         {
             get
             {
-                if (curGraphic == null || dirty)
-                    curGraphic = ResolveCurGraphic(Animatee, Props, ref curGraphic, ref curIndex, ref ticksToCycle,
-                        ref dirty);
+                if (curGraphic == null || dirty || !(parent is Pawn)) //Buildings and the like use us as a renderer.
+                {
+                    var resolveCurGraphic = DefaultGraphic();
+                    curGraphic = resolveCurGraphic;
+                }
+
                 return curGraphic;
             }
         }
 
-        public static Graphic ResolveCurGraphic(Pawn pAnimatee, CompProperties_Animated pProps, ref Graphic pCurGraphic,
+        public static Graphic ResolveCurGraphic(ThingWithComps pThingWithComps, CompProperties_Animated pProps, ref Graphic result,
             ref int pCurIndex, ref int pTicksToCycle, ref bool pDirty, bool useBaseGraphic = true)
         {
-            var result = pCurGraphic;
             if (pProps.secondsBetweenFrames <= 0.0f)
                 Log.ErrorOnce("CompAnimated :: CompProperties_Animated secondsBetweenFrames needs to be more than 0",
                     132);
 
-            if (pAnimatee != null && pProps.secondsBetweenFrames > 0.0f && Find.TickManager.TicksGame > pTicksToCycle)
+            if (pThingWithComps != null && pProps.secondsBetweenFrames > 0.0f && Find.TickManager.TicksGame > pTicksToCycle)
             {
                 pTicksToCycle = Find.TickManager.TicksGame + pProps.secondsBetweenFrames.SecondsToTicks();
 
-                if (pAnimatee?.pather?.MovingNow ?? false)
+                bool asPawn = AsPawn(pThingWithComps, out var pAnimatee);
+                if (asPawn && (pAnimatee?.pather?.MovingNow ?? false))
                 {
                     pCurIndex = (pCurIndex + 1) % pProps.movingFrames.Count();
                     if (pProps.sound != null) pProps.sound.PlayOneShot(SoundInfo.InMap(pAnimatee));
@@ -52,30 +78,40 @@ namespace CompAnimated
                 {
                     if (!pProps.stillFrames.NullOrEmpty())
                     {
+                        Log.Message("ticked still");
                         pCurIndex = (pCurIndex + 1) % pProps.stillFrames.Count();
-                        result = ResolveCycledGraphic(pAnimatee, pProps, pCurIndex);
+                        result = ResolveCycledGraphic(pThingWithComps, pProps, pCurIndex);
                         pDirty = false;
                         return result;
                     }
-                    if (useBaseGraphic)
+                    if (pAnimatee!=null && useBaseGraphic)
                         result = ResolveBaseGraphic(pAnimatee);
                     else
-                        result = ResolveCycledGraphic(pAnimatee, pProps, pCurIndex);
+                        result = ResolveCycledGraphic(pThingWithComps, pProps, pCurIndex);
                 }
             }
             pDirty = false;
             return result;
         }
 
-        public static Graphic ResolveCycledGraphic(Pawn pAnimatee, CompProperties_Animated pProps, int pCurIndex)
+        /** Primary call to above */
+        private Graphic DefaultGraphic()
+        {
+            return ResolveCurGraphic(parent, Props, ref curGraphic, ref curIndex, ref ticksToCycle, ref dirty);
+        }
+        
+        public static Graphic ResolveCycledGraphic(ThingWithComps pAnimatee, CompProperties_Animated pProps, int pCurIndex)
         {
             Graphic result = null;
-
+            bool haveMovingFrames = !pProps.movingFrames.NullOrEmpty();
             if (!pProps.movingFrames.NullOrEmpty() &&
-                pAnimatee.Drawer?.renderer?.graphics is PawnGraphicSet pawnGraphicSet)
+                AsPawn(pAnimatee, out var pPawn) &&
+                pPawn.Drawer?.renderer?.graphics is PawnGraphicSet pawnGraphicSet)
             {
+                /*Start Pawn*/
                 pawnGraphicSet.ClearCache();
-                if (pAnimatee.pather != null && pAnimatee.pather.MovingNow)
+                
+                if (haveMovingFrames && AsPawn(pAnimatee, out var p) && (p?.pather?.MovingNow ?? false))
                 {
                     result = pProps.movingFrames[pCurIndex].Graphic;
                     pawnGraphicSet.nakedGraphic = result;
@@ -85,11 +121,19 @@ namespace CompAnimated
                     result = pProps.stillFrames[pCurIndex].Graphic;
                     pawnGraphicSet.nakedGraphic = result;
                 }
-                else
+                else if(haveMovingFrames)
                 {
                     result = pProps.movingFrames[pCurIndex].Graphic;
                 }
+            } /*Start Non Pawn*/ else if (!pProps.stillFrames.NullOrEmpty())
+            {
+                result = pProps.stillFrames[pCurIndex].Graphic;
             }
+            else if(haveMovingFrames)
+            {
+                result = pProps.movingFrames[pCurIndex].Graphic;
+            }
+
             return result;
         }
 
@@ -127,7 +171,7 @@ namespace CompAnimated
 
         public override void CompTick()
         {
-            ResolveCurGraphic(Animatee, Props, ref curGraphic, ref curIndex, ref ticksToCycle, ref dirty);
+            curGraphic = DefaultGraphic(); //update cache on tick as well
         }
 
         public override void PostExposeData()
