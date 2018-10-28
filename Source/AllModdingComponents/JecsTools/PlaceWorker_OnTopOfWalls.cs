@@ -10,10 +10,9 @@ namespace JecsTools
             Thing thingToIgnore = null)
         {
             if (loc.GetThingList(map).FirstOrDefault(x =>
-                    x.def.blockWind && x.def.coversFloor && x.def.holdsRoof && x.def.building is BuildingProperties b &&
-                    b.isInert) == null)
-                return new AcceptanceReport("JT_PlaceWorker_OnTopOfWalls".Translate());
-            return true;
+                    x.def.defName.Contains("Wall")) != null)
+                return true;
+            return new AcceptanceReport("JT_PlaceWorker_OnTopOfWalls".Translate());
         }
     }
 }
