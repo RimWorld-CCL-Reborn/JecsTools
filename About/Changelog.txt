@@ -1,3 +1,7 @@
+1.1.0.10 (10-28-2018)
+========================
+AliceCecil has adjusted the CompAnimated code to support buildings and other objects (ThingWithComps).
+
 1.1.0.9 (10-19-2018)
 ========================
 Added a try and catch to the ProjectileExtension Harmony patch for CanHitCellFromCellIgnoringRange. This should allow for proper ability casting again.

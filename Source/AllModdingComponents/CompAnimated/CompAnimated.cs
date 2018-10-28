@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using UnityEngine;
 using Verse;
 using Verse.Sound;
@@ -56,7 +57,14 @@ namespace CompAnimated
             }
         }
 
-        public static Graphic ResolveCurGraphic(ThingWithComps pThingWithComps, CompProperties_Animated pProps, ref Graphic result,
+        [Obsolete("ResolveCurGraphic for pawns is deprecated, please use ResolveCurGraphic for ThingWithComps instead.")]
+        public static Graphic ResolveCurGraphic(Pawn pawn, CompProperties_Animated pProps, ref Graphic result,
+            ref int pCurIndex, ref int pTicksToCycle, ref bool pDirty, bool useBaseGraphic = true)
+        {
+            return ResolveCurGraphic(pawn as ThingWithComps, pProps, ref result, ref pCurIndex, ref pTicksToCycle, ref pDirty, useBaseGraphic);
+        }
+
+            public static Graphic ResolveCurGraphic(ThingWithComps pThingWithComps, CompProperties_Animated pProps, ref Graphic result,
             ref int pCurIndex, ref int pTicksToCycle, ref bool pDirty, bool useBaseGraphic = true)
         {
             if (pProps.secondsBetweenFrames <= 0.0f)
@@ -78,7 +86,7 @@ namespace CompAnimated
                 {
                     if (!pProps.stillFrames.NullOrEmpty())
                     {
-                        Log.Message("ticked still");
+                        //Log.Message("ticked still");
                         pCurIndex = (pCurIndex + 1) % pProps.stillFrames.Count();
                         result = ResolveCycledGraphic(pThingWithComps, pProps, pCurIndex);
                         pDirty = false;
@@ -99,8 +107,14 @@ namespace CompAnimated
         {
             return ResolveCurGraphic(parent, Props, ref curGraphic, ref curIndex, ref ticksToCycle, ref dirty);
         }
-        
-        public static Graphic ResolveCycledGraphic(ThingWithComps pAnimatee, CompProperties_Animated pProps, int pCurIndex)
+
+        [Obsolete("ResolveCycledGraphic for pawns is deprecated, please use ResolveCycledGraphic for ThingWithComps instead.")]
+        public static Graphic ResolveCycledGraphic(Pawn pAnimatee, CompProperties_Animated pProps, int pCurIndex)
+        {
+            return ResolveCycledGraphic(pAnimatee as ThingWithComps, pProps, pCurIndex);
+        }
+
+            public static Graphic ResolveCycledGraphic(ThingWithComps pAnimatee, CompProperties_Animated pProps, int pCurIndex)
         {
             Graphic result = null;
             bool haveMovingFrames = !pProps.movingFrames.NullOrEmpty();
