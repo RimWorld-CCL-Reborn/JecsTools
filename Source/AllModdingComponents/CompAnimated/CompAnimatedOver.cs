@@ -17,8 +17,8 @@ namespace CompAnimated
             Vector3 drawPos = this.parent.DrawPos;
             
             //apply offset
-            drawPos.x += OverProps.xOffset + yOffset;
-            drawPos.y += OverProps.yOffset + xOffset;
+            drawPos.x += OverProps.xOffset + xOffset;
+            drawPos.z += OverProps.yOffset + yOffset;
             
             curGraphic.Draw(drawPos, Rot4.North, this.parent);
         }

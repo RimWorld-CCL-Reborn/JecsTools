@@ -48,12 +48,7 @@ namespace CompAnimated
             {
                 if (curGraphic == null || dirty || !(parent is Pawn)) //Buildings and the like use us as a renderer.
                 {
-                    var resolveCurGraphic = DefaultGraphic();
-                    if (resolveCurGraphic != null && resolveCurGraphic != curGraphic)
-                    {
-                        curGraphic = resolveCurGraphic;
-                        NotifyGraphicsChange();
-                    }
+                    curGraphic = DefaultGraphic();
                 }
 
                 return curGraphic;
@@ -108,7 +103,13 @@ namespace CompAnimated
         /** Primary call to above */
         private Graphic DefaultGraphic()
         {
-            return ResolveCurGraphic(parent, Props, ref curGraphic, ref curIndex, ref ticksToCycle, ref dirty);
+            var resolveCurGraphic =ResolveCurGraphic(parent, Props, ref curGraphic, ref curIndex, ref ticksToCycle, ref dirty);
+            if (resolveCurGraphic != null && resolveCurGraphic != curGraphic)
+            {
+                curGraphic = resolveCurGraphic;
+                NotifyGraphicsChange();
+            }
+            return resolveCurGraphic;
         }
 
         [Obsolete("ResolveCycledGraphic for pawns is deprecated, please use ResolveCycledGraphic for ThingWithComps instead.")]
@@ -200,7 +201,7 @@ namespace CompAnimated
 
         public virtual void NotifyGraphicsChange()
         {
-            
+            Log.Message("Graphics Changed");
         }
     }
 }
