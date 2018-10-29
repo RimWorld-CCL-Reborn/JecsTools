@@ -5,6 +5,7 @@ namespace CompAnimated
 {
     public class CompAnimatedOver : CompAnimated
     {
+        protected Graphic scaled;
         /// <summary>
         /// Additional programatic movement hooks 
         /// </summary>
@@ -20,13 +21,20 @@ namespace CompAnimated
             drawPos.x += OverProps.xOffset + xOffset;
             drawPos.z += OverProps.yOffset + yOffset;
             
-            curGraphic.Draw(drawPos, Rot4.North, this.parent);
+            scaled.Draw(drawPos, Rot4.North, this.parent);
         }
 
         public override void NotifyGraphicsChange()
         {
+            var vector2 = new Vector2(OverProps.xScale*xScale, OverProps.yScale*yScale);
+            
+            var sz = curGraphic.drawSize;
+            sz.Scale(vector2);
+            scaled = curGraphic.GetCopy(sz);
             //re scale once
-            curGraphic.drawSize.Scale(new Vector2(OverProps.xScale*xScale, OverProps.yScale*yScale));
+            
+            
+            Log.Message("Size: "+sz +" Scalar "+vector2);
             base.NotifyGraphicsChange();
         }
 

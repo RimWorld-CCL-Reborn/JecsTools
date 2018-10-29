@@ -103,13 +103,15 @@ namespace CompAnimated
         /** Primary call to above */
         private Graphic DefaultGraphic()
         {
-            var resolveCurGraphic =ResolveCurGraphic(parent, Props, ref curGraphic, ref curIndex, ref ticksToCycle, ref dirty);
-            if (resolveCurGraphic != null && resolveCurGraphic != curGraphic)
+            Graphic proxyGraphic = null;
+            var resolveCurGraphic = ResolveCurGraphic(parent, Props, ref proxyGraphic, ref curIndex, ref ticksToCycle, ref dirty);
+            if (proxyGraphic != null)
             {
-                curGraphic = resolveCurGraphic;
+                curGraphic = proxyGraphic;
                 NotifyGraphicsChange();
             }
-            return resolveCurGraphic;
+           
+            return resolveCurGraphic ?? curGraphic;
         }
 
         [Obsolete("ResolveCycledGraphic for pawns is deprecated, please use ResolveCycledGraphic for ThingWithComps instead.")]
