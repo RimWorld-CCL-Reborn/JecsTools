@@ -14,5 +14,23 @@ namespace CompAnimated
         {
             compClass = typeof(CompAnimated);
         }
+
+        public override IEnumerable<string> ConfigErrors(ThingDef parentDef)
+        {
+            foreach (var error in base.ConfigErrors(parentDef))
+            {
+                yield return error;
+            }
+
+            if (stillFrames.NullOrEmpty() && movingFrames.NullOrEmpty())
+            {
+                yield return "Forgot to define stillFrame > li or movingFrame > li";
+            }
+            
+            if (secondsBetweenFrames<=0f)
+            {
+                yield return "Forgot to define secondsBetweenFrames";
+            }
+        }
     }
 }
