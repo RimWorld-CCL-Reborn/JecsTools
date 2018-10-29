@@ -82,8 +82,8 @@ namespace CompAnimated
                 if (asPawn && (pAnimatee?.pather?.MovingNow ?? false))
                 {
                     pCurIndex = (pCurIndex + 1) % pProps.movingFrames.Count();
-                    if (pProps.sound != null) pProps.sound.PlayOneShot(SoundInfo.InMap(pAnimatee));
-                    result = ResolveCycledGraphic(pAnimatee, pProps, pCurIndex);
+                    pProps.sound?.PlayOneShot(SoundInfo.InMap(pAnimatee));
+                    result = ResolveCycledGraphic(pThingWithComps, pProps, pCurIndex);
                 }
                 else
                 {
