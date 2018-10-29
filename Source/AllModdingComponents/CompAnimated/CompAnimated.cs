@@ -203,7 +203,6 @@ namespace CompAnimated
 
         public virtual void NotifyGraphicsChange()
         {
-            Log.Message("Graphics Changed");
         }
     }
 }

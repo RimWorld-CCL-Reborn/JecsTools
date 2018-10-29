@@ -31,10 +31,6 @@ namespace CompAnimated
             var sz = curGraphic.drawSize;
             sz.Scale(vector2);
             scaled = curGraphic.GetCopy(sz);
-            //re scale once
-            
-            
-            Log.Message("Size: "+sz +" Scalar "+vector2);
             base.NotifyGraphicsChange();
         }
 
