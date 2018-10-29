@@ -8,7 +8,7 @@ namespace CompAnimated
 {
     public class CompAnimated : ThingComp
     {
-        private Graphic curGraphic;
+        protected Graphic curGraphic;
         public int curIndex;
 
         public bool dirty;
@@ -29,18 +29,17 @@ namespace CompAnimated
         public override void PostDraw()
         {
             if (parent is Pawn) return;
-
-            Log.Message("Post");
             base.PostDraw();
-            if (curGraphic == null)
-                return;
-            
-            Log.Message("Overlay");
-            Vector3 drawPos = this.parent.DrawPos;
+            if (curGraphic != null)
+                Render();
+        }
 
+        public virtual void Render()
+        {
+            Vector3 drawPos = this.parent.DrawPos;
             curGraphic.Draw(drawPos, Rot4.North, this.parent, 0f);
         }
-        
+
         public CompProperties_Animated Props => (CompProperties_Animated) props;
 
         public Graphic CurGraphic
@@ -49,8 +48,7 @@ namespace CompAnimated
             {
                 if (curGraphic == null || dirty || !(parent is Pawn)) //Buildings and the like use us as a renderer.
                 {
-                    var resolveCurGraphic = DefaultGraphic();
-                    curGraphic = resolveCurGraphic;
+                    curGraphic = DefaultGraphic();
                 }
 
                 return curGraphic;
@@ -64,7 +62,7 @@ namespace CompAnimated
             return ResolveCurGraphic(pawn as ThingWithComps, pProps, ref result, ref pCurIndex, ref pTicksToCycle, ref pDirty, useBaseGraphic);
         }
 
-            public static Graphic ResolveCurGraphic(ThingWithComps pThingWithComps, CompProperties_Animated pProps, ref Graphic result,
+        public static Graphic ResolveCurGraphic(ThingWithComps pThingWithComps, CompProperties_Animated pProps, ref Graphic result,
             ref int pCurIndex, ref int pTicksToCycle, ref bool pDirty, bool useBaseGraphic = true)
         {
             if (pProps.secondsBetweenFrames <= 0.0f)
@@ -79,8 +77,8 @@ namespace CompAnimated
                 if (asPawn && (pAnimatee?.pather?.MovingNow ?? false))
                 {
                     pCurIndex = (pCurIndex + 1) % pProps.movingFrames.Count();
-                    if (pProps.sound != null) pProps.sound.PlayOneShot(SoundInfo.InMap(pAnimatee));
-                    result = ResolveCycledGraphic(pAnimatee, pProps, pCurIndex);
+                    pProps.sound?.PlayOneShot(SoundInfo.InMap(pAnimatee));
+                    result = ResolveCycledGraphic(pThingWithComps, pProps, pCurIndex);
                 }
                 else
                 {
@@ -105,7 +103,15 @@ namespace CompAnimated
         /** Primary call to above */
         private Graphic DefaultGraphic()
         {
-            return ResolveCurGraphic(parent, Props, ref curGraphic, ref curIndex, ref ticksToCycle, ref dirty);
+            Graphic proxyGraphic = null;
+            var resolveCurGraphic = ResolveCurGraphic(parent, Props, ref proxyGraphic, ref curIndex, ref ticksToCycle, ref dirty);
+            if (proxyGraphic != null)
+            {
+                curGraphic = proxyGraphic;
+                NotifyGraphicsChange();
+            }
+           
+            return resolveCurGraphic ?? curGraphic;
         }
 
         [Obsolete("ResolveCycledGraphic for pawns is deprecated, please use ResolveCycledGraphic for ThingWithComps instead.")]
@@ -114,7 +120,7 @@ namespace CompAnimated
             return ResolveCycledGraphic(pAnimatee as ThingWithComps, pProps, pCurIndex);
         }
 
-            public static Graphic ResolveCycledGraphic(ThingWithComps pAnimatee, CompProperties_Animated pProps, int pCurIndex)
+        public static Graphic ResolveCycledGraphic(ThingWithComps pAnimatee, CompProperties_Animated pProps, int pCurIndex)
         {
             Graphic result = null;
             bool haveMovingFrames = !pProps.movingFrames.NullOrEmpty();
@@ -193,6 +199,10 @@ namespace CompAnimated
             base.PostExposeData();
             Scribe_Values.Look(ref curIndex, "curIndex", 0);
             Scribe_Values.Look(ref ticksToCycle, "ticksToCycle", -1);
+        }
+
+        public virtual void NotifyGraphicsChange()
+        {
         }
     }
 }
