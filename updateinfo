@@ -3,10 +3,10 @@
 ==============================
 
 JecsTools Update
-v1.1.0.8 (10-18-2018)
+v1.1.0.10 (10-28-2018)
 ====================
 
-Changed very few issues to allow for the update for RimWorld 1.0.
+AliceCecil has adjusted the CompAnimated code to support buildings and other objects (ThingWithComps).
 --------------------
 
 Download now on...
@@ -25,9 +25,9 @@ Discuss the mod on...
 [img width=260]https://raw.githubusercontent.com/jecrell/JecsTools/master/About/Preview.png[/img]
 [hr]
 [b]JecsTools
-Version: 1.1.0.8
-Updated: 10-18-2018
-Description: [color=orange]Changed very few issues to allow for the update for RimWorld 1.0.[/color]
+Version: 1.1.0.10
+Updated: 10-28-2018
+Description: [color=orange]AliceCecil has adjusted the CompAnimated code to support buildings and other objects (ThingWithComps).[/color]
 [hr]
 [b]Download now on...[/b]
 [url=https://www.patreon.com/posts/22139730]Patreon[/url]
