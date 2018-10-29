@@ -4,7 +4,7 @@
   <author>jecrell</author>
   <url>https://discord.gg/AaVFA7V</url>
   <targetVersion>1.0.2059</targetVersion>
-  <description>1.1.0.10 (10-28-2018)
+  <description>1.1.0.11 (10-29-2018)
 
 Adds modding components to RimWorld: vehicles, spell casting, weapon slots, oversized weapons, and more!
 
@@ -63,6 +63,10 @@ Maaxar, Shibby Says, TheJagermeister, Cory Bonifay, Kiya Nicoll, Matt Harris, Pa
 ========================
 Changelog
 ========================
+1.1.0.11 (10-29-2018)
+========================
+CompProperties_AnimatedOver added by AliceCecil to draw on top of existing ThingDefs.
+
 1.1.0.10 (10-28-2018)
 ========================
 AliceCecil has adjusted the CompAnimated code to support buildings and other objects (ThingWithComps).
