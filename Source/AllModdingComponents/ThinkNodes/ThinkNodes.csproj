@@ -49,6 +49,7 @@
   <ItemGroup>
     <Compile Include="JobGiver_Capture.cs" />
     <Compile Include="JobGiver_GoToClosestThingDef.cs" />
+    <Compile Include="ThinkNode_ConditionalHediff.cs" />
     <Compile Include="ThinkNode_ConditionalWorkTypesDef.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
