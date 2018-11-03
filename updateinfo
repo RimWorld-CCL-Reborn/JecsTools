@@ -3,10 +3,10 @@
 ==============================
 
 JecsTools Update
-v1.1.0.10 (10-28-2018)
+v1.1.0.12 (11-03-2018)
 ====================
 
-AliceCecil has adjusted the CompAnimated code to support buildings and other objects (ThingWithComps).
+Adds ThinkNode_ConditionalWorkTypeDefs, ThinkNodes.JobGiver_Capture, JobGiver_GoToClosestThingDef, ThinkNode_ConditionalHediff, ThinkNodes.ThinkNode_ConditionalHunter, ThinkNode_ConditionalDelay, ThinkNode_ConditionalMissingHuntingWeapon by AliceCecil
 --------------------
 
 Download now on...
@@ -25,9 +25,9 @@ Discuss the mod on...
 [img width=260]https://raw.githubusercontent.com/jecrell/JecsTools/master/About/Preview.png[/img]
 [hr]
 [b]JecsTools
-Version: 1.1.0.10
-Updated: 10-28-2018
-Description: [color=orange]AliceCecil has adjusted the CompAnimated code to support buildings and other objects (ThingWithComps).[/color]
+Version: 1.1.0.12
+Updated: 11-03-2018
+Description: [color=orange]Adds ThinkNode_ConditionalWorkTypeDefs, ThinkNodes.JobGiver_Capture, JobGiver_GoToClosestThingDef, ThinkNode_ConditionalHediff, ThinkNodes.ThinkNode_ConditionalHunter, ThinkNode_ConditionalDelay, ThinkNode_ConditionalMissingHuntingWeapon by AliceCecil[/color]
 [hr]
 [b]Download now on...[/b]
 [url=https://www.patreon.com/posts/22139730]Patreon[/url]

@@ -4,7 +4,7 @@
   <author>jecrell</author>
   <url>https://discord.gg/AaVFA7V</url>
   <targetVersion>1.0.2059</targetVersion>
-  <description>1.1.0.12 (11-03-2018)
+  <description>1.1.0.13 (11-03-2018)
 
 Adds modding components to RimWorld: vehicles, spell casting, weapon slots, oversized weapons, and more!
 
@@ -63,6 +63,10 @@ Maaxar, Shibby Says, TheJagermeister, Cory Bonifay, Kiya Nicoll, Matt Harris, Pa
 ========================
 Changelog
 ========================
+1.1.0.13 (11-03-2018)
+========================
+Removed unneeded assemblies from source. Properly includes ThinkNode.dll in the correct location for public usage.
+
 1.1.0.12 (11-03-2018)
 ========================
 Adds ThinkNode_ConditionalWorkTypeDefs, ThinkNodes.JobGiver_Capture, JobGiver_GoToClosestThingDef, ThinkNode_ConditionalHediff, ThinkNodes.ThinkNode_ConditionalHunter, ThinkNode_ConditionalDelay, ThinkNode_ConditionalMissingHuntingWeapon by AliceCecil
