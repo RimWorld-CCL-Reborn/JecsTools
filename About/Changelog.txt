@@ -1,3 +1,7 @@
+1.1.0.12 (11-03-2018)
+========================
+Adds ThinkNode_ConditionalWorkTypeDefs, ThinkNodes.JobGiver_Capture, JobGiver_GoToClosestThingDef, ThinkNode_ConditionalHediff, ThinkNodes.ThinkNode_ConditionalHunter, ThinkNode_ConditionalDelay, ThinkNode_ConditionalMissingHuntingWeapon by AliceCecil
+
 1.1.0.11 (10-29-2018)
 ========================
 CompProperties_AnimatedOver added by AliceCecil to draw on top of existing ThingDefs.
