@@ -4,7 +4,7 @@
   <author>jecrell</author>
   <url>https://discord.gg/AaVFA7V</url>
   <targetVersion>1.0.2059</targetVersion>
-  <description>1.1.0.13 (11-03-2018)
+  <description>1.1.0.14 (11-18-2018)
 
 Adds modding components to RimWorld: vehicles, spell casting, weapon slots, oversized weapons, and more!
 
@@ -63,6 +63,14 @@ Maaxar, Shibby Says, TheJagermeister, Cory Bonifay, Kiya Nicoll, Matt Harris, Pa
 ========================
 Changelog
 ========================
+1.1.0.14 (11-18-2018)
+========================
+Added AlienRace BackstoryDef functionality into the JecsTools namespace
+
+1.1.0.14 (11-18-2018)
+========================
+Added erdelfs BackstoryDef functionality from AlienRaces to JecsTools.
+
 1.1.0.13 (11-03-2018)
 ========================
 Removed unneeded assemblies from source. Properly includes ThinkNode.dll in the correct location for public usage.

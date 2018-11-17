@@ -57,6 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApparelExtension.cs" />
+    <Compile Include="Backstories\BackstoryDef.cs" />
     <Compile Include="BuildingExtension.cs" />
     <Compile Include="CaravanJobs\CaravanJob.cs" />
     <Compile Include="CaravanJobs\CaravanJobDef.cs" />
@@ -120,7 +121,7 @@
     <Compile Include="TransformedPart.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="WeaponStuff" />
+    <Folder Include="WeaponStuff\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
