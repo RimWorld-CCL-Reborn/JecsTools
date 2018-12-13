@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
+using System.Reflection.Emit;
 using AbilityUser;
 using Harmony;
 using RimWorld;
@@ -93,8 +95,11 @@ namespace JecsTools
                 AccessTools.Method(typeof(Verb),
                     "CanHitCellFromCellIgnoringRange"),
                 new HarmonyMethod(type, nameof(CanHitCellFromCellIgnoringRange_Prefix)), null);
+
+            //optionally use "CutoutComplex" shader for apparel that wants it
+            harmony.Patch(AccessTools.Method(typeof(ApparelGraphicRecordGetter), nameof(ApparelGraphicRecordGetter.TryGetGraphicApparel)), null, null, new HarmonyMethod(type, nameof(CutOutComplexApparel_Transpiler)));
         }
-        
+
         //Added B19, Oct 2019
         //ProjectileExtension check
         //Allows a bullet to pass through walls when fired.
@@ -711,6 +716,33 @@ namespace JecsTools
                     else flyingObject.Launch(Caster, new LocalTargetInfo(loc.ToIntVec3()), target);
                 }
             }, "PushingCharacter", false, null);
+        }
+
+        //added 2018/12/13 - Mehni.
+        //Uses CutoutComplex shader for apparel that wants it.
+        private static IEnumerable<CodeInstruction> CutOutComplexApparel_Transpiler(IEnumerable<CodeInstruction> instructions)
+        {
+            MethodInfo shader = AccessTools.Method(typeof(HarmonyPatches), nameof(HarmonyPatches.Shader));
+            FieldInfo cutOut = AccessTools.Field(typeof(ShaderDatabase), nameof(ShaderDatabase.Cutout));
+
+            foreach (CodeInstruction codeInstruction in instructions)
+            {
+                if (codeInstruction.opcode == OpCodes.Ldsfld && codeInstruction.operand == cutOut)
+                {
+                    yield return new CodeInstruction(OpCodes.Ldarg_0); //apparel
+                    yield return new CodeInstruction(OpCodes.Call, shader); //return shader type
+                    continue; //skip instruction.
+                }
+                yield return codeInstruction;
+            }
+        }
+
+        private static Shader Shader (Apparel apparel)
+        {
+            if (apparel.def.graphicData.shaderType.Shader == ShaderDatabase.CutoutComplex)
+                return ShaderDatabase.CutoutComplex;
+
+            return ShaderDatabase.Cutout;
         }
     }
 }
