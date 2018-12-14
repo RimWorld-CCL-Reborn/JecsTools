@@ -1,3 +1,7 @@
+1.1.0.15 (12-14-2018)
+========================
+Removed apparel detour -- replaced with proper patched
+
 1.1.0.14 (11-18-2018)
 ========================
 Added AlienRace BackstoryDef functionality into the JecsTools namespace
