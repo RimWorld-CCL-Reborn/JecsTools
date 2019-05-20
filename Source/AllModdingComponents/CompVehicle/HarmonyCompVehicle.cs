@@ -2427,37 +2427,32 @@ namespace CompVehicle
             return false;
         }
 
-        public static IEnumerable<Command> GetVerbsCommands(VerbTracker __instance, KeyCode hotKey = 0)
+        public static IEnumerable<Command> GetVerbsCommands(VerbTracker __instance)
         {
-            CompEquippable ce = __instance.directOwner as CompEquippable;
-            if (ce != null)
+            if (__instance.directOwner is CompEquippable ce)
             {
                 Thing ownerThing = ce.parent;
-                if (ownerThing != null && ownerThing.def != null)
+                if (ownerThing?.def != null)
                 {
                     List<Verb> verbs = __instance.AllVerbs;
-                    for (int i = 0; i < verbs.Count; i++)
+                    foreach (Verb verb in verbs)
                     {
-                        Verb verb = verbs[i];
                         if (verb != null && verb.verbProps.hasStandardCommand && verb.CasterPawn != null &&
                             (!verb.CasterIsPawn || verb.CasterPawn.story != null))
                         {
                             yield return (Verse.Command) AccessTools
-                                .Method(typeof(VerbTracker), "CreateVerbTargetCommand")
-                                .Invoke(__instance, new object[] {ownerThing, verb});
+                                                        .Method(typeof(VerbTracker), "CreateVerbTargetCommand")
+                                                        .Invoke(__instance, new object[] {ownerThing, verb});
                         }
                     }
-                    CompEquippable equippable = __instance.directOwner as CompEquippable;
-                    if (!__instance.directOwner.Tools.NullOrEmpty<Tool>() && equippable != null &&
-                        equippable.parent.def.IsMeleeWeapon)
+
+                    var meleeAttack = verbs.FirstOrDefault(x => x.verbProps.IsMeleeAttack);
+                    if (!__instance.directOwner.Tools.NullOrEmpty() && ce.parent.def.IsMeleeWeapon
+                                 && meleeAttack?.CasterPawn != null && (!meleeAttack.CasterIsPawn || meleeAttack.CasterPawn.story != null))
                     {
-                        yield return (Verse.Command) AccessTools.Method(typeof(VerbTracker), "CreateVerbTargetCommand")
-                            .Invoke(__instance, new object[]
-                            {
-                                ownerThing, (from v in verbs
-                                    where v.verbProps.IsMeleeAttack
-                                    select v).FirstOrDefault<Verb>()
-                            });
+                        yield return (Verse.Command)AccessTools
+                                                   .Method(typeof(VerbTracker), "CreateVerbTargetCommand")
+                                                   .Invoke(__instance, new object[] { ownerThing, meleeAttack });
                     }
                 }
             }
