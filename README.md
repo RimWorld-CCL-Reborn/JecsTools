@@ -71,6 +71,9 @@ Total List of Classes
 Additions by roxxploxx.
 Additions by Swenzi.
 Transpilers by Erdelf.
+Extensive hours of testing, debugging, and fixes by Xen.
+"Hey, should we make this into a public toolset for people to take advantage of all this cool stuff?" - Jecrell
+"Hell yes - this is awesome stuff - people will love it!" - Xen
 	
 Special thanks to Pardeike's amazing non-destructive patching library, Harmony. Without his work, none of this would be possible.
 <p align="center">

@@ -259,6 +259,7 @@
       <e p="AllModdingComponents\JecsTools" t="IncludeRecursive">
         <e p="_HumanlikeOrdersUtility.cs" t="Include" />
         <e p="ApparelExtension.cs" t="Include" />
+        <e p="BuildingExtension.cs" t="Include" />
         <e p="CaravanJobs" t="Include">
           <e p="Caravan_JobTracker.cs" t="Include" />
           <e p="CaravanJob.cs" t="Include" />
@@ -319,6 +320,7 @@
         <e p="PlaceWorker_Outline.cs" t="Include" />
         <e p="PlaceWorker_UnderCeiling.cs" t="Include" />
         <e p="Projectile_Laser.cs" t="Include" />
+        <e p="ProjectileExtension.cs" t="Include" />
         <e p="Properties" t="Include">
           <e p="AssemblyInfo.cs" t="Include" />
         </e>
@@ -359,6 +361,7 @@
       <e p="JecsTools.sln" t="IncludeFlat" />
       <e p="packages" t="ExcludeRecursive" />
     </e>
+    <e p="C:\Users\mattw\.Rider2018.2\config\extensions" t="IncludeRecursive" />
     <e p="C:\Users\mattw\.Rider2018.2\system\extResources" t="IncludeRecursive" />
     <e p="C:\Users\mattw\.Rider2018.2\system\resharper-host\local\Transient\ReSharperHost\v182\SolutionCaches\_JecsTools.-286400281.00" t="ExcludeRecursive" />
   </component>

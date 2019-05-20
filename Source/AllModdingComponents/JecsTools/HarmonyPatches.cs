@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
+using System.Reflection.Emit;
 using AbilityUser;
 using Harmony;
 using RimWorld;
 using UnityEngine;
 using Verse;
+using Verse.AI;
 using Verse.Sound;
 
 namespace JecsTools
@@ -28,7 +31,7 @@ namespace JecsTools
             var harmony = HarmonyInstance.Create("rimworld.jecrell.jecstools.main");
             //Allow fortitude to soak damage
             var type = typeof(HarmonyPatches);
-            
+
             //Debug Line
             //------------
 //            harmony.Patch(
@@ -36,30 +39,202 @@ namespace JecsTools
 //                    nameof(PawnGroupKindWorker_Normal.MinPointsToGenerateAnything)),
 //                new HarmonyMethod(type, nameof(MinPointsTest)), null);
             //------------
+
+            //Adds HediffCompProperties_DamageSoak checks to damage
             harmony.Patch(AccessTools.Method(typeof(Pawn_HealthTracker), nameof(Pawn_HealthTracker.PreApplyDamage)),
                 new HarmonyMethod(type, nameof(PreApplyDamage_PrePatch)), null);
+
+            //Applies cached armor damage and absorption
             harmony.Patch(AccessTools.Method(typeof(ArmorUtility), "ApplyArmor"),
                 new HarmonyMethod(type, nameof(ApplyProperDamage)), null);
+
+            //Applies damage soak motes
             harmony.Patch(AccessTools.Method(typeof(ArmorUtility), nameof(ArmorUtility.GetPostArmorDamage)), null,
                 new HarmonyMethod(type, nameof(Post_GetPostArmorDamage)));
+
+            //Allows for adding additional HediffSets when characters spawn using the StartWithHediff class. 
             harmony.Patch(
                 AccessTools.Method(typeof(PawnGenerator), "GeneratePawn", new[] {typeof(PawnGenerationRequest)}), null,
                 new HarmonyMethod(type, nameof(Post_GeneratePawn)));
+
+            //Checks apparel that uses the ApparelExtension
             harmony.Patch(AccessTools.Method(typeof(ApparelUtility), nameof(ApparelUtility.CanWearTogether)), null,
                 new HarmonyMethod(type, nameof(Post_CanWearTogether)));
+
+            //Handles special cases of faction disturbances
             harmony.Patch(AccessTools.Method(typeof(Faction), nameof(Faction.Notify_MemberDied)),
                 new HarmonyMethod(type, nameof(Notify_MemberDied)), null);
+
+            //Handles FactionSettings extension to allow for fun effects when factions arrive.
             harmony.Patch(
                 AccessTools.Method(typeof(PawnGroupMakerUtility), nameof(PawnGroupMakerUtility.GeneratePawns)), null,
                 new HarmonyMethod(type, nameof(GeneratePawns)), null);
-            //harmony.Patch(AccessTools.Method(AccessTools.TypeByName("PossibleApparelSet"), "IsNaked"), null,
-            //    new HarmonyMethod(type, nameof(IsNaked)), null);
+
+            //Handles cases where gendered apparel swaps out for individual genders.
             harmony.Patch(
                 AccessTools.Method(typeof(PawnApparelGenerator),
                     nameof(PawnApparelGenerator.GenerateStartingApparelFor)), null,
                 new HarmonyMethod(type, nameof(GenerateStartingApparelFor_PostFix)), null);
 
-            //GUIPatches(harmony);
+            //BuildingExtension prevents some things from wiping other things when spawned.
+            harmony.Patch(
+                AccessTools.Method(typeof(GenSpawn),
+                    nameof(GenSpawn.SpawningWipes)), null,
+                new HarmonyMethod(type, nameof(SpawningWipes_PostFix)), null);
+            //BuildingExtension is also checked here to make sure things do not block construction.
+            harmony.Patch(
+                AccessTools.Method(typeof(GenConstruct),
+                    nameof(GenConstruct.BlocksConstruction)), null,
+                new HarmonyMethod(type, nameof(BlocksConstruction_PostFix)), null);
+            //
+            harmony.Patch(
+                AccessTools.Method(typeof(Projectile),
+                    "CanHit"), null,
+                new HarmonyMethod(type, nameof(CanHit_PostFix)), null);
+            harmony.Patch(
+                AccessTools.Method(typeof(Verb),
+                    "CanHitCellFromCellIgnoringRange"),
+                new HarmonyMethod(type, nameof(CanHitCellFromCellIgnoringRange_Prefix)), null);
+
+            //optionally use "CutoutComplex" shader for apparel that wants it
+            harmony.Patch(AccessTools.Method(typeof(ApparelGraphicRecordGetter), nameof(ApparelGraphicRecordGetter.TryGetGraphicApparel)), null, null, new HarmonyMethod(type, nameof(CutOutComplexApparel_Transpiler)));
+        }
+
+        //Added B19, Oct 2019
+        //ProjectileExtension check
+        //Allows a bullet to pass through walls when fired.
+        public static bool CanHitCellFromCellIgnoringRange_Prefix(Verb __instance, IntVec3 sourceSq, IntVec3 targetLoc, bool includeCorners, ref bool __result)
+        {
+            try
+            {
+
+                if (__instance?.EquipmentCompSource?.PrimaryVerb?.verbProps?.defaultProjectile is ThingDef proj &&
+                    proj?.HasModExtension<ProjectileExtension>() == true &&
+                    proj?.GetModExtension<ProjectileExtension>() is ProjectileExtension ext)
+                {
+                    if (ext.passesWalls)
+                        __result = true;
+                    return false;
+                }
+
+            }
+            catch (Exception e)
+            {
+
+            }
+            return true;
+        }
+
+        //Added B19, Oct 2019
+        //ProjectileExtension check
+        //Ignores all structures as part of objects that disallow being fired through.
+        public static void CanHit_PostFix(Projectile __instance, Thing thing, ref bool __result)
+        {
+            if (!__result && __instance?.def?.HasModExtension<ProjectileExtension>() == true &&
+                __instance.def.GetModExtension<ProjectileExtension>() is ProjectileExtension ext)
+            {
+                //Mods will often have their own walls, so we cannot do a def check for 
+                //ThingDefOf.Wall
+                //Most "walls" should either be in the structure category or be able to hold walls.
+                if (thing?.def?.designationCategory == DesignationCategoryDefOf.Structure ||
+                    thing?.def?.holdsRoof == true)
+                {
+                    if (ext.passesWalls)
+                    {
+                        __result = false;
+                        return;
+                    }
+                }
+                
+            }
+        }
+
+        public static void BlocksConstruction_PostFix(Thing constructible, Thing t, ref bool __result)
+        {
+            ThingDef thingDef = constructible.def;
+            ThingDef thingDef2 = t.def;
+            if (thingDef == null || thingDef2 == null)
+                return;
+            if (thingDef.HasModExtension<BuildingExtension>() || thingDef2.HasModExtension<BuildingExtension>())
+            {
+                BuildableDef buildableDef = GenConstruct.BuiltDefOf(thingDef);
+                BuildableDef buildableDef2 = GenConstruct.BuiltDefOf(thingDef2);
+                __result = ShouldWipe(buildableDef, buildableDef2, t.PositionHeld, t.MapHeld);
+            }
+        }
+
+        public static void SpawningWipes_PostFix(BuildableDef newEntDef, BuildableDef oldEntDef, ref bool __result)
+        {
+            ThingDef thingDef = newEntDef as ThingDef;
+            ThingDef thingDef2 = oldEntDef as ThingDef;
+            if (thingDef == null || thingDef2 == null)
+                return;
+            if (thingDef.HasModExtension<BuildingExtension>() || thingDef2.HasModExtension<BuildingExtension>())
+            {
+                BuildableDef buildableDef = GenConstruct.BuiltDefOf(thingDef);
+                BuildableDef buildableDef2 = GenConstruct.BuiltDefOf(thingDef2);
+                __result = ShouldWipe(buildableDef, buildableDef2, IntVec3.Invalid, null);
+            }
+        }
+
+        private static bool ShouldWipe(BuildableDef newEntDef, BuildableDef oldEntDef, IntVec3 loc, Map map)
+        {
+            if (map == null || loc == null || !loc.IsValid)
+            {
+                var buildingExtensionA = newEntDef?.GetModExtension<BuildingExtension>();
+                var buildingExtensionB = oldEntDef?.GetModExtension<BuildingExtension>();
+                if (buildingExtensionB == null && buildingExtensionA == null)
+                {
+                    //Log.Message("Both null");
+                    return true;
+                }
+
+                //Log.Message("A: " + newEntDef.label);
+                //Log.Message("B: " + oldEntDef.label);
+                if (buildingExtensionA != null && buildingExtensionB == null &&
+                    buildingExtensionA.wipeCategories?.Count > 0)
+                {
+                    //Log.Message("B null");
+
+                    return false;
+                }
+
+                if (buildingExtensionB != null && buildingExtensionA == null &&
+                    buildingExtensionB.wipeCategories?.Count > 0)
+                {
+                    //Log.Message("A null");
+
+                    return false;
+                }
+
+                if (buildingExtensionA != null && buildingExtensionB != null &&
+                    buildingExtensionA.wipeCategories?.Count > 0 &&
+                    buildingExtensionB.wipeCategories?.Count > 0)
+                {
+                    var hashes = new HashSet<string>();
+                    foreach (var str in buildingExtensionA.wipeCategories)
+                        hashes.Add(str);
+                    foreach (var strB in buildingExtensionB.wipeCategories)
+                    {
+                        if (!hashes.Contains(strB)) continue;
+                        //Log.Message("ShouldWipe");
+                        return true;
+                    }
+                }
+
+                return true;
+            }
+
+            var locThings = loc.GetThingList(map);
+            for (var index = 0; index < locThings.Count; index++)
+            {
+                var thing = locThings[index];
+                if (thing.def is ThingDef thingDef &&
+                    ShouldWipe(newEntDef, GenConstruct.BuiltDefOf(thingDef), IntVec3.Invalid, null))
+                    return true;
+            }
+
+            return true;
         }
 
         public static void MinPointsTest(PawnGroupKindWorker_Normal __instance, PawnGroupMaker groupMaker)
@@ -94,9 +269,11 @@ namespace JecsTools
                     {
                         pawn.apparel.Wear(apparel, false);
                     }
+
                     destroyables.Add(swap);
                 }
             }
+
             if (destroyables == null || destroyables?.Count <= 0) return;
             while (destroyables?.Count > 0)
             {
@@ -177,6 +354,7 @@ namespace JecsTools
             {
                 return false;
             }
+
             return true;
         }
 
@@ -189,38 +367,49 @@ namespace JecsTools
         /// <param name="__result"></param>
         public static void Post_CanWearTogether(ThingDef A, ThingDef B, BodyDef body, ref bool __result)
         {
-            var aHasExt = A.HasModExtension<ApparelExtension>();
-            var bHasExt = B.HasModExtension<ApparelExtension>();
-            if (aHasExt && bHasExt)
+            try
             {
-                var aExt = A.GetModExtension<ApparelExtension>();
-                var bExt = B.GetModExtension<ApparelExtension>();
-                var check = new Dictionary<string, int>();
-                for (int i = 0; i < aExt.coverage.Count; i++)
+                if (A == null || B == null || body == null || __result == true) return;
+                var aHasExt = A.HasModExtension<ApparelExtension>();
+                var bHasExt = B.HasModExtension<ApparelExtension>();
+                if (aHasExt && bHasExt)
                 {
-                    if (!check.ContainsKey(aExt.coverage[i]))
-                        check.Add(aExt.coverage[i].ToLowerInvariant(), 1);
-                    else
-                    {
-                        Log.Warning("JecsTools :: ApparelExtension :: Warning:: " + A.label +
-                                    " has multiple of the same tags.");
-                        return;
-                    }
+                    var aExt = A.GetModExtension<ApparelExtension>();
+                    var bExt = B.GetModExtension<ApparelExtension>();
+                    var check = new Dictionary<string, int>();
+                    if (aExt.coverage?.Count > 0)
+                        for (int i = 0; i < aExt.coverage.Count; i++)
+                        {
+                            if (!check.ContainsKey(aExt.coverage[i]))
+                                check.Add(aExt.coverage[i].ToLowerInvariant(), 1);
+                            else
+                            {
+                                Log.Warning("JecsTools :: ApparelExtension :: Warning:: " + A.label +
+                                            " has multiple of the same tags.");
+                                return;
+                            }
+                        }
+
+                    if (bExt.coverage?.Count > 0)
+                        for (int j = 0; j < bExt.coverage.Count; j++)
+                        {
+                            if (!check.ContainsKey(bExt.coverage[j]))
+                                check.Add(bExt.coverage[j].ToLowerInvariant(), 1);
+                            else
+                            {
+                                __result = false;
+                                break;
+                            }
+                        }
                 }
-                for (int j = 0; j < bExt.coverage.Count; j++)
+                else if ((aHasExt && !bHasExt) || (!aHasExt && bHasExt))
                 {
-                    if (!check.ContainsKey(bExt.coverage[j]))
-                        check.Add(bExt.coverage[j].ToLowerInvariant(), 1);
-                    else
-                    {
-                        __result = false;
-                        break;
-                    }
+                    __result = true;
                 }
             }
-            else if ((aHasExt && !bHasExt) || (!aHasExt && bHasExt))
+            catch (Exception e)
             {
-                __result = true;
+                Log.Message(e.ToString());
             }
         }
 
@@ -249,6 +438,7 @@ namespace JecsTools
                 {
                     DamageSoakedMote(pawn, tempDamageAbsorbed.Value);
                 }
+
                 tempDamageAbsorbed = null;
             }
         }
@@ -295,6 +485,7 @@ namespace JecsTools
                         {
                         }
                     }
+
                     if (dinfo.Weapon is ThingDef weaponDef && !weaponDef.IsRangedWeapon)
                         if (dinfo.Instigator is Pawn instigator)
                         {
@@ -316,6 +507,7 @@ namespace JecsTools
                         }
                 }
             }
+
             tempDamageAmount = (int) dinfo.Amount;
             absorbed = false;
             //Log.Message("Current Damage :" + dinfo.Amount);
@@ -352,6 +544,7 @@ namespace JecsTools
                         explosion.damageFalloff = false; // dealMoreDamageAtCenter = false;
                         explosion.StartExplosion(null);
                     }
+
                     if (pawn != instigator && !pawn.Dead && !pawn.Downed && pawn.Spawned)
                     {
                         if (knocker.Props.stunChance > -1 && knocker.Props.stunChance >= Rand.Value)
@@ -379,10 +572,13 @@ namespace JecsTools
                         StopPreApplyDamageCheck = false;
                         return true;
                     }
+
                     pawn.TakeDamage(new DamageInfo(dmg.def, dmg.amount, dmg.armorPenetration, -1, instigator));
                 }
+
                 StopPreApplyDamageCheck = false;
             }
+
             absorbed = false;
             return false;
         }
@@ -459,6 +655,7 @@ namespace JecsTools
                     }
                 }
             }
+
             absorbed = false;
             return false;
         }
@@ -497,6 +694,7 @@ namespace JecsTools
                     }
                 }
             }
+
             collision = collisionResult;
             return result;
         }
@@ -518,6 +716,33 @@ namespace JecsTools
                     else flyingObject.Launch(Caster, new LocalTargetInfo(loc.ToIntVec3()), target);
                 }
             }, "PushingCharacter", false, null);
+        }
+
+        //added 2018/12/13 - Mehni.
+        //Uses CutoutComplex shader for apparel that wants it.
+        private static IEnumerable<CodeInstruction> CutOutComplexApparel_Transpiler(IEnumerable<CodeInstruction> instructions)
+        {
+            MethodInfo shader = AccessTools.Method(typeof(HarmonyPatches), nameof(HarmonyPatches.Shader));
+            FieldInfo cutOut = AccessTools.Field(typeof(ShaderDatabase), nameof(ShaderDatabase.Cutout));
+
+            foreach (CodeInstruction codeInstruction in instructions)
+            {
+                if (codeInstruction.opcode == OpCodes.Ldsfld && codeInstruction.operand == cutOut)
+                {
+                    yield return new CodeInstruction(OpCodes.Ldarg_0); //apparel
+                    yield return new CodeInstruction(OpCodes.Call, shader); //return shader type
+                    continue; //skip instruction.
+                }
+                yield return codeInstruction;
+            }
+        }
+
+        private static Shader Shader (Apparel apparel)
+        {
+            if (apparel.def.graphicData.shaderType.Shader == ShaderDatabase.CutoutComplex)
+                return ShaderDatabase.CutoutComplex;
+
+            return ShaderDatabase.Cutout;
         }
     }
 }

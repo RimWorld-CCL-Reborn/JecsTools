@@ -1,0 +1,44 @@
+1.1.0.15 (12-14-2018)
+========================
+Removed apparel detour -- replaced with proper patched
+
+1.1.0.14 (11-18-2018)
+========================
+Added AlienRace BackstoryDef functionality into the JecsTools namespace
+
+1.1.0.14 (11-18-2018)
+========================
+Added erdelfs BackstoryDef functionality from AlienRaces to JecsTools.
+
+1.1.0.13 (11-03-2018)
+========================
+Removed unneeded assemblies from source. Properly includes ThinkNode.dll in the correct location for public usage.
+
+1.1.0.12 (11-03-2018)
+========================
+Adds ThinkNode_ConditionalWorkTypeDefs, ThinkNodes.JobGiver_Capture, JobGiver_GoToClosestThingDef, ThinkNode_ConditionalHediff, ThinkNodes.ThinkNode_ConditionalHunter, ThinkNode_ConditionalDelay, ThinkNode_ConditionalMissingHuntingWeapon by AliceCecil
+
+1.1.0.11 (10-29-2018)
+========================
+CompProperties_AnimatedOver added by AliceCecil to draw on top of existing ThingDefs.
+
+1.1.0.10 (10-28-2018)
+========================
+AliceCecil has adjusted the CompAnimated code to support buildings and other objects (ThingWithComps).
+
+1.1.0.9 (10-19-2018)
+========================
+Added a try and catch to the ProjectileExtension Harmony patch for CanHitCellFromCellIgnoringRange. This should allow for proper ability casting again.
+
+1.1.0.8 (10-18-2018)
+========================
+Changed very few issues to allow for the update for RimWorld 1.0.
+
+1.1.0.7 (10-02-2018)
+========================
+The wall placeworker now also allows other types of walls.
+
+1.1.0.6 (09-30-2018)
+===================
+Adds new BuildingExtension class to allow for bypasses to SpawningWipes. Perfect for adding furniture on top of existing tables.
+

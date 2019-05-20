@@ -3,14 +3,14 @@
 ==============================
 
 JecsTools Update
-====================
-Version: B19.642
-Updated: 09-14-2018
-Description: Fixed issue where CompDeflector was preventing code from executing.
+v1.1.0.13 (11-03-2018)
 ====================
 
+Removed unneeded assemblies from source. Properly includes ThinkNode.dll in the correct location for public usage.
+--------------------
+
 Download now on...
-- Patreon: https://www.patreon.com/posts/jecstools-for-0-21059900
+- Patreon: https://www.patreon.com/posts/22139730
 - GitHub: https://github.com/jecrell/JecsTools
 - Steam: https://steamcommunity.com/sharedfiles/filedetails/?id=932008009
 Discuss the mod on...
@@ -25,14 +25,12 @@ Discuss the mod on...
 [img width=260]https://raw.githubusercontent.com/jecrell/JecsTools/master/About/Preview.png[/img]
 [hr]
 [b]JecsTools
-Version: B19.642
-Updated: 09-14-2018
-Description: [color=orange]Fixed issue where CompDeflector was preventing code from executing.[/color]
-[hr][b]Notes from Jec:[/b][/center]
-
+Version: 1.1.0.13
+Updated: 11-03-2018
+Description: [color=orange]Removed unneeded assemblies from source. Properly includes ThinkNode.dll in the correct location for public usage.[/color]
 [hr]
 [b]Download now on...[/b]
-[url=https://www.patreon.com/posts/jecstools-for-0-21059900]Patreon[/url]
+[url=https://www.patreon.com/posts/22139730]Patreon[/url]
 [url=https://github.com/jecrell/JecsTools]GitHub[/url]
 [url=https://steamcommunity.com/sharedfiles/filedetails/?id=932008009]Steam[/url]
 [b]Discuss the mod on...[/b]

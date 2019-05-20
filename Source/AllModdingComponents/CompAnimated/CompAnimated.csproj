@@ -49,12 +49,12 @@
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-
-
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CompAnimated.cs" />
+    <Compile Include="CompAnimatedOver.cs" />
     <Compile Include="CompProperties_Animated.cs" />
+    <Compile Include="CompProperties_AnimatedOver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -5,53 +5,59 @@ using Verse.AI;
 
 namespace AbilityUser
 {
-    public class JobDriver_CastAbilityVerb : JobDriver
-    {
-        public AbilityContext Context => job.count == 1 ? AbilityContext.Player : AbilityContext.AI;
-	    public Verb_UseAbility Verb => pawn.CurJob.verbToUse as Verb_UseAbility;
+	public class JobDriver_CastAbilityVerb : JobDriver
+	{
+		public AbilityContext Context => job.count == 1 ? AbilityContext.Player : AbilityContext.AI;
+		public Verb_UseAbility Verb => pawn.CurJob.verbToUse as Verb_UseAbility;
 
-        public override bool TryMakePreToilReservations(bool errorOnFailed)
-        {
-            return true;
-        }
+		public override bool TryMakePreToilReservations(bool errorOnFailed)
+		{
+			return true;
+		}
 
-        protected override IEnumerable<Toil> MakeNewToils()
-        {
-            yield return Toils_Misc.ThrowColonistAttackingMote(TargetIndex.A);
-            if (TargetA.HasThing)
-            {
-                if (!GetActor().IsFighting() || !Verb.UseAbilityProps.canCastInMelee)
-                {
-                    var getInRangeToil = Toils_Combat.GotoCastPosition(TargetIndex.A, false);
-                    yield return getInRangeToil;
-                }
-            }
+		protected override IEnumerable<Toil> MakeNewToils()
+		{
+			yield return Toils_Misc.ThrowColonistAttackingMote(TargetIndex.A);
 
-	        if (Context == AbilityContext.Player)
-	        {
-		        Find.Targeter.targetingVerb = Verb;
-	        }
+			if (TargetA.HasThing)
+			{
+				// !GetActor().IsFighting() || - removed from below "If" by xen for melee casting fix - replaced with range check - !pawn.Position.InHorDistOf(TargetA.Cell, pawn.CurJob.verbToUse.verbProps.range)
 
-            yield return new Toil
-            {
-                initAction = delegate { Verb.Ability.PostAbilityAttempt(); },
-                defaultCompleteMode = ToilCompleteMode.Instant
-            };
-            yield return Toils_Combat.CastVerb(TargetIndex.A, false);
-            yield return new Toil
-            {
-                initAction = delegate
-                {
-                    if (Verb?.UseAbilityProps?.isViolent == true)
-                    {
-                    	CheckForAutoAttack(this.pawn);
-                    }
-                },
-                defaultCompleteMode = ToilCompleteMode.Instant
-            };
-        }
+				if (!pawn.Position.InHorDistOf(TargetA.Cell, pawn.CurJob.verbToUse.verbProps.range) ||
+				    !Verb.UseAbilityProps.canCastInMelee)
+				{
+					var getInRangeToil = Toils_Combat.GotoCastPosition(TargetIndex.A, false);
+					yield return getInRangeToil;
+				}
 
-	    //from the JobDriver_Wait in Vanilla RimWorld
+			}
+
+			if (Context == AbilityContext.Player)
+			{
+				Find.Targeter.targetingVerb = Verb;
+			}
+
+			yield return Toils_Combat.CastVerb(TargetIndex.A, false);
+			yield return new Toil
+			{
+				initAction = delegate
+				{
+					if (Verb?.UseAbilityProps?.isViolent == true)
+					{
+						CheckForAutoAttack(this.pawn);
+					}
+				},
+				defaultCompleteMode = ToilCompleteMode.Instant
+			};
+			
+			yield return new Toil
+				{
+					initAction = delegate { Verb.Ability.PostAbilityAttempt(); },
+					defaultCompleteMode = ToilCompleteMode.Instant
+				};	
+		}
+
+	//from the JobDriver_Wait in Vanilla RimWorld
 	    public static void CheckForAutoAttack(Pawn searcher)
 	    {
 		    if (searcher.Downed)

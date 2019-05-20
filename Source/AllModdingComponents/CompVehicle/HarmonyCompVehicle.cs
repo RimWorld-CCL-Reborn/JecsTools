@@ -1037,8 +1037,10 @@ namespace CompVehicle
         {
             if (Find.TickManager.TicksGame % 100 == 0)
             {
+                
+                List<Pawn> ownedPawns = __instance.lord.ownedPawns;
                 var meetingPoint = Traverse.Create(__instance).Field("meetingPoint").GetValue<IntVec3>();
-                GatherAnimalsAndSlavesForCaravanUtility.CheckArrived(__instance.lord, meetingPoint, "AllSlavesGathered",
+                GatherAnimalsAndSlavesForCaravanUtility.CheckArrived(__instance.lord, ownedPawns,  meetingPoint, "AllSlavesGathered",
                     x => !x.IsColonist &&
                          !(x.GetComp<CompVehicle>() is CompVehicle compVehicle && compVehicle.CanMove) &&
                          !x.RaceProps.Animal, x => GatherAnimalsAndSlavesForCaravanUtility.IsFollowingAnyone(x));

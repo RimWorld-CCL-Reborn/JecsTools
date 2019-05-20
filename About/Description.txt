@@ -1,0 +1,48 @@
+Adds modding components to RimWorld: vehicles, spell casting, weapon slots, oversized weapons, and more!
+
+Note to players: This mod will not change your game, but rather it lets modders do more, so you can have an even more amazing RimWorld experience.
+
+Note to modders: This mod is filled with lots of tools that allow you to do many new and different things in RimWorld. Check out RoxxPloxx's guide for more info here: https://github.com/roxxploxx/RimWorldModGuide/wiki
+
+Partial list of components:
+
+CompAbilityUser
+ - Adds spell/ability casting to humanlikes.
+
+CompActivatableEffect
+ - Adds an activation graphic for weapons (e.g. lightsaber beam).
+
+CompDeflector
+ - Allows the ability to knock projectiles to melee weapons.
+
+CompExtraSounds
+ - Allows extra melee sounds to weapons.
+
+CompLumbering
+ - Makes a staggered walking animation. (e.g. ATST walking effect)
+
+CompOversizedWeapon
+ - Allows weapons with graphic sizes that can be bigger than RimWorld's limits.
+
+CompSlotLoadable
+ - Adds slots to objects that can be filled to have effects. (e.g. different ammo types for guns, crystals for lightsabers)
+
+CompToggleDef (by Roxxploxx)
+- Allows for something to despawn, change its def, and respawn.
+
+CompVehicle (Experimental)
+ - Allows for a pawn to be treated as a vehicle that can be loaded with pilots, gunners, crew, and passengers.
+
+CompInstalledPart (WIP)
+- Allows installation and uninstallation of things onto other things. This is particularly useful for weapons on vehicles.
+
+JecsTools.PatchOperationModLoaded
+- Allows modders to use xpath code to check if a mod is loaded before patching code.
+
+Additions by ChJees
+Additions by roxxploxx
+Additions by Swenzi
+Additions and transpilers by Erdelf
+Extensive hours of testing, debugging, and fixes by Xen.
+"Hey, should we make this into a public toolset for people to take advantage of all this cool stuff?" - Jecrell
+"Hell yes - this is awesome stuff - people will love it!" - Xen

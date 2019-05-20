@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Manifest>
+  <identifier>JecsTools</identifier>
+  <version>1.1.0.15</version>
+  <dependencies />
+  <incompatibleWith />
+  <loadBefore>
+    <li>DoorsExpanded</li>
+    <li>CoC-Factions</li>
+    <li>CoC-Cults</li>
+    <li>CoC-ElderThings</li>
+    <li>HPLovecraftStoryteller</li>
+    <li>IA-ObjectsAndFurniture</li>
+    <li>IA-SteamCorp</li>
+    <li>LotR-Dwarves</li>
+    <li>LotR-Elves</li>
+    <li>LotR-Hobbits</li>
+    <li>LotR-MenAndBeasts</li>
+    <li>LotR-OrcsAndGoblins</li>
+    <li>LotR-TheThirdAge</li>
+    <li>RoM-Arachnophobia</li>
+    <li>RoM-Vampires</li>
+    <li>RoM-Werewolves</li>
+    <li>RimQuest</li>
+    <li>RimWriter</li>
+    <li>SW-Factions</li>
+    <li>SW-Lightsabers</li>
+    <li>SW-TheForce</li>
+  </loadBefore>
+  <loadAfter>
+    <li>HugsLib</li>
+  </loadAfter>
+  <manifestUri>https://raw.githubusercontent.com/jecrell/JecsTools/master/About/Manifest.xml</manifestUri>
+  <downloadUri>https://github.com/jecrell/JecsTools/releases</downloadUri>
+</Manifest>
