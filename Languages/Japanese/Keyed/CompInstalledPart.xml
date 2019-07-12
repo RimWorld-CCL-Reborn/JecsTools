@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+
+  <CompInstalledPart_Install>何かを装着します</CompInstalledPart_Install>
+  <CompInstalledPart_Uninstall>{0}を取り外す</CompInstalledPart_Uninstall>
+  <CompInstalledPart_Installed>{0}は{2}に{1}を装着しました</CompInstalledPart_Installed>
+  <CompInstalledPart_Uninstalled>{0}は{2}から{1}を取り外しました</CompInstalledPart_Uninstalled>
+
+</LanguageData>
