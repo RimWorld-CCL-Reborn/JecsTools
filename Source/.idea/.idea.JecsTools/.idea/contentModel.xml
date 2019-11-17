@@ -55,9 +55,13 @@
         <e p="CompProperties_AbilityUser.cs" t="Include" />
         <e p="Controller" t="Include">
           <e p="AbilityContext.cs" t="Include" />
+          <e p="AbilityEffectUtility.cs" t="Include" />
           <e p="JobDriver_CastAbilitySelf.cs" t="Include" />
           <e p="JobDriver_CastAbilityVerb.cs" t="Include" />
           <e p="PawnAbility.cs" t="Include" />
+          <e p="Projectile_Ability.cs" t="Include" />
+          <e p="Projectile_AbilityBase.cs" t="Include" />
+          <e p="Projectile_AbilityLaser.cs" t="Include" />
           <e p="Verb_UseAbility.cs" t="Include" />
           <e p="Verb_UseAbility_TrueBurst.cs" t="Include" />
         </e>
@@ -75,9 +79,6 @@
         <e p="PassiveEffectWorker.cs" t="Include" />
         <e p="PawnAbilityTargetCategory.cs" t="Include" />
         <e p="PawnSummoned.cs" t="Include" />
-        <e p="Projectile_Ability.cs" t="Include" />
-        <e p="Projectile_AbilityBase.cs" t="Include" />
-        <e p="Projectile_AbilityLaser.cs" t="Include" />
         <e p="ProjectileDef_Ability.cs" t="Include" />
         <e p="ProjectileDef_LaserProjectile.cs" t="Include" />
         <e p="Properties" t="Include">
@@ -102,7 +103,9 @@
       <e p="AllModdingComponents\CompAnimated" t="IncludeRecursive">
         <e p="CompAnimated.cs" t="Include" />
         <e p="CompAnimated.csproj" t="IncludeRecursive" />
+        <e p="CompAnimatedOver.cs" t="Include" />
         <e p="CompProperties_Animated.cs" t="Include" />
+        <e p="CompProperties_AnimatedOver.cs" t="Include" />
         <e p="obj" t="ExcludeRecursive" />
         <e p="Properties" t="Include">
           <e p="AssemblyInfo.cs" t="Include" />
@@ -259,6 +262,9 @@
       <e p="AllModdingComponents\JecsTools" t="IncludeRecursive">
         <e p="_HumanlikeOrdersUtility.cs" t="Include" />
         <e p="ApparelExtension.cs" t="Include" />
+        <e p="Backstories" t="Include">
+          <e p="BackstoryDef.cs" t="Include" />
+        </e>
         <e p="BuildingExtension.cs" t="Include" />
         <e p="CaravanJobs" t="Include">
           <e p="Caravan_JobTracker.cs" t="Include" />
@@ -357,6 +363,20 @@
         <e p="Workers" t="Include">
           <e p="StatWorker_Shield.cs" t="Include" />
         </e>
+      </e>
+      <e p="AllModdingComponents\ThinkNodes" t="IncludeRecursive">
+        <e p="JobGiver_Capture.cs" t="Include" />
+        <e p="JobGiver_GoToClosestThingDef.cs" t="Include" />
+        <e p="obj" t="ExcludeRecursive" />
+        <e p="Properties" t="Include">
+          <e p="AssemblyInfo.cs" t="Include" />
+        </e>
+        <e p="ThinkNode_ConditionalDelay.cs" t="Include" />
+        <e p="ThinkNode_ConditionalHediff.cs" t="Include" />
+        <e p="ThinkNode_ConditionalHunter.cs" t="Include" />
+        <e p="ThinkNode_ConditionalMissingWeapon.cs" t="Include" />
+        <e p="ThinkNode_ConditionalWorkTypesDef.cs" t="Include" />
+        <e p="ThinkNodes.csproj" t="IncludeRecursive" />
       </e>
       <e p="JecsTools.sln" t="IncludeFlat" />
       <e p="packages" t="ExcludeRecursive" />

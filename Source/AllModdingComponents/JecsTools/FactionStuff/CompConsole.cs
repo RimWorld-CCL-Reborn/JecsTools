@@ -45,13 +45,7 @@ namespace JecsTools
 			}
 			if (!myPawn.health.capacities.CapableOf(PawnCapacityDefOf.Talking))
 			{
-				yield return new FloatMenuOption("CannotUseReason".Translate(new object[]
-				{
-					"IncapableOfCapacity".Translate(new object[]
-					{
-						PawnCapacityDefOf.Talking.label
-					})
-				}), null);
+				yield return new FloatMenuOption("CannotUseReason".Translate("IncapableOfCapacity".Translate(PawnCapacityDefOf.Talking.label)), null);
 				yield break;
 			}
 			if (myPawn.skills.GetSkill(SkillDefOf.Social).TotallyDisabled)

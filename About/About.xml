@@ -3,7 +3,7 @@
   <name>JecsTools</name>
   <author>jecrell</author>
   <url>https://discord.gg/AaVFA7V</url>
-  <targetVersion>1.0.2059</targetVersion>
+  <supportedVersions><li>1.0</li></supportedVersions>
   <description>1.1.0.15 (12-14-2018)
 
 Adds modding components to RimWorld: vehicles, spell casting, weapon slots, oversized weapons, and more!
@@ -65,7 +65,7 @@ Changelog
 ========================
 1.1.0.15 (12-14-2018)
 ========================
-Removed apparel detour -- replaced with proper patched
+Removes apparel detour and replaces it with a harmony patch (thanks to Mehni)
 
 1.1.0.14 (11-18-2018)
 ========================
