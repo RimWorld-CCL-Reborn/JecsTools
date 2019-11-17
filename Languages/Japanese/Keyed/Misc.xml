@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <JT_PlaceWorker_UnderCeiling>天井の下に置く必要があります。</JT_PlaceWorker_UnderCeiling>
+  <JT_PlaceWorker_OnTopOfWalls>壁に置く必要があります。</JT_PlaceWorker_OnTopOfWalls>
+  <JT_DamageSoaked>{0}ダメージ吸収した</JT_DamageSoaked>
+  <JT_HI_DamageSoaked>貫通量：{0}</JT_HI_DamageSoaked>
+  <JT_HI_Knockback>ノックバック率：{0}</JT_HI_Knockback>
+  <JT_HI_ExtraDamages>追加ダメージ：</JT_HI_ExtraDamages>
+  <JT_HI_KnockbackExplosive>炸裂</JT_HI_KnockbackExplosive>
+
+</LanguageData>
