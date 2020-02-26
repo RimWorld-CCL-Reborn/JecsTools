@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Harmony;
+using HarmonyLib;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -13,7 +13,7 @@ namespace CompActivatableEffect
     {
         static HarmonyCompActivatableEffect()
         {
-            var harmony = HarmonyInstance.Create("rimworld.jecrell.comps.activator");
+            var harmony = new Harmony("jecstools.jecrell.comps.activator");
 
             harmony.Patch(typeof(Pawn).GetMethod("GetGizmos"), null,
                 new HarmonyMethod(typeof(HarmonyCompActivatableEffect).GetMethod("GetGizmosPrefix")));
