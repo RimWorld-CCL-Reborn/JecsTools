@@ -56,8 +56,8 @@ namespace PawnShields
                 Log.Warning("PawnShields :: " + request.KindDef.defName + " is not capable of manipulation.");
                 return;
             }
-            if (pawn.story != null && ((bool) pawn.story?.WorkTagIsDisabled(WorkTags.Violent)))
-                return;
+            if (pawn.story != null && ((bool) pawn?.WorkTagIsDisabled(WorkTags.Violent)))
+               return;
 
             var generatorPropsShieldMoney = generatorProps.shieldMoney;
             float randomInRange = generatorPropsShieldMoney.RandomInRange;

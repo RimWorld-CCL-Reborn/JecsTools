@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Harmony;
+using HarmonyLib;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -18,8 +18,8 @@ namespace CompSlotLoadable
 
         static HarmonyCompSlotLoadable()
         {
-            var harmony = HarmonyInstance.Create("rimworld.jecrell.comps.slotloadable");
-
+            var harmony = new Harmony("jecstools.jecrell.comps.slotloadable");
+            
             var type = typeof(HarmonyCompSlotLoadable);
             harmony.Patch(AccessTools.Method(typeof(Pawn), nameof(Pawn.GetGizmos)), null,
                 new HarmonyMethod(type, nameof(GetGizmos_PostFix)));

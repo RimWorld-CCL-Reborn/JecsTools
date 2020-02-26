@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using AbilityUser;
-using Harmony;
+using HarmonyLib;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -28,76 +28,77 @@ namespace JecsTools
 
         static HarmonyPatches()
         {
-            var harmony = HarmonyInstance.Create("rimworld.jecrell.jecstools.main");
+            // Changed by Tad : New Harmony Instance creation required
+            var instance = new Harmony("jecstools.jecrell.main");
             //Allow fortitude to soak damage
             var type = typeof(HarmonyPatches);
 
             //Debug Line
             //------------
-//            harmony.Patch(
+//            instance.Patch(
 //                AccessTools.Method(typeof(PawnGroupKindWorker_Normal),
 //                    nameof(PawnGroupKindWorker_Normal.MinPointsToGenerateAnything)),
 //                new HarmonyMethod(type, nameof(MinPointsTest)), null);
             //------------
 
             //Adds HediffCompProperties_DamageSoak checks to damage
-            harmony.Patch(AccessTools.Method(typeof(Pawn_HealthTracker), nameof(Pawn_HealthTracker.PreApplyDamage)),
+            instance.Patch(AccessTools.Method(typeof(Pawn_HealthTracker), nameof(Pawn_HealthTracker.PreApplyDamage)),
                 new HarmonyMethod(type, nameof(PreApplyDamage_PrePatch)), null);
 
             //Applies cached armor damage and absorption
-            harmony.Patch(AccessTools.Method(typeof(ArmorUtility), "ApplyArmor"),
+            instance.Patch(AccessTools.Method(typeof(ArmorUtility), "ApplyArmor"),
                 new HarmonyMethod(type, nameof(ApplyProperDamage)), null);
 
             //Applies damage soak motes
-            harmony.Patch(AccessTools.Method(typeof(ArmorUtility), nameof(ArmorUtility.GetPostArmorDamage)), null,
+            instance.Patch(AccessTools.Method(typeof(ArmorUtility), nameof(ArmorUtility.GetPostArmorDamage)), null,
                 new HarmonyMethod(type, nameof(Post_GetPostArmorDamage)));
 
             //Allows for adding additional HediffSets when characters spawn using the StartWithHediff class. 
-            harmony.Patch(
+            instance.Patch(
                 AccessTools.Method(typeof(PawnGenerator), "GeneratePawn", new[] {typeof(PawnGenerationRequest)}), null,
                 new HarmonyMethod(type, nameof(Post_GeneratePawn)));
 
             //Checks apparel that uses the ApparelExtension
-            harmony.Patch(AccessTools.Method(typeof(ApparelUtility), nameof(ApparelUtility.CanWearTogether)), null,
+            instance.Patch(AccessTools.Method(typeof(ApparelUtility), nameof(ApparelUtility.CanWearTogether)), null,
                 new HarmonyMethod(type, nameof(Post_CanWearTogether)));
 
             //Handles special cases of faction disturbances
-            harmony.Patch(AccessTools.Method(typeof(Faction), nameof(Faction.Notify_MemberDied)),
+            instance.Patch(AccessTools.Method(typeof(Faction), nameof(Faction.Notify_MemberDied)),
                 new HarmonyMethod(type, nameof(Notify_MemberDied)), null);
 
             //Handles FactionSettings extension to allow for fun effects when factions arrive.
-            harmony.Patch(
+            instance.Patch(
                 AccessTools.Method(typeof(PawnGroupMakerUtility), nameof(PawnGroupMakerUtility.GeneratePawns)), null,
                 new HarmonyMethod(type, nameof(GeneratePawns)), null);
 
             //Handles cases where gendered apparel swaps out for individual genders.
-            harmony.Patch(
+            instance.Patch(
                 AccessTools.Method(typeof(PawnApparelGenerator),
                     nameof(PawnApparelGenerator.GenerateStartingApparelFor)), null,
                 new HarmonyMethod(type, nameof(GenerateStartingApparelFor_PostFix)), null);
 
             //BuildingExtension prevents some things from wiping other things when spawned.
-            harmony.Patch(
+            instance.Patch(
                 AccessTools.Method(typeof(GenSpawn),
                     nameof(GenSpawn.SpawningWipes)), null,
                 new HarmonyMethod(type, nameof(SpawningWipes_PostFix)), null);
             //BuildingExtension is also checked here to make sure things do not block construction.
-            harmony.Patch(
+            instance.Patch(
                 AccessTools.Method(typeof(GenConstruct),
                     nameof(GenConstruct.BlocksConstruction)), null,
                 new HarmonyMethod(type, nameof(BlocksConstruction_PostFix)), null);
             //
-            harmony.Patch(
+            instance.Patch(
                 AccessTools.Method(typeof(Projectile),
                     "CanHit"), null,
                 new HarmonyMethod(type, nameof(CanHit_PostFix)), null);
-            harmony.Patch(
+            instance.Patch(
                 AccessTools.Method(typeof(Verb),
                     "CanHitCellFromCellIgnoringRange"),
                 new HarmonyMethod(type, nameof(CanHitCellFromCellIgnoringRange_Prefix)), null);
 
             //optionally use "CutoutComplex" shader for apparel that wants it
-            harmony.Patch(AccessTools.Method(typeof(ApparelGraphicRecordGetter), nameof(ApparelGraphicRecordGetter.TryGetGraphicApparel)), null, null, new HarmonyMethod(type, nameof(CutOutComplexApparel_Transpiler)));
+            instance.Patch(AccessTools.Method(typeof(ApparelGraphicRecordGetter), nameof(ApparelGraphicRecordGetter.TryGetGraphicApparel)), null, null, new HarmonyMethod(type, nameof(CutOutComplexApparel_Transpiler)));
         }
 
         //Added B19, Oct 2019
@@ -542,7 +543,7 @@ namespace JecsTools
                         explosion.applyDamageToExplosionCellsNeighbors = false;
                         explosion.chanceToStartFire = 0f;
                         explosion.damageFalloff = false; // dealMoreDamageAtCenter = false;
-                        explosion.StartExplosion(null);
+                        explosion.StartExplosion(null,null);
                     }
 
                     if (pawn != instigator && !pawn.Dead && !pawn.Downed && pawn.Spawned)
@@ -561,10 +562,10 @@ namespace JecsTools
                 instigator.health.hediffSet.hediffs.FirstOrDefault(y =>
                     y.TryGetComp<HediffComp_ExtraMeleeDamages>() != null);
             var damages = extraDamagesHediff?.TryGetComp<HediffComp_ExtraMeleeDamages>();
-            if (damages?.Props != null && !damages.Props.extraDamages.NullOrEmpty())
+            if (damages?.Props != null && !damages.Props.ExtraDamages.NullOrEmpty())
             {
                 StopPreApplyDamageCheck = true;
-                foreach (var dmg in damages.Props.extraDamages)
+                foreach (var dmg in damages.Props.ExtraDamages)
                 {
                     if (pawn == null || !pawn.Spawned || pawn.Dead)
                     {

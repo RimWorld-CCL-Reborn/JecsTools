@@ -119,8 +119,8 @@ static internal class AbilityEffectUtility
                     }
                 }
     }
-
-    public static void ApplyMentalStates(Pawn victim, Pawn caster, List<ApplyMentalStates> localApplyMentalStates, AbilityDef localAbilityDef, Projectile_AbilityBase abilityProjectile)
+    
+    public static void ApplyMentalStates(Pawn victim, Pawn caster, List<ApplyMentalStates> localApplyMentalStates, AbilityUser.AbilityDef localAbilityDef, Projectile_AbilityBase abilityProjectile)
     {
         if (localApplyMentalStates != null)
             if (localApplyMentalStates.Count > 0)

@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 using System.Text;
-using Harmony;
+using HarmonyLib;
 using RimWorld;
 using RimWorld.BaseGen;
 using RimWorld.Planet;
@@ -23,9 +23,10 @@ namespace CompVehicle
     {
         static HarmonyCompVehicle()
         {
-            var harmony = HarmonyInstance.Create("rimworld.jecrell.comps.vehicle");
+
+            var harmony = new Harmony("jecstools.jecrell.comps.vehicle");
             //HarmonyInstance.DEBUG = true;
-            
+
             #region Functions
 
             ///
@@ -147,13 +148,15 @@ namespace CompVehicle
                         mi.GetParameters().Count() == 1 && mi.GetParameters()[0].ParameterType == typeof(PawnKindDef)),
                 null, new HarmonyMethod(typeof(HarmonyCompVehicle),
                     nameof(MechanoidsFixerAncient)));
-            harmony.Patch(
-                typeof(CompSpawnerMechanoidsOnDamaged).GetMethods(BindingFlags.NonPublic | BindingFlags.Instance).First(
-                    mi => mi.HasAttribute<CompilerGeneratedAttribute>() && mi.ReturnType == typeof(bool) &&
-                          mi.GetParameters().Count() == 1 &&
-                          mi.GetParameters()[0].ParameterType == typeof(PawnKindDef)), null, new HarmonyMethod(
-                    typeof(HarmonyCompVehicle),
-                    nameof(MechanoidsFixer)));
+
+//  Tad Patched out the Mechanoid on damaged method as its no longer recognised.
+//            harmony.Patch(
+//                typeof(CompSpawnerMechanoidsOnDamaged).GetMethods(BindingFlags.NonPublic | BindingFlags.Instance).First(
+//                    mi => mi.HasAttribute<CompilerGeneratedAttribute>() && mi.ReturnType == typeof(bool) &&
+//                          mi.GetParameters().Count() == 1 &&
+//                          mi.GetParameters()[0].ParameterType == typeof(PawnKindDef)), null, new HarmonyMethod(
+//                    typeof(HarmonyCompVehicle),
+//                    nameof(MechanoidsFixer)));
 
 //            harmony.Patch(AccessTools.Method(typeof(JobDriver_Wait), "CheckForAutoAttack"), null, null,
 //                new HarmonyMethod(typeof(HarmonyCompVehicle),
@@ -1881,8 +1884,8 @@ namespace CompVehicle
                                 foreach (var vgroup in vehicle.handlers)
                                     if (vgroup.role.label == group.role.label)
                                     {
-                                        vgroup.handlers.Add(pawn);
-                                        caravan.RemovePawn(pawn);
+                                            vgroup.handlers.TryAdd(pawn);
+                                            caravan.RemovePawn(pawn);
                                         ////Log.Message("RemovedPawn " + pawn.LabelShort);
                                         ////Log.Message(caravan.PawnsListForReading.ToString());
                                         //if (pawn.IsWorldPawn()) Find.WorldPawns.RemovePawn(pawn);

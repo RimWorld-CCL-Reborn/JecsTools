@@ -24,7 +24,7 @@ namespace CompDeflector
         public bool useManipulationInCalc = false;
 
         public bool useSkillInCalc = false;
-
+        
         public CompProperties_Deflector()
         {
             compClass = typeof(CompDeflector);
@@ -40,9 +40,9 @@ namespace CompDeflector
         {
             if (!useSkillInCalc)
             {
-                yield return new StatDrawEntry(StatCategoryDefOf.Weapon, "Deflect chance",
-                    baseDeflectChance.ToStringPercent(), 0)
-                {
+                
+                yield return new StatDrawEntry(StatCategoryDefOf.Weapon, StatDef.Named("Deflect chance"),   float.Parse(baseDeflectChance.ToStringPercent()), StatRequest.ForEmpty())
+                { 
                     overrideReportText = "Determines how often this weapon returns projectiles back at the attacker."
                     //overrideReportText = "DeflectChanceEx".Translate(),
                 };
@@ -59,8 +59,7 @@ namespace CompDeflector
                 //        calc.ToStringPercent()
                 //    }),
                 //};
-                yield return new StatDrawEntry(StatCategoryDefOf.Weapon, "Max deflect chance", calc.ToStringPercent(),
-                    0)
+                yield return new StatDrawEntry(StatCategoryDefOf.Weapon,    StatDef.Named("Max deflect chance"), float.Parse(calc.ToStringPercent()),  StatRequest.ForEmpty())
                 {
                     overrideReportText = "For each point in " + deflectSkill.label + ", the user gains a " +
                                          deflectRatePerSkillPoint.ToStringPercent() +
@@ -75,8 +74,7 @@ namespace CompDeflector
                 //{
                 //    overrideReportText = "DeflectChancePerLevelEx".Translate(new object[] { deflectSkill.label })
                 //};
-                yield return new StatDrawEntry(StatCategoryDefOf.Weapon,
-                    "Deflect % per " + deflectSkill.label + " skill", deflectRatePerSkillPoint.ToStringPercent(), 0)
+                yield return new StatDrawEntry(StatCategoryDefOf.Weapon,    StatDef.Named("Deflect % per " + deflectSkill.label + " skill"), float.Parse(deflectRatePerSkillPoint.ToStringPercent()), StatRequest.ForEmpty())
                 {
                     overrideReportText = "For each level in " + deflectSkill.label +
                                          ", the user gains this much % chance to deflect a projectile."

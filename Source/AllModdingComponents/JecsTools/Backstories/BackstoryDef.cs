@@ -3,10 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Verse;
+using HarmonyLib;
 
 namespace JecsTools
 {
-    using Harmony;
+    
 
     //Pulled from erdelf's Alien Races 2.0
     //Original credit and work belong to erdelf (https://github.com/erdelf)

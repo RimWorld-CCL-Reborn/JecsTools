@@ -1,4 +1,4 @@
-﻿using Harmony;
+﻿using HarmonyLib;
 using RimWorld;
 using System;
 using System.Collections.Generic;
@@ -47,8 +47,9 @@ namespace PawnShields
         static HarmonyPatches()
         {
             //HarmonyInstance.DEBUG = true;
-            HarmonyInstance harmony = HarmonyInstance.Create("chjees.shields");
 
+            // Changed by Tad : New Harmony Instance creation required
+            var instance = new Harmony("jecstools.chjees.shields");
             //ThingDef
 //            {
 //                Type type = typeof(ThingDef);
@@ -56,12 +57,11 @@ namespace PawnShields
 //                MethodInfo patchMethod = type.GetMethod("SpecialDisplayStats");
 //                MethodInfo patchCustomMethod = typeof(HarmonyPatches).GetMethod(nameof(Patch_ThingDef_SpecialDisplayStats));
 //
-//                harmony.Patch(
+//                Harmony.Patch(
 //                    patchMethod,
 //                    null,
 //                    new HarmonyMethod(patchCustomMethod));
 //            }
-
 //            //Pawn
             {
                 Type type = typeof(Pawn);
@@ -69,7 +69,7 @@ namespace PawnShields
                 MethodInfo patchMethod = type.GetMethod("Tick");
                 MethodInfo patchCustomMethod = typeof(HarmonyPatches).GetMethod(nameof(Patch_Pawn_Tick));
 
-                harmony.Patch(
+                instance.Patch(
                     patchMethod,
                     null,
                     new HarmonyMethod(patchCustomMethod));
@@ -82,7 +82,7 @@ namespace PawnShields
                 MethodInfo patchMethod = type.GetMethod("GenerateGearFor", BindingFlags.NonPublic | BindingFlags.Static);
                 MethodInfo patchCustomMethod = typeof(HarmonyPatches).GetMethod(nameof(Patch_PawnGenerator_GenerateGearFor));
 
-                harmony.Patch(
+                instance.Patch(
                     patchMethod,
                     null,
                     new HarmonyMethod(patchCustomMethod));
@@ -97,7 +97,7 @@ namespace PawnShields
                 MethodInfo patchMethod = type.GetMethod("RenderPawnAt", new Type[] { typeof(Vector3), typeof(RotDrawMode), typeof(bool) });
                 MethodInfo patchCustomMethod = typeof(HarmonyPatches).GetMethod(nameof(Patch_PawnRenderer_RenderPawnAt));
 
-                harmony.Patch(
+                instance.Patch(
                     patchMethod,
                     null,
                     new HarmonyMethod(patchCustomMethod));
@@ -112,7 +112,7 @@ namespace PawnShields
                 MethodInfo patchMethod = type.GetMethod("PreApplyDamage");
                 MethodInfo patchCustomMethod = typeof(HarmonyPatches).GetMethod(nameof(Patch_Pawn_HealthTracker_PreApplyDamage));
 
-                harmony.Patch(
+                instance.Patch(
                     patchMethod,
                     new HarmonyMethod(patchCustomMethod),
                     null);
@@ -127,7 +127,7 @@ namespace PawnShields
                 MethodInfo patchMethod = type.GetMethod("MakeRoomFor");
                 MethodInfo patchCustomMethod = typeof(HarmonyPatches).GetMethod(nameof(Patch_Pawn_EquipmentTracker_MakeRoomFor));
 
-                harmony.Patch(
+                instance.Patch(
                     patchMethod,
                     null,
                     new HarmonyMethod(patchCustomMethod));
@@ -143,7 +143,7 @@ namespace PawnShields
                 MethodInfo patchMethod = type.GetMethod("GetExplanationUnfinalized"); //StatRequest req, ToStringNumberSense numberSense
                 MethodInfo patchCustomMethod = typeof(HarmonyPatches).GetMethod(nameof(Transpiler_StatWorker_GetExplanationUnfinalized));
 
-                harmony.Patch(
+                instance.Patch(
                     patchMethod,
                     null,
                     null,
@@ -155,7 +155,7 @@ namespace PawnShields
                 MethodInfo patchMethod = type.GetMethod("GetValueUnfinalized"); //StatRequest req, ToStringNumberSense numberSense
                 //MethodInfo patchCustomMethod = typeof(HarmonyPatches).GetMethod(nameof(Transpiler_StatWorker_GetValueUnfinalized));
                 MethodInfo patchCustomMethod = typeof(HarmonyPatches).GetMethod(nameof(Patch_StatWorker_GetValueUnfinalized));
-                harmony.Patch(
+                instance.Patch(
                     patchMethod,
                     null,
                     new HarmonyMethod(patchCustomMethod));

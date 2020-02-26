@@ -13,8 +13,9 @@ namespace JecsTools
             {
                 var s = new StringBuilder();
                 s.Append(base.CompTipStringExtra);
-                s.AppendLine("JT_HI_Knockback".Translate(Props.knockbackChance.ToStringPercent()) +
-                             (Props.explosiveKnockback ? " (" + "JT_HI_KnockbackExplosive".Translate() + ")" : ""));
+                //Changed by Tad.
+                //s.AppendLine("JT_HI_Knockback".Translate(Props.knockbackChance.ToStringPercent()) + (Props.explosiveKnockback ? " (" + "JT_HI_KnockbackExplosive".Translate() + ")" : ""));
+                s.AppendLine("JT_HI_Knockback".Translate(Props.knockbackChance.ToStringPercent()) +" "+ Props.explosiveKnockback + " " + " (JT_HI_KnockbackExplosive".Translate() + ")");
                 return s.ToString();
             }
         }

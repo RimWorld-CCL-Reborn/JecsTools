@@ -183,12 +183,13 @@ namespace AbilityUser
             if (context == AbilityContext.Player)
             {
                 var targeter = Find.Targeter;
-                if (verb.CasterIsPawn && targeter.targetingVerb != null &&
-                    targeter.targetingVerb.verbProps == verb.verbProps)
+                if (verb.CasterIsPawn && targeter.targetingSource != null )
+                    // Tad : Commented out for now. 
+                    // && targeter.targetingSource.targetParams .verbProps == verb.verbProps)
                 {
                     var casterPawn = verb.CasterPawn;
                     if (!targeter.IsPawnTargeting(casterPawn))
-                        targeter.targetingVerbAdditionalPawns.Add(casterPawn);
+                        targeter.targetingSourceAdditionalPawns.Add(casterPawn);
                 }
                 UseAbility(AbilityContext.Player, target);
             }
@@ -239,7 +240,7 @@ namespace AbilityUser
                 reason = "CannotOrderNonControlled".Translate();
                 return false;
             }
-            if (Verb.CasterPawn.story.WorkTagIsDisabled(WorkTags.Violent) &&
+            if (Verb.CasterPawn.WorkTagIsDisabled(WorkTags.Violent) &&
                 powerdef.MainVerb.isViolent)
             {
                 reason = "IsIncapableOfViolence".Translate(Verb.CasterPawn.Name.ToStringShort);

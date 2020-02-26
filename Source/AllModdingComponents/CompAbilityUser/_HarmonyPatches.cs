@@ -313,7 +313,7 @@ namespace AbilityUser
         // RimWorld.Targeter
         public static bool ConfirmStillValid(Targeter __instance)
         {
-            if (__instance.targetingVerb is Verb_UseAbility)
+            if (__instance.targetingSource is Verb_UseAbility)
             {
                 var caster = Traverse.Create(__instance).Field("caster").GetValue<Pawn>();
 
@@ -321,21 +321,21 @@ namespace AbilityUser
                                        !Find.Selector.IsSelected(caster) ||
                                        caster.Faction != Faction.OfPlayerSilentFail))
                     __instance.StopTargeting();
-                if (__instance.targetingVerb != null)
+                if (__instance.targetingSource != null)
                 {
                     var selector = Find.Selector;
-                    if (__instance.targetingVerb.caster.Map != Find.CurrentMap ||
-                        __instance.targetingVerb.caster.Destroyed ||
-                        !selector.IsSelected(__instance.targetingVerb.caster))
+                    if (__instance.targetingSource.CasterPawn.Map != Find.CurrentMap ||
+                        __instance.targetingSource.CasterPawn.Destroyed ||
+                        !selector.IsSelected(__instance.targetingSource.CasterPawn))
                     {
                         __instance.StopTargeting();
                     }
                     else
                     {
-                        if (!__instance.targetingVerbAdditionalPawns.NullOrEmpty())
-                            for (var i = 0; i < __instance.targetingVerbAdditionalPawns.Count; i++)
-                                if (__instance.targetingVerbAdditionalPawns[i].Destroyed ||
-                                    !selector.IsSelected(__instance.targetingVerbAdditionalPawns[i]))
+                        if (!__instance.targetingSourceAdditionalPawns.NullOrEmpty())
+                            for (var i = 0; i < __instance.targetingSourceAdditionalPawns.Count; i++)
+                                if (__instance.targetingSourceAdditionalPawns[i].Destroyed ||
+                                    !selector.IsSelected(__instance.targetingSourceAdditionalPawns[i]))
                                 {
                                     __instance.StopTargeting();
                                     break;
@@ -351,13 +351,13 @@ namespace AbilityUser
         // RimWorld.Targeter
         public static bool ProcessInputEvents_PreFix(Targeter __instance)
         {
-            if (__instance.targetingVerb is Verb_UseAbility v)
+            if (__instance.targetingSource is Verb_UseAbility v)
             {
                 if (v.UseAbilityProps.AbilityTargetCategory == AbilityTargetCategory.TargetSelf)
                 {
-                    var caster = (Pawn) __instance.targetingVerb.caster;
+                    var caster = (Pawn) __instance.targetingSource.CasterPawn;
                     v.Ability.TryCastAbility(AbilityContext.Player,
-                        caster); // caster, source.First<LocalTargetInfo>(), caster.GetComp<CompAbilityUser>(), (Verb_UseAbility)__instance.targetingVerb, ((Verb_UseAbility)(__instance.targetingVerb)).ability.powerdef as AbilityDef)?.Invoke();
+                        caster); // caster, source.First<LocalTargetInfo>(), caster.GetComp<CompAbilityUser>(), (Verb_UseAbility)__instance.targetingSource, ((Verb_UseAbility)(__instance.targetingSource)).ability.powerdef as AbilityDef)?.Invoke();
                     SoundDefOf.Tick_High.PlayOneShotOnCamera();
                     __instance.StopTargeting();
                     Event.current.Use();
@@ -375,9 +375,9 @@ namespace AbilityUser
                         __instance.StopTargeting();
                         Event.current.Use();
                         return false;
-                        //if (__instance.targetingVerb is Verb_UseAbility)
+                        //if (__instance.targetingSource is Verb_UseAbility)
                         //{
-                        //    Verb_UseAbility abilityVerb = __instance.targetingVerb as Verb_UseAbility;
+                        //    Verb_UseAbility abilityVerb = __instance.targetingSource as Verb_UseAbility;
                         //    if (abilityVerb.Ability.Def.MainVerb.AbilityTargetCategory != AbilityTargetCategory.TargetSelf)
                         //    {
                         //        TargetingParameters targetParams = abilityVerb.Ability.Def.MainVerb.targetParams;
@@ -391,8 +391,8 @@ namespace AbilityUser
                         //                if (source.Any<LocalTargetInfo>())
                         //                {
 
-                        //                    Pawn caster = (Pawn)__instance.targetingVerb.caster;
-                        //                    abilityVerb.Ability.TryCastAbility(AbilityContext.Player, source.First<LocalTargetInfo>());// caster, source.First<LocalTargetInfo>(), caster.GetComp<CompAbilityUser>(), (Verb_UseAbility)__instance.targetingVerb, ((Verb_UseAbility)(__instance.targetingVerb)).ability.powerdef as AbilityDef)?.Invoke();
+                        //                    Pawn caster = (Pawn)__instance.targetingSource.caster;
+                        //                    abilityVerb.Ability.TryCastAbility(AbilityContext.Player, source.First<LocalTargetInfo>());// caster, source.First<LocalTargetInfo>(), caster.GetComp<CompAbilityUser>(), (Verb_UseAbility)__instance.targetingSource, ((Verb_UseAbility)(__instance.targetingSource)).ability.powerdef as AbilityDef)?.Invoke();
                         //                    SoundDefOf.Tick_High.PlayOneShotOnCamera();
                         //                    __instance.StopTargeting();
                         //                    Event.current.Use();
@@ -403,8 +403,8 @@ namespace AbilityUser
                         //    }
                         //    else
                         //    {
-                        //        Pawn caster = (Pawn)__instance.targetingVerb.caster;
-                        //        abilityVerb.Ability.TryCastAbility(AbilityContext.Player, null);// caster.GetComp<CompAbilityUser>(), (Verb_UseAbility)__instance.targetingVerb, ((Verb_UseAbility)(__instance.targetingVerb)).ability.powerdef as AbilityDef)?.Invoke();
+                        //        Pawn caster = (Pawn)__instance.targetingSource.caster;
+                        //        abilityVerb.Ability.TryCastAbility(AbilityContext.Player, null);// caster.GetComp<CompAbilityUser>(), (Verb_UseAbility)__instance.targetingSource, ((Verb_UseAbility)(__instance.targetingSource)).ability.powerdef as AbilityDef)?.Invoke();
                         //        SoundDefOf.Tick_High.PlayOneShotOnCamera();
                         //        __instance.StopTargeting();
                         //        Event.current.Use();
@@ -419,7 +419,7 @@ namespace AbilityUser
 
         public static void TargeterUpdate_PostFix(Targeter __instance)
         {
-            if (__instance.targetingVerb is Verb_UseAbility tVerb &&
+            if (__instance.targetingSource is Verb_UseAbility tVerb &&
                 tVerb.verbProps is VerbProperties_Ability tVerbProps)
             {
                 if (tVerbProps?.range > 0)

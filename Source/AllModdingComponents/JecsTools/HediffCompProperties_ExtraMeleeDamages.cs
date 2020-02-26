@@ -5,8 +5,7 @@ namespace JecsTools
 {
     public class HediffCompProperties_ExtraMeleeDamages : HediffCompProperties
     {
-        public List<ExtraMeleeDamage> extraDamages = new List<ExtraMeleeDamage>();
-
+        public List<ExtraDamage> ExtraDamages = new List<ExtraDamage>();
         public HediffCompProperties_ExtraMeleeDamages()
         {
             compClass = typeof(HediffComp_ExtraMeleeDamages);

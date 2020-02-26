@@ -34,7 +34,7 @@ namespace AbilityUser
 
             if (Context == AbilityContext.Player)
             {
-                Find.Targeter.targetingVerb = Verb;
+                Find.Targeter.targetingSource = Verb;
             }
 
             yield return Toils_Combat.CastVerb(TargetIndex.A, false);
@@ -68,9 +68,9 @@ namespace AbilityUser
             {
                 return;
             }
-            bool flag = searcher.story == null || !searcher.story.WorkTagIsDisabled(WorkTags.Violent);
+            bool flag = searcher.story == null || !searcher.WorkTagIsDisabled(WorkTags.Violent);
             bool flag2 = searcher.RaceProps.ToolUser && searcher.Faction == Faction.OfPlayer &&
-                         !searcher.story.WorkTagIsDisabled(WorkTags.Firefighting);
+                         !searcher.WorkTagIsDisabled(WorkTags.Firefighting);
             if (flag || flag2)
             {
                 Fire fire = null;

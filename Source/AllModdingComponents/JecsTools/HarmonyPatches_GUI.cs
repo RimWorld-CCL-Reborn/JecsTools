@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reflection.Emit;
 using AbilityUser;
-using Harmony;
+using HarmonyLib;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -16,13 +16,16 @@ namespace JecsTools
     {
         private static bool drawButtonsPatched;
         
-        public static void GUIPatches(HarmonyInstance harmony)
+        public static void GUIPatches(Harmony harmony)
         {
+            // Changed by Tad : New Harmony Instance creation required
+            var instance = new Harmony("jecstools.jecrell.main-gui");
+
             //Allow fortitude to soak damage
             var type = typeof(HarmonyPatches);
             //harmony.Patch(AccessTools.Method(typeof(DebugWindowsOpener), "DrawButtons"), null,
             //    null, new HarmonyMethod(type, nameof(DrawAdditionalButtons)));
-            harmony.Patch(AccessTools.Method(typeof(MoteMaker), "MakeMoodThoughtBubble"), null,
+            instance.Patch(AccessTools.Method(typeof(MoteMaker), "MakeMoodThoughtBubble"), null,
                 new HarmonyMethod(type, nameof(ToggleMoodThoughtBubble)),
                 null);
         }
@@ -45,7 +48,7 @@ namespace JecsTools
 //            }
 //        }
         
-        private static int TryGetLocalIndexOfConstructedObject(IEnumerable<CodeInstruction> instructions, Type constructedType, Type[] constructorParams = null) {
+        private static int TryGetLocalIndexOfConstructedObject(IEnumerable<CodeInstruction> instructions, Type constructedType, Type[] constructorParams = null) { 
             var constructor = AccessTools.Constructor(constructedType, constructorParams);
             int localIndex = -1;
             if (constructor == null) {

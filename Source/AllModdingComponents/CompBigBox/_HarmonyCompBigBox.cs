@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Harmony;
+using HarmonyLib;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -14,7 +14,7 @@ namespace DefModExtension_BigBox
     {
         static HarmonyDefModExtension_BigBox()
         {
-            var harmony = HarmonyInstance.Create("rimworld.jecrell.defmodextensions.bigbox");
+            var harmony = new Harmony("jecstools.jecrell.defmodextensions.bigbox");
 
             var type = typeof(HarmonyDefModExtension_BigBox);
             harmony.Patch(AccessTools.Method(typeof(SelectionDrawer), "DrawSelectionBracketFor"),

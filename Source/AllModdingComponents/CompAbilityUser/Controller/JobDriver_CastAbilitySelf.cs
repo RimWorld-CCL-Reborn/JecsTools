@@ -32,7 +32,7 @@ namespace AbilityUser
             yield return Toils_Misc.ThrowColonistAttackingMote(TargetIndex.A);
 
             var verb = pawn.CurJob.verbToUse as Verb_UseAbility;
-            Find.Targeter.targetingVerb = verb;
+            Find.Targeter.targetingSource = verb;
             yield return new Toil
             {
                 initAction = delegate { verb.Ability.PostAbilityAttempt(); },

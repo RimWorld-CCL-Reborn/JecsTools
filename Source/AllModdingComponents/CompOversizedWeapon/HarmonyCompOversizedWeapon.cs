@@ -2,7 +2,7 @@
 using System.Data.Common;
 using System.Linq;
 using System.Security.Cryptography;
-using Harmony;
+using HarmonyLib;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -14,7 +14,7 @@ namespace CompOversizedWeapon
     {
         static HarmonyCompOversizedWeapon()
         {
-            var harmony = HarmonyInstance.Create("rimworld.jecrell.comps.oversized");
+            var harmony = new Harmony("jecstools.jecrell.comps.oversized");
             harmony.Patch(typeof(PawnRenderer).GetMethod("DrawEquipmentAiming"),
                 new HarmonyMethod(typeof(HarmonyCompOversizedWeapon).GetMethod("DrawEquipmentAimingPreFix")), null);
             harmony.Patch(AccessTools.Method(typeof(Thing), "get_DefaultGraphic"), null,
