@@ -166,8 +166,8 @@ namespace CompDeflector
             return calc;
         }
 
-        public IEnumerable<StatDrawEntry> SpecialDisplayStats()
-        { 
+        public override IEnumerable<StatDrawEntry> SpecialDisplayStats()
+        {
             //yield return new StatDrawEntry(StatCategoryDefOf.Basics, "DeflectChance".Translate(), ChanceToString, 0);
             yield return new StatDrawEntry(StatCategoryDefOf.Basics, StatDef.Named("Deflect chance"), float.Parse(ChanceToString), StatRequest.ForEmpty());
         }
