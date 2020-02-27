@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Harmony;
+using HarmonyLib;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -13,7 +13,7 @@ namespace AbilityUser
     {
         public AbilityUserMod(ModContentPack content) : base(content)
         {
-            var harmony = HarmonyInstance.Create("rimworld.jecrell.abilityuser");
+            var harmony = new Harmony("jecstools.jecrell.abilityuser");
             harmony.Patch(AccessTools.Method(typeof(Targeter), nameof(Targeter.TargeterUpdate)), null,
                 new HarmonyMethod(typeof(AbilityUserMod), nameof(TargeterUpdate_PostFix)), null);
             harmony.Patch(AccessTools.Method(typeof(Targeter), nameof(Targeter.ProcessInputEvents)),

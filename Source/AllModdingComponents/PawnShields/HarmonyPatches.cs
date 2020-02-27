@@ -51,18 +51,19 @@ namespace PawnShields
             // Changed by Tad : New Harmony Instance creation required
             var instance = new Harmony("jecstools.chjees.shields");
             //ThingDef
-//            {
-//                Type type = typeof(ThingDef);
-//
-//                MethodInfo patchMethod = type.GetMethod("SpecialDisplayStats");
-//                MethodInfo patchCustomMethod = typeof(HarmonyPatches).GetMethod(nameof(Patch_ThingDef_SpecialDisplayStats));
-//
-//                Harmony.Patch(
-//                    patchMethod,
-//                    null,
-//                    new HarmonyMethod(patchCustomMethod));
-//            }
-//            //Pawn
+            //            {
+            //                Type type = typeof(ThingDef);
+            //
+            //                MethodInfo patchMethod = type.GetMethod("SpecialDisplayStats");
+            //                MethodInfo patchCustomMethod = typeof(HarmonyPatches).GetMethod(nameof(Patch_ThingDef_SpecialDisplayStats));
+            //
+            //                Harmony.Patch(
+            //                    patchMethod,
+            //                    null,
+            //                    new HarmonyMethod(patchCustomMethod));
+            //            }
+            //            //Pawn
+            
             {
                 Type type = typeof(Pawn);
 
@@ -74,8 +75,10 @@ namespace PawnShields
                     null,
                     new HarmonyMethod(patchCustomMethod));
             }
-//
-//            //PawnGenerator
+
+            
+            //
+            //            //PawnGenerator
             {
                 Type type = typeof(PawnGenerator);
 
@@ -87,14 +90,16 @@ namespace PawnShields
                     null,
                     new HarmonyMethod(patchCustomMethod));
             }
-//
-//            //PawnRenderer
+
+            
+            //
+            //            //PawnRenderer
             {
                 Type type = typeof(PawnRenderer);
 
                 pawnField_PawnRenderer = type.GetField("pawn", BindingFlags.NonPublic | BindingFlags.Instance);
 
-                MethodInfo patchMethod = type.GetMethod("RenderPawnAt", new Type[] { typeof(Vector3), typeof(RotDrawMode), typeof(bool) });
+                MethodInfo patchMethod = type.GetMethod("RenderPawnAt", new Type[] { typeof(Vector3), typeof(RotDrawMode), typeof(bool), typeof(bool) });
                 MethodInfo patchCustomMethod = typeof(HarmonyPatches).GetMethod(nameof(Patch_PawnRenderer_RenderPawnAt));
 
                 instance.Patch(
@@ -102,6 +107,9 @@ namespace PawnShields
                     null,
                     new HarmonyMethod(patchCustomMethod));
             }
+
+
+            Log.Message("2");
 
             //Pawn_HealthTracker
             {
@@ -118,6 +126,9 @@ namespace PawnShields
                     null);
             }
 
+
+            Log.Message("2");
+
             //Pawn_EquipmentTracker
             {
                 Type type = typeof(Pawn_EquipmentTracker);
@@ -133,6 +144,9 @@ namespace PawnShields
                     new HarmonyMethod(patchCustomMethod));
             }
 
+
+
+            Log.Message("2");
             //StatWorker //TODO - Needs fixing for 1.0
             {
                 Type type = typeof(StatWorker);
@@ -149,6 +163,10 @@ namespace PawnShields
                     null,
                     new HarmonyMethod(patchCustomMethod));
             }
+
+
+            Log.Message("2");
+
             {
                 Type type = typeof(StatWorker);
 

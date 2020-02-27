@@ -98,7 +98,7 @@ namespace JecsTools
                 new HarmonyMethod(type, nameof(CanHitCellFromCellIgnoringRange_Prefix)), null);
 
             //optionally use "CutoutComplex" shader for apparel that wants it
-            instance.Patch(AccessTools.Method(typeof(ApparelGraphicRecordGetter), nameof(ApparelGraphicRecordGetter.TryGetGraphicApparel)), null, null, new HarmonyMethod(type, nameof(CutOutComplexApparel_Transpiler)));
+            //instance.Patch(AccessTools.Method(typeof(ApparelGraphicRecordGetter), nameof(ApparelGraphicRecordGetter.TryGetGraphicApparel)), null, null, new HarmonyMethod(type, nameof(CutOutComplexApparel_Transpiler)));
         }
 
         //Added B19, Oct 2019
@@ -721,29 +721,29 @@ namespace JecsTools
 
         //added 2018/12/13 - Mehni.
         //Uses CutoutComplex shader for apparel that wants it.
-        private static IEnumerable<CodeInstruction> CutOutComplexApparel_Transpiler(IEnumerable<CodeInstruction> instructions)
-        {
-            MethodInfo shader = AccessTools.Method(typeof(HarmonyPatches), nameof(HarmonyPatches.Shader));
-            FieldInfo cutOut = AccessTools.Field(typeof(ShaderDatabase), nameof(ShaderDatabase.Cutout));
+     // private static IEnumerable<CodeInstruction> CutOutComplexApparel_Transpiler(IEnumerable<CodeInstruction> instructions)
+     // {
+     //    MethodInfo shader = AccessTools.Method(typeof(HarmonyPatches), nameof(HarmonyPatches.Shader));
+     //       FieldInfo cutOut = AccessTools.Field(typeof(ShaderDatabase), nameof(ShaderDatabase.Cutout));
+     //
+     //      foreach (CodeInstruction codeInstruction in instructions)
+     //      {
+     //          if (codeInstruction.opcode == OpCodes.Ldsfld && codeInstruction.operand == cutOut)
+     //          {
+     //              yield return new CodeInstruction(OpCodes.Ldarg_0); //apparel
+     //              yield return new CodeInstruction(OpCodes.Call, shader); //return shader type
+       //             continue; //skip instruction.
+       //         }
+       //         yield return codeInstruction;
+       //     }
+       // }
 
-            foreach (CodeInstruction codeInstruction in instructions)
-            {
-                if (codeInstruction.opcode == OpCodes.Ldsfld && codeInstruction.operand == cutOut)
-                {
-                    yield return new CodeInstruction(OpCodes.Ldarg_0); //apparel
-                    yield return new CodeInstruction(OpCodes.Call, shader); //return shader type
-                    continue; //skip instruction.
-                }
-                yield return codeInstruction;
-            }
-        }
-
-        private static Shader Shader (Apparel apparel)
-        {
-            if (apparel.def.graphicData.shaderType.Shader == ShaderDatabase.CutoutComplex)
-                return ShaderDatabase.CutoutComplex;
-
-            return ShaderDatabase.Cutout;
-        }
+      //  private static Shader Shader (Apparel apparel)
+      //  {
+      //      if (apparel.def.graphicData.shaderType.Shader == ShaderDatabase.CutoutComplex)
+      //          return ShaderDatabase.CutoutComplex;
+      //
+      //      return ShaderDatabase.Cutout;
+      //  }
     }
 }
