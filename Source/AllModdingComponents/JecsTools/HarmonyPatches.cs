@@ -377,12 +377,13 @@ namespace JecsTools
                 {
                     var aExt = A.GetModExtension<ApparelExtension>();
                     var bExt = B.GetModExtension<ApparelExtension>();
-                    var check = new Dictionary<string, int>();
+                    var check = new HashSet<string>();
                     if (aExt.coverage?.Count > 0)
                         for (int i = 0; i < aExt.coverage.Count; i++)
                         {
-                            if (!check.ContainsKey(aExt.coverage[i]))
-                                check.Add(aExt.coverage[i].ToLowerInvariant(), 1);
+                            var coverageItem = aExt.coverage[i].ToLowerInvariant();
+                            if (!check.Contains(coverageItem))
+                                check.Add(coverageItem);
                             else
                             {
                                 Log.Warning("JecsTools :: ApparelExtension :: Warning:: " + A.label +
@@ -394,8 +395,9 @@ namespace JecsTools
                     if (bExt.coverage?.Count > 0)
                         for (int j = 0; j < bExt.coverage.Count; j++)
                         {
-                            if (!check.ContainsKey(bExt.coverage[j]))
-                                check.Add(bExt.coverage[j].ToLowerInvariant(), 1);
+                            var coverageItem = bExt.coverage[j].ToLowerInvariant();
+                            if (!check.Contains(coverageItem))
+                                check.Add(coverageItem);
                             else
                             {
                                 __result = false;
