@@ -47,6 +47,7 @@
 		<defName>ShieldFatigue</defName>
 		<label>shield fatigue</label>
 		<hediffClass>HediffWithComps</hediffClass>
+		<description>Shield Fatigue</description>
 		<maxSeverity>1.0</maxSeverity>
 		<comps>
 			<li Class="HediffCompProperties_Immunizable">
