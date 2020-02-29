@@ -8,7 +8,7 @@ namespace JecsTools
     {
         private static readonly Color transparentWhite = new Color(1f, 1f, 1f, 0f);
 
-        public override void DrawGhost(ThingDef def, IntVec3 center, Rot4 rot, Color ghostCol)
+        public override void DrawGhost(ThingDef def, IntVec3 center, Rot4 rot, Color ghostCol, Thing thing = null)
         {
             var drawFieldCells = new List<IntVec3>();
             foreach (var c in GenAdj.CellsOccupiedBy(center, rot, def.size))

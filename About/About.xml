@@ -1,12 +1,21 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ModMetaData>
-  <name>JecsToolsXTed</name>
+  <name>JecsTools</name>
   <author>jecrell</author>
+  <packageId>jecrell.jecstools</packageId>
   <url>https://discord.gg/AaVFA7V</url>
   <supportedVersions>
     <li>1.1</li>
   </supportedVersions>
-  <description>1.1.0.16 (11-16-2019)
+  <modDependencies>
+    <li>
+      <packageId>brrainz.harmony</packageId>
+      <displayName>Harmony</displayName>
+      <steamWorkshopUrl>steam://url/CommunityFilePage/2009463077</steamWorkshopUrl>
+      <downloadUrl>https://github.com/pardeike/HarmonyRimWorld/releases/latest</downloadUrl>
+    </li>
+  </modDependencies>
+  <description>1.1.0.17 (02-29-2020)
 
 Adds modding components to RimWorld: vehicles, spell casting, weapon slots, oversized weapons, and more!
 
@@ -65,6 +74,10 @@ Marcus Bell, RainerWingel, Dalton Johnson, Chris Seieroe, Robin Gleeson, Robert 
 ========================
 Changelog
 ========================
+1.1.0.17 (02-29-2020)
+========================
+Updates JecsTools for use in RimWorld 1.1
+
 1.1.0.16 (11-16-2019)
 ========================
 Adds in various work-in-progress code changes. Adds a belated Japanese translation update from Proxyer. Adds a force user code fix from Mehni. Adds BigBox - a solution for larger selection boxes for oversized pawns (such as dragons).

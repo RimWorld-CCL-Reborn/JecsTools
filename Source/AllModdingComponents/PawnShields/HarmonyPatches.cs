@@ -108,8 +108,7 @@ namespace PawnShields
                     new HarmonyMethod(patchCustomMethod));
             }
 
-
-            Log.Message("2");
+            
 
             //Pawn_HealthTracker
             {
@@ -126,8 +125,7 @@ namespace PawnShields
                     null);
             }
 
-
-            Log.Message("2");
+            
 
             //Pawn_EquipmentTracker
             {
@@ -145,8 +143,7 @@ namespace PawnShields
             }
 
 
-
-            Log.Message("2");
+            
             //StatWorker //TODO - Needs fixing for 1.0
             {
                 Type type = typeof(StatWorker);
@@ -164,8 +161,7 @@ namespace PawnShields
                     new HarmonyMethod(patchCustomMethod));
             }
 
-
-            Log.Message("2");
+            
 
             {
                 Type type = typeof(StatWorker);
