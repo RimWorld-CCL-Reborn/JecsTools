@@ -18,7 +18,7 @@
       </li>
     </v1.1>
   </modDependenciesByVersion>
-  <description>1.1.0.18 (02-29-2020)
+  <description>1.1.0.19 (02-29-2020)
 
 Adds modding components to RimWorld: vehicles, spell casting, weapon slots, oversized weapons, and more!
 
@@ -77,6 +77,10 @@ Marcus Bell, RainerWingel, Dalton Johnson, Chris Seieroe, Robin Gleeson, Robert 
 ========================
 Changelog
 ========================
+1.1.0.19 (02-29-2020)
+========================
+Hotfix for adding compatibility between the newest version of RimWorld and the previous version of 1.0.
+
 1.1.0.18 (02-29-2020)
 ========================
 Added cross compatibility for RimWorld 1.0 as well as RimWorld 1.1.
