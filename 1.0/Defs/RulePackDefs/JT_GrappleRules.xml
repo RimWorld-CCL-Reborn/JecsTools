@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+  <RulePackDef>
+    <defName>JT_GrappleSuccess</defName>
+    <include>
+      <li>Transition_Include</li>
+    </include>
+    <rulePack>
+      <rulesStrings>
+        <li>r_logentry->[INITIATOR_nameDef] [grappled] [SUBJECT_definite].</li>
+
+        <li>grappled->grappled</li>
+        <li>grappled->seized</li>
+        <li>grappled->took hold of</li>
+      </rulesStrings>
+    </rulePack>
+  </RulePackDef>
+
+  <RulePackDef>
+    <defName>JT_GrappleFailed</defName>
+    <include>
+      <li>Transition_Include</li>
+    </include>
+    <rulePack>
+      <rulesStrings>
+        <li>r_logentry->[INITIATOR_nameDef] [triedtograpple] [SUBJECT_definite], [but] [failedmeta].</li>
+
+		<li>tried->tried</li>
+		<li>tried->attempted</li>
+		<li>grappleinf->to grapple</li>
+		<li>grappleinf->to seize</li>
+		<li>grappleinf->to hold onto</li>
+        <li>triedtograpple->[tried] [grappleinf]</li>
+		
+		<li>but->but</li>
+		<li>but->however</li>
+		<li>but->even so</li>
+		<li>but->yet</li>
+		
+		<li>failed->failed</li>
+		<li>failed->missed</li>
+		<li>dodged->dodged</li>
+		<li>dodged->slipped away</li>
+		<li>spectacularly->spectacularly</li>
+		<li>spectacularly->miserably</li>
+		<li>spectacularly->completely</li>
+		<li>spectacularly->utterly</li>
+		<li>failedmeta->[INITIATOR_pronoun] [failed]</li>
+		<li>failedmeta->[INITIATOR_pronoun] [failed] [spectacularly]</li>
+		<li>failedmeta->[SUBJECT_definite] [dodged]</li>
+      </rulesStrings>
+    </rulePack>
+  </RulePackDef>
+  
+</Defs>

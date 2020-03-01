@@ -1,0 +1,196 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+	<StatCategoryDef>
+		<defName>Shield</defName>
+		<label>Shield</label>
+		<displayOrder>35</displayOrder>
+	</StatCategoryDef>
+	
+	<StatDef>
+		<defName>Shield_BaseMeleeBlockChance</defName>
+		<label>melee block chance</label>
+		<description>Shield users melee block chance is multiplied by this. The higher the better.</description>
+		<category>Shield</category>
+		<workerClass>PawnShields.StatWorker_Shield</workerClass>
+		<defaultBaseValue>1</defaultBaseValue>
+		<minValue>0.05</minValue>
+		<toStringStyle>PercentZero</toStringStyle>
+		<showIfUndefined>false</showIfUndefined>
+	</StatDef>
+	
+	<StatDef>
+		<defName>Shield_BaseRangedBlockChance</defName>
+		<label>ranged block chance</label>
+		<description>Shield users ranged block chance is multiplied by this. The higher the better.</description>
+		<category>Shield</category>
+		<workerClass>PawnShields.StatWorker_Shield</workerClass>
+		<defaultBaseValue>0.5</defaultBaseValue>
+		<minValue>0.05</minValue>
+		<toStringStyle>PercentZero</toStringStyle>
+		<showIfUndefined>false</showIfUndefined>
+	</StatDef>
+	
+	<StatDef>
+		<defName>Shield_DamageAbsorbed</defName>
+		<label>damage absorption</label>
+		<description>How much damage the shield absorbs from a blocked attack.</description>
+		<category>Shield</category>
+		<workerClass>PawnShields.StatWorker_Shield</workerClass>
+		<defaultBaseValue>1</defaultBaseValue>
+		<minValue>0.05</minValue>
+		<toStringStyle>PercentZero</toStringStyle>
+		<showIfUndefined>false</showIfUndefined>
+	</StatDef>
+
+	<!-- Hediffs -->
+	<HediffDef>
+		<defName>ShieldFatigue</defName>
+		<label>shield fatigue</label>
+		<hediffClass>HediffWithComps</hediffClass>
+		<maxSeverity>1.0</maxSeverity>
+		<comps>
+			<li Class="HediffCompProperties_Immunizable">
+				<severityPerDayNotImmune>-48.0</severityPerDayNotImmune>
+			</li>
+		</comps>
+		<stages>
+			<li>
+				<label>minor</label>
+				<capMods>
+					<li>
+						<capacity>Manipulation</capacity>
+						<offset>-0.02</offset>
+					</li>
+					<li>
+						<capacity>Moving</capacity>
+						<offset>-0.02</offset>
+					</li>
+				</capMods>
+			</li>
+			<li>
+				<minSeverity>0.5</minSeverity>
+				<label>major</label>
+				<capMods>
+					<li>
+						<capacity>Manipulation</capacity>
+						<offset>-0.06</offset>
+					</li>
+					<li>
+						<capacity>Moving</capacity>
+						<offset>-0.06</offset>
+					</li>
+				</capMods>
+			</li>
+			<li>
+				<minSeverity>0.8</minSeverity>
+				<label>severe</label>
+				<capMods>
+					<li>
+						<capacity>Manipulation</capacity>
+						<offset>-0.1</offset>
+					</li>
+					<li>
+						<capacity>Moving</capacity>
+						<offset>-0.1</offset>
+					</li>
+				</capMods>
+			</li>
+			<li>
+				<minSeverity>1.0</minSeverity>
+				<label>extreme</label>
+				<capMods>
+					<li>
+						<capacity>Manipulation</capacity>
+						<offset>-0.1</offset>
+					</li>
+					<li>
+						<capacity>Moving</capacity>
+						<offset>-0.1</offset>
+					</li>
+				</capMods>
+			</li>
+		</stages>
+	</HediffDef>
+
+	<!-- Melee Block -->
+	<StatDef>
+		<defName>MeleeShieldBlockChance</defName>
+		<label>melee block chance</label>
+		<description>Chance to block a melee attack that would've otherwise hit.</description>
+		<category>PawnCombat</category>
+		<displayPriorityInCategory>99</displayPriorityInCategory>
+		<neverDisabled>false</neverDisabled>
+		<defaultBaseValue>0.3</defaultBaseValue>
+		<toStringStyle>PercentZero</toStringStyle>
+		<toStringStyleUnfinalized>FloatOne</toStringStyleUnfinalized>
+		<noSkillOffset>0</noSkillOffset>
+		<skillNeedOffsets>
+			<li Class="SkillNeed_BaseBonus">
+				<skill>Melee</skill>
+				<baseValue>5</baseValue>
+				<bonusPerLevel>7</bonusPerLevel>
+			</li>
+		</skillNeedOffsets>
+		<capacityOffsets>
+			<li>
+				<capacity>Moving</capacity>
+				<scale>18</scale>
+			</li>
+			<li>
+				<capacity>Sight</capacity>
+				<scale>8</scale>
+				<max>1.4</max>
+			</li>
+		</capacityOffsets>
+		<postProcessCurve>
+			<points>
+				<li>(5, 0.10)</li>
+				<li>(20, 0.30)</li>
+				<li>(60, 0.50)</li>
+				<li>(100, 0.80)</li>
+				<li>(140, 0.90)</li>
+			</points>
+		</postProcessCurve>
+	</StatDef>
+
+	<!-- Ranged Block -->
+	<StatDef>
+		<defName>RangedShieldBlockChance</defName>
+		<label>ranged block chance</label>
+		<description>Chance to block a ranged attack that would've otherwise hit.</description>
+		<category>PawnCombat</category>
+		<displayPriorityInCategory>99</displayPriorityInCategory>
+		<neverDisabled>false</neverDisabled>
+		<defaultBaseValue>0.1</defaultBaseValue>
+		<toStringStyle>PercentZero</toStringStyle>
+		<toStringStyleUnfinalized>FloatOne</toStringStyleUnfinalized>
+		<noSkillOffset>0</noSkillOffset>
+		<skillNeedOffsets>
+			<li Class="SkillNeed_BaseBonus">
+				<skill>Melee</skill>
+				<baseValue>5</baseValue>
+				<bonusPerLevel>3</bonusPerLevel>
+			</li>
+		</skillNeedOffsets>
+		<capacityOffsets>
+			<li>
+				<capacity>Moving</capacity>
+				<scale>18</scale>
+			</li>
+			<li>
+				<capacity>Sight</capacity>
+				<scale>8</scale>
+				<max>1.4</max>
+			</li>
+		</capacityOffsets>
+		<postProcessCurve>
+			<points>
+				<li>(5, 0.05)</li>
+				<li>(20, 0.10)</li>
+				<li>(60, 0.30)</li>
+				<li>(100, 0.60)</li>
+				<li>(140, 0.80)</li>
+			</points>
+		</postProcessCurve>
+	</StatDef>
+</Defs>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<Defs>
+
+<ThingDef Name="JT_BaseBullet" Abstract="True">
+  <category>Projectile</category>
+  <tickerType>Normal</tickerType>
+  <altitudeLayer>Projectile</altitudeLayer>
+  <thingClass>Bullet</thingClass>
+  <label>bullet</label>
+  <useHitPoints>False</useHitPoints>
+  <neverMultiSelect>True</neverMultiSelect>
+  <graphicData>
+    <shaderType>Transparent</shaderType>
+  </graphicData>
+</ThingDef>
+
+
+  <ThingDef ParentName="JT_BaseBullet" Name="JT_FlyingObject">
+   <defName>JT_FlyingObject</defName>
+   <thingClass>AbilityUser.FlyingObject</thingClass>
+   <label>flying object</label>
+   <graphicData>
+		<texPath>NullTex</texPath>
+		<graphicClass>Graphic_Single</graphicClass>
+	</graphicData>
+   <projectile>
+		<flyOverhead>true</flyOverhead>
+		<damageDef>Stun</damageDef>
+		<damageAmountBase>0</damageAmountBase>
+		<speed>10</speed>
+   </projectile>
+ </ThingDef>
+
+</Defs>
