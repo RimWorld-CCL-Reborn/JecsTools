@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+  <WorldObjectDef>
+    <defName>WorldObject_ProgressBar</defName>
+    <label>progress bar</label>
+    <useDynamicDrawer>true</useDynamicDrawer>
+    <description>This should not be visible to players.</description>
+    <worldObjectClass>JecsTools.WorldObject_ProgressBar</worldObjectClass>
+    <texture>World/WorldObjects/TribalFactionBase</texture>
+    <expandingIcon>true</expandingIcon>
+    <expandingIconTexture>World/WorldObjects/Expanding/RoutePlannerWaypoint</expandingIconTexture>
+    <expandingIconPriority>1</expandingIconPriority>
+    <allowCaravanIncidentsWhichGenerateMap>true</allowCaravanIncidentsWhichGenerateMap>
+    <saved>false</saved>
+    <selectable>false</selectable>
+  </WorldObjectDef>
+
+</Defs>
