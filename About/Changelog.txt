@@ -1,3 +1,7 @@
+1.1.0.18 (02-29-2020)
+========================
+Added cross compatibility for RimWorld 1.0 as well as RimWorld 1.1.
+
 1.1.0.17 (02-29-2020)
 ========================
 Updates JecsTools for use in RimWorld 1.1
