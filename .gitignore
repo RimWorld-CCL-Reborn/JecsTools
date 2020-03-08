@@ -403,9 +403,5 @@ ASALocalRun/
 .localhistory/
 *.ide-shm
 *.ide-wal
-Source/.vs/JecsTools/v15/.suo
-Source/.vs/JecsTools/v15/.suo
-Source/.vs/JecsTools/v15/Server/sqlite3/storage.ide-shm
-Source/.vs/JecsTools/v15/.suo
 Source/DiscordWebhookToken.txt
 updateinfo
