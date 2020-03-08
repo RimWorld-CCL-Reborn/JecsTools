@@ -10,8 +10,9 @@
     <RootNamespace>CompSlotLoadable</RootNamespace>
     <AssemblyName>CompSlotLoadable</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <NoStdLib>True</NoStdLib>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
+    <Deterministic>true</Deterministic>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>false</DebugSymbols>
@@ -33,13 +34,6 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="0JecsTools, Version=1.0.8.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Assemblies\0JecsTools.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="CompProperties_SlotLoadable.cs" />
     <Compile Include="CompProperties_SlottedBonus.cs" />
     <Compile Include="CompSlotLoadable.cs" />
@@ -58,24 +52,13 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\JecsTools\JecsTools.csproj">
-      <Project>{106BF102-0379-41CF-9C5D-E21AAC5F051B}</Project>
+      <Project>{106bf102-0379-41cf-9c5d-e21aac5f051b}</Project>
       <Name>JecsTools</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Krafs.Rimworld.Ref">
-      <Version>1.1.2566</Version>
-    </PackageReference>
-    <PackageReference Include="Lib.Harmony">
-      <Version>2.0.0.8</Version>
-    </PackageReference>
+    <PackageReference Include="Krafs.Rimworld.Ref" Version="1.1.2598" />
+    <PackageReference Include="Lib.Harmony" Version="2.0.0.8" ExcludeAssets="runtime" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

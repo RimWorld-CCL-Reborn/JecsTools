@@ -10,8 +10,9 @@
     <RootNamespace>PawnShields</RootNamespace>
     <AssemblyName>PawnShields</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <NoStdLib>True</NoStdLib>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
+    <Deterministic>true</Deterministic>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>false</DebugSymbols>
@@ -33,13 +34,6 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AbilityUser, Version=1.18.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Assemblies\AbilityUser.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="HarmonyPatches.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Mod Extensions\ShieldPawnGeneratorProperties.cs" />
@@ -55,12 +49,8 @@
     <Compile Include="Workers\StatWorker_Shield.cs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Krafs.Rimworld.Ref">
-      <Version>1.1.2566</Version>
-    </PackageReference>
-    <PackageReference Include="Lib.Harmony">
-      <Version>2.0.0.8</Version>
-    </PackageReference>
+    <PackageReference Include="Krafs.Rimworld.Ref" Version="1.1.2598" />
+    <PackageReference Include="Lib.Harmony" Version="2.0.0.8" ExcludeAssets="runtime" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

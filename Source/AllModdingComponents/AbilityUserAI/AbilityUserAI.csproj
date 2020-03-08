@@ -10,8 +10,9 @@
     <RootNamespace>AbilityUserAI</RootNamespace>
     <AssemblyName>AbilityUserAI</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <NoStdLib>True</NoStdLib>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
+    <Deterministic>true</Deterministic>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>false</DebugSymbols>
@@ -32,18 +33,6 @@
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="0JecsTools, Version=1.0.8.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Assemblies\0JecsTools.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="AbilityUser">
-      <HintPath>..\..\..\Assemblies\AbilityUser.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="System.Runtime.InteropServices.RuntimeInformation" />
-  </ItemGroup>
   <ItemGroup>
     <Compile Include="AIDefOf.cs" />
     <Compile Include="AI\AbilityDecision\AbilityDecisionConditionalNode_CasterHealth.cs" />
@@ -69,12 +58,18 @@
     <Compile Include="Workers\AbilityWorker_HealAlly.cs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Krafs.Rimworld.Ref">
-      <Version>1.1.2566</Version>
-    </PackageReference>
-    <PackageReference Include="Lib.Harmony">
-      <Version>2.0.0.8</Version>
-    </PackageReference>
+    <ProjectReference Include="..\JecsTools\JecsTools.csproj">
+      <Project>{106bf102-0379-41cf-9c5d-e21aac5f051b}</Project>
+      <Name>JecsTools</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CompAbilityUser\CompAbilityUser.csproj">
+      <Project>{417b8649-7a66-4580-8c75-473e46da9c7a}</Project>
+      <Name>CompAbilityUser</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Krafs.Rimworld.Ref" Version="1.1.2598" />
+    <PackageReference Include="Lib.Harmony" Version="2.0.0.8" ExcludeAssets="runtime" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
