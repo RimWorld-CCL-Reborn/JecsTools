@@ -1,0 +1,143 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{106BF102-0379-41CF-9C5D-E21AAC5F051B}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>JecsTools</RootNamespace>
+    <AssemblyName>0JecsTools</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\Assemblies\</OutputPath>
+    <DefineConstants>
+    </DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="0Harmony, Version=2.0.0.8, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Lib.Harmony.2.0.0.8\lib\net472\0Harmony.dll</HintPath>
+    </Reference>
+    <Reference Include="AbilityUser, Version=1.18.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Assemblies\AbilityUser.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>..\..\..\..\..\RimWorldWin64_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Runtime.InteropServices.RuntimeInformation" />
+    <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>..\..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ApparelExtension.cs" />
+    <Compile Include="Backstories\BackstoryDef.cs" />
+    <Compile Include="BuildingExtension.cs" />
+    <Compile Include="CaravanJobs\CaravanJob.cs" />
+    <Compile Include="CaravanJobs\CaravanJobDef.cs" />
+    <Compile Include="CaravanJobs\CaravanJobDriver.cs" />
+    <Compile Include="CaravanJobs\CaravanJobQueue.cs" />
+    <Compile Include="CaravanJobs\CaravanJobsUtility.cs" />
+    <Compile Include="CaravanJobs\CaravanToils_GoTo.cs" />
+    <Compile Include="CaravanJobs\CaravanToils_Effects.cs" />
+    <Compile Include="CaravanJobs\Caravan_JobTracker.cs" />
+    <Compile Include="CaravanJobs\CaravanToil.cs" />
+    <None Include="CaravanJobs\WorldEffecter.cs" />
+    <None Include="CaravanJobs\WorldMote.cs" />
+    <Compile Include="CaravanJobs\HarmonyCaravanJobs.cs" />
+    <Compile Include="CaravanJobs\StuffCategoryCountClass.cs" />
+    <Compile Include="CaravanJobs\StuffDefCount.cs" />
+    <Compile Include="CaravanJobs\WorldObjectBlueprint.cs" />
+    <None Include="CaravanJobs\WorldSubEffecter.cs" />
+    <None Include="CaravanJobs\WorldSubEffecter_ProgressBar.cs" />
+    <Compile Include="CaravanJobs\WorldObjectRecipeDef.cs" />
+    <Compile Include="CaravanJobs\WorldObject_ProgressBar.cs" />
+    <None Include="CaravanJobs\WorldProgressBarDrawer.cs" />
+    <Compile Include="FactionStuff\CompConsole.cs" />
+    <Compile Include="FactionStuff\CompProperties_Console.cs" />
+    <Compile Include="FactionStuff\FactionSettings.cs" />
+    <Compile Include="FactionStuff\JobDefMaker.cs" />
+    <Compile Include="FactionStuff\JobDriver_UseConsole.cs" />
+    <Compile Include="FactionStuff\JecsToolsFactionDialogMaker.cs" />
+    <Compile Include="HarmonyPatches_GUI.cs" />
+    <Compile Include="HediffExpandedDef.cs" />
+    <Compile Include="HediffGiver_StartWithHediff.cs" />
+    <Compile Include="HediffWithComps_Expanded.cs" />
+    <Compile Include="PatchOperationModLoaded.cs" />
+    <Compile Include="PlaceWorker_UnderCeiling.cs" />
+    <Compile Include="Projectile_Laser.cs" />
+    <Compile Include="DamageDefCleave.cs" />
+    <Compile Include="DamageWorker_Cleave.cs" />
+    <Compile Include="FirelessTrashUtility.cs" />
+    <Compile Include="GrappleUtility.cs" />
+    <Compile Include="HarmonyPatches.cs" />
+    <Compile Include="HediffCompDamageOverTime.cs" />
+    <Compile Include="HediffCompProperties_DamageOverTime.cs" />
+    <Compile Include="HediffCompProperties_DamageSoak.cs" />
+    <Compile Include="HediffCompProperties_ExtraMeleeDamages.cs" />
+    <Compile Include="HediffCompProperties_Knockback.cs" />
+    <Compile Include="HediffComp_DamageSoak.cs" />
+    <Compile Include="HediffComp_ExtraMeleeDamages.cs" />
+    <Compile Include="HediffComp_Knockback.cs" />
+    <Compile Include="Hediff_InjuryCustomLabel.cs" />
+    <Compile Include="PlaceWorker_OnTopOfWalls.cs" />
+    <Compile Include="ModCompatibilityUtility.cs" />
+    <Compile Include="TexButton.cs" />
+    <Compile Include="ThingDef_LaserProjectile.cs" />
+    <Compile Include="ProjectileExtension.cs" />
+    <Compile Include="_HumanlikeOrdersUtility.cs" />
+    <Compile Include="JobGiver_AIFirelessTrashColonyClose.cs" />
+    <Compile Include="JobGiver_AIFirelessTrashColonyDistant.cs" />
+    <Compile Include="PlaceWorker_Outline.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="CaravanJobs\CaravanJobGiver.cs" />
+    <Compile Include="CaravanJobs\QueuedCaravanJob.cs" />
+    <Compile Include="TransformedPart.cs" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="WeaponStuff\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

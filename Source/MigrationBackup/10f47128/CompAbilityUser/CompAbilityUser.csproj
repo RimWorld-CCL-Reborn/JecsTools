@@ -1,0 +1,117 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{417B8649-7A66-4580-8C75-473E46DA9C7A}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>AbilityUser</RootNamespace>
+    <AssemblyName>AbilityUser</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType>none</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\Assemblies\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="0Harmony, Version=2.0.0.8, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Lib.Harmony.2.0.0.8\lib\net472\0Harmony.dll</HintPath>
+    </Reference>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>..\..\..\..\..\RimWorldWin64_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Runtime.InteropServices.RuntimeInformation" />
+    <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>..\..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.IMGUIModule">
+      <HintPath>..\..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.TextRenderingModule">
+      <HintPath>..\..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AbilityButtons.cs" />
+    <Compile Include="Controller\AbilityContext.cs" />
+    <Compile Include="Controller\AbilityEffectUtility.cs" />
+    <Compile Include="Controller\Projectile_Ability.cs" />
+    <Compile Include="Controller\Projectile_AbilityBase.cs" />
+    <Compile Include="Controller\Projectile_AbilityLaser.cs" />
+    <Compile Include="Model\AbilityData.cs" />
+    <Compile Include="Model\AbilityDef.cs" />
+    <Compile Include="AbilityDefOf.cs" />
+    <Compile Include="AbilityUserUtility.cs" />
+    <Compile Include="AoEProperties.cs" />
+    <Compile Include="ApplyHediffs.cs" />
+    <Compile Include="ApplyMentalStates.cs" />
+    <Compile Include="PawnSummoned.cs" />
+    <Compile Include="View\Command_PawnAbility.cs" />
+    <Compile Include="CompAbilityItem.cs" />
+    <Compile Include="Model\CompAbilityUser.cs" />
+    <Compile Include="CompProperties_AbilityItem.cs" />
+    <Compile Include="CompProperties_AbilityUser.cs" />
+    <Compile Include="ExtraDamage.cs" />
+    <Compile Include="FlyingObject.cs" />
+    <Compile Include="FlyingObject_Equipable.cs" />
+    <Compile Include="_HarmonyPatches.cs" />
+    <Compile Include="Controller\JobDriver_CastAbilitySelf.cs" />
+    <Compile Include="Controller\JobDriver_CastAbilityVerb.cs" />
+    <Compile Include="PassiveEffectProperties.cs" />
+    <Compile Include="PassiveEffectWorker.cs" />
+    <Compile Include="Controller\PawnAbility.cs" />
+    <Compile Include="PawnAbilityTargetCategory.cs" />
+    <Compile Include="ProjectileDef_Ability.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ProjectileDef_LaserProjectile.cs" />
+    <Compile Include="SpawnThings.cs" />
+    <Compile Include="StringsToTranslate.cs" />
+    <Compile Include="Model\VerbProperties_Ability.cs" />
+    <Compile Include="Controller\Verb_UseAbility.cs" />
+    <Compile Include="Controller\Verb_UseAbility_TrueBurst.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

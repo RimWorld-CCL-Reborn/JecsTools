@@ -1,3 +1,7 @@
+1.1.0.20 (03-07-2020)
+========================
+DefModExtension_ExtraSounds is now processed in the CompExtraSounds Harmony patch. Different pawns with DefModExtension_ExtraSounds in their PawnKindDef can make extra on-hit attack sounds.
+
 1.1.0.19 (02-29-2020)
 ========================
 Hotfix for adding compatibility between the newest version of RimWorld and the previous version of 1.0.

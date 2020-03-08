@@ -25,6 +25,18 @@ namespace CompExtraSounds
         {
             if (__instance.caster is Pawn pawn)
             {
+                var pawn_PawnKindDef = pawn.kindDef;
+                if (pawn_PawnKindDef != null)
+                {
+                    var extraSoundsExtension = pawn_PawnKindDef.GetModExtension<DefModExtension_ExtraSounds>();
+                    if (extraSoundsExtension != null)
+                    {
+                        if (extraSoundsExtension != null)
+                            if (extraSoundsExtension.soundHitPawn != null)
+                                __result = extraSoundsExtension.soundHitPawn;
+                    }
+                }
+
                 var pawn_EquipmentTracker = pawn.equipment;
                 if (pawn_EquipmentTracker != null)
                 {
