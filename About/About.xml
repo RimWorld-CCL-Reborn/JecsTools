@@ -18,7 +18,7 @@
       </li>
     </v1.1>
   </modDependenciesByVersion>
-  <description>1.1.0.20 (03-07-2020)
+  <description>1.1.1.0 (03-15-2020)
 
 Adds modding components to RimWorld: vehicles, spell casting, weapon slots, oversized weapons, and more!
 
@@ -72,11 +72,15 @@ Extensive hours of testing, debugging, and fixes by Xen.
 Thank you to my Patrons for supporting me in my efforts. Without you, none of this would be possible.
 
 These are the most excellent rim dwellers who support me: 
-Marcus Bell, RainerWingel, Dalton Johnson, Chris Seieroe, Robin Gleeson, Robert Alessi, Lea Stannard, Teres, David Silberstein, Sam, Kiya Nicoll, Matt Harris, Paul Fenwick, Grendalloffen, Don Homer, Josh McCabe, Elodie, Gothi, J, Michael Paugh, Audrin Navarro, Михаил Юрченко, Calum, Tim Stillson, Adam Bliss, Populous25, Marcus Sireanu, Maaxar, John Kanady, Midgeman, Dick Jones, Patrick, TinyFloatingTurtle, Nathan Getman, LionsFate, Sharp Spook, Cristina Shaver, Mark, George Chong Chuang Ming, Oliver White, roxxploxx, Emily Shaw, Karol Rybak, Justin Andres, Marcus Regan, Robin Hager, Allic, Austin Harbert, E_T, Alex Mederer, Alexander, Toss Antilles
+Cade Perkinson, Jay Sacane, John Pahl, Tankok1998 also known as the Shermanlover, Vahl Kilmer, Zsolt Biró, Genaeve, JD2.0, Olteanu Laurentiu, Penelope Charli Whitman, Charlie Garnham, Steven Pretswell, Sultan Saltlick, RainerWingel, Daniel Paseka, Kyben, Charles Morris, Chris Seieroe, Robin Gleeson, Lea Stannard, Teres, David Silberstein, Kiya Nicoll, Matt Harris, Paul Fenwick, Michael Whitehead, Robert Alessi, Elodie, Gothi, Audrin Navarro, Михаил Юрченко, Calum, Tim Stillson, Populous25, Don Homer, Adam Bliss, Maaxar, Christopher, TinyFloatingTurtle, John Kanady, Midgeman, Nathan Getman, Sharp Spook, LionsFate, Cristina Shaver, Mark, George Chong Chuang Ming, Oliver White, roxxploxx, Emily Shaw, Justin Andres, Robin Hager, Kevin Reagan, Austin Harbert, Marcus Regan, E_T, Alex Mederer, Alexander, Toss Antilles
 
 ========================
 Changelog
 ========================
+1.1.1.0 (03-15-2020)
+========================
+AbilityUser should now report when line of sight failure takes place for abilities. Extra damages no longer gives errors in combat logs.
+
 1.1.0.20 (03-07-2020)
 ========================
 DefModExtension_ExtraSounds is now processed in the CompExtraSounds Harmony patch. Different pawns with DefModExtension_ExtraSounds in their PawnKindDef can make extra on-hit attack sounds.

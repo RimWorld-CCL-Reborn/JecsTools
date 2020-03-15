@@ -66,6 +66,24 @@ namespace AbilityUser
                 AccessTools.Property(typeof(Verb), nameof(Verb.DirectOwner))
                     .GetGetMethod(),
                 new HarmonyMethod(typeof(AbilityUserMod), nameof(get_DirectOwner_Prefix)), null);
+
+            harmony.Patch(
+                AccessTools.Method(typeof(Verb), nameof(Verb.TryStartCastOn), new Type[] { typeof(LocalTargetInfo), typeof(LocalTargetInfo), typeof(bool), typeof(bool) })
+                ,
+                new HarmonyMethod(typeof(AbilityUserMod), nameof(TryStartCastOn_Prefix), null));
+        }
+
+
+        public static bool TryStartCastOn_Prefix(Verb __instance, LocalTargetInfo castTarg, LocalTargetInfo destTarg, bool surpriseAttack, bool canHitNonTargetPawns, ref bool __result)
+        {
+            if (!(__instance is Verb_UseAbility vua))
+                return true;
+            else
+            {
+                var result = vua.PreCastShot(castTarg, destTarg, surpriseAttack, canHitNonTargetPawns);
+                __result = result;
+                return false;
+            }         
         }
 
         public static bool get_DirectOwner_Prefix(Verb __instance, ref IVerbOwner __result)

@@ -2,11 +2,11 @@
 ==========Steam Format========
 ==============================
 
-Doors Expanded
-1.23.0.0 (03-07-2020)
-========================
-A 1.1 compatible version of Doors Expanded, rewritten and recreated by lbmaian to be even better than before.
+JecsTools Update
+v1.1.0.20 (03-07-2020)
+====================
 
+DefModExtension_ExtraSounds is now processed in the CompExtraSounds Harmony patch. Different pawns with DefModExtension_ExtraSounds in their PawnKindDef can make extra on-hit attack sounds.
 --------------------
 
 Download now on...
@@ -25,9 +25,9 @@ Discuss the mod on...
 [img width=260]https://raw.githubusercontent.com/jecrell/JecsTools/master/About/Preview.png[/img]
 [hr]
 [b]JecsTools
-Version: 1.1.0.19
-Updated: 02-29-2020
-Description: [color=orange]Hotfix for adding compatibility between the newest version of RimWorld and the previous version of 1.0.[/color]
+Version: 1.1.0.20
+Updated: 03-07-2020
+Description: [color=orange]DefModExtension_ExtraSounds is now processed in the CompExtraSounds Harmony patch. Different pawns with DefModExtension_ExtraSounds in their PawnKindDef can make extra on-hit attack sounds.[/color]
 [hr]
 [b]Download now on...[/b]
 [url=https://www.patreon.com/posts/34452021]Patreon[/url]

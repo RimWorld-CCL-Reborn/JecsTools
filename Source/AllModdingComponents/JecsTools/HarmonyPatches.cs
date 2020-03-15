@@ -491,7 +491,7 @@ namespace JecsTools
                         {
                             try
                             {
-                                if (PreApplyDamage_ApplyExtraDamages(out absorbed, instigator, pawn)) return false;
+                                if (PreApplyDamage_ApplyExtraDamages(dinfo, out absorbed, instigator, pawn)) return false;
                             }
                             catch (NullReferenceException e)
                             {
@@ -555,7 +555,7 @@ namespace JecsTools
                 }
         }
 
-        private static bool PreApplyDamage_ApplyExtraDamages(out bool absorbed, Pawn instigator, Pawn pawn)
+        private static bool PreApplyDamage_ApplyExtraDamages(DamageInfo dinfo, out bool absorbed, Pawn instigator, Pawn pawn)
         {
             var extraDamagesHediff =
                 instigator.health.hediffSet.hediffs.FirstOrDefault(y =>
@@ -573,7 +573,14 @@ namespace JecsTools
                         return true;
                     }
 
-                    pawn.TakeDamage(new DamageInfo(dmg.def, dmg.amount, dmg.armorPenetration, -1, instigator));
+                    BattleLogEntry_MeleeCombat battleLogEntry_MeleeCombat = new BattleLogEntry_MeleeCombat(dinfo.Def.combatLogRules, true,
+                        instigator, pawn, ImplementOwnerTypeDefOf.Bodypart, (dinfo.Weapon != null) ? dinfo.Weapon.label : dinfo.Def.label );
+                    DamageWorker.DamageResult damageResult = new DamageWorker.DamageResult();
+                    damageResult = pawn.TakeDamage(new DamageInfo(dmg.def, dmg.amount, dmg.armorPenetration, -1, instigator));
+                    damageResult.AssociateWithLog(battleLogEntry_MeleeCombat);
+                    battleLogEntry_MeleeCombat.def = LogEntryDefOf.MeleeAttack;
+                    Find.BattleLog.Add(battleLogEntry_MeleeCombat);
+
                 }
 
                 StopPreApplyDamageCheck = false;

@@ -88,6 +88,7 @@ namespace AbilityUser
 
         public virtual void Notify_AbilityFailed(bool refund)
         {
+            AbilityUser.AbilityUser.jobs.StopAll();
             if (refund)
                 CooldownTicksLeft = -1;
         }

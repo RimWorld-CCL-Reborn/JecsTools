@@ -91,6 +91,90 @@ namespace AbilityUser
             }
         }
 
+        private bool CausesTimeSlowdown(LocalTargetInfo castTarg)
+        {
+            if (!verbProps.CausesTimeSlowdown)
+            {
+                return false;
+            }
+            if (!castTarg.HasThing)
+            {
+                return false;
+            }
+            Thing thing = castTarg.Thing;
+            if (thing.def.category != ThingCategory.Pawn && (thing.def.building == null || !thing.def.building.IsTurret))
+            {
+                return false;
+            }
+            bool flag = (thing as Pawn)?.Downed ?? false;
+            if (thing.Faction != Faction.OfPlayer || !caster.HostileTo(Faction.OfPlayer))
+            {
+                if (caster.Faction == Faction.OfPlayer && thing.HostileTo(Faction.OfPlayer))
+                {
+                    return !flag;
+                }
+                return false;
+            }
+            return true;
+        }
+
+        public bool PreCastShotCheck(LocalTargetInfo castTarg, LocalTargetInfo destTarg, bool surpriseAttack, bool canHitNonTargetPawns)
+        {
+            if (caster == null)
+            {
+                Log.Error("Verb " + GetUniqueLoadID() + " needs caster to work (possibly lost during saving/loading).");
+                return false;
+            }
+            if (!caster.Spawned)
+            {
+                return false;
+            }
+            if (state == VerbState.Bursting || (!CanHitTarget(castTarg) && verbProps.requireLineOfSight))
+            {
+                return false;
+            }
+            if (CausesTimeSlowdown(castTarg))
+            {
+                Find.TickManager.slower.SignalForceNormalSpeed();
+            }
+
+            this.surpriseAttack = surpriseAttack;
+            this.canHitNonTargetPawnsNow = canHitNonTargetPawns;
+            this.currentTarget = castTarg;
+            this.currentDestination = destTarg;
+            if (CasterIsPawn && verbProps.warmupTime > 0f)
+            {
+                if (verbProps.requireLineOfSight)
+                {
+                    ShootLine resultingLine;
+                    if (!TryFindShootLineFromTo(caster.Position, castTarg, out resultingLine))
+                    {
+                        Messages.Message("AU_NoLineOfSight".Translate(), MessageTypeDefOf.RejectInput);
+                        return false;
+                    }
+                    CasterPawn.Drawer.Notify_WarmingCastAlongLine(resultingLine, caster.Position);
+                }
+                float statValue = CasterPawn.GetStatValue(StatDefOf.AimingDelayFactor);
+                int ticks = (verbProps.warmupTime * statValue).SecondsToTicks();
+                CasterPawn.stances.SetStance(new Stance_Warmup(ticks, castTarg, this));
+            }
+            else
+            {
+                WarmupComplete();
+            }
+            return true;
+        }
+
+        public bool PreCastShot(LocalTargetInfo castTarg, LocalTargetInfo destTarg, bool surpriseAttack, bool canHitNonTargetPawns)
+        {
+            if (PreCastShotCheck(castTarg, destTarg, surpriseAttack, canHitNonTargetPawns))
+            {
+                return true;
+            }
+            Ability.Notify_AbilityFailed(true);
+            return false;
+        }
+
         public virtual void PostCastShot(bool inResult, out bool outResult)
         {
             outResult = inResult;
@@ -100,7 +184,6 @@ namespace AbilityUser
 
         protected override bool TryCastShot()
         {
-            Log.Message("Try Cast Shot Called");
             //Log.Message("Cast");
             var result = false;
             TargetsAoE.Clear();
@@ -120,7 +203,7 @@ namespace AbilityUser
                 //                {
                 if (verbProps.defaultProjectile != null) //ranged attacks WILL have projectiles
                 {
-                    Log.Message("Yes Projectile");
+                    //Log.Message("Yes Projectile");
                     var attempt = TryLaunchProjectile(verbProps.defaultProjectile, TargetsAoE[i]);
                     ////Log.Message(TargetsAoE[i].ToString());
                     if (attempt != null)
@@ -131,14 +214,14 @@ namespace AbilityUser
                 }
                 else //melee attacks WON'T have projectiles
                 {
-                    Log.Message("No Projectile");
+                    //Log.Message("No Projectile");
                     var victim = TargetsAoE[i].Thing;
                     if (victim != null)
                     {
-                        Log.Message("Yes victim");
+                        //Log.Message("Yes victim");
                         if (victim is Pawn pawnVictim)
                         {
-                            Log.Message("Yes victim is pawn");
+                            //Log.Message("Yes victim is pawn");
                             AbilityEffectUtility.ApplyMentalStates(pawnVictim, CasterPawn, UseAbilityProps.mentalStatesToApply, UseAbilityProps.abilityDef, null);
                             AbilityEffectUtility.ApplyHediffs(pawnVictim, CasterPawn, UseAbilityProps.hediffsToApply, null);
                             AbilityEffectUtility.SpawnSpawnables(UseAbilityProps.thingsToSpawn, pawnVictim, victim.MapHeld, victim.PositionHeld);   
@@ -146,7 +229,7 @@ namespace AbilityUser
                     }
                     else
                     {
-                        Log.Message("Victim is null");
+                        //Log.Message("Victim is null");
                         AbilityEffectUtility.SpawnSpawnables(UseAbilityProps.thingsToSpawn, CasterPawn, CasterPawn.MapHeld, CasterPawn.PositionHeld);
                     }
                 }
@@ -168,18 +251,18 @@ namespace AbilityUser
             if (debugMode) Log.Message(s);
         }
 
-      
-        protected bool? TryLaunchProjectile(ThingDef projectileDef, LocalTargetInfo launchTarget)
+
+        public bool TryLaunchProjectileCheck(ThingDef projectileDef, LocalTargetInfo launchTarget)
         {
             DebugMessage(launchTarget.ToString());
             var flag = TryFindShootLineFromTo(caster.Position, launchTarget, out var shootLine);
-            if (verbProps.stopBurstWithoutLos && !flag)
+            if (verbProps.requireLineOfSight && verbProps.stopBurstWithoutLos && !flag)
             {
-                DebugMessage("Targeting cancelled");
+                Messages.Message("AU_NoLineOfSight".Translate(), MessageTypeDefOf.RejectInput);
                 return false;
             }
             var drawPos = caster.DrawPos;
-            var projectile = (Projectile_AbilityBase) GenSpawn.Spawn(projectileDef, shootLine.Source, caster.Map);
+            var projectile = (Projectile_AbilityBase)GenSpawn.Spawn(projectileDef, shootLine.Source, caster.Map);
             projectile.extraDamages = UseAbilityProps.extraDamages;
             projectile.localSpawnThings = UseAbilityProps.thingsToSpawn;
             verbProps.soundCast?.PlayOneShot(new TargetInfo(caster.Position, caster.Map, false));
@@ -200,6 +283,16 @@ namespace AbilityUser
                 UseAbilityProps.hediffsToApply,
                 UseAbilityProps.mentalStatesToApply, UseAbilityProps.thingsToSpawn);
             return true;
+        }
+      
+        protected bool? TryLaunchProjectile(ThingDef projectileDef, LocalTargetInfo launchTarget)
+        {
+            if (TryLaunchProjectileCheck(projectileDef, launchTarget))
+            {
+                return true;
+            }
+            Ability.Notify_AbilityFailed(true);
+            return false;
         }
 
         public override void WarmupComplete()

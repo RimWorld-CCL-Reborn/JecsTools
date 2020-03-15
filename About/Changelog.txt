@@ -1,3 +1,7 @@
+1.1.1.0 (03-15-2020)
+========================
+AbilityUser should now report when line of sight failure takes place for abilities. Extra damages no longer gives errors in combat logs.
+
 1.1.0.20 (03-07-2020)
 ========================
 DefModExtension_ExtraSounds is now processed in the CompExtraSounds Harmony patch. Different pawns with DefModExtension_ExtraSounds in their PawnKindDef can make extra on-hit attack sounds.
