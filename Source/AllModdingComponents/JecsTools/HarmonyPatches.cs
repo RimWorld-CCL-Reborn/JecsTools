@@ -14,6 +14,8 @@ namespace JecsTools
     [StaticConstructorOnStartup]
     public static partial class HarmonyPatches
     {
+        public static bool DEBUGMODE = false;
+
         //For alternating fire on some weapons
         public static Dictionary<Thing, int> AlternatingFireTracker = new Dictionary<Thing, int>();
 
@@ -96,6 +98,12 @@ namespace JecsTools
 
             //optionally use "CutoutComplex" shader for apparel that wants it
             //instance.Patch(AccessTools.Method(typeof(ApparelGraphicRecordGetter), nameof(ApparelGraphicRecordGetter.TryGetGraphicApparel)), null, null, new HarmonyMethod(type, nameof(CutOutComplexApparel_Transpiler)));
+        }
+
+        public static void DebugMessage(string s)
+        {
+            if (DEBUGMODE)
+                Log.Message(s);
         }
 
         //Added B19, Oct 2019
@@ -462,39 +470,47 @@ namespace JecsTools
         public static bool PreApplyDamage_PrePatch(Pawn_HealthTracker __instance, ref DamageInfo dinfo,
             out bool absorbed)
         {
+
+            DebugMessage($"c6c:: === Enter Harmony Prefix --- PreApplyDamage_ApplyExtraDamages ===");
+
             var pawn = (Pawn) AccessTools.Field(typeof(Pawn_HealthTracker), "pawn").GetValue(__instance);
-            //Log.Message("Entry");
             if (pawn != null && !StopPreApplyDamageCheck)
             {
-                //Log.Message("0");
+                DebugMessage("c6c:: Pawn exists. StopPreApplyDamageCheck: False");
                 if (pawn?.health?.hediffSet?.hediffs != null && pawn?.health?.hediffSet?.hediffs?.Count > 0)
                 {
-                    //Log.Message("1");
+                    DebugMessage("c6c:: Pawn has health.");
                     //A list will stack.
                     var fortitudeHediffs =
                         pawn?.health?.hediffSet?.hediffs?.FindAll(x => x.TryGetComp<HediffComp_DamageSoak>() != null);
                     if (!fortitudeHediffs.NullOrEmpty())
                     {
-                        //Log.Message("2");
+                        DebugMessage("c6c:: Pawn has Damage Soak hediff.");
                         try
                         {
                             if (PreApplyDamage_ApplyDamageSoakers(ref dinfo, out absorbed, fortitudeHediffs, pawn))
+                            {
+                                DebugMessage($"c6c:: === Exit Harmony Prefix --- PreApplyDamage_ApplyExtraDamages ===");
                                 return false;
+                            }
                         }
                         catch (NullReferenceException e)
                         {
+                            DebugMessage($"c6c:: Soak failure:: {e.Message}");
                         }
                     }
 
                     if (dinfo.Weapon is ThingDef weaponDef && !weaponDef.IsRangedWeapon)
                         if (dinfo.Instigator is Pawn instigator)
                         {
+                            DebugMessage("c6c:: Pawn has non-ranged weapon.");
                             try
                             {
                                 if (PreApplyDamage_ApplyExtraDamages(dinfo, out absorbed, instigator, pawn)) return false;
                             }
                             catch (NullReferenceException e)
                             {
+                                DebugMessage($"c6c:: Extra damages failure:: {e.Message}");
                             }
 
                             try
@@ -503,6 +519,7 @@ namespace JecsTools
                             }
                             catch (NullReferenceException e)
                             {
+                                DebugMessage($"c6c:: Apply knockback failure:: {e.Message}");
                             }
                         }
                 }
@@ -510,7 +527,7 @@ namespace JecsTools
 
             tempDamageAmount = (int) dinfo.Amount;
             absorbed = false;
-            //Log.Message("Current Damage :" + dinfo.Amount);
+            DebugMessage($"c6c:: === Exit Harmony Prefix --- PreApplyDamage_ApplyExtraDamages ===");
             return true;
         }
 
@@ -557,35 +574,56 @@ namespace JecsTools
 
         private static bool PreApplyDamage_ApplyExtraDamages(DamageInfo dinfo, out bool absorbed, Pawn instigator, Pawn pawn)
         {
+
+            DebugMessage($"c6c:: --- Enter PreApplyDamage_ApplyExtraDamages ---");
             var extraDamagesHediff =
                 instigator.health.hediffSet.hediffs.FirstOrDefault(y =>
                     y.TryGetComp<HediffComp_ExtraMeleeDamages>() != null);
+            DebugMessage("c6c:: ExtraDamagesHediff variable assigned.");
             var damages = extraDamagesHediff?.TryGetComp<HediffComp_ExtraMeleeDamages>();
-            if (damages?.Props != null && !damages.Props.ExtraDamages.NullOrEmpty())
+            DebugMessage("c6c:: Damages variable assigned.");
+            if (damages?.Props != null && damages.Props.ExtraDamages is List<Verse.ExtraDamage> extraDamages)
             {
+                DebugMessage("c6c:: Extra damages list exists.");
                 StopPreApplyDamageCheck = true;
-                foreach (var dmg in damages.Props.ExtraDamages)
+                foreach (var dmg in extraDamages)
                 {
+                    DebugMessage($"c6c:: Extra Damage: {dmg.def.defName}");
                     if (pawn == null || !pawn.Spawned || pawn.Dead)
                     {
+                        DebugMessage($"c6c:: Pawn is null, unspawned, or dead. Aborting.");
                         absorbed = false;
                         StopPreApplyDamageCheck = false;
                         return true;
                     }
 
-                    BattleLogEntry_MeleeCombat battleLogEntry_MeleeCombat = new BattleLogEntry_MeleeCombat(dinfo.Def.combatLogRules, true,
-                        instigator, pawn, ImplementOwnerTypeDefOf.Bodypart, (dinfo.Weapon != null) ? dinfo.Weapon.label : dinfo.Def.label );
-                    DamageWorker.DamageResult damageResult = new DamageWorker.DamageResult();
-                    damageResult = pawn.TakeDamage(new DamageInfo(dmg.def, dmg.amount, dmg.armorPenetration, -1, instigator));
-                    damageResult.AssociateWithLog(battleLogEntry_MeleeCombat);
-                    battleLogEntry_MeleeCombat.def = LogEntryDefOf.MeleeAttack;
-                    Find.BattleLog.Add(battleLogEntry_MeleeCombat);
+                    //BattleLogEntry_MeleeCombat battleLogEntry_MeleeCombat = new BattleLogEntry_MeleeCombat(dinfo.Def.combatLogRules, true,
+                    //    instigator, pawn, ImplementOwnerTypeDefOf.Bodypart, (dinfo.Weapon != null) ? dinfo.Weapon.label : dinfo.Def.label );
+                    //DebugMessage($"c6c:: MeleeCombat Log generated.");
+                    //DamageWorker.DamageResult damageResult = new DamageWorker.DamageResult();
+                    //DebugMessage($"c6c:: MeleeCombat Damage Result generated.");
+                    //damageResult = pawn.TakeDamage(new DamageInfo(dmg.def, dmg.amount, dmg.armorPenetration, -1, instigator));
+                    pawn.TakeDamage(new DamageInfo(dmg.def, dmg.amount, dmg.armorPenetration, -1, instigator));
+                    DebugMessage($"c6c:: MeleeCombat TakeDamage set to -- Def:{dmg.def.defName} Amt:{dmg.amount} ArmorPen:{dmg.armorPenetration}.");
+                    //try
+                    //{
+                    //    damageResult.AssociateWithLog(battleLogEntry_MeleeCombat);
+                    //    DebugMessage($"c6c:: MeleeCombat Damage associated with log.");
+                    //}
+                    //catch (Exception e)
+                    //{
+                    //    DebugMessage($"c6c:: Failed to associate log: {e.Message}");
+                    //}
+                    //battleLogEntry_MeleeCombat.def = LogEntryDefOf.MeleeAttack;
+                    //DebugMessage($"c6c:: MeleeCombat Log def set as MeleeAttack.");
+                    //Find.BattleLog.Add(battleLogEntry_MeleeCombat);
+                    //DebugMessage($"c6c:: MeleeCombat Log added to battle log.");
 
                 }
 
                 StopPreApplyDamageCheck = false;
             }
-
+            DebugMessage($"c6c:: --- Exit PreApplyDamage_ApplyExtraDamages ---");
             absorbed = false;
             return false;
         }
@@ -594,75 +632,117 @@ namespace JecsTools
             List<Hediff> fortitudeHediffs,
             Pawn pawn)
         {
-            //Log.Message("3");
 
+            DebugMessage($"c6c:: --- Enter PreApplyDamage_ApplyDamageSoakers ---");
             var soakedDamage = 0;
             foreach (var fortitudeHediff in fortitudeHediffs)
             {
-                //Log.Message("Hediff");
+                DebugMessage("c6c:: Soak Damage Hediff checked.");
 
                 var soaker = fortitudeHediff.TryGetComp<HediffComp_DamageSoak>();
                 var soakSetting = soaker?.Props;
-                if (soakSetting == null) continue;
+                if (soakSetting == null) {
+                    DebugMessage("c6c:: Soak Damage Hediff has no damage soak XML properties.");
+                    continue; }
                 if (soakSetting.settings.NullOrEmpty())
                 {
-                    //Log.Message("Hediff_A1");
+                    DebugMessage("c6c:: Soak Damage Hediff has no damage soak settings.");
+
                     //Null, here, means "all damage types"
                     //So Null should pass this check.
-                    if (soakSetting.damageType != null && soakSetting.damageType != dinfo.Def) continue;
+                    if (soakSetting.damageType != null && soakSetting.damageType != dinfo.Def) 
+                    {
+                        DebugMessage($"c6c:: {dinfo.Def.label.CapitalizeFirst()} is not in soak settings.");
+                        continue; 
+                    }
 
-                    //Log.Message("Hediff_A2");
-
+                    
                     if (!soakSetting.damageTypesToExclude.NullOrEmpty() &&
                         soakSetting.damageTypesToExclude.Contains(dinfo.Def))
+                    {
+                        DebugMessage($"c6c:: {dinfo.Def.label.CapitalizeFirst()} is to be excluded from damage soak.");
                         continue;
-                    //Log.Message("Hediff_A3");
+                    }
                     var dmgAmount = Mathf.Clamp(dinfo.Amount - soakSetting.damageToSoak, 0, dinfo.Amount);
-                    //Log.Message(dinfo.Amount + " - " + soakSetting.damageToSoak + " = " + dmgAmount);
+                    DebugMessage($"c6c:: Min: 0, Max: {dinfo.Amount}. Calc: {dinfo.Amount} - {soakSetting.damageToSoak}.");
+                    soakedDamage += (int)Mathf.Min(dinfo.Amount, soakSetting.damageToSoak);
+                    DebugMessage($"c6c:: Soaked Running Total: {soakedDamage}");
                     dinfo.SetAmount(dmgAmount);
-                    //Log.Message("New damage amt: " + dinfo.Amount);
-                    soakedDamage += (int) dmgAmount;
-                    if (dinfo.Amount > 0) continue;
-                    //Log.Message("Hediff_A_Absorbed");
+                    DebugMessage($"c6c:: Result: {dinfo.Amount}");
+                    if (dinfo.Amount > 0)
+                    {
+                        DebugMessage($"c6c:: More damage exists. Continuing check for soakers.");
+                        continue;
+                    }
                     DamageSoakedMote(pawn, soakedDamage);
+                    DebugMessage($"c6c:: Damage absorbed.");
+                    DebugMessage($"c6c::   FINAL RESULT -- Soak: {soakedDamage} Damage: {dinfo.Amount}.");
+                    DebugMessage($"c6c:: --- Exit PreApplyDamage_ApplyDamageSoakers ---");
                     absorbed = true;
                     return true;
                 }
                 else
                 {
-                    //Log.Message("Hediff_B1");
+                    DebugMessage("c6c:: Soak Damage Hediff has damage soak settings.");
                     foreach (var soakSettings in soaker.Props.settings)
                     {
                         DamageInfo info = dinfo;
-                        //Log.Message("Hediff_B1_Setting");
 
-                        //Log.Message("Hediff Damage: " + info.Def.defName);
+                        DebugMessage($"c6c:: Hediff Damage: {info.Def.defName}");
+                        if (soakSettings.damageType != null)
+                            DebugMessage($"c6c:: Soak Type: {soakSettings.damageType.defName}");
+                        else
+                            DebugMessage($"c6c:: Soak Type: All");
+
                         //Null, here, means "all damage types"
                         //So Null should pass this check.
-                        if (soakSettings.damageType != null && soakSettings.damageType != info.Def) continue;
-                        //Log.Message("Hediff_B1_Setting1");
+                        if (soakSettings.damageType != null && soakSettings.damageType != info.Def)
+                        {
+                            DebugMessage($"c6c:: No match. No soak.");
+                            continue;
+                        }
 
                         // ReSharper disable once PossibleNullReferenceException
-                        if (!soakSettings.damageTypesToExclude.NullOrEmpty() &&
-                            soakSettings.damageTypesToExclude.Any(x => x == info.Def))
-                            continue;
-                        //Log.Message("Hediff_B1_Setting2");
+                        if (!soakSettings.damageTypesToExclude.NullOrEmpty())
+                        {
+                            DebugMessage($"c6c:: Damage Soak Exlusions: ");
+                            foreach (var exclusion in soakSettings.damageTypesToExclude)
+                            {
+                                DebugMessage($"c6c::    {exclusion.defName}");
+                                if (exclusion == info.Def)
+                                {
+                                    DebugMessage($"c6c:: Exclusion match. Damage soak aborted.");
+                                    continue;
+                                }
+                            }
+                        }
 
                         var dmgAmount = Mathf.Clamp(dinfo.Amount - soakSettings.damageToSoak, 0, dinfo.Amount);
-                        //Log.Message(dinfo.Amount + " - " + soakSettings.damageToSoak + " = " + dmgAmount);
-                        soakedDamage += (int) dmgAmount;
+                        DebugMessage($"c6c:: Min: 0, Max: {dinfo.Amount}. Calc: {dinfo.Amount} - {soakSettings.damageToSoak}.");
+                        soakedDamage += (int)Mathf.Min(soakSettings.damageToSoak, dinfo.Amount);
                         dinfo.SetAmount(dmgAmount);
-                        //Log.Message("New damage amt: " + dinfo.Amount);
-                        //Log.Message("Total soaked: " + soakedDamage);
-                        if (dinfo.Amount > 0) continue;
-                        //Log.Message("Hediff_B_Setting_Absorbed");
+                        DebugMessage($"c6c:: Result: {dinfo.Amount}");
+                        DebugMessage($"c6c:: Total soaked: {soakedDamage}");
+                        if (dinfo.Amount > 0)
+                        {
+                            DebugMessage($"c6c:: Unsoaked damage remains. Checking for more soakers.");
+                            continue;
+                        }
                         DamageSoakedMote(pawn, soakedDamage);
+                        DebugMessage($"c6c:: Damage absorbed.");
+                        DebugMessage($"c6c::  FINAL RESULT -- Soak: {soakedDamage} Damage: {dinfo.Amount}.");
+                        DebugMessage($"c6c:: --- Exit PreApplyDamage_ApplyDamageSoakers ---");
                         absorbed = true;
                         return true;
                     }
                 }
             }
-
+            if (soakedDamage > 0)
+            {
+                DamageSoakedMote(pawn, soakedDamage);
+                DebugMessage($"c6c::   FINAL RESULT -- Soak: {soakedDamage} Damage: {dinfo.Amount}.");
+            }
+            DebugMessage($"c6c:: --- Exit PreApplyDamage_ApplyDamageSoakers ---");
             absorbed = false;
             return false;
         }

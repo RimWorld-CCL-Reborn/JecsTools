@@ -1,3 +1,7 @@
+1.1.1.1 (03-20-2020)
+========================
+Fixed issues with damage soak and extra damages. Extra damage should now be dealt properly and damage soak should now deflect damage properly.
+
 1.1.1.0 (03-15-2020)
 ========================
 AbilityUser should now report when line of sight failure takes place for abilities. Extra damages no longer gives errors in combat logs.
