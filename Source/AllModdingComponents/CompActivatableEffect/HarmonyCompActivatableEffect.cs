@@ -106,8 +106,10 @@ namespace CompActivatableEffect
                 {
                 }
 
-                if (compActivatableEffect.CurrentState == CompActivatableEffect.State.Activated) return true;
-                
+                if (compActivatableEffect.CurrentState == CompActivatableEffect.State.Activated)
+                    return true;
+                else if (compActivatableEffect.TryActivate())
+                    return true;
                 if (Find.TickManager.TicksGame % 250 == 0)
                     Messages.Message("DeactivatedWarning".Translate(pawn.Label),
                         MessageTypeDefOf.RejectInput);
