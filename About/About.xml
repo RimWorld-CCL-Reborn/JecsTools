@@ -18,7 +18,7 @@
       </li>
     </v1.1>
   </modDependenciesByVersion>
-  <description>1.1.1.1 (03-20-2020)
+  <description>1.1.1.2 (03-29-2020)
 
 Adds modding components to RimWorld: vehicles, spell casting, weapon slots, oversized weapons, and more!
 
@@ -77,6 +77,10 @@ Cade Perkinson, Jay Sacane, John Pahl, Tankok1998 also known as the Shermanlover
 ========================
 Changelog
 ========================
+1.1.1.2 (03-29-2020)
+========================
+Activatable weapons now activate in defense thanks to code from qadsad.
+
 1.1.1.1 (03-20-2020)
 ========================
 Fixed issues with damage soak and extra damages. Extra damage should now be dealt properly and damage soak should now deflect damage properly.
