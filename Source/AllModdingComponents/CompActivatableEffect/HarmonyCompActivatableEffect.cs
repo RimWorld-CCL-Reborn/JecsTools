@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
 using RimWorld;
@@ -20,24 +19,19 @@ namespace CompActivatableEffect
             
             harmony.Patch(typeof(PawnRenderer).GetMethod("DrawEquipmentAiming"), null,
                 new HarmonyMethod(typeof(HarmonyCompActivatableEffect), nameof(DrawEquipmentAimingPostFix)));
-            
 
             harmony.Patch(AccessTools.Method(typeof(Verb), "TryStartCastOn", new[] { typeof(LocalTargetInfo), typeof(LocalTargetInfo), typeof(bool), typeof(bool)}),
                 new HarmonyMethod(typeof(HarmonyCompActivatableEffect), nameof(TryStartCastOnPrefix)), null);
 
-            
             harmony.Patch(typeof(Pawn_DraftController).GetMethod("set_Drafted"), null,
                 new HarmonyMethod(typeof(HarmonyCompActivatableEffect).GetMethod("set_DraftedPostFix")));
 
-            
             harmony.Patch(typeof(Pawn).GetMethod("ExitMap"),
                 new HarmonyMethod(typeof(HarmonyCompActivatableEffect).GetMethod("ExitMap_PreFix")), null);
 
-            
             harmony.Patch(typeof(Pawn_EquipmentTracker).GetMethod("TryDropEquipment"),
                 new HarmonyMethod(typeof(HarmonyCompActivatableEffect).GetMethod("TryDropEquipment_PreFix")), null);
 
-            
             harmony.Patch(typeof(Pawn_DraftController).GetMethod("set_Drafted"), null,
                 new HarmonyMethod(typeof(HarmonyCompActivatableEffect).GetMethod("set_DraftedPostFix")));
         }
@@ -54,7 +48,7 @@ namespace CompActivatableEffect
                 compActivatableEffect.TryDeactivate();
         }
 
-        public static void ExitMap_PreFix(Pawn __instance, bool allowedToJoinOrCreateCaravan)
+        public static void ExitMap_PreFix(Pawn __instance)
         {
             if (__instance is Pawn p && p.equipment is Pawn_EquipmentTracker eq &&
                 eq.Primary is ThingWithComps t &&
@@ -101,7 +95,7 @@ namespace CompActivatableEffect
                     if (__instance?.EquipmentSource != thingWithComps)
                         return true;
                 }
-                catch (Exception e)
+                catch
                 {
                 }
 
@@ -136,19 +130,16 @@ namespace CompActivatableEffect
 
             if (aimAngle > 20f && aimAngle < 160f)
             {
-                //mesh = MeshPool.GridPlaneFlip(thingWithComps.def.graphicData.drawSize);
                 num += eq.def.equippedAngleOffset;
             }
             else if (aimAngle > 200f && aimAngle < 340f)
             {
-                //mesh = MeshPool.GridPlane(thingWithComps.def.graphicData.drawSize);
                 flip = true;
                 num -= 180f;
                 num -= eq.def.equippedAngleOffset;
             }
             else
             {
-                //mesh = MeshPool.GridPlaneFlip(thingWithComps.def.graphicData.drawSize);
                 num += eq.def.equippedAngleOffset;
             }
 
@@ -170,24 +161,6 @@ namespace CompActivatableEffect
                     offset += weaponComp.Props.offset;
                 }
 
-                //var deflector = eqComps.AllComps.FirstOrDefault(y =>
-                //    y.GetType().ToString().Contains("Deflect"));
-                //if (deflector != null)
-                //{
-                //    var isActive = (bool) AccessTools
-                //        .Property(deflector.GetType(), "IsAnimatingNow").GetValue(deflector, null);
-                //    if (isActive)
-                //    {
-                //        float numMod = (int) AccessTools
-                //            .Property(deflector.GetType(), "AnimationDeflectionTicks")
-                //            .GetValue(deflector, null);
-                //        //float numMod2 = new float();
-                //        //numMod2 = numMod;
-                //        if (numMod > 0)
-                //            if (!flip) num += (numMod + 1) / 2;
-                //            else num -= (numMod + 1) / 2;
-                //    }
-                //}
                 if (compActivatableEffect.CompDeflectorIsAnimatingNow)
                 {
                     float numMod = compActivatableEffect.CompDeflectorAnimationDeflectionTicks;
@@ -201,27 +174,22 @@ namespace CompActivatableEffect
             num %= 360f;
 
             var matSingle = compActivatableEffect.Graphic.MatSingle;
-            //if (mesh == null) mesh = MeshPool.GridPlane(thingWithComps.def.graphicData.drawSize);
 
             var s = new Vector3(eq.def.graphicData.drawSize.x, 1f, eq.def.graphicData.drawSize.y);
             var matrix = default(Matrix4x4);
             matrix.SetTRS(drawLoc + offset, Quaternion.AngleAxis(num, Vector3.up), s);
             if (!flip) Graphics.DrawMesh(MeshPool.plane10, matrix, matSingle, 0);
             else Graphics.DrawMesh(MeshPool.plane10Flip, matrix, matSingle, 0);
-            //Graphics.DrawMesh(mesh, drawLoc, Quaternion.AngleAxis(num, Vector3.up), matSingle, 0);
         }
 
         public static IEnumerable<Gizmo> GizmoGetter(CompActivatableEffect compActivatableEffect)
         {
-            //Log.Message("5");
             if (compActivatableEffect.GizmosOnEquip)
             {
-                //Log.Message("6");
                 //Iterate EquippedGizmos
                 var enumerator = compActivatableEffect.EquippedGizmos().GetEnumerator();
                 while (enumerator.MoveNext())
                 {
-                    //Log.Message("7");
                     var current = enumerator.Current;
                     yield return current;
                 }
@@ -230,16 +198,13 @@ namespace CompActivatableEffect
 
         public static void GetGizmosPrefix(Pawn __instance, ref IEnumerable<Gizmo> __result)
         {
-            //Log.Message("1");
             var pawn_EquipmentTracker = __instance.equipment;
             if (pawn_EquipmentTracker != null)
             {
-                //Log.Message("2");
                 var thingWithComps = pawn_EquipmentTracker.Primary;
 
                 if (thingWithComps != null)
                 {
-                    //Log.Message("3");
                     var compActivatableEffect = thingWithComps.GetComp<CompActivatableEffect>();
                     if (compActivatableEffect != null)
                         if (__instance != null)

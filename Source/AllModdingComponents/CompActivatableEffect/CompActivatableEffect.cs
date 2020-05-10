@@ -307,23 +307,7 @@ namespace CompActivatableEffect
             base.PostDraw();
             if (ShowNow)
             {
-                //float parentRotation = 0.0f;
-
-                //if (this.parent.Graphic != null)
-                //{
-                //    if (this.parent.Graphic.data != null)
-                //    {
-                //        parentRotation = this.parent.Graphic.data.onGroundRandomRotateAngle;
-                //    }
-                //    else Log.ErrorOnce("ProjectJedi.CompActivatableEffect :: this.parent.graphic.data Null Reference", 7887);
-                //}
-
-                //if (parentRotation > 0.01f)
-                //{
                 Graphic = new Graphic_RandomRotated(Graphic, 35f);
-                //}
-
-
                 Graphic.Draw(GenThing.TrueCenter(parent.Position, parent.Rotation, parent.def.size, Props.Altitude),
                     parent.Rotation, parent);
             }

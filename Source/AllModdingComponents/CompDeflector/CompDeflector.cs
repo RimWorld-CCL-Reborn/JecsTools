@@ -205,19 +205,8 @@ namespace CompDeflector
 
         public override IEnumerable<StatDrawEntry> SpecialDisplayStats()
         {
-            //yield return new StatDrawEntry(StatCategoryDefOf.Basics, "DeflectChance".Translate(), ChanceToString, 0);
             yield return new StatDrawEntry(StatCategoryDefOf.Basics, StatDef.Named("Deflect chance"), float.Parse(ChanceToString), StatRequest.ForEmpty());
         }
-
-        //        	if (this.ingestible != null)
-        //	{
-        //		IEnumerator<StatDrawEntry> enumerator2 = this.ingestible.SpecialDisplayStats(this).GetEnumerator();
-        //		while (enumerator2.MoveNext())
-        //		{
-        //			StatDrawEntry current2 = enumerator2.Current;
-        //        yield return current2;
-        //		}
-        //}
 
         public virtual Verb ReflectionHandler(Verb newVerb)
         {
@@ -398,9 +387,6 @@ namespace CompDeflector
                 {
                     if (HasCompActivatableEffect)
                     {
-                        //bool? isActive = (bool) AccessTools.Method(GetActivatableEffect.GetType(), "IsActive")
-                        //    .Invoke(GetActivatableEffect, null);
-                        //if (isActive == false)
                         if (CompActivatableEffectiveIsActive == false)
                         {
                             //Log.Message("Inactivate Weapon");

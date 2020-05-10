@@ -23,15 +23,11 @@ namespace CompDeflector
         {
             if (___pawn != null)
             {
-                ////Log.Message("1");
                 var pawn_EquipmentTracker = ___pawn.equipment;
                 if (pawn_EquipmentTracker != null)
                     foreach (var thingWithComps in pawn_EquipmentTracker.AllEquipmentListForReading)
-                        ////Log.Message("3");
                         if (thingWithComps != null)
                         {
-                            ////Log.Message("4");
-                            ////Log.Message("3");
                             var compDeflector = thingWithComps.GetComp<CompDeflector>();
                             if (compDeflector != null)
                                 if (compDeflector.IsAnimatingNow)
@@ -43,14 +39,12 @@ namespace CompDeflector
                                     var num = aimAngle - 90f;
                                     if (aimAngle > 20f && aimAngle < 160f)
                                     {
-                                        //mesh = MeshPool.plane10;
                                         num += offset;
                                         if (compDeflector.IsAnimatingNow)
                                             num += (compDeflector.AnimationDeflectionTicks + 1) / 2;
                                     }
                                     else if (aimAngle > 200f && aimAngle < 340f)
                                     {
-                                        //mesh = MeshPool.plane10Flip;
                                         flip = true;
                                         num -= 180f;
                                         num -= offset;
@@ -59,7 +53,6 @@ namespace CompDeflector
                                     }
                                     else
                                     {
-                                        //mesh = MeshPool.plane10;
                                         num += offset;
                                         if (compDeflector.IsAnimatingNow)
                                             num += (compDeflector.AnimationDeflectionTicks + 1) / 2;
@@ -71,8 +64,6 @@ namespace CompDeflector
                                         matSingle = graphic_StackCount.SubGraphicForStackCount(1, eq.def).MatSingle;
                                     else
                                         matSingle = eq.Graphic.MatSingle;
-                                    //mesh = MeshPool.GridPlane(thingWithComps.def.graphicData.drawSize);
-                                    //Graphics.DrawMesh(mesh, drawLoc, Quaternion.AngleAxis(num, Vector3.up), matSingle, 0);
 
                                     var s = new Vector3(eq.def.graphicData.drawSize.x, 1f,
                                         eq.def.graphicData.drawSize.y);
@@ -80,8 +71,6 @@ namespace CompDeflector
                                     matrix.SetTRS(drawLoc, Quaternion.AngleAxis(num, Vector3.up), s);
                                     if (!flip) Graphics.DrawMesh(MeshPool.plane10, matrix, matSingle, 0);
                                     else Graphics.DrawMesh(MeshPool.plane10Flip, matrix, matSingle, 0);
-
-                                    ////Log.Message("DeflectDraw");
                                 }
                         }
             }
@@ -98,7 +87,6 @@ namespace CompDeflector
                     if (pawn_EquipmentTracker?.AllEquipmentListForReading.Count > 0)
                         foreach (var thingWithComps in pawn_EquipmentTracker.AllEquipmentListForReading)
                         {
-                            ////Log.Message("3");
                             var compDeflector = thingWithComps?.GetComp<CompDeflector>();
                             if (compDeflector == null) continue;
                             if (dinfo.Def == DamageDefOf.Bomb) continue;

@@ -1,4 +1,3 @@
-using System.Linq;
 using HarmonyLib;
 using RimWorld;
 using UnityEngine;
@@ -18,7 +17,6 @@ namespace CompOversizedWeapon
                 new HarmonyMethod(typeof(HarmonyCompOversizedWeapon), nameof(get_DefaultGraphic_PostFix)));
         }
 
-
         /// <summary>
         ///     Adds another "layer" to the equipment aiming if they have a
         ///     weapon with a CompActivatableEffect.
@@ -28,17 +26,6 @@ namespace CompOversizedWeapon
             if (___pawn == null) return true;
             if (eq is ThingWithComps thingWithComps)
             {
-                //If the deflector is active, it's already using this code.
-                //var deflector = thingWithComps.AllComps.FirstOrDefault(y =>
-                //    y.GetType().ToString() == "CompDeflector.CompDeflector" ||
-                //    y.GetType().BaseType.ToString() == "CompDeflector.CompDeflector");
-                //if (deflector != null)
-                //{
-                //    var isAnimatingNow = Traverse.Create(deflector).Property("IsAnimatingNow").GetValue<bool>();
-                //    if (isAnimatingNow)
-                //        return false;
-                //}
-
                 var compOversizedWeapon = thingWithComps.TryGetComp<CompOversizedWeapon>();
                 if (compOversizedWeapon != null)
                 {
@@ -63,18 +50,16 @@ namespace CompOversizedWeapon
                         num = AdjustOffsetAtPeace(eq, ___pawn, compOversizedWeapon, num);
                     }
                     
-                    if (compOversizedWeapon.Props != null && (!___pawn.IsFighting() && (compOversizedWeapon.Props.verticalFlipNorth && ___pawn.Rotation == Rot4.North)))
-                    {
-                        num += 180f;
-                    }
                     if (!___pawn.IsFighting())
                     {
+                        if (compOversizedWeapon.Props != null && compOversizedWeapon.Props.verticalFlipNorth && ___pawn.Rotation == Rot4.North)
+                        {
+                            num += 180f;
+                        }
                         num = AdjustNonCombatRotation(___pawn, num, compOversizedWeapon);
                     }
                     num %= 360f;
-                    
-         
-                    
+
                     var graphic_StackCount = eq.Graphic as Graphic_StackCount;
                     Material matSingle;
                     if (graphic_StackCount != null)
@@ -82,11 +67,9 @@ namespace CompOversizedWeapon
                     else
                         matSingle = eq.Graphic.MatSingle;
 
-         
                     var s = new Vector3(eq.def.graphicData.drawSize.x, 1f, eq.def.graphicData.drawSize.y);
                     var matrix = default(Matrix4x4);
 
-         
                     Vector3 curOffset = AdjustRenderOffsetFromDir(___pawn, compOversizedWeapon);
                     matrix.SetTRS(drawLoc + curOffset, Quaternion.AngleAxis(num, Vector3.up), s);                        
                     
@@ -112,14 +95,13 @@ namespace CompOversizedWeapon
                     return false;
                 }
             }
-            //}
             return true;
         }
 
         private static float AdjustOffsetAtPeace(Thing eq, Pawn pawn, CompOversizedWeapon compOversizedWeapon, float num)
         {
             var offsetAtPeace = eq.def.equippedAngleOffset;
-            if (compOversizedWeapon.Props != null && (!pawn.IsFighting() && compOversizedWeapon.Props.verticalFlipOutsideCombat))
+            if (compOversizedWeapon.Props != null && !pawn.IsFighting() && compOversizedWeapon.Props.verticalFlipOutsideCombat)
             {
                 offsetAtPeace += 180f;
             }
