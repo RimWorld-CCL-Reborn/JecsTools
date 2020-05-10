@@ -41,20 +41,57 @@ namespace CompDeflector
             }
         }
 
-        public CompEquippable GetEquippable => parent.GetComp<CompEquippable>();
+        private bool initComps;
+        private CompEquippable compEquippable;
+        private ThingComp compActivatableEffect;
+        private Func<bool> compActivatableEffectIsActive;
 
-        public Pawn GetPawn => GetEquippable.verbTracker.PrimaryVerb.CasterPawn;
+        private void InitCompsAsNeeded()
+        {
+            if (!initComps)
+            {
+                if (parent == null) return;
+                compEquippable = parent.GetComp<CompEquippable>();
+                compActivatableEffect = parent.AllComps.FirstOrDefault(y => y.GetType().ToString().Contains("ActivatableEffect"));
+                if (compActivatableEffect != null)
+                {
+                    compActivatableEffectIsActive =
+                        (Func<bool>) AccessTools.Method(compActivatableEffect.GetType(), "IsActive").CreateDelegate(
+                            typeof(Func<bool>), compActivatableEffect);
+                }
+                initComps = true;
+            }
+        }
 
-        public ThingComp GetActivatableEffect =>
-            parent.AllComps.FirstOrDefault(y => y.GetType().ToString().Contains("ActivatableEffect"));
-
-        public bool HasCompActivatableEffect
+        public CompEquippable GetEquippable
         {
             get
             {
-                if (parent is ThingWithComps x)
-                    if (GetActivatableEffect != null)
-                        return true;
+                InitCompsAsNeeded();
+                return compEquippable;
+            }
+        }
+
+        public Pawn GetPawn => GetEquippable.verbTracker.PrimaryVerb.CasterPawn;
+
+        public ThingComp GetActivatableEffect
+        {
+            get
+            {
+                InitCompsAsNeeded();
+                return compActivatableEffect;
+            }
+        }
+
+        public bool HasCompActivatableEffect => GetActivatableEffect != null;
+
+        public bool CompActivatableEffectiveIsActive
+        {
+            get
+            {
+                InitCompsAsNeeded();
+                if (compActivatableEffectIsActive != null)
+                    return compActivatableEffectIsActive();
                 return false;
             }
         }
@@ -361,11 +398,12 @@ namespace CompDeflector
                 {
                     if (HasCompActivatableEffect)
                     {
-                        bool? isActive = (bool) AccessTools.Method(GetActivatableEffect.GetType(), "IsActive")
-                            .Invoke(GetActivatableEffect, null);
-                        if (isActive == false)
+                        //bool? isActive = (bool) AccessTools.Method(GetActivatableEffect.GetType(), "IsActive")
+                        //    .Invoke(GetActivatableEffect, null);
+                        //if (isActive == false)
+                        if (CompActivatableEffectiveIsActive == false)
                         {
-                            ////Log.Message("Inactivate Weapon");
+                            //Log.Message("Inactivate Weapon");
                             absorbed = false;
                             return;
                         }

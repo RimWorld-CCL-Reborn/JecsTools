@@ -15,7 +15,7 @@ namespace CompOversizedWeapon
             harmony.Patch(typeof(PawnRenderer).GetMethod("DrawEquipmentAiming"),
                 new HarmonyMethod(typeof(HarmonyCompOversizedWeapon).GetMethod("DrawEquipmentAimingPreFix")), null);
             harmony.Patch(AccessTools.Method(typeof(Thing), "get_DefaultGraphic"), null,
-                new HarmonyMethod(typeof(HarmonyCompOversizedWeapon), nameof(get_Graphic_PostFix)));
+                new HarmonyMethod(typeof(HarmonyCompOversizedWeapon), nameof(get_DefaultGraphic_PostFix)));
         }
 
 
@@ -23,58 +23,53 @@ namespace CompOversizedWeapon
         ///     Adds another "layer" to the equipment aiming if they have a
         ///     weapon with a CompActivatableEffect.
         /// </summary>
-        /// <param name="__instance"></param>
-        /// <param name="eq"></param>
-        /// <param name="drawLoc"></param>
-        /// <param name="aimAngle"></param>
-        public static bool DrawEquipmentAimingPreFix(PawnRenderer __instance, Thing eq, Vector3 drawLoc, float aimAngle)
+        public static bool DrawEquipmentAimingPreFix(Pawn ___pawn, Thing eq, Vector3 drawLoc, float aimAngle)
         {
+            if (___pawn == null) return true;
             if (eq is ThingWithComps thingWithComps)
             {
                 //If the deflector is active, it's already using this code.
-                var deflector = thingWithComps.AllComps.FirstOrDefault(y =>
-                    y.GetType().ToString() == "CompDeflector.CompDeflector" ||
-                    y.GetType().BaseType.ToString() == "CompDeflector.CompDeflector");
-                if (deflector != null)
-                {
-                    var isAnimatingNow = Traverse.Create(deflector).Property("IsAnimatingNow").GetValue<bool>();
-                    if (isAnimatingNow)
-                        return false;
-                }
+                //var deflector = thingWithComps.AllComps.FirstOrDefault(y =>
+                //    y.GetType().ToString() == "CompDeflector.CompDeflector" ||
+                //    y.GetType().BaseType.ToString() == "CompDeflector.CompDeflector");
+                //if (deflector != null)
+                //{
+                //    var isAnimatingNow = Traverse.Create(deflector).Property("IsAnimatingNow").GetValue<bool>();
+                //    if (isAnimatingNow)
+                //        return false;
+                //}
 
                 var compOversizedWeapon = thingWithComps.TryGetComp<CompOversizedWeapon>();
                 if (compOversizedWeapon != null)
                 {
+                    //If the deflector is animating now, deflector handles drawing (and already has the drawSize fix).
+                    if (compOversizedWeapon.CompDeflectorIsAnimatingNow) return false;
+
                     var flip = false;
                     var num = aimAngle - 90f;
-                    var pawn = Traverse.Create(__instance).Field("pawn").GetValue<Pawn>();
-                    if (pawn == null) return true;
                     
-                    Mesh mesh;
                     if (aimAngle > 20f && aimAngle < 160f)
                     {
-                        mesh = MeshPool.plane10;
                         num += eq.def.equippedAngleOffset;
                     }
                     else if (aimAngle > 200f && aimAngle < 340f)
                     {
-                        mesh = MeshPool.plane10Flip;
                         flip = true;
                         num -= 180f;
                         num -= eq.def.equippedAngleOffset;
                     }
                     else
                     {
-                        num = AdjustOffsetAtPeace(eq, pawn, compOversizedWeapon, num);
+                        num = AdjustOffsetAtPeace(eq, ___pawn, compOversizedWeapon, num);
                     }
                     
-                    if (compOversizedWeapon.Props != null && (!pawn.IsFighting() && (compOversizedWeapon.Props.verticalFlipNorth && pawn.Rotation == Rot4.North)))
+                    if (compOversizedWeapon.Props != null && (!___pawn.IsFighting() && (compOversizedWeapon.Props.verticalFlipNorth && ___pawn.Rotation == Rot4.North)))
                     {
                         num += 180f;
                     }
-                    if (!pawn.IsFighting())
+                    if (!___pawn.IsFighting())
                     {
-                        num = AdjustNonCombatRotation(pawn, num, compOversizedWeapon);
+                        num = AdjustNonCombatRotation(___pawn, num, compOversizedWeapon);
                     }
                     num %= 360f;
                     
@@ -92,7 +87,7 @@ namespace CompOversizedWeapon
                     var matrix = default(Matrix4x4);
 
          
-                    Vector3 curOffset = AdjustRenderOffsetFromDir(pawn, compOversizedWeapon);
+                    Vector3 curOffset = AdjustRenderOffsetFromDir(___pawn, compOversizedWeapon);
                     matrix.SetTRS(drawLoc + curOffset, Quaternion.AngleAxis(num, Vector3.up), s);                        
                     
                     Graphics.DrawMesh(!flip ? MeshPool.plane10 : MeshPool.plane10Flip, matrix, matSingle, 0);
@@ -100,7 +95,7 @@ namespace CompOversizedWeapon
                     {
                         curOffset = new Vector3(-1f * curOffset.x, curOffset.y, curOffset.z);
                         Mesh curPool;
-                        if (pawn.Rotation == Rot4.North || pawn.Rotation == Rot4.South)
+                        if (___pawn.Rotation == Rot4.North || ___pawn.Rotation == Rot4.South)
                         {
                             num += 135f;
                             num %= 360f;
@@ -123,8 +118,6 @@ namespace CompOversizedWeapon
 
         private static float AdjustOffsetAtPeace(Thing eq, Pawn pawn, CompOversizedWeapon compOversizedWeapon, float num)
         {
-            Mesh mesh;
-            mesh = MeshPool.plane10;
             var offsetAtPeace = eq.def.equippedAngleOffset;
             if (compOversizedWeapon.Props != null && (!pawn.IsFighting() && compOversizedWeapon.Props.verticalFlipOutsideCombat))
             {
@@ -185,55 +178,52 @@ namespace CompOversizedWeapon
             return curOffset;
         }
 
-        public static void get_Graphic_PostFix(Thing __instance, ref Graphic __result)
+        public static void get_DefaultGraphic_PostFix(Thing __instance, Graphic ___graphicInt, ref Graphic __result)
         {
-            var tempGraphic = Traverse.Create(__instance).Field("graphicInt").GetValue<Graphic>();
-            if (tempGraphic != null)
-                if (__instance is ThingWithComps thingWithComps)
+            if (___graphicInt == null) return;
+            if (__instance.ParentHolder is Pawn) return;
+
+            var compOversizedWeapon = __instance.TryGetComp<CompOversizedWeapon>();
+            if (compOversizedWeapon != null)
+            {
+                //Following commented-out section is an unnecessary "optimization" that actually hurts performance due to the reflection involved.
+                //var activatableEffect =
+                //    thingWithComps.AllComps.FirstOrDefault(
+                //        y => y.GetType().ToString().Contains("ActivatableEffect"));
+                //if (activatableEffect != null)
+                //{
+                //    var getPawn = Traverse.Create(activatableEffect).Property("GetPawn").GetValue<Pawn>();
+                //    if (getPawn != null)
+                //        return;
+                //}
+                if (compOversizedWeapon.Props?.groundGraphic == null)
                 {
-                    if (thingWithComps.ParentHolder is Pawn)
-                        return;
-                    var activatableEffect =
-                        thingWithComps.AllComps.FirstOrDefault(
-                            y => y.GetType().ToString().Contains("ActivatableEffect"));
-                    if (activatableEffect != null)
+                    ___graphicInt.drawSize = __instance.def.graphicData.drawSize;
+                    __result = ___graphicInt;
+                }
+                else
+                {
+                    if (compOversizedWeapon.IsEquipped)
                     {
-                        var getPawn = Traverse.Create(activatableEffect).Property("GetPawn").GetValue<Pawn>();
-                        if (getPawn != null)
-                            return;
+                        ___graphicInt.drawSize = __instance.def.graphicData.drawSize;
+                        __result = ___graphicInt;
                     }
-                    var compOversizedWeapon = thingWithComps.TryGetComp<CompOversizedWeapon>();
-                    if (compOversizedWeapon != null)
+                    else
                     {
-                        if (compOversizedWeapon.Props?.groundGraphic == null)
+                        if (compOversizedWeapon.Props?.groundGraphic?.GraphicColoredFor(__instance) is Graphic
+                            newResult)
                         {
-                            tempGraphic.drawSize = __instance.def.graphicData.drawSize;
-                            __result = tempGraphic;   
+                            newResult.drawSize = compOversizedWeapon.Props.groundGraphic.drawSize;
+                            __result = newResult;
                         }
                         else
                         {
-                            if (compOversizedWeapon.IsEquipped)
-                            {
-                                tempGraphic.drawSize = __instance.def.graphicData.drawSize;
-                                __result = tempGraphic;
-                            }
-                            else
-                            {
-                                if (compOversizedWeapon.Props?.groundGraphic?.GraphicColoredFor(__instance) is Graphic
-                                    newResult)
-                                {
-                                    newResult.drawSize = compOversizedWeapon.Props.groundGraphic.drawSize;
-                                    __result = newResult;      
-                                }
-                                else
-                                {
-                                    tempGraphic.drawSize = __instance.def.graphicData.drawSize;
-                                    __result = tempGraphic;   
-                                }
-                            }
+                            ___graphicInt.drawSize = __instance.def.graphicData.drawSize;
+                            __result = ___graphicInt;
                         }
                     }
                 }
+            }
         }
     }
 }

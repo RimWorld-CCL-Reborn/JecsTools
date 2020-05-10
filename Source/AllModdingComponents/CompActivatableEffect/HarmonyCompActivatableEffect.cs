@@ -89,8 +89,7 @@ namespace CompActivatableEffect
                 var pawn_EquipmentTracker = pawn?.equipment;
                 if (pawn_EquipmentTracker == null) return true;
 
-                var thingWithComps =
-                    pawn_EquipmentTracker?.Primary; //(ThingWithComps)AccessTools.Field(typeof(Pawn_EquipmentTracker), "primaryInt").GetValue(pawn_EquipmentTracker);
+                var thingWithComps = pawn_EquipmentTracker?.Primary;
 
                 var compActivatableEffect = thingWithComps?.GetComp<CompActivatableEffect>();
                 if (compActivatableEffect == null) return true;
@@ -119,53 +118,15 @@ namespace CompActivatableEffect
             return true;
         }
 
-        ///// <summary>
-        ///// Prevents the user from having damage with the verb.
-        ///// </summary>
-        ///// <param name="__instance"></param>
-        ///// <param name="__result"></param>
-        ///// <param name="pawn"></param>
-        //public static void GetDamageFactorForPostFix(Verb __instance, ref float __result, Pawn pawn)
-        //{
-        //    Pawn_EquipmentTracker pawn_EquipmentTracker = pawn.equipment;
-        //    if (pawn_EquipmentTracker != null)
-        //    {
-        //        //Log.Message("2");
-        //        ThingWithComps thingWithComps = (ThingWithComps)AccessTools.Field(typeof(Pawn_EquipmentTracker), "primaryInt").GetValue(pawn_EquipmentTracker);
-
-        //        if (thingWithComps != null)
-        //        {
-        //            //Log.Message("3");
-        //            CompActivatableEffect compActivatableEffect = thingWithComps.GetComp<CompActivatableEffect>();
-        //            if (compActivatableEffect != null)
-        //            {
-        //                if (compActivatableEffect.CurrentState != CompActivatableEffect.State.Activated)
-        //                {
-        //                    //Messages.Message("DeactivatedWarning".Translate(), MessageSound.RejectInput);
-        //                    __result = 0f;
-        //                }
-        //            }
-        //        }
-        //    }
-        //}
-
-
         /// <summary>
         ///     Adds another "layer" to the equipment aiming if they have a
         ///     weapon with a CompActivatableEffect.
         /// </summary>
-        /// <param name="__instance"></param>
-        /// <param name="eq"></param>
-        /// <param name="drawLoc"></param>
-        /// <param name="aimAngle"></param>
-        public static void DrawEquipmentAimingPostFix(PawnRenderer __instance, Thing eq, Vector3 drawLoc,
+        public static void DrawEquipmentAimingPostFix(Pawn ___pawn, Thing eq, Vector3 drawLoc,
             float aimAngle)
         {
-            var pawn = (Pawn) AccessTools.Field(typeof(PawnRenderer), "pawn").GetValue(__instance);
-
-            var pawn_EquipmentTracker = pawn.equipment;
-            var thingWithComps =
-                pawn_EquipmentTracker?.Primary; //(ThingWithComps)AccessTools.Field(typeof(Pawn_EquipmentTracker), "primaryInt").GetValue(pawn_EquipmentTracker);
+            var pawn_EquipmentTracker = ___pawn.equipment;
+            var thingWithComps = pawn_EquipmentTracker?.Primary;
 
             var compActivatableEffect = thingWithComps?.GetComp<CompActivatableEffect>();
             if (compActivatableEffect?.Graphic == null) return;
@@ -198,52 +159,46 @@ namespace CompActivatableEffect
                 if (eqComps.AllComps.FirstOrDefault(z => z is CompOversizedWeapon.CompOversizedWeapon) is
                     CompOversizedWeapon.CompOversizedWeapon weaponComp)
                 {
-                    if (pawn.Rotation == Rot4.East)
+                    if (___pawn.Rotation == Rot4.East)
                         offset = weaponComp.Props.eastOffset;
-                    else if (pawn.Rotation == Rot4.West)
+                    else if (___pawn.Rotation == Rot4.West)
                         offset = weaponComp.Props.westOffset;
-                    else if (pawn.Rotation == Rot4.North)
+                    else if (___pawn.Rotation == Rot4.North)
                         offset = weaponComp.Props.northOffset;
-                    else if (pawn.Rotation == Rot4.South)
+                    else if (___pawn.Rotation == Rot4.South)
                         offset = weaponComp.Props.southOffset;
                     offset += weaponComp.Props.offset;
                 }
-                                
-                                    
-                var deflector = eqComps.AllComps.FirstOrDefault(y =>
-                    y.GetType().ToString().Contains("Deflect"));
-                if (deflector != null)
+
+                //var deflector = eqComps.AllComps.FirstOrDefault(y =>
+                //    y.GetType().ToString().Contains("Deflect"));
+                //if (deflector != null)
+                //{
+                //    var isActive = (bool) AccessTools
+                //        .Property(deflector.GetType(), "IsAnimatingNow").GetValue(deflector, null);
+                //    if (isActive)
+                //    {
+                //        float numMod = (int) AccessTools
+                //            .Property(deflector.GetType(), "AnimationDeflectionTicks")
+                //            .GetValue(deflector, null);
+                //        //float numMod2 = new float();
+                //        //numMod2 = numMod;
+                //        if (numMod > 0)
+                //            if (!flip) num += (numMod + 1) / 2;
+                //            else num -= (numMod + 1) / 2;
+                //    }
+                //}
+                if (compActivatableEffect.CompDeflectorIsAnimatingNow)
                 {
-                    var isActive = (bool) AccessTools
-                        .Property(deflector.GetType(), "IsAnimatingNow").GetValue(deflector, null);
-                    if (isActive)
+                    float numMod = compActivatableEffect.CompDeflectorAnimationDeflectionTicks;
+                    if (numMod > 0)
                     {
-                        float numMod = (int) AccessTools
-                            .Property(deflector.GetType(), "AnimationDeflectionTicks")
-                            .GetValue(deflector, null);
-                        //float numMod2 = new float();
-                        //numMod2 = numMod;
-                        if (numMod > 0)
-                            if (!flip) num += (numMod + 1) / 2;
-                            else num -= (numMod + 1) / 2;
+                        if (!flip) num += (numMod + 1) / 2;
+                        else num -= (numMod + 1) / 2;
                     }
                 }
             }
             num %= 360f;
-
-            //ThingWithComps eqComps = eq as ThingWithComps;
-            //if (eqComps != null)
-            //{
-            //    ThingComp deflector = eqComps.AllComps.FirstOrDefault<ThingComp>((ThingComp y) => y.GetType().ToString() == "CompDeflector.CompDeflector");
-            //    if (deflector != null)
-            //    {
-            //        float numMod = (float)((int)AccessTools.Property(deflector.GetType(), "AnimationDeflectionTicks").GetValue(deflector, null));
-            //        //Log.ErrorOnce("NumMod " + numMod.ToString(), 1239);
-            //numMod = (numMod + 1) / 2;
-            //if (subtract) num -= numMod;
-            //else num += numMod;
-            //    }
-            //}
 
             var matSingle = compActivatableEffect.Graphic.MatSingle;
             //if (mesh == null) mesh = MeshPool.GridPlane(thingWithComps.def.graphicData.drawSize);
@@ -280,7 +235,6 @@ namespace CompActivatableEffect
             if (pawn_EquipmentTracker != null)
             {
                 //Log.Message("2");
-                //ThingWithComps thingWithComps = (ThingWithComps)AccessTools.Field(typeof(Pawn_EquipmentTracker), "primaryInt").GetValue(pawn_EquipmentTracker);
                 var thingWithComps = pawn_EquipmentTracker.Primary;
 
                 if (thingWithComps != null)

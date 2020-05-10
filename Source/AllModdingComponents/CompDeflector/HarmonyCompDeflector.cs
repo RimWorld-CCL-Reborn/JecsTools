@@ -18,14 +18,13 @@ namespace CompDeflector
                 new HarmonyMethod(typeof(HarmonyCompDeflector), nameof(DrawEquipmentAimingPostFix)), null);
         }
 
-        public static void DrawEquipmentAimingPostFix(PawnRenderer __instance, Thing eq, Vector3 drawLoc,
+        public static void DrawEquipmentAimingPostFix(Pawn ___pawn, Thing eq, Vector3 drawLoc,
             float aimAngle)
         {
-            var pawn = (Pawn) AccessTools.Field(typeof(PawnRenderer), "pawn").GetValue(__instance);
-            if (pawn != null)
+            if (___pawn != null)
             {
                 ////Log.Message("1");
-                var pawn_EquipmentTracker = pawn.equipment;
+                var pawn_EquipmentTracker = ___pawn.equipment;
                 if (pawn_EquipmentTracker != null)
                     foreach (var thingWithComps in pawn_EquipmentTracker.AllEquipmentListForReading)
                         ////Log.Message("3");
@@ -90,7 +89,6 @@ namespace CompDeflector
 
         public static bool TakeDamage_PreFix(Thing __instance, ref DamageInfo dinfo)
         {
-            //Pawn pawn = (Pawn)AccessTools.Field(typeof(Pawn_HealthTracker), "pawn").GetValue(__instance);
             //if (dinfo.Instigator == null) return true;
             try
             {

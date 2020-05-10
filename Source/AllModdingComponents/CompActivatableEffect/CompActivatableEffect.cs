@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using HarmonyLib;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -20,11 +23,67 @@ namespace CompActivatableEffect
 
         private Sustainer sustainer;
 
-        public CompEquippable GetEquippable => parent.GetComp<CompEquippable>();
+        private bool initComps = false;
+        private CompEquippable compEquippable;
+        private Func<bool> compDeflectorIsAnimatingNow;
+        private Func<int> compDeflectorAnimationDeflectionTicks;
+
+        private void InitCompsAsNeeded()
+        {
+            if (!initComps)
+            {
+                if (parent == null) return;
+                compEquippable = parent.GetComp<CompEquippable>();
+                var deflector = parent.AllComps.FirstOrDefault(y =>
+                    y.GetType().ToString() == "CompDeflector.CompDeflector" ||
+                    y.GetType().BaseType.ToString() == "CompDeflector.CompDeflector");
+                if (deflector != null)
+                {
+                    compDeflectorIsAnimatingNow =
+                        (Func<bool>) AccessTools.PropertyGetter(deflector.GetType(), "IsAnimatingNow").CreateDelegate(
+                            typeof(Func<bool>), deflector);
+                    compDeflectorAnimationDeflectionTicks =
+                        (Func<int>) AccessTools.PropertyGetter(deflector.GetType(), "AnimationDeflectionTicks").CreateDelegate(
+                            typeof(Func<int>), deflector);
+                }
+                initComps = true;
+            }
+        }
+
+        public CompEquippable GetEquippable
+        {
+            get
+            {
+                InitCompsAsNeeded();
+                return compEquippable;
+            }
+        }
 
         public Pawn GetPawn =>  GetEquippable.verbTracker.PrimaryVerb.CasterPawn;
 
         //public List<Verb> GetVerbs => GetEquippable.verbTracker.AllVerbs;
+
+        public bool CompDeflectorIsAnimatingNow
+        {
+            get
+            {
+                InitCompsAsNeeded();
+                if (compDeflectorIsAnimatingNow != null)
+                    return compDeflectorIsAnimatingNow();
+                return false;
+            }
+        }
+
+        public int CompDeflectorAnimationDeflectionTicks
+        {
+            get
+            {
+                InitCompsAsNeeded();
+                if (compDeflectorAnimationDeflectionTicks != null)
+                    return compDeflectorAnimationDeflectionTicks();
+                return 0;
+            }
+        }
 
         public bool GizmosOnEquip => Props.gizmosOnEquip;
         public State CurrentState => currentState;
@@ -220,15 +279,13 @@ namespace CompActivatableEffect
             set => graphicInt = value;
             get
             {
-                Graphic badGraphic;
                 if (graphicInt == null)
                 {
                     if (Props.graphicData == null)
                     {
                         Log.ErrorOnce(parent.def + " has no SecondLayer graphicData but we are trying to access it.",
                             764532);
-                        badGraphic = BaseContent.BadGraphic;
-                        return badGraphic;
+                        return BaseContent.BadGraphic;
                     }
                     var newColor1 = overrideColor == Color.white ? parent.DrawColor : overrideColor;
                     var newColor2 = overrideColor == Color.white ? parent.DrawColorTwo : overrideColor;
@@ -236,8 +293,7 @@ namespace CompActivatableEffect
                         Props.graphicData.Graphic.GetColoredVersion(parent.Graphic.Shader, newColor1, newColor2);
                     graphicInt = PostGraphicEffects(graphicInt);
                 }
-                badGraphic = graphicInt;
-                return badGraphic;
+                return graphicInt;
             }
         }
 
