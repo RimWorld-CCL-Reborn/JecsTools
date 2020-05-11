@@ -50,7 +50,7 @@ namespace AbilityUser
                 new HarmonyMethod(typeof(AbilityUserMod), nameof(GiveShortHash_PrePatch)), null);
 
             harmony.Patch(AccessTools.Method(typeof(PawnGroupKindWorker), nameof(PawnGroupKindWorker.GeneratePawns),
-                    new Type[] {typeof(PawnGroupMakerParms), typeof(PawnGroupMaker), typeof(bool)}), null,
+                    new Type[] { typeof(PawnGroupMakerParms), typeof(PawnGroupMaker), typeof(bool) }), null,
                 new HarmonyMethod(typeof(AbilityUserMod), nameof(GeneratePawns_PostFix)));
 
             //RimWorld v1.0.1964
@@ -61,7 +61,7 @@ namespace AbilityUser
                 AccessTools.Property(typeof(Verb_LaunchProjectile), nameof(Verb_LaunchProjectile.Projectile))
                     .GetGetMethod(),
                 new HarmonyMethod(typeof(AbilityUserMod), nameof(get_Projectile_Prefix)), null);
-            
+
             harmony.Patch(
                 AccessTools.Property(typeof(Verb), nameof(Verb.DirectOwner))
                     .GetGetMethod(),
@@ -83,7 +83,7 @@ namespace AbilityUser
                 var result = vua.PreCastShot(castTarg, destTarg, surpriseAttack, canHitNonTargetPawns);
                 __result = result;
                 return false;
-            }         
+            }
         }
 
         public static bool get_DirectOwner_Prefix(Verb __instance, ref IVerbOwner __result)
@@ -122,7 +122,7 @@ namespace AbilityUser
         {
             //Anyone special?
             if (__result?.Count > 0 &&
-                __result.FindAll(x => x.TryGetComp<CompAbilityUser>() is CompAbilityUser cu && cu.CombatPoints() > 0) is
+                __result.FindAll(x => x.GetComp<CompAbilityUser>() is CompAbilityUser cu && cu.CombatPoints() > 0) is
                     List<Pawn> specialPawns && specialPawns?.Count > 0)
             {
                 //Log.Message("Special Pawns Detected");
@@ -138,7 +138,7 @@ namespace AbilityUser
                 //Anyone average?
                 int avgPawns = 0;
                 var avgCombatPoints = new Dictionary<Pawn, float>();
-                if (__result.FindAll(x => x.TryGetComp<CompAbilityUser>() == null) is List<Pawn> averagePawns)
+                if (__result.FindAll(x => x.GetComp<CompAbilityUser>() == null) is List<Pawn> averagePawns)
                 {
                     avgPawns = averagePawns.Count;
                     averagePawns.ForEach(x =>
@@ -171,7 +171,7 @@ namespace AbilityUser
                 if (avgPawns == 0 && specCombatPoints.Sum(x => x.Value) > 0 && specialPawns.Count == 1)
                 {
                     //Log.Message("Special case called: Single character");
-                    specialPawns.First().TryGetComp<CompAbilityUser>().DisableAbilityUser();
+                    specialPawns.First().GetComp<CompAbilityUser>().DisableAbilityUser();
                     return;
                 }
 
@@ -237,16 +237,16 @@ namespace AbilityUser
                 avgCombatPoints = tempAvgCombatPoints;
                 specCombatPoints = tempSpecCombatPoints;
 
-//                Log.Message("------------");                                
-//                Log.Message("Final Report");
-//                Log.Message("------------");
-//                Log.Message("Scenario Points: " + previousPoints + ". Total Points: " + tempAvgCombatPoints.Sum(x => x.Value) + tempSpecCombatPoints.Sum(x => x.Value));
-//                Log.Message("------------");
-//                Log.Message("Characters");
-//                Log.Message("------------------");
+                //Log.Message("------------");
+                //Log.Message("Final Report");
+                //Log.Message("------------");
+                //Log.Message("Scenario Points: " + previousPoints + ". Total Points: " + tempAvgCombatPoints.Sum(x => x.Value) + tempSpecCombatPoints.Sum(x => x.Value));
+                //Log.Message("------------");
+                //Log.Message("Characters");
+                //Log.Message("------------------");
                 __result.ForEach(x =>
                 {
-                    var combatValue = x.kindDef.combatPower + x?.TryGetComp<CompAbilityUser>()?.CombatPoints() ?? 0f;
+                    var combatValue = x.kindDef.combatPower + x?.GetComp<CompAbilityUser>()?.CombatPoints() ?? 0f;
                     //Log.Message(x.LabelShort + " : " + combatValue);
                 });
                 foreach (var x in removedCharacters)
@@ -261,11 +261,6 @@ namespace AbilityUser
             }
         }
 
-        //static HarmonyPatches()
-        //{
-
-        //}
-
         //Verse.ShortHashGiver
         public static bool GiveShortHash_PrePatch(Def def, Type defType)
         {
@@ -279,53 +274,80 @@ namespace AbilityUser
 
         public static void Notify_EquipmentAdded_PostFix(Pawn_EquipmentTracker __instance, ThingWithComps eq)
         {
-            foreach (var cai in eq.GetComps<CompAbilityItem>()
-                ) //((Pawn)__instance.ParentHolder).GetComps<CompAbilityItem>() )
-                //Log.Message("Notify_EquipmentAdded_PostFix 1 : "+eq.ToString());
-                //Log.Message("  Found CompAbilityItem, for CompAbilityUser of "+cai.Props.AbilityUserClass.ToString());
-
-            foreach (var cau in ((Pawn) __instance.ParentHolder).GetComps<CompAbilityUser>())
-                //Log.Message("  Found CompAbilityUser, "+cau.ToString() +" : "+ cau.GetType()+":"+cai.Props.AbilityUserClass ); //Props.AbilityUserTarget.ToString());
-                if (cau.GetType() == cai.Props.AbilityUserClass)
+            //Log.Message("Notify_EquipmentAdded_PostFix 1 : " + eq);
+            var compAbilityUsers = ((Pawn) __instance.ParentHolder).GetComps<CompAbilityUser>();
+            foreach (var cai in eq.GetComps<CompAbilityItem>())
+            {
+                //Log.Message("  Found CompAbilityItem, for CompAbilityUser of " + cai.Props.AbilityUserClass);
+                foreach (var cau in compAbilityUsers)
                 {
-                    //Log.Message("  and they match types " );
-                    cai.AbilityUserTarget = cau;
-                    foreach (var abdef in cai.Props.Abilities) cau.AddWeaponAbility(abdef);
+                    //Log.Message("  Found CompAbilityUser, " + cau + " : " + cau.GetType() + ":" + cai.Props.AbilityUserClass);
+                    if (cau.GetType() == cai.Props.AbilityUserClass)
+                    {
+                        //Log.Message("  and they match types");
+                        cai.AbilityUserTarget = cau;
+                        foreach (var abdef in cai.Props.Abilities) cau.AddWeaponAbility(abdef);
+                    }
                 }
+            }
         }
 
         public static void Notify_EquipmentRemoved_PostFix(Pawn_EquipmentTracker __instance, ThingWithComps eq)
         {
-            foreach (var cai in eq.GetComps<CompAbilityItem>()
-                ) //((Pawn)__instance.ParentHolder).GetComps<CompAbilityItem>() )
-                //Log.Message("Notify_EquipmentAdded_PostFix 1 : "+eq.ToString());
-                //Log.Message("  Found CompAbilityItem, for CompAbilityUser of "+cai.Props.AbilityUserClass.ToString());
-
-            foreach (var cau in ((Pawn) __instance.ParentHolder).GetComps<CompAbilityUser>())
-                //Log.Message("  Found CompAbilityUser, "+cau.ToString() +" : "+ cau.GetType()+":"+cai.Props.AbilityUserClass ); //Props.AbilityUserTarget.ToString());
-                if (cau.GetType() == cai.Props.AbilityUserClass)
-                    foreach (var abdef in cai.Props.Abilities) cau.RemoveWeaponAbility(abdef);
+            //Log.Message("Notify_EquipmentRemoved_PostFix : " + eq);
+            var compAbilityUsers = ((Pawn) __instance.ParentHolder).GetComps<CompAbilityUser>();
+            foreach (var cai in eq.GetComps<CompAbilityItem>())
+            {
+                //Log.Message("  Found CompAbilityItem, for CompAbilityUser of " + cai.Props.AbilityUserClass);
+                foreach (var cau in compAbilityUsers)
+                {
+                    //Log.Message("  Found CompAbilityUser, " + cau + " : " + cau.GetType() + ":" + cai.Props.AbilityUserClass);
+                    if (cau.GetType() == cai.Props.AbilityUserClass)
+                    {
+                        //Log.Message("  and they match types");
+                        foreach (var abdef in cai.Props.Abilities) cau.RemoveWeaponAbility(abdef);
+                    }
+                }
+            }
         }
 
         public static void Notify_ApparelAdded_PostFix(Pawn_ApparelTracker __instance, Apparel apparel)
         {
-            foreach (var cai in apparel.GetComps<CompAbilityItem>()
-            ) //((Pawn)__instance.ParentHolder).GetComps<CompAbilityItem>() )
-            foreach (var cau in ((Pawn) __instance.ParentHolder).GetComps<CompAbilityUser>())
-                if (cau.GetType() == cai.Props.AbilityUserClass)
+            //Log.Message("Notify_ApparelAdded_PostFix : " + apparel);
+            var compAbilityUsers = ((Pawn) __instance.ParentHolder).GetComps<CompAbilityUser>();
+            foreach (var cai in apparel.GetComps<CompAbilityItem>())
+            {
+                //Log.Message("  Found CompAbilityItem, for CompAbilityUser of " + cai.Props.AbilityUserClass);
+                foreach (var cau in compAbilityUsers)
                 {
-                    cai.AbilityUserTarget = cau;
-                    foreach (var abdef in cai.Props.Abilities) cau.AddApparelAbility(abdef);
+                    //Log.Message("  Found CompAbilityUser, " + cau + " : " + cau.GetType() + ":" + cai.Props.AbilityUserClass);
+                    if (cau.GetType() == cai.Props.AbilityUserClass)
+                    {
+                        //Log.Message("  and they match types");
+                        cai.AbilityUserTarget = cau;
+                        foreach (var abdef in cai.Props.Abilities) cau.AddApparelAbility(abdef);
+                    }
                 }
+            }
         }
 
         public static void Notify_ApparelRemoved_PostFix(Pawn_ApparelTracker __instance, Apparel apparel)
         {
-            foreach (var cai in apparel.GetComps<CompAbilityItem>()
-            ) //((Pawn)__instance.ParentHolder).GetComps<CompAbilityItem>() )
-            foreach (var cau in ((Pawn) __instance.ParentHolder).GetComps<CompAbilityUser>())
-                if (cau.GetType() == cai.Props.AbilityUserClass)
-                    foreach (var abdef in cai.Props.Abilities) cau.RemoveApparelAbility(abdef);
+            //Log.Message("Notify_ApparelRemoved_PostFix 1 : " + apparel);
+            var compAbilityUsers = ((Pawn) __instance.ParentHolder).GetComps<CompAbilityUser>();
+            foreach (var cai in apparel.GetComps<CompAbilityItem>())
+            {
+                //Log.Message("  Found CompAbilityItem, for CompAbilityUser of " + cai.Props.AbilityUserClass);
+                foreach (var cau in compAbilityUsers)
+                {
+                    //Log.Message("  Found CompAbilityUser, " + cau + " : " + cau.GetType() + ":" + cai.Props.AbilityUserClass);
+                    if (cau.GetType() == cai.Props.AbilityUserClass)
+                    {
+                        //Log.Message("  and they match types");
+                        foreach (var abdef in cai.Props.Abilities) cau.RemoveApparelAbility(abdef);
+                    }
+                }
+            }
         }
 
         // RimWorld.Targeter
@@ -373,67 +395,35 @@ namespace AbilityUser
             {
                 if (v.UseAbilityProps.AbilityTargetCategory == AbilityTargetCategory.TargetSelf)
                 {
-                    var caster = (Pawn) __instance.targetingSource.CasterPawn;
-                    v.Ability.TryCastAbility(AbilityContext.Player,
-                        caster); // caster, source.First<LocalTargetInfo>(), caster.GetComp<CompAbilityUser>(), (Verb_UseAbility)__instance.targetingSource, ((Verb_UseAbility)(__instance.targetingSource)).ability.powerdef as AbilityDef)?.Invoke();
+                    var caster = __instance.targetingSource.CasterPawn;
+                    v.Ability.TryCastAbility(AbilityContext.Player, caster);
                     SoundDefOf.Tick_High.PlayOneShotOnCamera();
                     __instance.StopTargeting();
                     Event.current.Use();
                     return false;
                 }
-                AccessTools.Method(typeof(Targeter), "ConfirmStillValid").Invoke(__instance, null);
+                targeterConfirmStillValidMethod(__instance);
                 if (Event.current.type == EventType.MouseDown)
                     if (Event.current.button == 0 && __instance.IsTargeting)
                     {
-                        var obj = (LocalTargetInfo) AccessTools.Method(typeof(Targeter), "CurrentTargetUnderMouse")
-                            .Invoke(__instance, new object[] {false});
+                        var obj = targeterCurrentTargetUnderMouseMethod(__instance, false);
                         if (obj.IsValid)
                             v.Ability.TryCastAbility(AbilityContext.Player, obj);
                         SoundDefOf.Tick_High.PlayOneShotOnCamera(null);
                         __instance.StopTargeting();
                         Event.current.Use();
                         return false;
-                        //if (__instance.targetingSource is Verb_UseAbility)
-                        //{
-                        //    Verb_UseAbility abilityVerb = __instance.targetingSource as Verb_UseAbility;
-                        //    if (abilityVerb.Ability.Def.MainVerb.AbilityTargetCategory != AbilityTargetCategory.TargetSelf)
-                        //    {
-                        //        TargetingParameters targetParams = abilityVerb.Ability.Def.MainVerb.targetParams;
-                        //        if (targetParams != null)
-                        //        {
-                        //            IEnumerable<LocalTargetInfo> source = GenUI.TargetsAtMouse(targetParams, false);
-
-                        //            if (source != null && source.Count<LocalTargetInfo>() > 0)
-                        //            {
-
-                        //                if (source.Any<LocalTargetInfo>())
-                        //                {
-
-                        //                    Pawn caster = (Pawn)__instance.targetingSource.caster;
-                        //                    abilityVerb.Ability.TryCastAbility(AbilityContext.Player, source.First<LocalTargetInfo>());// caster, source.First<LocalTargetInfo>(), caster.GetComp<CompAbilityUser>(), (Verb_UseAbility)__instance.targetingSource, ((Verb_UseAbility)(__instance.targetingSource)).ability.powerdef as AbilityDef)?.Invoke();
-                        //                    SoundDefOf.Tick_High.PlayOneShotOnCamera();
-                        //                    __instance.StopTargeting();
-                        //                    Event.current.Use();
-                        //                    return false;
-                        //                }
-                        //            }
-                        //        }
-                        //    }
-                        //    else
-                        //    {
-                        //        Pawn caster = (Pawn)__instance.targetingSource.caster;
-                        //        abilityVerb.Ability.TryCastAbility(AbilityContext.Player, null);// caster.GetComp<CompAbilityUser>(), (Verb_UseAbility)__instance.targetingSource, ((Verb_UseAbility)(__instance.targetingSource)).ability.powerdef as AbilityDef)?.Invoke();
-                        //        SoundDefOf.Tick_High.PlayOneShotOnCamera();
-                        //        __instance.StopTargeting();
-                        //        Event.current.Use();
-                        //        return false;
-                        //    }
-                        //}
-                        //}
                     }
             }
             return true;
         }
+
+        // Note: These are open instance delegates where the first argument is the instance.
+        private static readonly Action<Targeter> targeterConfirmStillValidMethod =
+            (Action<Targeter>) AccessTools.Method(typeof(Targeter), "ConfirmStillValid").CreateDelegate(typeof(Action<Targeter>));
+        private static readonly Func<Targeter, bool, LocalTargetInfo> targeterCurrentTargetUnderMouseMethod =
+            (Func<Targeter, bool, LocalTargetInfo>) AccessTools.Method(typeof(Targeter), "CurrentTargetUnderMouse")
+            .CreateDelegate(typeof(Func<Targeter, bool, LocalTargetInfo>));
 
         public static void TargeterUpdate_PostFix(Targeter __instance)
         {
@@ -453,18 +443,10 @@ namespace AbilityUser
             if (__instance is Pawn p) InternalAddInAbilityUsers(p);
         }
 
-        //// Catches loading of Pawns
-        //public static void ExposeData_PostFix(Pawn __instance)
-        //{ HarmonyPatches.internalAddInAbilityUsers(__instance); }
-
-        //// Catches generation of Pawns
-        //public static void GeneratePawn_PostFix(PawnGenerationRequest request, Pawn __result)
-        //{ HarmonyPatches.internalAddInAbilityUsers(__result); }
-
         // Add in any AbilityUser Components, if the Pawn is accepting
         public static void InternalAddInAbilityUsers(Pawn pawn)
         {
-            //            Log.Message("Trying to add AbilityUsers to Pawn");
+            //Log.Message("Trying to add AbilityUsers to Pawn");
             if (pawn != null && pawn.RaceProps != null && pawn.RaceProps.Humanlike)
                 AbilityUserUtility.TransformPawn(pawn);
         }

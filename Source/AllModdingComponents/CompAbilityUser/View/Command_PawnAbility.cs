@@ -34,18 +34,26 @@ namespace AbilityUser
             Texture2D mouseAttachment = null)
         {
             verbToAdd.timeSavingActionVariable = this.action;
-            // Tad changed
-            // Find.Targeter.targetingVerb = verbToAdd;
-            // Find.Targeter.targetingVerbAdditionalPawns = null;
-            Find.Targeter.targetingSource = verbToAdd;
-            Find.Targeter.targetingSourceAdditionalPawns = null;
-            AccessTools.Field(typeof(Targeter), "action").SetValue(Find.Targeter, action);
-            AccessTools.Field(typeof(Targeter), "targetParams").SetValue(Find.Targeter, targetParams);
-            AccessTools.Field(typeof(Targeter), "caster").SetValue(Find.Targeter, caster);
-            AccessTools.Field(typeof(Targeter), "actionWhenFinished").SetValue(Find.Targeter, actionWhenFinished);
-            AccessTools.Field(typeof(Targeter), "mouseAttachment").SetValue(Find.Targeter, mouseAttachment);
+            var targeter = Find.Targeter;
+            targeter.targetingSource = verbToAdd;
+            targeter.targetingSourceAdditionalPawns = null;
+            targeterActionField(targeter) = action;
+            targeterCasterField(targeter) = caster;
+            targeterTargetParamsField(targeter) = targetParams;
+            targeterActionWhenFinishedField(targeter) = actionWhenFinished;
+            targeterMouseAttachmentField(targeter) = mouseAttachment;
         }
 
+        private static readonly AccessTools.FieldRef<Targeter, Action<LocalTargetInfo>> targeterActionField =
+            AccessTools.FieldRefAccess<Targeter, Action<LocalTargetInfo>>("action");
+        private static readonly AccessTools.FieldRef<Targeter, Pawn> targeterCasterField =
+            AccessTools.FieldRefAccess<Targeter, Pawn>("caster");
+        private static readonly AccessTools.FieldRef<Targeter, TargetingParameters> targeterTargetParamsField =
+            AccessTools.FieldRefAccess<Targeter, TargetingParameters>("targetParams");
+        private static readonly AccessTools.FieldRef<Targeter, Action> targeterActionWhenFinishedField =
+            AccessTools.FieldRefAccess<Targeter, Action>("actionWhenFinished");
+        private static readonly AccessTools.FieldRef<Targeter, Texture2D> targeterMouseAttachmentField =
+            AccessTools.FieldRefAccess<Targeter, Texture2D>("mouseAttachment");
 
         public override void ProcessInput(Event ev)
         {

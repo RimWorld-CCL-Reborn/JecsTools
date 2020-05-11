@@ -15,7 +15,7 @@ namespace AbilityUser
 
         public VerbProperties_Ability UseAbilityProps => (VerbProperties_Ability) verbProps;
         public ProjectileDef_Ability AbilityProjectileDef => UseAbilityProps.defaultProjectile as ProjectileDef_Ability;
-        public CompAbilityUser AbilityUserComp => CasterPawn.TryGetComp<CompAbilityUser>();
+        public CompAbilityUser AbilityUserComp => CasterPawn.GetComp<CompAbilityUser>();
 
         protected override int ShotsPerBurst => verbProps.burstShotCount;
 

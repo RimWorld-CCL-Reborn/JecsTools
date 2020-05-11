@@ -30,7 +30,6 @@ namespace AbilityUser
             return retval;
         }
 
-
         public static bool TransformPawn(Pawn p)
         {
             var retval = false;
@@ -49,13 +48,14 @@ namespace AbilityUser
                     retval = true;
                     var thingComp = (ThingComp) Activator.CreateInstance(t);
                     thingComp.parent = p;
-                    var comps = AccessTools.Field(typeof(ThingWithComps), "comps").GetValue(p);
-                    if (comps != null)
-                        ((List<ThingComp>) comps).Add(thingComp);
+                    compsField(p)?.Add(thingComp);
                     thingComp.Initialize(null);
                 }
             }
             return retval;
         }
+
+        private static readonly AccessTools.FieldRef<ThingWithComps, List<ThingComp>> compsField =
+            AccessTools.FieldRefAccess<ThingWithComps, List<ThingComp>>("comps");
     }
 }
