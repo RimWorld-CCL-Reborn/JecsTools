@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
 using RimWorld;
@@ -14,7 +15,6 @@ namespace CompInstalledPart
         static HarmonyCompInstalledPart()
         {
             var harmony = new Harmony("jecstools.jecrell.comps.installedpart");
-            //harmony.Patch(AccessTools.Method(typeof(FloatMenuMakerMap), "AddHumanlikeOrders"), null, new HarmonyMethod(typeof(HarmonyCompInstalledPart), "AddHumanlikeOrders_PostFix"));
             harmony.Patch(AccessTools.Method(typeof(ITab_Pawn_Gear), "InterfaceDrop"),
                 new HarmonyMethod(typeof(HarmonyCompInstalledPart).GetMethod("InterfaceDrop_PreFix")), null);
             harmony.Patch(AccessTools.Method(typeof(Pawn_EquipmentTracker), "TryDropEquipment"),
@@ -23,32 +23,25 @@ namespace CompInstalledPart
                 new HarmonyMethod(typeof(HarmonyCompInstalledPart).GetMethod("DrawEquipmentAiming_PreFix")), null);
         }
 
-
-        public static bool DrawEquipmentAiming_PreFix(PawnRenderer __instance, Thing eq, Vector3 drawLoc,
+        public static bool DrawEquipmentAiming_PreFix(Pawn ___pawn, Thing eq, Vector3 drawLoc,
             float aimAngle)
         {
-            var pawn = (Pawn) AccessTools.Field(typeof(PawnRenderer), "pawn").GetValue(__instance);
-            if (pawn != null && eq is ThingWithComps x &&
-                x.GetComp<CompInstalledPart>() is CompInstalledPart installedComp)
+            if (___pawn != null && eq.TryGetComp<CompInstalledPart>() is CompInstalledPart installedComp)
             {
                 var flip = false;
                 var num = aimAngle - 90f;
-                Mesh mesh;
                 if (aimAngle > 20f && aimAngle < 160f)
                 {
-                    mesh = MeshPool.plane10;
                     num += eq.def.equippedAngleOffset;
                 }
                 else if (aimAngle > 200f && aimAngle < 340f)
                 {
-                    mesh = MeshPool.plane10Flip;
                     flip = true;
                     num -= 180f;
                     num -= eq.def.equippedAngleOffset;
                 }
                 else
                 {
-                    mesh = MeshPool.plane10;
                     num += eq.def.equippedAngleOffset;
                 }
                 num %= 360f;
@@ -78,122 +71,32 @@ namespace CompInstalledPart
         public static bool TryDropEquipment_PreFix(ThingWithComps eq, out ThingWithComps resultingEq, ref bool __result)
         {
             resultingEq = null;
-            return __result = !!eq?.TryGetComp<CompInstalledPart>()?.uninstalled ?? true;
-        }
-
-        // RimWorld.FloatMenuMakerMap
-        public static void AddHumanlikeOrders_PostFix(Vector3 clickPos, Pawn pawn, List<FloatMenuOption> opts)
-        {
-            var c = IntVec3.FromVector3(clickPos);
-
-            //Ground things with installed part components
-            var groundThing =
-                c.GetThingList(pawn.Map).FirstOrDefault(x => x.TryGetComp<CompInstalledPart>() != null) as
-                    ThingWithComps;
-            if (groundThing != null && groundThing.GetComp<CompInstalledPart>() is CompInstalledPart groundPart)
-                if (pawn.equipment != null)
-                {
-                    //Remove "Equip" option from right click.
-                    if (groundThing.GetComp<CompEquippable>() != null)
-                    {
-                        var optToRemove = opts.FirstOrDefault(x => x.Label.Contains(groundThing.Label));
-                        if (optToRemove != null) opts.Remove(optToRemove);
-                    }
-
-                    var text = "CompInstalledPart_Install".Translate();
-                    opts.Add(new FloatMenuOption(text, delegate
-                    {
-                        var props = groundPart.Props;
-                        if (props != null)
-                            if (props.allowedToInstallOn != null && props.allowedToInstallOn.Count > 0)
-                            {
-                                SoundDefOf.Tick_Tiny.PlayOneShotOnCamera(null);
-                                Find.Targeter.BeginTargeting(new TargetingParameters
-                                {
-                                    canTargetPawns = true,
-                                    canTargetBuildings = true,
-                                    mapObjectTargetsMustBeAutoAttackable = false,
-                                    validator = delegate(TargetInfo targ)
-                                    {
-                                        if (!targ.HasThing)
-                                            return false;
-                                        return props.allowedToInstallOn.Contains(targ.Thing.def);
-                                    }
-                                }, delegate(LocalTargetInfo target)
-                                {
-                                    groundThing.SetForbidden(false);
-                                    groundPart.GiveInstallJob(pawn, target.Thing);
-                                }, null, null, null);
-                            }
-                            else
-                            {
-                                Log.ErrorOnce(
-                                    "CompInstalledPart :: allowedToInstallOn list needs to be defined in XML.", 3242);
-                            }
-                    }, MenuOptionPriority.Default, null, null, 29f, null, null));
-                }
-
-            //Install to a thing
-            var targetPawn = c.GetThingList(pawn.Map).FirstOrDefault(x => x is Pawn) as Pawn;
-            if (targetPawn != null)
-            {
-                if (targetPawn != null && pawn != null && pawn != targetPawn)
-                    if (targetPawn.equipment != null)
-                        if (targetPawn.equipment.Primary != null)
-                        {
-                            var installedEq = targetPawn.equipment.Primary.GetComp<CompInstalledPart>();
-                            if (installedEq != null)
-                            {
-                                var text = "CompInstalledPart_Uninstall".Translate(targetPawn.equipment.Primary
-                                    .LabelShort);
-                                opts.Add(new FloatMenuOption(text, delegate
-                                {
-                                    SoundDefOf.Tick_Tiny.PlayOneShotOnCamera(null);
-                                    installedEq.GiveUninstallJob(pawn, targetPawn);
-                                }, MenuOptionPriority.Default, null, null, 29f, null, null));
-                            }
-                        }
-
-
-                //Handle installed apparel
-                if (targetPawn.apparel != null)
-                    if (targetPawn.apparel.WornApparel != null && targetPawn.apparel.WornApparelCount > 0)
-                    {
-                        var installedApparel =
-                            targetPawn.apparel.WornApparel.FindAll(x => x.GetComp<CompInstalledPart>() != null);
-                        if (installedApparel != null && installedApparel.Count > 0)
-                            foreach (var ap in installedApparel)
-                            {
-                                var text = "CompInstalledPart_Uninstall".Translate(ap.LabelShort);
-                                opts.Add(new FloatMenuOption(text, delegate
-                                {
-                                    SoundDefOf.Tick_Tiny.PlayOneShotOnCamera(null);
-                                    ap.GetComp<CompInstalledPart>().GiveUninstallJob(pawn, targetPawn);
-                                }, MenuOptionPriority.Default, null, null, 29f, null, null));
-                            }
-                    }
-            }
+            return __result = !!eq?.GetComp<CompInstalledPart>()?.uninstalled ?? true;
         }
 
         // RimWorld.Pawn_ApparelTracker
         public static bool InterfaceDrop_PreFix(ITab_Pawn_Gear __instance, Thing t)
         {
-            var thingWithComps = t as ThingWithComps;
-            var apparel = t as Apparel;
-            var __pawn = (Pawn) AccessTools.Method(typeof(ITab_Pawn_Gear), "get_SelPawnForGear")
-                .Invoke(__instance, new object[0]);
-            if (__pawn != null)
-                if (apparel != null)
-                    if (__pawn.apparel != null)
-                        if (__pawn.apparel.WornApparel.Contains(apparel))
-                            if (__pawn.apparel.WornApparel != null)
+            if (t is Apparel apparel)
+            {
+                var pawn = itabPawnGearSelPawnForGearGetter(__instance);
+                if (pawn != null)
+                    if (pawn.apparel != null)
+                        if (pawn.apparel.WornApparel.Contains(apparel))
+                            if (pawn.apparel.WornApparel != null)
                             {
                                 var installedPart = apparel.GetComp<CompInstalledPart>();
                                 if (installedPart != null)
                                     if (!installedPart.uninstalled)
                                         return false;
                             }
+            }
             return true;
         }
+
+        // Note: This is an open instance delegate where the first argument is the instance.
+        private static readonly Func<ITab_Pawn_Gear, Pawn> itabPawnGearSelPawnForGearGetter =
+            (Func<ITab_Pawn_Gear, Pawn>) AccessTools.PropertyGetter(typeof(ITab_Pawn_Gear), "SelPawnForGear")
+            .CreateDelegate(typeof(Func<ITab_Pawn_Gear, Pawn>));
     }
 }
