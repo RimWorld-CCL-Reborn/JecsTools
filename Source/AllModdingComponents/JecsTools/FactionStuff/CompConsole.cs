@@ -13,7 +13,7 @@ namespace JecsTools
 		
 		public bool CanUseCommsNow => 
 			(!parent.Spawned || !parent.Map.gameConditionManager.ConditionIsActive(GameConditionDefOf.SolarFlare)) &&
-			(!Props.usesPower || (Props.usesPower && (parent.TryGetComp<CompPowerTrader>()?.PowerOn ?? false)));
+			(!Props.usesPower || (Props.usesPower && (parent.GetComp<CompPowerTrader>()?.PowerOn ?? false)));
 
 		private void UseAct(Pawn myPawn, ICommunicable commTarget)
 		{
@@ -38,7 +38,7 @@ namespace JecsTools
 				yield return new FloatMenuOption("CannotUseSolarFlare".Translate(), null);
 				yield break;
 			}
-			if (Props.usesPower && (!parent.TryGetComp<CompPowerTrader>()?.PowerOn ?? false))
+			if (Props.usesPower && (!parent.GetComp<CompPowerTrader>()?.PowerOn ?? false))
 			{
 				yield return new FloatMenuOption("CannotUseNoPower".Translate(), null);
 				yield break;
@@ -50,10 +50,7 @@ namespace JecsTools
 			}
 			if (myPawn.skills.GetSkill(SkillDefOf.Social).TotallyDisabled)
 			{
-				yield return new FloatMenuOption("CannotPrioritizeWorkTypeDisabled".Translate(new object[]
-				{
-					SkillDefOf.Social.LabelCap
-				}), null);
+				yield return new FloatMenuOption("CannotPrioritizeWorkTypeDisabled".Translate(SkillDefOf.Social.LabelCap), null);
 				yield break;
 			}
 			if (!this.CanUseCommsNow)

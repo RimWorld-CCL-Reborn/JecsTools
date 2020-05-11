@@ -1,12 +1,14 @@
-﻿using System;
+﻿//#define DEBUGLOG
+
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using AbilityUser;
 using HarmonyLib;
 using RimWorld;
 using UnityEngine;
 using Verse;
-using Verse.AI;
 using Verse.Sound;
 
 namespace JecsTools
@@ -14,8 +16,6 @@ namespace JecsTools
     [StaticConstructorOnStartup]
     public static partial class HarmonyPatches
     {
-        public static bool DEBUGMODE = false;
-
         //For alternating fire on some weapons
         public static Dictionary<Thing, int> AlternatingFireTracker = new Dictionary<Thing, int>();
 
@@ -100,10 +100,10 @@ namespace JecsTools
             //instance.Patch(AccessTools.Method(typeof(ApparelGraphicRecordGetter), nameof(ApparelGraphicRecordGetter.TryGetGraphicApparel)), null, null, new HarmonyMethod(type, nameof(CutOutComplexApparel_Transpiler)));
         }
 
+        [Conditional("DEBUGLOG")]
         public static void DebugMessage(string s)
         {
-            if (DEBUGMODE)
-                Log.Message(s);
+            Log.Message(s);
         }
 
         //Added B19, Oct 2019
@@ -467,28 +467,25 @@ namespace JecsTools
             }
         }
 
-        public static bool PreApplyDamage_PrePatch(Pawn_HealthTracker __instance, ref DamageInfo dinfo,
+        public static bool PreApplyDamage_PrePatch(Pawn ___pawn, ref DamageInfo dinfo,
             out bool absorbed)
         {
-
             DebugMessage($"c6c:: === Enter Harmony Prefix --- PreApplyDamage_ApplyExtraDamages ===");
-
-            var pawn = (Pawn) AccessTools.Field(typeof(Pawn_HealthTracker), "pawn").GetValue(__instance);
-            if (pawn != null && !StopPreApplyDamageCheck)
+            if (___pawn != null && !StopPreApplyDamageCheck)
             {
                 DebugMessage("c6c:: Pawn exists. StopPreApplyDamageCheck: False");
-                if (pawn?.health?.hediffSet?.hediffs != null && pawn?.health?.hediffSet?.hediffs?.Count > 0)
+                if (___pawn?.health?.hediffSet?.hediffs != null && ___pawn?.health?.hediffSet?.hediffs?.Count > 0)
                 {
                     DebugMessage("c6c:: Pawn has health.");
                     //A list will stack.
                     var fortitudeHediffs =
-                        pawn?.health?.hediffSet?.hediffs?.FindAll(x => x.TryGetComp<HediffComp_DamageSoak>() != null);
+                        ___pawn?.health?.hediffSet?.hediffs?.FindAll(x => x.TryGetComp<HediffComp_DamageSoak>() != null);
                     if (!fortitudeHediffs.NullOrEmpty())
                     {
                         DebugMessage("c6c:: Pawn has Damage Soak hediff.");
                         try
                         {
-                            if (PreApplyDamage_ApplyDamageSoakers(ref dinfo, out absorbed, fortitudeHediffs, pawn))
+                            if (PreApplyDamage_ApplyDamageSoakers(ref dinfo, out absorbed, fortitudeHediffs, ___pawn))
                             {
                                 DebugMessage($"c6c:: === Exit Harmony Prefix --- PreApplyDamage_ApplyExtraDamages ===");
                                 return false;
@@ -506,7 +503,7 @@ namespace JecsTools
                             DebugMessage("c6c:: Pawn has non-ranged weapon.");
                             try
                             {
-                                if (PreApplyDamage_ApplyExtraDamages(dinfo, out absorbed, instigator, pawn)) return false;
+                                if (PreApplyDamage_ApplyExtraDamages(dinfo, out absorbed, instigator, ___pawn)) return false;
                             }
                             catch (NullReferenceException e)
                             {
@@ -515,7 +512,7 @@ namespace JecsTools
 
                             try
                             {
-                                PreApplyDamage_ApplyKnockback(instigator, pawn);
+                                PreApplyDamage_ApplyKnockback(instigator, ___pawn);
                             }
                             catch (NullReferenceException e)
                             {
@@ -574,7 +571,6 @@ namespace JecsTools
 
         private static bool PreApplyDamage_ApplyExtraDamages(DamageInfo dinfo, out bool absorbed, Pawn instigator, Pawn pawn)
         {
-
             DebugMessage($"c6c:: --- Enter PreApplyDamage_ApplyExtraDamages ---");
             var extraDamagesHediff =
                 instigator.health.hediffSet.hediffs.FirstOrDefault(y =>
@@ -618,7 +614,6 @@ namespace JecsTools
                     //DebugMessage($"c6c:: MeleeCombat Log def set as MeleeAttack.");
                     //Find.BattleLog.Add(battleLogEntry_MeleeCombat);
                     //DebugMessage($"c6c:: MeleeCombat Log added to battle log.");
-
                 }
 
                 StopPreApplyDamageCheck = false;
@@ -632,7 +627,6 @@ namespace JecsTools
             List<Hediff> fortitudeHediffs,
             Pawn pawn)
         {
-
             DebugMessage($"c6c:: --- Enter PreApplyDamage_ApplyDamageSoakers ---");
             var soakedDamage = 0;
             foreach (var fortitudeHediff in fortitudeHediffs)
@@ -656,7 +650,6 @@ namespace JecsTools
                         continue; 
                     }
 
-                    
                     if (!soakSetting.damageTypesToExclude.NullOrEmpty() &&
                         soakSetting.damageTypesToExclude.Contains(dinfo.Def))
                     {
