@@ -202,7 +202,7 @@ namespace CompDeflector
 
         public override IEnumerable<StatDrawEntry> SpecialDisplayStats()
         {
-            yield return new StatDrawEntry(StatCategoryDefOf.Basics, StatDef.Named("Deflect chance"), float.Parse(ChanceToString), StatRequest.ForEmpty());
+            yield return new StatDrawEntry(StatCategoryDefOf.Basics, CompDeflectorDefOf.MeleeWeapon_DeflectionChance, DeflectionChance, StatRequest.ForEmpty());
         }
 
         public virtual Verb ReflectionHandler(Verb newVerb)

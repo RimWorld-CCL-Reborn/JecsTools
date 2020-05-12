@@ -7,5 +7,6 @@ namespace CompDeflector
     public static class CompDeflectorDefOf
     {
         public static JobDef CastDeflectVerb;
+        public static StatDef MeleeWeapon_DeflectionChance;
     }
 }
