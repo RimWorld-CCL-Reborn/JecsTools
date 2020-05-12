@@ -21,7 +21,7 @@ namespace JecsTools
             {
                 if (t is Pawn p)
                 {
-                    if (p?.equipment?.Primary is ThingWithComps w)
+                    if (p.equipment?.Primary is ThingWithComps w)
                         return (int) w.GetStatValue(StatDefOf.Mass);
                     return (int) p.BodySize;
                 }
@@ -47,7 +47,7 @@ namespace JecsTools
                             if (cleaveAttacks > 0 && (dinfo.Instigator.Position - c).LengthHorizontalSquared < maxDist)
                             {
                                 var pawnsInCell = c.GetThingList(victim.Map).FindAll(x =>
-                                    x is Pawn && x != dinfo.Instigator && x?.Faction != dinfo.Instigator?.Faction);
+                                    x is Pawn && x != dinfo.Instigator && x.Faction != dinfo.Instigator.Faction);
                                 for (var k = 0; cleaveAttacks > 0 && k < pawnsInCell.Count; k++)
                                 {
                                     --cleaveAttacks;

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using UnityEngine;
 using Verse;
 using Verse.Sound;
@@ -13,16 +12,9 @@ namespace CompAnimated
 
         public bool dirty;
         public int ticksToCycle = -1;
-        public int MaxFrameIndexMoving => Props.movingFrames.Count();
-        public int MaxFrameIndexStill => Props.stillFrames.Count();
+        public int MaxFrameIndexMoving => Props.movingFrames.Count;
+        public int MaxFrameIndexStill => Props.stillFrames.Count;
 
-        private static bool AsPawn(ThingWithComps pAnimatee, out Pawn pawn)
-        {
-            bool asPawn = pAnimatee is Pawn;
-            pawn = asPawn? (Pawn) pAnimatee : null;
-            return asPawn;
-        }
-        
         /**
         * render over thing when not a pawn; rather than use as base layer like the PawnGraphicSet does for the pawns graphics managment
         */
@@ -73,10 +65,10 @@ namespace CompAnimated
             {
                 pTicksToCycle = Find.TickManager.TicksGame + pProps.secondsBetweenFrames.SecondsToTicks();
 
-                bool asPawn = AsPawn(pThingWithComps, out var pAnimatee);
-                if (asPawn && (pAnimatee?.pather?.MovingNow ?? false))
+                var pAnimatee = pThingWithComps as Pawn;
+                if (pAnimatee?.pather?.MovingNow ?? false)
                 {
-                    pCurIndex = (pCurIndex + 1) % pProps.movingFrames.Count();
+                    pCurIndex = (pCurIndex + 1) % pProps.movingFrames.Count;
                     pProps.sound?.PlayOneShot(SoundInfo.InMap(pAnimatee));
                     result = ResolveCycledGraphic(pThingWithComps, pProps, pCurIndex);
                 }
@@ -85,12 +77,12 @@ namespace CompAnimated
                     if (!pProps.stillFrames.NullOrEmpty())
                     {
                         //Log.Message("ticked still");
-                        pCurIndex = (pCurIndex + 1) % pProps.stillFrames.Count();
+                        pCurIndex = (pCurIndex + 1) % pProps.stillFrames.Count;
                         result = ResolveCycledGraphic(pThingWithComps, pProps, pCurIndex);
                         pDirty = false;
                         return result;
                     }
-                    if (pAnimatee!=null && useBaseGraphic)
+                    if (pAnimatee != null && useBaseGraphic)
                         result = ResolveBaseGraphic(pAnimatee);
                     else
                         result = ResolveCycledGraphic(pThingWithComps, pProps, pCurIndex);
@@ -124,14 +116,14 @@ namespace CompAnimated
         {
             Graphic result = null;
             bool haveMovingFrames = !pProps.movingFrames.NullOrEmpty();
-            if (!pProps.movingFrames.NullOrEmpty() &&
-                AsPawn(pAnimatee, out var pPawn) &&
+            if (haveMovingFrames &&
+                pAnimatee is Pawn pPawn &&
                 pPawn.Drawer?.renderer?.graphics is PawnGraphicSet pawnGraphicSet)
             {
                 /*Start Pawn*/
                 pawnGraphicSet.ClearCache();
                 
-                if (haveMovingFrames && AsPawn(pAnimatee, out var p) && (p?.pather?.MovingNow ?? false))
+                if (pPawn.pather?.MovingNow ?? false)
                 {
                     result = pProps.movingFrames[pCurIndex].Graphic;
                     pawnGraphicSet.nakedGraphic = result;
@@ -141,7 +133,7 @@ namespace CompAnimated
                     result = pProps.stillFrames[pCurIndex].Graphic;
                     pawnGraphicSet.nakedGraphic = result;
                 }
-                else if(haveMovingFrames)
+                else
                 {
                     result = pProps.movingFrames[pCurIndex].Graphic;
                 }
@@ -149,7 +141,7 @@ namespace CompAnimated
             {
                 result = pProps.stillFrames[pCurIndex].Graphic;
             }
-            else if(haveMovingFrames)
+            else if (haveMovingFrames)
             {
                 result = pProps.movingFrames[pCurIndex].Graphic;
             }

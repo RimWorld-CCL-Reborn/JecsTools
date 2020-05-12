@@ -137,10 +137,9 @@ namespace AbilityUserAI
             ShootLeanUtility.LeanShootingSourcesFromTo(caster.Position, target.Cell, caster.Map, tempSourceList);
 
             //See if we can get target from any source cell.
-            if (tempSourceList.Count > 0)
-                foreach (var sourceCell in tempSourceList)
-                    if (GenSight.LineOfSight(sourceCell, target.Cell, caster.Map, skipFirstCell, validator))
-                        return true;
+            foreach (var sourceCell in tempSourceList)
+                if (GenSight.LineOfSight(sourceCell, target.Cell, caster.Map, skipFirstCell, validator))
+                    return true;
 
             return false;
         }

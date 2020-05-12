@@ -109,24 +109,21 @@ namespace JecsTools
         //Added B19, Oct 2019
         //ProjectileExtension check
         //Allows a bullet to pass through walls when fired.
-        public static bool CanHitCellFromCellIgnoringRange_Prefix(Verb __instance, IntVec3 sourceSq, IntVec3 targetLoc, bool includeCorners, ref bool __result)
+        public static bool CanHitCellFromCellIgnoringRange_Prefix(Verb __instance, ref bool __result)
         {
             try
             {
 
-                if (__instance?.EquipmentCompSource?.PrimaryVerb?.verbProps?.defaultProjectile is ThingDef proj &&
-                    proj?.HasModExtension<ProjectileExtension>() == true &&
-                    proj?.GetModExtension<ProjectileExtension>() is ProjectileExtension ext)
+                if (__instance?.EquipmentCompSource?.PrimaryVerb?.verbProps?.defaultProjectile?
+                    .GetModExtension<ProjectileExtension>() is ProjectileExtension ext)
                 {
                     if (ext.passesWalls)
                         __result = true;
                     return false;
                 }
-
             }
-            catch (Exception e)
+            catch
             {
-
             }
             return true;
         }
@@ -136,22 +133,21 @@ namespace JecsTools
         //Ignores all structures as part of objects that disallow being fired through.
         public static void CanHit_PostFix(Projectile __instance, Thing thing, ref bool __result)
         {
-            if (!__result && __instance?.def?.HasModExtension<ProjectileExtension>() == true &&
-                __instance.def.GetModExtension<ProjectileExtension>() is ProjectileExtension ext)
+            if (!__result && __instance?.def?.GetModExtension<ProjectileExtension>() is ProjectileExtension ext)
             {
                 //Mods will often have their own walls, so we cannot do a def check for 
                 //ThingDefOf.Wall
                 //Most "walls" should either be in the structure category or be able to hold walls.
-                if (thing?.def?.designationCategory == DesignationCategoryDefOf.Structure ||
-                    thing?.def?.holdsRoof == true)
-                {
-                    if (ext.passesWalls)
+                if (thing?.def is ThingDef def)
+                    if (def.designationCategory == DesignationCategoryDefOf.Structure ||
+                        def.holdsRoof == true)
                     {
-                        __result = false;
-                        return;
+                        if (ext.passesWalls)
+                        {
+                            __result = false;
+                            return;
+                        }
                     }
-                }
-                
             }
         }
 
@@ -243,30 +239,29 @@ namespace JecsTools
             return true;
         }
 
-        public static void MinPointsTest(PawnGroupKindWorker_Normal __instance, PawnGroupMaker groupMaker)
-        {
-//            if (groupMaker?.options?.Count == null ||
-//                groupMaker.options.Count <= 0)
-//            {
-//                Log.Message("No options available.");
-//            }
-//            foreach (var x in groupMaker.options)
-//            {
-//                Log.Message(x.kind.defName + " " + x.kind.isFighter.ToString() +  " " + x.Cost);
-//            }
-        }
-
+        //public static void MinPointsTest(PawnGroupMaker groupMaker)
+        //{
+        //    if (!(groupMaker?.options?.Count > 0))
+        //    {
+        //        Log.Message("No options available.");
+        //        return;
+        //    }
+        //    foreach (var x in groupMaker.options)
+        //    {
+        //        Log.Message(x.kind.defName + " " + x.kind.isFighter.ToString() + " " + x.Cost);
+        //    }
+        //}
 
         //PawnApparelGenerator
-        public static void GenerateStartingApparelFor_PostFix(Pawn pawn, PawnGenerationRequest request)
+        public static void GenerateStartingApparelFor_PostFix(Pawn pawn)
         {
             var swappables = pawn?.apparel?.WornApparel?.FindAll(x => x.def.HasModExtension<ApparelExtension>());
-            if (swappables == null || swappables?.Count <= 0) return;
+            if (swappables.NullOrEmpty()) return;
             var destroyables = new HashSet<Apparel>();
             foreach (var swap in swappables)
             {
                 if (swap.def?.GetModExtension<ApparelExtension>()?.swapCondition is SwapCondition sc &&
-                    sc?.swapWhenGender is Gender gen &&
+                    sc.swapWhenGender is Gender gen &&
                     gen != Gender.None && gen == pawn.gender)
                 {
                     Apparel apparel = (Apparel) ThingMaker.MakeThing(sc.swapTo, swap.Stuff);
@@ -280,8 +275,7 @@ namespace JecsTools
                 }
             }
 
-            if (destroyables == null || destroyables?.Count <= 0) return;
-            while (destroyables?.Count > 0)
+            while (destroyables.Count > 0)
             {
                 var first = destroyables.First();
                 first.Destroy();
@@ -289,35 +283,14 @@ namespace JecsTools
             }
         }
 
-//
-//        //PawnApparelGenerator
-//        public static void IsNaked(Gender gender, ref bool __result)
-//        {
-//            if (!__result) return;
-//            var aps = Traverse.Create(AccessTools.TypeByName("PossibleApparelSet")).Field("aps").GetValue<List<ThingStuffPair>>();
-//            if (aps == null || aps?.Count <= 0) return;
-//            for (int i = 0; i < aps.Count; i++)
-//            {
-//                if (!aps[i].thing.HasModExtension<ApparelExtension>())
-//                    continue;
-//                var aExt = aps[i].thing.GetModExtension<ApparelExtension>();
-//                if (aExt.forcedGender == Gender.None)
-//                    continue;
-//                if (aExt.forcedGender == gender) continue;
-//                __result = false;
-//                return;
-//            }
-//        }
-
         public static Faction lastPhoneAideFaction = null;
         public static int lastPhoneAideTick = 0;
 
         //public class PawnGroupMakerUtility
         //{
-        public static void GeneratePawns(PawnGroupMakerParms parms,
-            bool warnOnZeroResults, ref IEnumerable<Pawn> __result)
+        public static void GeneratePawns(PawnGroupMakerParms parms, ref IEnumerable<Pawn> __result)
         {
-            if (__result?.Count() > 0 &&
+            if (__result != null && __result.Any() &&
                 parms.faction.def.GetModExtension<FactionSettings>() is FactionSettings settings)
             {
                 settings.entrySoundDef?.PlayOneShotOnCamera();
@@ -325,32 +298,21 @@ namespace JecsTools
         }
 
         //Faction
-        public static bool Notify_MemberDied(Faction __instance, Pawn member, DamageInfo? dinfo, bool wasWorldPawn,
-            Map map)
+        public static bool Notify_MemberDied(Faction __instance, Pawn member, DamageInfo? dinfo)
         {
-            //Log.Message("1");
             if (member?.Faction == null) return true;
             if (!dinfo.HasValue) return true;
             if (!(dinfo.Value.Instigator is Pawn instigator)) return true;
-            //Log.Message("2");
-
 
             var notLeader = __instance?.leader != member;
-            //Log.Message("3");
 
-            var notPlayerKiller = instigator?.Faction != Faction.OfPlayerSilentFail;
-            //Log.Message("4");
+            var notPlayerKiller = instigator.Faction != Faction.OfPlayerSilentFail;
 
-            //var notAttackingPlayer = member.LastAttackedTarget.IsValid && member?.LastAttackedTarget.Thing is Pawn p && p?.Faction != Faction.OfPlayerSilentFail;
-            //Log.Message("5");
+            //var notAttackingPlayer = member.LastAttackedTarget.IsValid && member.LastAttackedTarget.Thing is Pawn p && p.Faction != Faction.OfPlayerSilentFail;
 
             var inTime = lastPhoneAideTick < (Find.TickManager?.TicksGame + GenDate.HoursPerDay ?? 0);
-            //Log.Message("6");
-
 
             var isPhoneFaction = __instance == lastPhoneAideFaction;
-            //Log.Message("7");
-
 
             if (isPhoneFaction &&
                 inTime &&
@@ -367,10 +329,6 @@ namespace JecsTools
         /// <summary>
         /// Using the new ApparelExtension, we can have a string based apparel check.
         /// </summary>
-        /// <param name="A"></param>
-        /// <param name="B"></param>
-        /// <param name="body"></param>
-        /// <param name="__result"></param>
         public static void Post_CanWearTogether(ThingDef A, ThingDef B, BodyDef body, ref bool __result)
         {
             try
@@ -383,7 +341,7 @@ namespace JecsTools
                     var aExt = A.GetModExtension<ApparelExtension>();
                     var bExt = B.GetModExtension<ApparelExtension>();
                     var check = new HashSet<string>();
-                    if (aExt.coverage?.Count > 0)
+                    if (aExt.coverage != null)
                         for (int i = 0; i < aExt.coverage.Count; i++)
                         {
                             var coverageItem = aExt.coverage[i].ToLowerInvariant();
@@ -397,7 +355,7 @@ namespace JecsTools
                             }
                         }
 
-                    if (bExt.coverage?.Count > 0)
+                    if (bExt.coverage != null)
                         for (int j = 0; j < bExt.coverage.Count; j++)
                         {
                             var coverageItem = bExt.coverage[j].ToLowerInvariant();
@@ -421,13 +379,10 @@ namespace JecsTools
             }
         }
 
-        public static void Post_GeneratePawn(PawnGenerationRequest request, ref Pawn __result)
+        public static void Post_GeneratePawn(ref Pawn __result)
         {
-            var hediffGiverSet = __result?.def?.race?.hediffGiverSets?.FirstOrDefault(
-                x => x.hediffGivers.Any(y => y is HediffGiver_StartWithHediff));
-            if (hediffGiverSet == null) return;
-
-            if (hediffGiverSet.hediffGivers.FirstOrDefault(x => x is HediffGiver_StartWithHediff) is
+            if (__result?.def?.race?.hediffGiverSets?.SelectMany(
+                x => x.hediffGivers.Where(y => y is HediffGiver_StartWithHediff)).FirstOrDefault() is
                 HediffGiver_StartWithHediff hediffGiver)
             {
                 hediffGiver.GiveHediff(__result);
@@ -435,14 +390,13 @@ namespace JecsTools
         }
 
         //ArmorUtility
-        public static void Post_GetPostArmorDamage(Pawn pawn, float amount, BodyPartRecord part, DamageDef damageDef,
-            ref float __result)
+        public static void Post_GetPostArmorDamage(Pawn pawn)
         {
             if (tempDamageAbsorbed != null)
             {
                 var hasFortitudeHediffs =
-                    pawn?.health?.hediffSet?.hediffs?.Any(x => x.TryGetComp<HediffComp_DamageSoak>() != null);
-                if (hasFortitudeHediffs ?? false)
+                    pawn?.health?.hediffSet?.hediffs?.Any(x => x.TryGetComp<HediffComp_DamageSoak>() != null) ?? false;
+                if (hasFortitudeHediffs)
                 {
                     DamageSoakedMote(pawn, tempDamageAbsorbed.Value);
                 }
@@ -451,8 +405,7 @@ namespace JecsTools
             }
         }
 
-        public static void ApplyProperDamage(ref float damAmount, float armorRating, Thing armorThing,
-            DamageDef damageDef, Pawn pawn, ref bool metalArmor)
+        public static void ApplyProperDamage(ref float damAmount)
         {
             if (tempDamageAmount != null && damAmount > 0)
             {
@@ -474,13 +427,13 @@ namespace JecsTools
             if (___pawn != null && !StopPreApplyDamageCheck)
             {
                 DebugMessage("c6c:: Pawn exists. StopPreApplyDamageCheck: False");
-                if (___pawn?.health?.hediffSet?.hediffs != null && ___pawn?.health?.hediffSet?.hediffs?.Count > 0)
+                if (___pawn.health?.hediffSet?.hediffs?.Count > 0) // note: null compared with any number => false
                 {
                     DebugMessage("c6c:: Pawn has health.");
                     //A list will stack.
                     var fortitudeHediffs =
-                        ___pawn?.health?.hediffSet?.hediffs?.FindAll(x => x.TryGetComp<HediffComp_DamageSoak>() != null);
-                    if (!fortitudeHediffs.NullOrEmpty())
+                        ___pawn.health.hediffSet.hediffs.FindAll(x => x.TryGetComp<HediffComp_DamageSoak>() != null);
+                    if (fortitudeHediffs.Count > 0)
                     {
                         DebugMessage("c6c:: Pawn has Damage Soak hediff.");
                         try
@@ -530,19 +483,18 @@ namespace JecsTools
 
         private static void PreApplyDamage_ApplyKnockback(Pawn instigator, Pawn pawn)
         {
-            var knockbackHediff =
-                instigator?.health?.hediffSet?.hediffs.FirstOrDefault(y =>
-                    y.TryGetComp<HediffComp_Knockback>() != null);
-            var knocker = knockbackHediff?.TryGetComp<HediffComp_Knockback>();
-            if (knocker != null)
-                if (knocker?.Props?.knockbackChance >= Rand.Value)
+            var knockerProps =
+                instigator?.health?.hediffSet?.hediffs?.Select(y => y.TryGetComp<HediffComp_Knockback>()).FirstOrDefault(
+                    knockbackHediff => knockbackHediff != null)?.Props;
+            if (knockerProps != null)
+                if (knockerProps.knockbackChance >= Rand.Value)
                 {
-                    if (knocker.Props.explosiveKnockback)
+                    if (knockerProps.explosiveKnockback)
                     {
                         var explosion = (Explosion) GenSpawn.Spawn(ThingDefOf.Explosion,
                             instigator.PositionHeld, instigator.MapHeld);
-                        explosion.radius = knocker.Props.explosionSize;
-                        explosion.damType = knocker.Props.explosionDmg;
+                        explosion.radius = knockerProps.explosionSize;
+                        explosion.damType = knockerProps.explosionDmg;
                         explosion.instigator = instigator;
                         explosion.damAmount = 0;
                         explosion.weapon = null;
@@ -561,9 +513,9 @@ namespace JecsTools
 
                     if (pawn != instigator && !pawn.Dead && !pawn.Downed && pawn.Spawned)
                     {
-                        if (knocker.Props.stunChance > -1 && knocker.Props.stunChance >= Rand.Value)
-                            pawn.stances.stunner.StunFor(knocker.Props.stunTicks, instigator);
-                        PushEffect(instigator, pawn, knocker.Props.knockDistance.RandomInRange,
+                        if (knockerProps.stunChance > -1 && knockerProps.stunChance >= Rand.Value)
+                            pawn.stances.stunner.StunFor(knockerProps.stunTicks, instigator);
+                        PushEffect(instigator, pawn, knockerProps.knockDistance.RandomInRange,
                             true);
                     }
                 }
@@ -578,7 +530,7 @@ namespace JecsTools
             DebugMessage("c6c:: ExtraDamagesHediff variable assigned.");
             var damages = extraDamagesHediff?.TryGetComp<HediffComp_ExtraMeleeDamages>();
             DebugMessage("c6c:: Damages variable assigned.");
-            if (damages?.Props != null && damages.Props.ExtraDamages is List<Verse.ExtraDamage> extraDamages)
+            if (damages?.Props?.ExtraDamages is List<Verse.ExtraDamage> extraDamages)
             {
                 DebugMessage("c6c:: Extra damages list exists.");
                 StopPreApplyDamageCheck = true;
@@ -633,8 +585,7 @@ namespace JecsTools
             {
                 DebugMessage("c6c:: Soak Damage Hediff checked.");
 
-                var soaker = fortitudeHediff.TryGetComp<HediffComp_DamageSoak>();
-                var soakSetting = soaker?.Props;
+                var soakSetting = fortitudeHediff.TryGetComp<HediffComp_DamageSoak>()?.Props;
                 if (soakSetting == null) {
                     DebugMessage("c6c:: Soak Damage Hediff has no damage soak XML properties.");
                     continue; }
@@ -650,7 +601,7 @@ namespace JecsTools
                         continue; 
                     }
 
-                    if (!soakSetting.damageTypesToExclude.NullOrEmpty() &&
+                    if (soakSetting.damageTypesToExclude != null &&
                         soakSetting.damageTypesToExclude.Contains(dinfo.Def))
                     {
                         DebugMessage($"c6c:: {dinfo.Def.label.CapitalizeFirst()} is to be excluded from damage soak.");
@@ -677,7 +628,7 @@ namespace JecsTools
                 else
                 {
                     DebugMessage("c6c:: Soak Damage Hediff has damage soak settings.");
-                    foreach (var soakSettings in soaker.Props.settings)
+                    foreach (var soakSettings in soakSetting.settings)
                     {
                         DamageInfo info = dinfo;
 
@@ -783,7 +734,7 @@ namespace JecsTools
         {
             LongEventHandler.QueueLongEvent(delegate
             {
-                if (target != null && target is Pawn p && p.Spawned && !p.Downed && !p.Dead && p?.MapHeld != null)
+                if (target is Pawn p && p.Spawned && !p.Downed && !p.Dead && p.MapHeld != null)
                 {
                     bool applyDamage;
                     var loc = PushResult(Caster, target, distance, out applyDamage);

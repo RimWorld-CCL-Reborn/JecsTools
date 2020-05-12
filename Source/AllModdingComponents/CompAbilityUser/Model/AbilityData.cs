@@ -40,11 +40,11 @@ namespace AbilityUser
                 if (allPowers == null)
                 {
                     allPowers = new List<PawnAbility>();
-                    if (!Powers.NullOrEmpty())
+                    if (Powers != null)
                         allPowers.AddRange(Powers);
-                    if (!TemporaryApparelPowers.NullOrEmpty())
+                    if (TemporaryApparelPowers != null)
                         allPowers.AddRange(TemporaryApparelPowers);
-                    if (!TemporaryWeaponPowers.NullOrEmpty())
+                    if (TemporaryWeaponPowers != null)
                         allPowers.AddRange(TemporaryWeaponPowers);
                 }
                 return allPowers;

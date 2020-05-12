@@ -12,15 +12,13 @@ namespace CompInstalledPart
 
         public void GiveInstallJob(Pawn actor, Thing target)
         {
-            var actorFac = actor?.Faction;
-            var targetFac = target?.Faction;
-            if (actorFac != null && targetFac != null)
+            if (actor?.Faction is Faction actorFac && target?.Faction is Faction targetFac)
                 if (actorFac == targetFac)
                 {
                     var newJob = new Job(DefDatabase<JobDef>.GetNamed("CompInstalledPart_InstallPart"), parent, target,
                         target.Position);
                     newJob.count = 2;
-                    actor?.jobs?.TryTakeOrderedJob(newJob);
+                    actor.jobs?.TryTakeOrderedJob(newJob);
                 }
                 else if (actorFac != targetFac)
                 {
@@ -30,15 +28,13 @@ namespace CompInstalledPart
 
         public void GiveUninstallJob(Pawn actor, Thing target)
         {
-            var actorFac = actor?.Faction;
-            var targetFac = target?.Faction;
-            if (actorFac != null && targetFac != null)
+            if (actor?.Faction is Faction actorFac && target?.Faction is Faction targetFac)
                 if (actorFac == targetFac)
                 {
                     var newJob = new Job(DefDatabase<JobDef>.GetNamed("CompInstalledPart_UninstallPart"), parent,
                         target, target.Position);
                     newJob.count = 1;
-                    actor?.jobs?.TryTakeOrderedJob(newJob);
+                    actor.jobs?.TryTakeOrderedJob(newJob);
                 }
                 else if (actorFac != targetFac)
                 {
@@ -63,7 +59,7 @@ namespace CompInstalledPart
                 //Add equipment
                 if (parent.def.IsWeapon)
                 {
-                    if (targetPawn?.equipment?.Primary?.GetComp<CompInstalledPart>() is CompInstalledPart otherPart)
+                    if (targetPawn.equipment.Primary?.GetComp<CompInstalledPart>() is CompInstalledPart otherPart)
                         otherPart.Notify_Uninstalled(installer, targetPawn);
                     parent.DeSpawn();
                     targetPawn.equipment.MakeRoomFor(parent);
@@ -96,12 +92,12 @@ namespace CompInstalledPart
                     //Remove apparel
                     if (parent.def.IsApparel && targetPawn.apparel is Pawn_ApparelTracker tracker &&
                         tracker.WornApparel.Contains((Apparel) parent) &&
-                        tracker.TryDrop((Apparel) parent, out var apparel))
+                        tracker.TryDrop((Apparel) parent, out _))
                     {
                     }
                     //Remove equipment
                     if (parent.def.IsWeapon && targetPawn.equipment is Pawn_EquipmentTracker eqTracker &&
-                        eqTracker.TryDropEquipment(parent, out var dropped, targetPawn.Position))
+                        eqTracker.TryDropEquipment(parent, out _, targetPawn.Position))
                     {
                     }
                 }

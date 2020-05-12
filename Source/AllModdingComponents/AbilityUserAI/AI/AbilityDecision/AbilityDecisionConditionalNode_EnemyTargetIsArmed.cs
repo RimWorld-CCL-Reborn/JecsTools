@@ -22,11 +22,11 @@ namespace AbilityUserAI
             if (enemyPawn == null)
                 return false;
 
-            var result = false;
+            bool result;
             if (enemyPawn.AnimalOrWildMan())
                 result = false;
             else
-                result = enemyPawn?.equipment.Primary != null;
+                result = enemyPawn.equipment.Primary != null;
 
             if (invert)
                 return !result;

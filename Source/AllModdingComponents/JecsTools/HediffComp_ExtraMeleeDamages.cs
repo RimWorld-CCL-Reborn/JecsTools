@@ -15,7 +15,7 @@ namespace JecsTools
                 var b = base.CompTipStringExtra;
                 if (b != "")
                     s.Append(b);
-                if ((Props?.ExtraDamages?.Count ?? 0) > 0)
+                if (Props?.ExtraDamages?.Count > 0) // note: null compared with any number => false
                 {
                     s.AppendLine("JT_HI_ExtraDamages".Translate());
                     for (var i = 0; i < Props.ExtraDamages.Count; i++)

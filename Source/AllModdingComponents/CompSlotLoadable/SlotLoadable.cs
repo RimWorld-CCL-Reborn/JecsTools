@@ -57,9 +57,8 @@ namespace CompSlotLoadable
         public bool CanLoad(ThingDef defType)
         {
             if (slottableThingDefs != null)
-                if (slottableThingDefs.Count > 0)
-                    if (slottableThingDefs.Contains(defType))
-                        return true;
+                if (slottableThingDefs.Contains(defType))
+                    return true;
             return false;
         }
 

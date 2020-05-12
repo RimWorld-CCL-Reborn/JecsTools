@@ -10,8 +10,8 @@ namespace CompOverlays
         public override void PostDraw()
         {
             base.PostDraw();
-            if (Props.fuelRequired && parent.TryGetComp<CompRefuelable>() is CompRefuelable rf && rf.HasFuel ||
-                Props.fuelRequired == false)
+            if (Props.fuelRequired == false ||
+                parent.GetComp<CompRefuelable>() is CompRefuelable rf && rf.HasFuel)
             {
                 var drawPos = parent.DrawPos;
                 drawPos.y += 0.046875f;

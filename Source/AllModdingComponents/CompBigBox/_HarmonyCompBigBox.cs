@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using HarmonyLib;
 using RimWorld;
 using UnityEngine;
 using Verse;
-using Verse.AI;
 
 namespace DefModExtension_BigBox
 {
@@ -23,10 +20,8 @@ namespace DefModExtension_BigBox
 
         private static bool DrawSelectionBracketFor_PreFix(object obj)
         {
-            var thing = obj as ThingWithComps;
-            if (thing != null && thing?.def?.GetModExtension<DefModExtension_BigBox>() is DefModExtension_BigBox bigBox)
+            if (obj is ThingWithComps thing && thing.def?.GetModExtension<DefModExtension_BigBox>() is DefModExtension_BigBox bigBox)
             {
-
                 var bracketLocs = Traverse.Create(typeof(SelectionDrawer)).Field("bracketLocs").GetValue<Vector3[]>();
                 var SelectionBracketMat = Traverse.Create(typeof(SelectionDrawer)).Field("SelectionBracketMat").GetValue<Material>();
                 var selectTimes = Traverse.Create(typeof(SelectionDrawer)).Field("selectTimes").GetValue<Dictionary<object, float>>();

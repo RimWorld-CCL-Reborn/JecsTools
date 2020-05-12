@@ -44,11 +44,10 @@ namespace JecsTools
             }
         }
 
-
         public virtual bool Cancel()
         {
             var c = Find.WorldObjects.PlayerControlledCaravanAt(Tile);
-            if (ConsumedResources != null && ConsumedResources.Count() > 0)
+            if (!ConsumedResources.NullOrEmpty())
                 if (c != null)
                 {
                     var temp = new HashSet<Thing>(ConsumedResources);
@@ -197,7 +196,7 @@ namespace JecsTools
         public void AddNumOfCheapestStuff(List<Thing> allItems, Dictionary<Thing, int> toBeConsumed,
             StuffCategoryCountClass stuffCount)
         {
-            var matchingItemsPriceSorted = allItems.Where(thing => ((thing?.Stuff?.stuffProps ?? thing.def.stuffProps)
+            var matchingItemsPriceSorted = allItems.Where(thing => ((thing.Stuff?.stuffProps ?? thing.def.stuffProps)
                                                                     ?.categories?.Contains(stuffCount.stuffCatDef) ??
                                                                     false)
                                                                    && (toBeConsumed.TryGetValue(thing, out int value)
@@ -232,7 +231,7 @@ namespace JecsTools
             var toBeConsumed = new Dictionary<Thing, int>();
             var caravanInv = CaravanInventoryUtility.AllInventoryItems(c);
 
-            if (caravanInv == null || caravanInv.Count() == 0)
+            if (caravanInv.NullOrEmpty())
                 return false;
 
             var passed = true;
@@ -241,32 +240,6 @@ namespace JecsTools
 
             foreach (var thingCount in recipe?.costList ?? Enumerable.Empty<ThingDefCountClass>())
             {
-//<<<<<<< Previous code before merging with Pull Request #23
-//                var passed = false;
-//                foreach (var t in recipe.stuffCategories)
-//                {
-//                    var yy = CaravanInventoryUtility.AllInventoryItems(c)
-//                        .FindAll(x => x?.def?.stuffProps?.categories?.Contains(t) ?? false);
-//                    if (!yy.NullOrEmpty())
-//                    {
-//                        var totalCount = yy.Sum(x => x.stackCount);
-//                        if (totalCount - recipe.costStuffCount >= 0)
-//                        {
-//                            totalCount -= totalCount - recipe.costStuffCount;
-//                            passed = true;
-//                            foreach (var y in yy)
-//                            {
-//                                if (totalCount > 0)
-//                                {
-//                                    var math = Math.Min(y.stackCount, totalCount);
-//                                    toBeConsumed.Add(y, math);
-//                                    //Log.Message(y + " x" + math);
-//                                }
-//                                totalCount -= y.stackCount;
-//                            }
-//                        }
-//                    }
-//=======
                 int thingsFound = allItems.Where(thing => thing.def == thingCount.thingDef)
                     .Sum(thing => thing.stackCount);
                 if (thingsFound >= thingCount.count)
@@ -276,14 +249,13 @@ namespace JecsTools
                     missingResourcesMessage.AppendLine("JecsTools_WorldObjectConst_NotEnoughThings"
                         .Translate(thingsFound, thingCount.count, thingCount.thingDef.LabelCap));
                     passed = false;
-//>>>>>>> pr/23
                 }
             }
 
             foreach (var stuffCount in recipe?.stuffCostList ?? Enumerable.Empty<StuffCategoryCountClass>())
             {
                 //Ensure I find stuffProps either under Stuff or def if any
-                int stuffFound = allItems.Where(thing => (thing?.Stuff?.stuffProps ?? thing.def.stuffProps)
+                int stuffFound = allItems.Where(thing => (thing.Stuff?.stuffProps ?? thing.def.stuffProps)
                                                          ?.categories?.Contains(stuffCount.stuffCatDef) ?? false)
                     .Sum(thing => thing.stackCount -
                                   (toBeConsumed.TryGetValue(thing, out int value) ? value : 0));
@@ -314,7 +286,7 @@ namespace JecsTools
 
         public bool ConsumeResources(Caravan c, Dictionary<Thing, int> toBeConsumed)
         {
-            if (toBeConsumed != null && toBeConsumed.Count > 0)
+            if (toBeConsumed != null)
                 foreach (var pair in toBeConsumed)
                 {
                     var t = pair.Key;
@@ -348,13 +320,13 @@ namespace JecsTools
             s.Append(base.GetInspectString());
             if (Recipe != null)
             {
-                if (!Recipe.costList.NullOrEmpty())
+                if (Recipe.costList != null)
                     foreach (var t in Recipe.costList)
                     {
                         var amtFilled = resourcesSupplied ? t.count.ToString() : "0";
                         s.AppendLine(t.thingDef.LabelCap + ": " + amtFilled + " / " + t.count);
                     }
-                if (!Recipe.stuffCostList.NullOrEmpty())
+                if (Recipe.stuffCostList != null)
                     foreach (var stuffCat in Recipe.stuffCostList)
                     {
                         var amtFilled = resourcesSupplied ? stuffCat.count.ToString() : "0";

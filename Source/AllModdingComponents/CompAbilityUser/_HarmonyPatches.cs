@@ -117,13 +117,12 @@ namespace AbilityUser
         }
 
         // RimWorld.PawnGroupKindWorker_Normal
-        public static void GeneratePawns_PostFix(PawnGroupMakerParms parms, PawnGroupMaker groupMaker,
-            bool errorOnZeroResults, ref List<Pawn> __result)
+        public static void GeneratePawns_PostFix(PawnGroupMakerParms parms, ref List<Pawn> __result)
         {
             //Anyone special?
-            if (__result?.Count > 0 &&
-                __result.FindAll(x => x.GetComp<CompAbilityUser>() is CompAbilityUser cu && cu.CombatPoints() > 0) is
-                    List<Pawn> specialPawns && specialPawns?.Count > 0)
+            if (__result.NullOrEmpty()) return;
+            var specialPawns = __result.FindAll(x => x.GetComp<CompAbilityUser>() is CompAbilityUser cu && cu.CombatPoints() > 0);
+            if (specialPawns.Count > 0)
             {
                 //Log.Message("Special Pawns Detected");
                 //Log.Message("------------------");
@@ -136,19 +135,16 @@ namespace AbilityUser
                 //Log.Message("------------------");
 
                 //Anyone average?
-                int avgPawns = 0;
+                var averagePawns = __result.FindAll(x => x.GetComp<CompAbilityUser>() == null);
+                int avgPawns = averagePawns.Count;
                 var avgCombatPoints = new Dictionary<Pawn, float>();
-                if (__result.FindAll(x => x.GetComp<CompAbilityUser>() == null) is List<Pawn> averagePawns)
+                averagePawns.ForEach(x =>
                 {
-                    avgPawns = averagePawns.Count;
-                    averagePawns.ForEach(x =>
-                    {
-                        avgCombatPoints.Add(x, x.kindDef.combatPower);
-                        //Log.Message(x.LabelShort + " : " + x.kindDef.combatPower);
-                    });
-                }
+                    avgCombatPoints.Add(x, x.kindDef.combatPower);
+                    //Log.Message(x.LabelShort + " : " + x.kindDef.combatPower);
+                });
 
-                //Log.Message("------------------");                                
+                //Log.Message("------------------");
                 //Log.Message("Special Characters");
                 //Log.Message("------------------");
 
@@ -157,7 +153,7 @@ namespace AbilityUser
                 specialPawns.ForEach(x =>
                 {
                     var combatValue = x.kindDef.combatPower;
-                    foreach (var thingComp in x.AllComps.FindAll(y => y is CompAbilityUser))
+                    foreach (var thingComp in x.GetComps<CompAbilityUser>())
                     {
                         //var compAbilityUser = (CompAbilityUser) thingComp;
                         var val = Traverse.Create(thingComp).Method("CombatPoints").GetValue<float>();
@@ -168,15 +164,15 @@ namespace AbilityUser
                 });
 
                 //Special case -- single raider/character should not be special to avoid problems (e.g. Werewolf raid destroys everyone).
-                if (avgPawns == 0 && specCombatPoints.Sum(x => x.Value) > 0 && specialPawns.Count == 1)
+                if (avgPawns == 0 && specialPawns.Count == 1 && specCombatPoints.Sum(x => x.Value) > 0)
                 {
                     //Log.Message("Special case called: Single character");
-                    specialPawns.First().GetComp<CompAbilityUser>().DisableAbilityUser();
+                    specialPawns[0].GetComp<CompAbilityUser>().DisableAbilityUser();
                     return;
                 }
 
                 //Special case -- no special characters.
-                if (specialPawns?.Count <= 0)
+                if (specialPawns.Count == 0)
                     return;
 
                 //Should we rebalance?
@@ -200,7 +196,7 @@ namespace AbilityUser
                     //If special characters outnumber the avg characters, try removing some of the special characters instead.
                     if (tempSpecCombatPoints.Count >= tempAvgCombatPoints.Count)
                     {
-                        var toRemove = tempSpecCombatPoints?.Keys?.RandomElement();
+                        var toRemove = tempSpecCombatPoints.Keys.RandomElement();
                         if (toRemove != null)
                         {
                             //Log.Message("Removed: " + toRemove.LabelShort + " : " + tempSpecCombatPoints[toRemove]);
@@ -214,7 +210,7 @@ namespace AbilityUser
                         //Remove a random average character if the average characters have more combat points for a score
                         if (tempAvgCombatPoints.Sum(x => x.Value) > tempSpecCombatPoints.Sum(x => x.Value))
                         {
-                            var toRemove = tempAvgCombatPoints?.Keys?.RandomElement();
+                            var toRemove = tempAvgCombatPoints.Keys.RandomElement();
                             if (toRemove != null)
                             {
                                 //Log.Message("Removed: " + toRemove.LabelShort + " : " + tempSpecCombatPoints[toRemove]);
@@ -224,7 +220,7 @@ namespace AbilityUser
                         }
                         else
                         {
-                            var toRemove = tempSpecCombatPoints?.Keys?.RandomElement();
+                            var toRemove = tempSpecCombatPoints.Keys.RandomElement();
                             //Log.Message("Removed: " + toRemove.LabelShort + " : " + tempSpecCombatPoints[toRemove]);
                             if (toRemove != null)
                             {
@@ -246,12 +242,12 @@ namespace AbilityUser
                 //Log.Message("------------------");
                 __result.ForEach(x =>
                 {
-                    var combatValue = x.kindDef.combatPower + x?.GetComp<CompAbilityUser>()?.CombatPoints() ?? 0f;
+                    var combatValue = x.kindDef.combatPower + x.GetComp<CompAbilityUser>()?.CombatPoints() ?? 0f;
                     //Log.Message(x.LabelShort + " : " + combatValue);
                 });
                 foreach (var x in removedCharacters)
                 {
-                    if (x.TryGetComp<CompAbilityUser>() is CompAbilityUser cu && cu.CombatPoints() > 0)
+                    if (x.GetComp<CompAbilityUser>() is CompAbilityUser cu && cu.CombatPoints() > 0)
                         cu.DisableAbilityUser();
                     else x.DestroyOrPassToWorld();
                 }
@@ -372,10 +368,9 @@ namespace AbilityUser
                     }
                     else
                     {
-                        if (!__instance.targetingSourceAdditionalPawns.NullOrEmpty())
-                            for (var i = 0; i < __instance.targetingSourceAdditionalPawns.Count; i++)
-                                if (__instance.targetingSourceAdditionalPawns[i].Destroyed ||
-                                    !selector.IsSelected(__instance.targetingSourceAdditionalPawns[i]))
+                        if (__instance.targetingSourceAdditionalPawns != null)
+                            foreach (var additionalPawn in __instance.targetingSourceAdditionalPawns)
+                                if (additionalPawn.Destroyed || !selector.IsSelected(additionalPawn))
                                 {
                                     __instance.StopTargeting();
                                     break;
@@ -386,7 +381,6 @@ namespace AbilityUser
             }
             return true;
         }
-
 
         // RimWorld.Targeter
         public static bool ProcessInputEvents_PreFix(Targeter __instance)
@@ -430,9 +424,9 @@ namespace AbilityUser
             if (__instance.targetingSource is Verb_UseAbility tVerb &&
                 tVerb.verbProps is VerbProperties_Ability tVerbProps)
             {
-                if (tVerbProps?.range > 0)
+                if (tVerbProps.range > 0)
                     GenDraw.DrawRadiusRing(tVerb.CasterPawn.PositionHeld, tVerbProps.range);
-                if (tVerbProps?.TargetAoEProperties?.range > 0 && Find.CurrentMap is Map map &&
+                if (tVerbProps.TargetAoEProperties?.range > 0 && Find.CurrentMap is Map map &&
                     UI.MouseCell().InBounds(map))
                     GenDraw.DrawRadiusRing(UI.MouseCell(), tVerbProps.TargetAoEProperties.range);
             }

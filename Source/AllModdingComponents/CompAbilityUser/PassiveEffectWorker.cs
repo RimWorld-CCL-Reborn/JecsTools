@@ -10,7 +10,7 @@ namespace AbilityUser
 
         public virtual void DoEffect(CompAbilityUser abilityUser)
         {
-            if (Props?.hediffs is List<HediffDef> hList && !hList.NullOrEmpty())
+            if (Props?.hediffs is List<HediffDef> hList)
                 foreach (var h in hList)
                     HealthUtility.AdjustSeverity(abilityUser.AbilityUser, h, 1f);
         }
@@ -30,7 +30,7 @@ namespace AbilityUser
                 return false;
             if (pawn.jobs == null)
                 return false;
-            if (Props.awakeOnly && pawn?.CurJob?.def == JobDefOf.LayDown || pawn.Downed)
+            if (Props.awakeOnly && pawn.CurJob?.def == JobDefOf.LayDown || pawn.Downed)
                 return false;
             if (pawn.mindState == null)
                 return false;

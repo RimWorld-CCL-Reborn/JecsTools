@@ -64,7 +64,7 @@ namespace JecsTools
             modifierVictim += victimBonusMod;
 
             //Throw a mental warning
-            if (victim?.mindState is Pawn_MindState mind)
+            if (victim.mindState is Pawn_MindState mind)
                 mind.Notify_DamageTaken(new DamageInfo(DamageDefOf.Bite, -1, 0f, -1, grappler));
 
             //Determine success of grapples
@@ -166,7 +166,7 @@ namespace JecsTools
             if (grappler.health.hediffSet.GetNotMissingParts().ToList().FindAll(x =>
                         x.def.tags.Contains(BodyPartTagDefOf.ManipulationLimbSegment) ||
                         x.def.tags.Contains(BodyPartTagDefOf.ManipulationLimbCore)) is
-                    List<BodyPartRecord> recs && !recs.NullOrEmpty())
+                    List<BodyPartRecord> recs && recs.Count > 0)
                 result = recs.RandomElement();
             bodyPartRec = result;
             return bodyPartRec != null;
@@ -228,7 +228,7 @@ namespace JecsTools
         /// <returns></returns>
         public static float ResolveToolModifier(Pawn pawn)
         {
-            return pawn?.def?.tools?.Max(x => x.power) ?? 0;
+            return pawn.def?.tools?.Max(x => x.power) ?? 0;
         }
 
         /// <summary>

@@ -84,7 +84,7 @@ namespace CompDeflector
                 if (__instance is Pawn pawn)
                 {
                     var pawn_EquipmentTracker = pawn.equipment;
-                    if (pawn_EquipmentTracker?.AllEquipmentListForReading.Count > 0)
+                    if (pawn_EquipmentTracker != null)
                         foreach (var thingWithComps in pawn_EquipmentTracker.AllEquipmentListForReading)
                         {
                             var compDeflector = thingWithComps?.GetComp<CompDeflector>();

@@ -40,7 +40,7 @@ namespace JecsTools
 
         public QueuedCaravanJob Dequeue()
         {
-            if (jobs.NullOrEmpty())
+            if (jobs.Count == 0)
                 return null;
             var result = jobs[0];
             jobs.RemoveAt(0);

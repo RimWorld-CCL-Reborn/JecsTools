@@ -37,7 +37,7 @@ namespace CompInstalledPart
                             {
                                 var props = groundPart.Props;
                                 if (props != null)
-                                    if (props.allowedToInstallOn != null && props.allowedToInstallOn.Count > 0)
+                                    if (!props.allowedToInstallOn.NullOrEmpty())
                                     {
                                         SoundDefOf.Tick_Tiny.PlayOneShotOnCamera(null);
                                         Find.Targeter.BeginTargeting(new TargetingParameters

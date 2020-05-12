@@ -22,7 +22,7 @@ namespace AbilityUserAI
         public virtual bool ValidProfileFor(AbilityUserAIProfileDef profileDef, Pawn pawn)
         {
             //Default implementation only cares about checking for matching Traits.
-            return profileDef.matchingTraits.Count <= 0 || profileDef.matchingTraits.Count > 0 &&
+            return profileDef.matchingTraits.Count == 0 ||
                    profileDef.matchingTraits.Any(traitDef => pawn.story.traits.HasTrait(traitDef));
         }
 

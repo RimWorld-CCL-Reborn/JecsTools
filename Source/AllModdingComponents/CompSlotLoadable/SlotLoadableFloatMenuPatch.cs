@@ -28,9 +28,8 @@ namespace CompSlotLoadable
                 holders.ForEach(x => allThings.AddRange(x.GetDirectlyHeldThings().ToList()));
                 foreach (var item in allThings)
                 {
-                    if (item is ThingWithComps slotLoadable &&
-                        slotLoadable.AllComps.FirstOrDefault(x => x is CompSlotLoadable) is CompSlotLoadable
-                            compSlotLoadable)
+                    var compSlotLoadable = item.TryGetComp<CompSlotLoadable>();
+                    if (compSlotLoadable != null)
                     {
                         var c = clickPos.ToIntVec3();
                         //var thingList = c.GetThingList(pawn.Map);

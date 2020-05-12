@@ -12,11 +12,9 @@ namespace ThinkNodes
         {
             foreach (var _def in workTypeDefs)
             {
-                if (pawn.IsColonist && (pawn?.workSettings?.WorkIsActive(_def) ?? false))
+                if (pawn.IsColonist && (pawn.workSettings?.WorkIsActive(_def) ?? false))
                     return true;
             }
-
-
             return false;
         }
     }

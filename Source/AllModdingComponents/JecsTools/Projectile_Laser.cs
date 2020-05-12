@@ -77,8 +77,6 @@ namespace JecsTools
                 this.def.projectile.explosionDamageFalloff);
         }
 
-        private int ticksToDetonation;
-
         public override void SpawnSetup(Map map, bool blabla)
         {
             base.SpawnSetup(map, blabla);
@@ -501,11 +499,11 @@ namespace JecsTools
         public override void Draw()
         {
             this.Comps_PostDraw();
-            if (!drawingMatrix.NullOrEmpty())
+            if (drawingMatrix != null)
             {
                 foreach (var drawing in drawingMatrix)
                 {
-                    UnityEngine.Graphics.DrawMesh(MeshPool.plane10, drawing,
+                    Graphics.DrawMesh(MeshPool.plane10, drawing,
                         FadedMaterialPool.FadedVersionOf(drawingTexture, drawingIntensity), 0);
                 }
             }

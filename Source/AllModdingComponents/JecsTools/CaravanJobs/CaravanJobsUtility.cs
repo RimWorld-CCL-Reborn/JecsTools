@@ -8,7 +8,7 @@ namespace JecsTools
     {
         public static void TeachCaravan(Caravan c, SkillDef sd, float rate)
         {
-            if (c.PawnsListForReading.NullOrEmpty())
+            if (c.PawnsListForReading.Count == 0)
             {
                 Log.Error("JecsTools :: No characters found in caravan.");
                 return;
@@ -20,7 +20,7 @@ namespace JecsTools
         public static float GetStatValueTotal(Caravan c, StatDef s)
         {
             var result = 1f;
-            if (c.PawnsListForReading.NullOrEmpty())
+            if (c.PawnsListForReading.Count == 0)
             {
                 Log.Error("JecsTools :: No characters found in caravan.");
                 return result;
@@ -33,7 +33,7 @@ namespace JecsTools
         public static float GetStatValueAverage(Caravan c, StatDef s)
         {
             var result = 1f;
-            if (c.PawnsListForReading.NullOrEmpty())
+            if (c.PawnsListForReading.Count == 0)
             {
                 Log.Error("JecsTools :: No characters found in caravan.");
                 return result;

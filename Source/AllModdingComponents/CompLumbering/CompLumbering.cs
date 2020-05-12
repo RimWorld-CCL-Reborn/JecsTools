@@ -57,7 +57,7 @@ namespace CompLumbering
                 Log.ErrorOnce("CompLumbering :: CompProperties_Lumbering secondsPerStep needs to be more than 0", 133);
 
             if (Lumberer != null && Props.secondsPerStep > 0.0f && Find.TickManager.TicksGame > ticksToCycle)
-                if (Lumberer?.pather?.MovingNow ?? false)
+                if (Lumberer.pather?.MovingNow ?? false)
                 {
                     cycled = !cycled;
                     ticksToCycle = Find.TickManager.TicksGame + Props.secondsPerStep.SecondsToTicks();

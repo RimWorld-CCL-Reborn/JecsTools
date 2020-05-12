@@ -39,7 +39,7 @@ namespace AbilityUserAI
 
             Log.Message(builder.ToString());*/
 
-            if (profiles != null && profiles.Count() > 0)
+            if (profiles != null)
                 foreach (var profile in profiles)
                     if (profile != null)
                     {

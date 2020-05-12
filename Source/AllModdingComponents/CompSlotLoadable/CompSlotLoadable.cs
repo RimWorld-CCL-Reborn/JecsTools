@@ -28,9 +28,8 @@ namespace CompSlotLoadable
             get
             {
                 if (colorChangingSlot != null) return colorChangingSlot;
-                if (Slots != null)
-                    if (Slots.Count > 0)
-                        colorChangingSlot = Slots.FirstOrDefault(x => ((SlotLoadableDef) x.def).doesChangeColor);
+                if (slots != null)
+                    colorChangingSlot = slots.FirstOrDefault(x => ((SlotLoadableDef) x.def).doesChangeColor);
                 return colorChangingSlot;
             }
         }
@@ -40,10 +39,8 @@ namespace CompSlotLoadable
             get
             {
                 if (secondColorChangingSlot != null) return secondColorChangingSlot;
-                if (Slots != null)
-                    if (Slots.Count > 0)
-                        secondColorChangingSlot =
-                            Slots.FirstOrDefault(x => ((SlotLoadableDef) x.def).doesChangeSecondColor);
+                if (slots != null)
+                    secondColorChangingSlot = slots.FirstOrDefault(x => ((SlotLoadableDef) x.def).doesChangeSecondColor);
                 return secondColorChangingSlot;
             }
         }
@@ -54,9 +51,8 @@ namespace CompSlotLoadable
             {
                 var result = new List<SlotLoadableDef>();
                 if (slots != null)
-                    if (slots.Count > 0)
-                        foreach (var slot in slots)
-                            result.Add(slot.def as SlotLoadableDef);
+                    foreach (var slot in slots)
+                        result.Add(slot.def as SlotLoadableDef);
                 return result;
             }
         }
@@ -81,20 +77,16 @@ namespace CompSlotLoadable
 
         public void Initialize()
         {
-            //Log.Message("1");
             if (!isInitialized)
             {
-                //Log.Message("2");
                 isInitialized = true;
-                if (Props != null)
-                    if (Props.slots != null)
-                        if (Props.slots.Count > 0)
-                            foreach (var slot in Props.slots)
-                            {
-                                var newSlot = new SlotLoadable(slot, parent);
-                                //Log.Message("Added Slot");
-                                slots.Add(newSlot);
-                            }
+                if (Props?.slots != null)
+                    foreach (var slot in Props.slots)
+                    {
+                        var newSlot = new SlotLoadable(slot, parent);
+                        //Log.Message("Added Slot");
+                        slots.Add(newSlot);
+                    }
             }
         }
 
@@ -145,66 +137,49 @@ namespace CompSlotLoadable
             //Log.Message("TryLoadSlot Called");
             isGathering = false;
             if (slots != null)
-                if (slots.Count > 0)
-                {
-                    var loadSlot = slots.FirstOrDefault(x => x.IsEmpty() && x.CanLoad(thing.def));
-                    if (loadSlot == null) loadSlot = slots.FirstOrDefault(y => y.CanLoad(thing.def));
-                    if (loadSlot != null)
-                        if (loadSlot.TryLoadSlot(thing, true))
-                            return true;
-                }
+            {
+                var loadSlot = slots.FirstOrDefault(x => x.IsEmpty() && x.CanLoad(thing.def));
+                if (loadSlot == null)
+                    loadSlot = slots.FirstOrDefault(y => y.CanLoad(thing.def));
+                if (loadSlot != null)
+                    if (loadSlot.TryLoadSlot(thing, true))
+                        return true;
+            }
             return false;
         }
 
         public void ProcessInput(SlotLoadable slot)
         {
-            var loadTypes = new List<ThingDef>();
             var floatList = new List<FloatMenuOption>();
             if (!isGathering)
             {
                 var map = GetMap;
-                loadTypes = slot.SlottableTypes;
-                if (slot.SlotOccupant == null)
-                    if (loadTypes != null)
-                        if (loadTypes.Count != 0)
-                            foreach (var current in loadTypes)
+                if (slot.SlotOccupant == null && slot.SlottableTypes is List<ThingDef> loadTypes)
+                {
+                    if (loadTypes.Count > 0)
+                        foreach (var current in loadTypes)
+                        {
+                            var thingToLoad = map.listerThings.ThingsOfDef(current)
+                                .FirstOrDefault(x => map.reservationManager.CanReserve(GetPawn, x));
+                            if (thingToLoad != null)
                             {
-                                var thingsWithDef =
-                                    new List<Thing>(map.listerThings.AllThings.FindAll(x => x.def == current));
-                                if (thingsWithDef != null)
-                                    if (thingsWithDef.Count > 0)
-                                    {
-                                        var thingToLoad = thingsWithDef.FirstOrDefault(x =>
-                                            map.reservationManager.CanReserve(GetPawn, x));
-                                        if (thingToLoad != null)
-                                        {
-                                            var text = "Load".Translate() + " " + thingToLoad.def.label;
-                                            //Func<Rect, bool> extraPartOnGUI = (Rect rect) => Widgets.InfoCardButton(rect.x + 5f, rect.y + (rect.height - 24f) / 2f, current);
-                                            floatList.Add(new FloatMenuOption(text,
-                                                delegate { TryGiveLoadSlotJob(thingToLoad); },
-                                                MenuOptionPriority.Default, null, null, 29f, null, null));
-                                        }
-                                        else
-                                        {
-                                            floatList.Add(new FloatMenuOption(
-                                                string.Format(StringOf.Unavailable, new object[] {current.label}),
-                                                delegate { }, MenuOptionPriority.Default));
-                                        }
-                                    }
-                                    else
-                                    {
-                                        floatList.Add(new FloatMenuOption(
-                                            string.Format(StringOf.Unavailable, new object[] {current.label}),
-                                            delegate { }, MenuOptionPriority.Default));
-                                    }
-                                else
-                                    floatList.Add(new FloatMenuOption(
-                                        string.Format(StringOf.Unavailable, new object[] {current.label}), delegate { },
-                                        MenuOptionPriority.Default));
+                                var text = "Load".Translate() + " " + thingToLoad.def.label;
+                                //Func<Rect, bool> extraPartOnGUI = (Rect rect) => Widgets.InfoCardButton(rect.x + 5f, rect.y + (rect.height - 24f) / 2f, current);
+                                floatList.Add(new FloatMenuOption(text,
+                                    delegate { TryGiveLoadSlotJob(thingToLoad); },
+                                    MenuOptionPriority.Default, null, null, 29f, null, null));
                             }
-                        else
-                            floatList.Add(new FloatMenuOption(StringOf.NoLoadOptions, delegate { },
-                                MenuOptionPriority.Default));
+                            else
+                            {
+                                floatList.Add(new FloatMenuOption(
+                                    string.Format(StringOf.Unavailable, new object[] { current.label }),
+                                    delegate { }, MenuOptionPriority.Default));
+                            }
+                        }
+                    else
+                        floatList.Add(new FloatMenuOption(StringOf.NoLoadOptions, delegate { },
+                            MenuOptionPriority.Default));
+                }
             }
             if (!slot.IsEmpty())
             {
@@ -223,36 +198,35 @@ namespace CompSlotLoadable
 
         public virtual IEnumerable<Gizmo> EquippedGizmos()
         {
-            if (slots != null)
-                if (slots.Count > 0)
-                {
-                    if (isGathering)
+            if (!slots.NullOrEmpty())
+            {
+                if (isGathering)
+                    yield return new Command_Action
+                    {
+                        defaultLabel = "Designator_Cancel".Translate(),
+                        defaultDesc = "Designator_CancelDesc".Translate(),
+                        icon = ContentFinder<Texture2D>.Get("UI/Designators/Cancel", true),
+                        action = delegate { TryCancel(); }
+                    };
+                foreach (var slot in slots)
+                    if (slot.IsEmpty())
                         yield return new Command_Action
                         {
-                            defaultLabel = "Designator_Cancel".Translate(),
-                            defaultDesc = "Designator_CancelDesc".Translate(),
-                            icon = ContentFinder<Texture2D>.Get("UI/Designators/Cancel", true),
-                            action = delegate { TryCancel(); }
+                            defaultLabel = slot.Label,
+                            icon = Command.BGTex,
+                            defaultDesc = SlotDesc(slot),
+                            action = delegate { ProcessInput(slot); }
                         };
-                    foreach (var slot in slots)
-                        if (slot.IsEmpty())
-                            yield return new Command_Action
-                            {
-                                defaultLabel = slot.Label,
-                                icon = Command.BGTex,
-                                defaultDesc = SlotDesc(slot),
-                                action = delegate { ProcessInput(slot); }
-                            };
-                        else
-                            yield return new Command_Action
-                            {
-                                defaultLabel = slot.Label,
-                                icon = slot.SlotIcon(),
-                                defaultDesc = SlotDesc(slot),
-                                defaultIconColor = slot.SlotColor(),
-                                action = delegate { ProcessInput(slot); }
-                            };
-                }
+                    else
+                        yield return new Command_Action
+                        {
+                            defaultLabel = slot.Label,
+                            icon = slot.SlotIcon(),
+                            defaultDesc = SlotDesc(slot),
+                            defaultIconColor = slot.SlotColor(),
+                            action = delegate { ProcessInput(slot); }
+                        };
+            }
         }
 
         public virtual string SlotDesc(SlotLoadable slot)
@@ -272,67 +246,66 @@ namespace CompSlotLoadable
                 if (((SlotLoadableDef) slot.def).doesChangeStats)
                 {
                     var slotBonus = slot.SlotOccupant.TryGetComp<CompSlottedBonus>();
-                    if (slotBonus != null)
-                        if (slotBonus.Props != null)
+                    if (slotBonus?.Props != null)
+                    {
+                        if (!slotBonus.Props.statModifiers.NullOrEmpty())
                         {
-                            if (slotBonus.Props.statModifiers != null && slotBonus.Props.statModifiers.Count > 0)
-                            {
-                                s.AppendLine();
-                                s.AppendLine(StringOf.StatModifiers);
+                            s.AppendLine();
+                            s.AppendLine(StringOf.StatModifiers);
 
-                                foreach (var mod in slotBonus.Props.statModifiers)
-                                {
-                                    var v = SlotLoadableUtility.DetermineSlottableStatAugment(slot.SlotOccupant, mod.stat);
-                                    var modstring = mod.stat.ValueToString(v, ToStringNumberSense.Offset);
-                                    //Log.Message("Determined slot stat augment "+v+" and made string "+modstring);
-                                    s.AppendLine("  " + mod.stat.LabelCap + " " + modstring);
-                                    //s.AppendLine("\t" + mod.stat.LabelCap + " " + mod.ToStringAsOffset);
-                                }
-                                /*
-                                //Log.Message("fix this to display statModifiers");
-                                List<StatModifier> statMods = slot.SlotOccupant.def.statBases.FindAll(
-                                    (StatModifier z) => z.stat.category == StatCategoryDefOf.Weapon ||
-                                                        z.stat.category == StatCategoryDefOf.EquippedStatOffsets);
-                                if (statMods != null && statMods.Count > 0)
-                                {
-                                    s.AppendLine();
-                                    s.AppendLine("StatModifiers".Translate() + ":");
-                                    foreach (StatModifier mod in statMods)
-                                    {
-                                        s.AppendLine("\t" + mod.stat.LabelCap + " " + mod.ToStringAsOffset);
-                                    }
-                                }
-                                */
+                            foreach (var mod in slotBonus.Props.statModifiers)
+                            {
+                                var v = SlotLoadableUtility.DetermineSlottableStatAugment(slot.SlotOccupant, mod.stat);
+                                var modstring = mod.stat.ValueToString(v, ToStringNumberSense.Offset);
+                                //Log.Message("Determined slot stat augment "+v+" and made string "+modstring);
+                                s.AppendLine("  " + mod.stat.LabelCap + " " + modstring);
+                                //s.AppendLine("\t" + mod.stat.LabelCap + " " + mod.ToStringAsOffset);
                             }
-                            var damageDef = slotBonus.Props.damageDef;
-                            if (damageDef != null)
+                            /*
+                            //Log.Message("fix this to display statModifiers");
+                            List<StatModifier> statMods = slot.SlotOccupant.def.statBases.FindAll(
+                                (StatModifier z) => z.stat.category == StatCategoryDefOf.Weapon ||
+                                                    z.stat.category == StatCategoryDefOf.EquippedStatOffsets);
+                            if (statMods.Count > 0)
                             {
                                 s.AppendLine();
-                                s.AppendLine(string.Format(StringOf.DamageType, new object[] {damageDef.LabelCap}));
-                            }
-                            var defHealChance = slotBonus.Props.defensiveHealChance;
-                            if (defHealChance != null)
-                            {
-                                var healText = StringOf.all;
-                                if (defHealChance.woundLimit != 0) healText = defHealChance.woundLimit.ToString();
-                                s.AppendLine("  " + string.Format(StringOf.DefensiveHealChance, new object[]
+                                s.AppendLine("StatModifiers".Translate() + ":");
+                                foreach (StatModifier mod in statMods)
                                 {
-                                    healText,
-                                    defHealChance.chance.ToStringPercent()
-                                }));
+                                    s.AppendLine("\t" + mod.stat.LabelCap + " " + mod.ToStringAsOffset);
+                                }
                             }
-                            var vampChance = slotBonus.Props.vampiricHealChance;
-                            if (vampChance != null)
-                            {
-                                var vampText = StringOf.all;
-                                if (vampChance.woundLimit != 0) vampText = defHealChance.woundLimit.ToString();
-                                s.AppendLine("  " + string.Format(StringOf.VampiricChance, new object[]
-                                {
-                                    vampText,
-                                    vampChance.chance.ToStringPercent()
-                                }));
-                            }
+                            */
                         }
+                        var damageDef = slotBonus.Props.damageDef;
+                        if (damageDef != null)
+                        {
+                            s.AppendLine();
+                            s.AppendLine(string.Format(StringOf.DamageType, new object[] {damageDef.LabelCap}));
+                        }
+                        var defHealChance = slotBonus.Props.defensiveHealChance;
+                        if (defHealChance != null)
+                        {
+                            var healText = StringOf.all;
+                            if (defHealChance.woundLimit != 0) healText = defHealChance.woundLimit.ToString();
+                            s.AppendLine("  " + string.Format(StringOf.DefensiveHealChance, new object[]
+                            {
+                                healText,
+                                defHealChance.chance.ToStringPercent()
+                            }));
+                        }
+                        var vampChance = slotBonus.Props.vampiricHealChance;
+                        if (vampChance != null)
+                        {
+                            var vampText = StringOf.all;
+                            if (vampChance.woundLimit != 0) vampText = defHealChance.woundLimit.ToString();
+                            s.AppendLine("  " + string.Format(StringOf.VampiricChance, new object[]
+                            {
+                                vampText,
+                                vampChance.chance.ToStringPercent()
+                            }));
+                        }
+                    }
                 }
             }
             return s.ToString();

@@ -32,7 +32,7 @@ namespace JecsTools
             ref bool usedColonistBar, ref IEnumerable<WorldObject> __result)
         {
             var objects = new List<WorldObject>(__result);
-            if (!objects.NullOrEmpty())
+            if (objects.Count > 0)
             {
                 var temp = new HashSet<WorldObject>(objects);
                 foreach (var o in temp)
@@ -42,9 +42,7 @@ namespace JecsTools
             __result = objects;
         }
 
-
         // RimWorld.Planet.Caravan
-
         public static void GetGizmos_Jobs(Caravan __instance, ref IEnumerable<Gizmo> __result)
         {
             if (__instance.IsPlayerControlled)

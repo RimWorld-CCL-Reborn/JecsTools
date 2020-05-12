@@ -42,7 +42,7 @@ namespace AbilityUser
             {
                 initAction = delegate
                 {
-                    if (Verb?.UseAbilityProps?.isViolent == true)
+                    if (Verb.UseAbilityProps.isViolent)
                     {
                         CheckForAutoAttack(this.pawn);
                     }

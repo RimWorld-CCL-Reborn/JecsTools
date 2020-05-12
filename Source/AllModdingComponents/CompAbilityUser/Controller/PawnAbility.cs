@@ -51,7 +51,7 @@ namespace AbilityUser
             get
             {
                 if (abilityUser == null)
-                    abilityUser = (CompAbilityUser) pawn.AllComps.FirstOrDefault(x => x is CompAbilityUser);
+                    abilityUser = pawn.GetComp<CompAbilityUser>();
                 return abilityUser;
             }
         }
@@ -221,8 +221,7 @@ namespace AbilityUser
             command_CastPower.icon = powerdef.uiIcon;
             command_CastPower.action = delegate(Thing target)
             {
-                var tInfo = GenUI.TargetsAt(UI.MouseMapPosition(), Verb.verbProps.targetParams, false)?.First() ??
-                            target;
+                var tInfo = GenUI.TargetsAt_NewTemp(UI.MouseMapPosition(), Verb.verbProps.targetParams).FirstOrFallback(target);
                 TryCastAbility(AbilityContext.Player, tInfo);
             };
 

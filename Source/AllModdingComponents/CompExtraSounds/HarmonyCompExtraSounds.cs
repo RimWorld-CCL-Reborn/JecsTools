@@ -11,13 +11,12 @@ namespace CompExtraSounds
         {
             var harmony = new Harmony("jecstools.jecrell.comps.sounds");
 
-
             harmony.Patch(AccessTools.Method(typeof(Verb_MeleeAttack), "SoundMiss"), null,
-                new HarmonyMethod(typeof(HarmonyCompExtraSounds), "SoundMissPrefix"));
+                new HarmonyMethod(typeof(HarmonyCompExtraSounds), nameof(SoundMissPrefix)));
             harmony.Patch(AccessTools.Method(typeof(Verb_MeleeAttack), "SoundHitPawn"), null,
-                new HarmonyMethod(typeof(HarmonyCompExtraSounds), "SoundHitPawnPrefix"));
+                new HarmonyMethod(typeof(HarmonyCompExtraSounds), nameof(SoundHitPawnPrefix)));
             harmony.Patch(AccessTools.Method(typeof(Verb_MeleeAttack), "SoundHitBuilding"), null,
-                new HarmonyMethod(typeof(HarmonyCompExtraSounds), "SoundHitBuildingPrefix"));
+                new HarmonyMethod(typeof(HarmonyCompExtraSounds), nameof(SoundHitBuildingPrefix)));
         }
 
         //=================================== COMPEXTRASOUNDS

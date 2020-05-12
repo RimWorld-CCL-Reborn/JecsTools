@@ -32,8 +32,8 @@ namespace AbilityUserAI
                 from validAbilityDef in
                     //Initial filtering.
                     (from abilityAIDef in profileDef.abilities
-                        //where tags.FindAll(tag => tags.Contains(tag))?.Count() >= tags.Count
-                        where tags.FindAll(tag => abilityAIDef.tags.Contains(tag))?.Count() >= tags.Count
+                        //where tags.FindAll(tag => tags.Contains(tag)).Count >= tags.Count
+                        where tags.FindAll(tag => abilityAIDef.tags.Contains(tag)).Count >= tags.Count
                         select abilityAIDef)
                 //Blacklist filtering.
                 where !validAbilityDef.tags.Any(tag => blacklistedTags.Contains(tag))
@@ -62,7 +62,7 @@ namespace AbilityUserAI
                 //GenDebug.LogList(knownAbilities);
 
                 if (compAbilityUser != null)
-                    if (knownAbilities != null && knownAbilities.Count() > 0)
+                    if (knownAbilities != null)
                         foreach (var ability in knownAbilities)
                         {
                             var reason = "";

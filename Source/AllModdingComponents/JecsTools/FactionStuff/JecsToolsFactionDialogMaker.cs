@@ -19,7 +19,7 @@ namespace JecsTools
 			JecsToolsFactionDialogMaker.negotiator = negotiator;
 			JecsToolsFactionDialogMaker.faction = faction;
 			var text = (faction.leader != null) ? faction.leader.Name.ToStringFull : faction.Name;
-			var factionSettings = faction?.def?.GetModExtension<FactionSettings>();
+			var factionSettings = faction.def?.GetModExtension<FactionSettings>();
 			var greetingHostileKey = factionSettings?.greetingHostileKey ?? "FactionGreetingHostile";
 			var greetingWaryKey = factionSettings?.greetingWaryKey ?? "FactionGreetingWary";
 			var greetingWarmKey = factionSettings?.greetingWarmKey ?? "FactionGreetingWarm";
@@ -27,16 +27,8 @@ namespace JecsTools
 			var warmMinimum = factionSettings?.warmMinimumRelations ?? 40f;
 			
 			var greetingHostile = greetingHostileKey.Translate(text);
-			var greetingWary = greetingWaryKey.Translate(new object[]
-			{
-				text,
-				negotiator.LabelShort
-			});
-			var greetingWarm = greetingWarmKey.Translate(new object[]
-			{
-				text,
-				negotiator.LabelShort
-			});
+			var greetingWary = greetingWaryKey.Translate(text, negotiator.LabelShort);
+			var greetingWarm = greetingWarmKey.Translate(text, negotiator.LabelShort);
 			
 			if (faction.PlayerGoodwill < waryMinimum)
 			{
@@ -111,7 +103,6 @@ namespace JecsTools
 			};
 			opt3.linkLateBind = (() => FactionDialogFor(negotiator, faction));
 			yield return opt3;
-			yield break;
 		}
 
 		private static int AmountSendableSilver(Map map)
@@ -159,29 +150,18 @@ namespace JecsTools
 			if (AmountSendableSilver(map) < 300)
 			{
 				var diaOption = new DiaOption("OfferGift".Translate());
-				diaOption.Disable("NeedSilverLaunchable".Translate(new object[]
-				{
-					300
-				}));
+				diaOption.Disable("NeedSilverLaunchable".Translate(300));
 				return diaOption;
 			}
 			var goodwillDelta = 12f * negotiator.GetStatValue(StatDefOf.NegotiationAbility, true);
-			var diaOption2 = new DiaOption("OfferGift".Translate() + " (" + "SilverForGoodwill".Translate(new object[]
-			{
-				300,
-				goodwillDelta.ToString("#####0")
-			}) + ")");
+			var diaOption2 = new DiaOption("OfferGift".Translate() + " (" + "SilverForGoodwill".Translate(300, goodwillDelta.ToString("#####0")) + ")");
 			diaOption2.action = delegate
 			{
 				TradeUtility.LaunchThingsOfType(ThingDefOf.Silver, 300, map, null);
 				faction.TryAffectGoodwillWith(Faction.OfPlayer, (int)goodwillDelta);
 				PlaySoundFor(faction);
 			};
-			var text = "SilverGiftSent".Translate(new object[]
-			{
-				faction.leader.LabelIndefinite(),
-				Mathf.RoundToInt(goodwillDelta)
-			}).CapitalizeFirst();
+			var text = "SilverGiftSent".Translate(faction.leader.LabelIndefinite(), Mathf.RoundToInt(goodwillDelta)).CapitalizeFirst();
 			diaOption2.link = new DiaNode(text)
 			{
 				options = 
@@ -194,17 +174,11 @@ namespace JecsTools
 
 		private static DiaOption RequestTraderOption(Map map, int silverCost)
 		{
-			var text = "RequestTrader".Translate(new object[]
-			{
-				silverCost.ToString()
-			});
+			var text = "RequestTrader".Translate(silverCost.ToString());
 			if (AmountSendableSilver(map) < silverCost)
 			{
 				var diaOption = new DiaOption(text);
-				diaOption.Disable("NeedSilverLaunchable".Translate(new object[]
-				{
-					silverCost
-				}));
+				diaOption.Disable("NeedSilverLaunchable".Translate(silverCost));
 				return diaOption;
 			}
 			if (!faction.def.allowedArrivalTemperatureRange.ExpandedBy(-4f).Includes(map.mapTemperature.SeasonalTemp))
@@ -217,22 +191,13 @@ namespace JecsTools
 			if (num > 0)
 			{
 				var diaOption3 = new DiaOption(text);
-				diaOption3.Disable("WaitTime".Translate(new object[]
-				{
-					num.ToStringTicksToPeriod()
-				}));
+				diaOption3.Disable("WaitTime".Translate(num.ToStringTicksToPeriod()));
 				return diaOption3;
 			}
 			var diaOption4 = new DiaOption(text);
-			var diaNode = new DiaNode("TraderSent".Translate(new object[]
-			{
-				faction.leader.LabelIndefinite()
-			}).CapitalizeFirst());
+			var diaNode = new DiaNode("TraderSent".Translate(faction.leader.LabelIndefinite()).CapitalizeFirst());
 			diaNode.options.Add(OKToRoot());
-			var diaNode2 = new DiaNode("ChooseTraderKind".Translate(new object[]
-			{
-				faction.leader.LabelIndefinite()
-			}));
+			var diaNode2 = new DiaNode("ChooseTraderKind".Translate(faction.leader.LabelIndefinite()));
 			foreach (var localTk2 in faction.def.caravanTraderKinds)
 			{
 				var localTk = localTk2;
@@ -261,10 +226,7 @@ namespace JecsTools
 
 		private static DiaOption RequestMilitaryAidOption(Map map)
 		{
-			var text = "RequestMilitaryAid".Translate(new object[]
-			{
-				-25f
-			});
+			var text = "RequestMilitaryAid".Translate(-25f);
 			if (!faction.def.allowedArrivalTemperatureRange.ExpandedBy(-4f).Includes(map.mapTemperature.SeasonalTemp))
 			{
 				var diaOption = new DiaOption(text);
@@ -291,11 +253,8 @@ namespace JecsTools
 					where fa != null && !fa.HostileTo(faction)
 					select fa).Distinct<Faction>();
 					var key = "MilitaryAidConfirmMutualEnemy";
-					var array = new object[2];
-					array[0] = faction.Name;
-					array[1] = GenText.ToCommaList(from fa in source
-					select fa.Name, true);
-					var diaNode = new DiaNode(key.Translate(array));
+					var diaNode = new DiaNode(key.Translate(faction.Name,
+						GenText.ToCommaList(from fa in source select fa.Name, true)));
 					var diaOption3 = new DiaOption("CallConfirm".Translate());
 					diaOption3.action = delegate
 					{
@@ -320,10 +279,7 @@ namespace JecsTools
 
 		private static DiaNode FightersSent()
 		{
-			return new DiaNode("MilitaryAidSent".Translate(new object[]
-			{
-				faction.leader.LabelIndefinite()
-			}).CapitalizeFirst())
+			return new DiaNode("MilitaryAidSent".Translate(faction.leader.LabelIndefinite()).CapitalizeFirst())
 			{
 				options = 
 				{
@@ -351,7 +307,7 @@ namespace JecsTools
 		{
 			if (faction.def.GetModExtension<FactionSettings>() is FactionSettings fs)
 			{
-				fs?.entrySoundDef?.PlayOneShotOnCamera();
+				fs.entrySoundDef?.PlayOneShotOnCamera();
 			}
 		}
 

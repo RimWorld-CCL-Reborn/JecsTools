@@ -1,8 +1,6 @@
-﻿using RimWorld;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using RimWorld;
 using Verse;
 
 namespace PawnShields
@@ -39,7 +37,7 @@ namespace PawnShields
             workingShields = new List<ThingStuffPair>();
 
             //Initial filtering
-            if (generatorProps.shieldTags == null || generatorProps.shieldTags?.Count == 0)
+            if (generatorProps.shieldTags.NullOrEmpty())
             {
                 Log.Warning("PawnShields :: XML element shieldTags is null or empty for " + request.KindDef.defName);
                 return;
@@ -51,17 +49,17 @@ namespace PawnShields
                             " is not a ToolUser or Humanlike in RaceProps.");
                 return;
             }
-            if (!(pawn.health?.capacities?.CapableOf(PawnCapacityDefOf.Manipulation) ?? false))
+            if (!(pawn.health?.capacities.CapableOf(PawnCapacityDefOf.Manipulation) ?? false))
             {
                 Log.Warning("PawnShields :: " + request.KindDef.defName + " is not capable of manipulation.");
                 return;
             }
-            if (pawn.story != null && ((bool) pawn?.WorkTagIsDisabled(WorkTags.Violent)))
+            if (pawn.story != null && pawn.WorkTagIsDisabled(WorkTags.Violent))
                return;
 
             var generatorPropsShieldMoney = generatorProps.shieldMoney;
             float randomInRange = generatorPropsShieldMoney.RandomInRange;
-            if (allShieldPairs != null && allShieldPairs?.Count > 0)
+            if (allShieldPairs != null)
                 foreach (var w in allShieldPairs)
                 {
                     if (w.Price <= randomInRange)
@@ -79,7 +77,7 @@ namespace PawnShields
                             }   
                         }
                 }
-            if (workingShields == null || workingShields?.Count == 0)
+            if (workingShields.NullOrEmpty())
             {
                 Log.Warning("No working shields found for " + pawn.Label + "::" + pawn.KindLabel);
                 return;
@@ -105,27 +103,21 @@ namespace PawnShields
 
             allShieldPairs = ThingStuffPair.AllWith(IsShield);
 
-            using (IEnumerator<ThingDef> enumerator = (from td in DefDatabase<ThingDef>.AllDefs
-                where IsShield(td)
-                select td).GetEnumerator())
+            foreach (var thingDef in DefDatabase<ThingDef>.AllDefs.Where(IsShield))
             {
-                while (enumerator.MoveNext())
+                float num = (from pa in allShieldPairs
+                    where pa.thing == thingDef
+                    select pa).Sum(pa => pa.Commonality);
+                if (thingDef == null) continue;
+                float num2 = thingDef.generateCommonality / num;
+                if (num2 == 1f) continue;
+                for (int i = 0; i < allShieldPairs.Count; i++)
                 {
-                    ThingDef thingDef = enumerator.Current;
-                    float num = (from pa in allShieldPairs
-                        where pa.thing == thingDef
-                        select pa).Sum(pa => pa.Commonality);
-                    if (thingDef == null) continue;
-                    float num2 = thingDef.generateCommonality / num;
-                    if (num2 == 1f) continue;
-                    for (int i = 0; i < allShieldPairs.Count; i++)
+                    ThingStuffPair thingStuffPair = allShieldPairs[i];
+                    if (thingStuffPair.thing == thingDef)
                     {
-                        ThingStuffPair thingStuffPair = allShieldPairs[i];
-                        if (thingStuffPair.thing == thingDef)
-                        {
-                            allShieldPairs[i] = new ThingStuffPair(thingStuffPair.thing, thingStuffPair.stuff,
-                                thingStuffPair.commonalityMultiplier * num2);
-                        }
+                        allShieldPairs[i] = new ThingStuffPair(thingStuffPair.thing, thingStuffPair.stuff,
+                            thingStuffPair.commonalityMultiplier * num2);
                     }
                 }
             }

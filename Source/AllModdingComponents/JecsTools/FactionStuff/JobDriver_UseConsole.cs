@@ -32,7 +32,6 @@ namespace JecsTools
                 }
             };
             yield return openComms;
-            yield break;
         }
 
         private static void TryOpenComms(Pawn actor)

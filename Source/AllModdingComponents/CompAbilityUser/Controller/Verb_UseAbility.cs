@@ -22,7 +22,7 @@ namespace AbilityUser
         public override float HighlightFieldRadiusAroundTarget(out bool needLOSToCenter)
         {
             needLOSToCenter = true;
-            var result = verbProps?.defaultProjectile?.projectile?.explosionRadius ?? 1;
+            var result = verbProps.defaultProjectile?.projectile?.explosionRadius ?? 1;
             if (UseAbilityProps.abilityDef.MainVerb.TargetAoEProperties != null)
                 if (UseAbilityProps.abilityDef.MainVerb.TargetAoEProperties.showRangeOnSelect)
                     result = UseAbilityProps.abilityDef.MainVerb.TargetAoEProperties.range;
@@ -77,7 +77,7 @@ namespace AbilityUser
 
                 var maxTargets = UseAbilityProps.abilityDef.MainVerb.TargetAoEProperties.maxTargets;
                 var randTargets = new List<Thing>(targets.InRandomOrder());
-                for (var i = 0; i < maxTargets && i < randTargets.Count(); i++)
+                for (var i = 0; i < maxTargets && i < randTargets.Count; i++)
                 {
                     var tinfo = new TargetInfo(randTargets[i]);
                     if (UseAbilityProps.targetParams.CanTarget(tinfo))
@@ -106,12 +106,11 @@ namespace AbilityUser
             {
                 return false;
             }
-            bool flag = (thing as Pawn)?.Downed ?? false;
             if (thing.Faction != Faction.OfPlayer || !caster.HostileTo(Faction.OfPlayer))
             {
                 if (caster.Faction == Faction.OfPlayer && thing.HostileTo(Faction.OfPlayer))
                 {
-                    return !flag;
+                    return !(thing is Pawn pawn && pawn.Downed);
                 }
                 return false;
             }

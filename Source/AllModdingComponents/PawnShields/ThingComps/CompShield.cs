@@ -1,5 +1,5 @@
-﻿using RimWorld;
-using System.Linq;
+﻿using System.Linq;
+using RimWorld;
 using UnityEngine;
 using Verse;
 
@@ -42,11 +42,10 @@ namespace PawnShields
         {
             get
             {
-                if (ShieldProps?.stuffedSounds != null && ShieldProps?.stuffedSounds?.Count > 0 && parent.Stuff?.stuffProps?.categories != null && ShieldProps.stuffedSounds.Count > 0 &&
-                    ShieldProps.stuffedSounds.ContainsKey(parent.Stuff?.stuffProps?.categories.FirstOrDefault()))
+                if (parent.Stuff?.stuffProps?.categories?.FirstOrDefault() is StuffCategoryDef category &&
+                    ShieldProps?.stuffedSounds?.TryGetValue(category) is SoundDef def)
                 {
-                    if (ShieldProps.stuffedSounds[parent.Stuff.stuffProps.categories.First()] is SoundDef def)
-                        return def;
+                    return def;
                 }
 
                 //Default sound

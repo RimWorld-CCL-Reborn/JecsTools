@@ -72,12 +72,8 @@ namespace CompDeflector
 
             }
 
-            var enumerator2 = PostSpecialDisplayStats().GetEnumerator();
-            while (enumerator2.MoveNext())
-            {
-                var current2 = enumerator2.Current;
-                yield return current2;
-            }
+            foreach (var current in PostSpecialDisplayStats())
+                yield return current;
         }
     }
 }

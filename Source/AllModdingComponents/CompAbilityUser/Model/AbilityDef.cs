@@ -132,7 +132,7 @@ namespace AbilityUser
                                              def.defaultProjectile.projectile.damageDef.LabelCap);
                             }
                 if (def.tooltipShowExtraDamages)
-                    if (def.extraDamages != null && def.extraDamages.Count > 0)
+                    if (def.extraDamages != null)
                         if (def.extraDamages.Count == 1)
                         {
                             s.AppendLine(StringsToTranslate.AU_Extra + " " + "Damage".Translate() + ": " +
@@ -140,7 +140,7 @@ namespace AbilityUser
                             s.AppendLine(StringsToTranslate.AU_Extra + " " + "Damage".Translate() + " " +
                                          StringsToTranslate.AU_Type + def.extraDamages[0].damageDef.LabelCap);
                         }
-                        else
+                        else if (def.extraDamages.Count > 1)
                         {
                             s.AppendLine(StringsToTranslate.AU_Extra + " " + "Damage".Translate() + ": ");
                             foreach (var extraDam in def.extraDamages)
@@ -152,14 +152,14 @@ namespace AbilityUser
                             }
                         }
                 if (def.tooltipShowMentalStatesToApply)
-                    if (def.mentalStatesToApply != null && def.mentalStatesToApply.Count > 0)
+                    if (def.mentalStatesToApply != null)
                         if (def.mentalStatesToApply.Count == 1)
                         {
                             s.AppendLine(StringsToTranslate.AU_MentalStateChance + ": " +
                                          def.mentalStatesToApply[0].mentalStateDef.LabelCap + " " +
                                          def.mentalStatesToApply[0].applyChance.ToStringPercent());
                         }
-                        else
+                        else if (def.mentalStatesToApply.Count > 1)
                         {
                             s.AppendLine(StringsToTranslate.AU_MentalStateChance);
                             foreach (var mentalState in def.mentalStatesToApply)
@@ -168,13 +168,13 @@ namespace AbilityUser
                         }
                 if (def.tooltipShowHediffsToApply)
                 {
-                    if (def.hediffsToApply != null && def.hediffsToApply.Count > 0)
+                    if (def.hediffsToApply != null)
                         if (def.hediffsToApply.Count == 1)
                         {
                             s.AppendLine(StringsToTranslate.AU_EffectChance + def.hediffsToApply[0].hediffDef.LabelCap +
                                          " " + def.hediffsToApply[0].applyChance.ToStringPercent());
                         }
-                        else
+                        else if (def.hediffsToApply.Count > 1)
                         {
                             s.AppendLine(StringsToTranslate.AU_EffectChance);
                             foreach (var hediff in def.hediffsToApply)

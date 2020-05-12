@@ -52,8 +52,6 @@ static internal class AbilityEffectUtility
         //Log.Message("SingleSpawnLoops");
         if (spawnables.def != null)
         {
-            //Log.Message("2");
-
             var factionToAssign = ResolveFaction(spawnables, caster);
             if (spawnables.def.race != null)
             {
@@ -63,11 +61,10 @@ static internal class AbilityEffectUtility
                     return;
                 }
                 Pawn p = SpawnPawn(spawnables, factionToAssign, caster, positionHeld);
-                //if (this?.Caster?.Faction is Faction f && Faction.OfPlayerSilentFail != f) p.SetFactionDirect(f);
+                //if (caster?.Faction is Faction f && Faction.OfPlayerSilentFail != f) p.SetFactionDirect(f);
             }
             else
             {
-                //Log.Message("3b");
                 var thingDef = spawnables.def;
                 ThingDef stuff = null;
                 if (thingDef.MadeFromStuff)
@@ -82,7 +79,7 @@ static internal class AbilityEffectUtility
     public static void SpawnSpawnables(List<SpawnThings> localSpawnThings, Pawn caster, Map mapHeld, IntVec3 positionHeld)
     {
         //Log.Message("SpawnSpawnables");
-        if (localSpawnThings != null && localSpawnThings.Count > 0)
+        if (localSpawnThings != null)
             foreach (var spawnables in localSpawnThings)
                 //Log.Message("2S");
                 if (spawnables.spawnCount == 1)
@@ -96,73 +93,71 @@ static internal class AbilityEffectUtility
     public static void ApplyHediffs(Pawn victim, Pawn caster, List<ApplyHediffs> localApplyHediffs, Projectile_AbilityBase abilityProjectile)
     {
         if (localApplyHediffs != null)
-            if (localApplyHediffs.Count > 0)
-                foreach (var hediffs in localApplyHediffs)
-                {
-                    var success = false;
-                    if (Rand.Value <= hediffs.applyChance)
-                        if (victim == caster || abilityProjectile?.CanOverpower(caster, victim) != false)
-                        {
-                            HealthUtility.AdjustSeverity(victim, hediffs.hediffDef, hediffs.severity);
-                            success = true;
-                        }
+            foreach (var hediffs in localApplyHediffs)
+            {
+                var success = false;
+                if (Rand.Value <= hediffs.applyChance)
+                    if (victim == caster || abilityProjectile?.CanOverpower(caster, victim) != false) // note: null != false => true
+                    {
+                        HealthUtility.AdjustSeverity(victim, hediffs.hediffDef, hediffs.severity);
+                        success = true;
+                    }
 
-                    if (success)
-                    {
-                        victim.Drawer.Notify_DebugAffected();
-                        MoteMaker.ThrowText(victim.DrawPos, victim.Map,
-                            hediffs.hediffDef.LabelCap + ": " + StringsToTranslate.AU_CastSuccess, -1f);
-                    }
-                    else
-                    {
-                        MoteMaker.ThrowText(victim.DrawPos, victim.Map, StringsToTranslate.AU_CastFailure, -1f);
-                    }
+                if (success)
+                {
+                    victim.Drawer.Notify_DebugAffected();
+                    MoteMaker.ThrowText(victim.DrawPos, victim.Map,
+                        hediffs.hediffDef.LabelCap + ": " + StringsToTranslate.AU_CastSuccess, -1f);
                 }
+                else
+                {
+                    MoteMaker.ThrowText(victim.DrawPos, victim.Map, StringsToTranslate.AU_CastFailure, -1f);
+                }
+            }
     }
     
     public static void ApplyMentalStates(Pawn victim, Pawn caster, List<ApplyMentalStates> localApplyMentalStates, AbilityUser.AbilityDef localAbilityDef, Projectile_AbilityBase abilityProjectile)
     {
         if (localApplyMentalStates != null)
-            if (localApplyMentalStates.Count > 0)
-                foreach (var mentalStateGiver in localApplyMentalStates)
-                {
-                    var success = false;
-                    var checkValue = Rand.Value;
-                    var str = localAbilityDef.LabelCap + " (" + caster.LabelShort + ")";
-                    if (checkValue <= mentalStateGiver.applyChance)
-                        if (mentalStateGiver.mentalStateDef == MentalStateDefOf.Berserk &&
-                            victim.RaceProps.intelligence < Intelligence.Humanlike)
-                        {
-                            if (caster == victim || abilityProjectile?.CanOverpower(caster, victim) != false)
-                            {
-                                success = true;
-                                victim.mindState.mentalStateHandler.TryStartMentalState(
-                                    MentalStateDefOf.Manhunter, str, true);
-                            }
-                        }
-                        else
-                        {
-                            if (caster == victim || abilityProjectile?.CanOverpower(caster, victim) != false)
-                            {
-                                success = true;
-                                victim.mindState.mentalStateHandler.TryStartMentalState(
-                                    mentalStateGiver.mentalStateDef, str, true);
-                            }
-                        }
-
-                    if (success)
+            foreach (var mentalStateGiver in localApplyMentalStates)
+            {
+                var success = false;
+                var checkValue = Rand.Value;
+                var str = localAbilityDef.LabelCap + " (" + caster.LabelShort + ")";
+                if (checkValue <= mentalStateGiver.applyChance)
+                    if (mentalStateGiver.mentalStateDef == MentalStateDefOf.Berserk &&
+                        victim.RaceProps.intelligence < Intelligence.Humanlike)
                     {
-                        victim.Drawer.Notify_DebugAffected();
-                        MoteMaker.ThrowText(victim.DrawPos, victim.Map,
-                            mentalStateGiver.mentalStateDef.LabelCap + ": " + StringsToTranslate.AU_CastSuccess,
-                            -1f);
+                        if (caster == victim || abilityProjectile?.CanOverpower(caster, victim) != false) // note: null != false => true
+                        {
+                            success = true;
+                            victim.mindState.mentalStateHandler.TryStartMentalState(
+                                MentalStateDefOf.Manhunter, str, true);
+                        }
                     }
                     else
                     {
-                        MoteMaker.ThrowText(victim.DrawPos, victim.Map,
-                            mentalStateGiver.mentalStateDef.LabelCap + ": " + StringsToTranslate.AU_CastFailure,
-                            -1f);
+                        if (caster == victim || abilityProjectile?.CanOverpower(caster, victim) != false) // note: null != false => true
+                        {
+                            success = true;
+                            victim.mindState.mentalStateHandler.TryStartMentalState(
+                                mentalStateGiver.mentalStateDef, str, true);
+                        }
                     }
+
+                if (success)
+                {
+                    victim.Drawer.Notify_DebugAffected();
+                    MoteMaker.ThrowText(victim.DrawPos, victim.Map,
+                        mentalStateGiver.mentalStateDef.LabelCap + ": " + StringsToTranslate.AU_CastSuccess,
+                        -1f);
                 }
+                else
+                {
+                    MoteMaker.ThrowText(victim.DrawPos, victim.Map,
+                        mentalStateGiver.mentalStateDef.LabelCap + ": " + StringsToTranslate.AU_CastFailure,
+                        -1f);
+                }
+            }
     }
 }

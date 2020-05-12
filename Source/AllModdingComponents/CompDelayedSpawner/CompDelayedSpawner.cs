@@ -90,7 +90,7 @@ namespace CompDelayedSpawner
 
         private void GiveHediffs(SpawnInfo info, Pawn pawn)
         {
-            if (!info.withHediffs.NullOrEmpty())
+            if (info.withHediffs != null)
                 foreach (var hediff in info.withHediffs)
                     if (HediffMaker.MakeHediff(hediff, pawn, null) is Hediff tempHediff)
                         pawn.health.AddHediff(tempHediff, null, null);

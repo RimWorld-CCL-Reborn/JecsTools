@@ -103,10 +103,8 @@ namespace CompDeflector
                 var calc = Props.baseDeflectChance;
 
                 if (GetEquippable != null)
-                    if (GetPawn != null)
+                    if (GetPawn is Pawn pawn)
                     {
-                        var pawn = GetPawn;
-
                         //This handles if a deflection skill is defined.
                         //Example, melee skill of 20.
                         if (Props.useSkillInCalc)
@@ -162,13 +160,12 @@ namespace CompDeflector
             var d100 = Rand.Range(1, 100);
             var modifier = 0;
             var difficulty = 80;
-            var thisPawn = GetPawn;
-            if (thisPawn?.skills != null)
+            if (GetPawn?.skills is Pawn_SkillTracker skills)
             {
-                if (Props?.reflectSkill != null)
+                if (Props.reflectSkill != null)
                 {
-                    var skill = thisPawn.skills.GetSkill(Props.reflectSkill);
-                    if (skill?.Level > 0)
+                    var skill = skills.GetSkill(Props.reflectSkill);
+                    if (skill.Level > 0)
                     {
                         modifier += (int) (Props.deflectRatePerSkillPoint * skill.Level);
                         //Log.Message("Deflection mod: " + modifier.ToString());
@@ -230,8 +227,8 @@ namespace CompDeflector
                 switch (lastAccuracyRoll)
                 {
                     case AccuracyRoll.CriticalSuccess:
-                        if (GetPawn != null)
-                            MoteMaker.ThrowText(GetPawn.DrawPos, GetPawn.Map,
+                        if (GetPawn is Pawn pawn)
+                            MoteMaker.ThrowText(pawn.DrawPos, pawn.Map,
                                 "SWSaber_TextMote_CriticalSuccess".Translate(), 6f);
                         newVerbProps.accuracyLong = 999.0f;
                         newVerbProps.accuracyMedium = 999.0f;
@@ -247,8 +244,8 @@ namespace CompDeflector
                         break;
 
                     case AccuracyRoll.CritialFailure:
-                        if (GetPawn != null)
-                            MoteMaker.ThrowText(GetPawn.DrawPos, GetPawn.Map,
+                        if (GetPawn is Pawn pawn2)
+                            MoteMaker.ThrowText(pawn2.DrawPos, pawn2.Map,
                                 "SWSaber_TextMote_CriticalFailure".Translate(), 6f);
                         newVerbProps.accuracyLong = 999.0f;
                         newVerbProps.accuracyMedium = 999.0f;
@@ -342,7 +339,7 @@ namespace CompDeflector
             if (newTarget != dinfo.Instigator as Pawn)
                 return;
             shouldContinue = false;
-            GetPawn.TakeDamage(new DamageInfo(dinfo.Def, dinfo.Amount));
+            thisPawn.TakeDamage(new DamageInfo(dinfo.Def, dinfo.Amount));
         }
 
         public virtual void GiveDeflectJob(DamageInfo dinfo)
@@ -355,19 +352,20 @@ namespace CompDeflector
                     playerForced = true,
                     locomotionUrgency = LocomotionUrgency.Sprint
                 };
-                var compEquip = pawn2.equipment?.PrimaryEq;
-                if (compEquip?.PrimaryVerb == null) return;
-                var verbToUse = (Verb_Deflected) CopyAndReturnNewVerb(compEquip.PrimaryVerb);
+                var compEquipVerb = pawn2.equipment?.PrimaryEq?.PrimaryVerb;
+                if (compEquipVerb == null) return;
+                var thisPawn = GetPawn;
+                var verbToUse = (Verb_Deflected) CopyAndReturnNewVerb(compEquipVerb);
                 verbToUse = (Verb_Deflected) ReflectionHandler(deflectVerb);
                 verbToUse.lastShotReflected = lastShotReflected;
-                verbToUse.verbTracker = GetPawn.VerbTracker;
+                verbToUse.verbTracker = thisPawn.VerbTracker;
                 pawn2 = ResolveDeflectionTarget(pawn2);
                 CriticalFailureHandler(dinfo, pawn2, out var shouldContinue);
                 if (!shouldContinue) return;
                 job.targetA = pawn2;
                 job.verbToUse = verbToUse;
                 job.killIncappedTarget = pawn2.Downed;
-                GetPawn.jobs.TryTakeOrderedJob(job);
+                thisPawn.jobs.TryTakeOrderedJob(job);
             }
             catch (NullReferenceException)
             {

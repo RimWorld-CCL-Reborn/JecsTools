@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
 using Verse;
@@ -13,7 +12,7 @@ namespace JecsTools
 		
 		public bool CanUseCommsNow => 
 			(!parent.Spawned || !parent.Map.gameConditionManager.ConditionIsActive(GameConditionDefOf.SolarFlare)) &&
-			(!Props.usesPower || (Props.usesPower && (parent.GetComp<CompPowerTrader>()?.PowerOn ?? false)));
+			(!Props.usesPower || (parent.GetComp<CompPowerTrader>()?.PowerOn ?? false));
 
 		private void UseAct(Pawn myPawn, ICommunicable commTarget)
 		{
@@ -60,49 +59,39 @@ namespace JecsTools
 				yield break;
 			}
 			
-			var list = new List<FloatMenuOption>();
-			var enumerable = myPawn.Map.passingShipManager.passingShips.Cast<ICommunicable>().Concat(Find.FactionManager.AllFactionsInViewOrder.Cast<ICommunicable>());
-			using (var enumerator = enumerable.GetEnumerator())
+			foreach (var localCommTarget in myPawn.Map.passingShipManager.passingShips.Cast<ICommunicable>().Concat(
+				Find.FactionManager.AllFactionsInViewOrder.Cast<ICommunicable>()))
 			{
-				while (enumerator.MoveNext())
+				if (localCommTarget == null) continue;
+				var text = "CallOnRadio".Translate(localCommTarget.GetCallLabel());
+				if (localCommTarget is Faction faction)
 				{
-					var localCommTarget = enumerator.Current;
-					if (localCommTarget == null) continue;
-					var text = "CallOnRadio".Translate(localCommTarget.GetCallLabel());
-					if (localCommTarget is Faction faction)
+					if (faction.IsPlayer)
+						continue;
+					if (!LeaderIsAvailableToTalk(faction))
 					{
-						if (faction.IsPlayer)
-							continue;
-						if (!LeaderIsAvailableToTalk(faction))
-						{
-							string str;
-							if (faction.leader != null)
-								str = "LeaderUnavailable".Translate(faction.leader.LabelShort);
-							else
-								str = "LeaderUnavailableNoLeader".Translate();
-							list.Add(new FloatMenuOption(text + " (" + str + ")", null));
-							continue;
-						}
+						string str;
+						if (faction.leader != null)
+							str = "LeaderUnavailable".Translate(faction.leader.LabelShort);
+						else
+							str = "LeaderUnavailableNoLeader".Translate();
+						yield return new FloatMenuOption(text + " (" + str + ")", null);
+						continue;
 					}
-
-					void Action()
-					{
-						if (localCommTarget is TradeShip && !Building_OrbitalTradeBeacon.AllPowered(parent.Map).Any())
-						{
-							Messages.Message("MessageNeedBeaconToTradeWithShip".Translate(), parent, MessageTypeDefOf.RejectInput);
-							return;
-						}
-						UseAct(myPawn, localCommTarget);
-					}
-
-					list.Add(FloatMenuUtility.DecoratePrioritizedTask(new FloatMenuOption(text, Action, MenuOptionPriority.InitiateSocial), myPawn, parent, "ReservedBy"));
 				}
+
+				void Action()
+				{
+					if (localCommTarget is TradeShip && !Building_OrbitalTradeBeacon.AllPowered(parent.Map).Any())
+					{
+						Messages.Message("MessageNeedBeaconToTradeWithShip".Translate(), parent, MessageTypeDefOf.RejectInput);
+						return;
+					}
+					UseAct(myPawn, localCommTarget);
+				}
+
+				yield return FloatMenuUtility.DecoratePrioritizedTask(new FloatMenuOption(text, Action, MenuOptionPriority.InitiateSocial), myPawn, parent, "ReservedBy");
 			}
-			foreach (var option in list)
-			{
-				yield return option;
-			}
-			yield break;
 		}
 
 		public static bool LeaderIsAvailableToTalk(Faction fac)

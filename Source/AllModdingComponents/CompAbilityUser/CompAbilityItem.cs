@@ -18,7 +18,7 @@ namespace AbilityUser
         public void GetOverlayGraphic()
         {
             // Cool effect if you uncomment. Places this graffic behind the item.
-//            this.Overlay = GraphicDatabase.Get<Graphic_Single>("UI/Glow_Corrupt", ShaderDatabase.MetaOverlay, Vector2.one, Color.white);
+            //this.Overlay = GraphicDatabase.Get<Graphic_Single>("UI/Glow_Corrupt", ShaderDatabase.MetaOverlay, Vector2.one, Color.white);
         }
 
 
@@ -46,8 +46,8 @@ namespace AbilityUser
             }
         }
 
-        //        public override void CompTick() { }
-        //        public override void CompTickRare() { }
+        //public override void CompTick() { }
+        //public override void CompTickRare() { }
 
         public override void PostExposeData()
         {

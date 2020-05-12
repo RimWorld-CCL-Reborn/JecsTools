@@ -213,21 +213,11 @@ namespace CompActivatableEffect
         {
             if (!GizmosOnEquip)
             {
-                //Iterate Base Functions
-                var enumerator = base.CompGetGizmosExtra().GetEnumerator();
-                while (enumerator.MoveNext())
-                {
-                    var current = enumerator.Current;
+                foreach (var current in base.CompGetGizmosExtra())
                     yield return current;
-                }
 
-                //Iterate ActivationActions
-                var enumerator2 = EquippedGizmos().GetEnumerator();
-                while (enumerator2.MoveNext())
-                {
-                    var current = enumerator2.Current;
+                foreach (var current in EquippedGizmos())
                     yield return current;
-                }
             }
         }
 

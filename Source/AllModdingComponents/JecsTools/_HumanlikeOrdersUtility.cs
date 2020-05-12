@@ -50,7 +50,7 @@ namespace JecsTools
                 var floatMenus = item.GetFloatMenus();
                 DebugMessage("FMOL :: Float Menus Variable Declared");
 
-                if (floatMenus != null && floatMenus.Count() > 0)
+                if (floatMenus != null)
                 {
                     DebugMessage("FMOL :: Float Menus Available Check Passed");
                     foreach (var floatMenu in floatMenus)
@@ -117,31 +117,32 @@ namespace JecsTools
             optsID = "";
             optsID += pawn.ThingID;
             optsID += c.ToString();
-            for (var i = 0; i < (opts?.Count() ?? 0); i++)
-                optsID += opts[i].Label;
+            if (opts != null)
+                for (var i = 0; i < opts.Count; i++)
+                    optsID += opts[i].Label;
             if (optsID == lastOptsID)
             {
-                opts.AddRange(savedList);
+                opts?.AddRange(savedList);
                 return;
             }
             DebugMessage("FMOL :: New list constructed");
             DebugMessage(optsID);
             lastOptsID = optsID;
             savedList.Clear();
-            if (c.GetThingList(pawn.Map) is List<Thing> things && !things.NullOrEmpty())
+            var things = c.GetThingList(pawn.Map);
+            if (things.Count > 0)
                 foreach (var pair in FloatMenuOptionList)
                     if (!pair.Value.NullOrEmpty())
                     {
                         var passers = things.FindAll(x => pair.Key.Passes(x));
-                        if (passers.NullOrEmpty()) continue;
                         foreach (var passer in passers)
-                        foreach (var func in pair.Value)
-                            if (func.Invoke(clickPos, pawn, passer) is List<FloatMenuOption> newOpts &&
-                                !newOpts.NullOrEmpty())
-                            {
-                                opts?.AddRange(newOpts);
-                                savedList.AddRange(newOpts);
-                            }
+                            foreach (var func in pair.Value)
+                                if (func.Invoke(clickPos, pawn, passer) is List<FloatMenuOption> newOpts &&
+                                    newOpts.Count > 0)
+                                {
+                                    opts?.AddRange(newOpts);
+                                    savedList.AddRange(newOpts);
+                                }
                     }
         }
     }
@@ -190,7 +191,7 @@ namespace JecsTools
                         return true;
                     //////////////////////////
                     if (toCheck.GetType() == Data.GetType() || Equals(toCheck.GetType(), Data) ||
-                        toCheck.GetType() == Data || toCheck.GetType().ToString() == Data.ToString() ||
+                        toCheck.GetType() == Data as Type || toCheck.GetType().ToString() == Data.ToString() ||
                         Data.GetType().IsInstanceOfType(toCheck))
                         return true;
                     break;
@@ -199,10 +200,11 @@ namespace JecsTools
                         return true;
                     break;
                 case _ConditionType.ThingHasComp:
-                    var dataType = Data;
-                    if (toCheck is ThingWithComps t && t?.AllComps?.Count > 0 && Enumerable.Any(t.AllComps, comp =>
-                            comp?.props?.compClass?.ToString() == dataType?.ToString() ||
-                            comp?.props?.compClass?.BaseType?.ToString() == dataType?.ToString()))
+                    var dataTypeStr = Data?.ToString();
+                    if (toCheck is ThingWithComps t && t.AllComps.Any(comp =>
+                            comp?.props?.compClass is Type compClass &&
+                            (compClass.ToString() == dataTypeStr ||
+                             compClass.BaseType?.ToString() == dataTypeStr)))
                         return true;
                     break;
             }

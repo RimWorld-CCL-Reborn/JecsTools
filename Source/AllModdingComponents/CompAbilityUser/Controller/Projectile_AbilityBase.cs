@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using RimWorld;
 using UnityEngine;
 using Verse;
-using Verse.AI.Group;
 using Verse.Sound;
 
 namespace AbilityUser
@@ -175,7 +173,7 @@ namespace AbilityUser
             //Log.Message("Impact");
             Impact_Override(hitThing);
             if (hitThing != null)
-                if (extraDamages != null && extraDamages.Count > 0)
+                if (extraDamages != null)
                     foreach (var damage in extraDamages)
                     {
                         var extraDinfo = new DamageInfo(damage.damageDef, damage.damage, this.def.projectile.GetArmorPenetration(1f), ExactRotation.eulerAngles.y,

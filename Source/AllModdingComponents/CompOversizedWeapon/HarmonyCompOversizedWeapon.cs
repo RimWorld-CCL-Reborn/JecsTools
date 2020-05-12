@@ -12,7 +12,7 @@ namespace CompOversizedWeapon
         {
             var harmony = new Harmony("jecstools.jecrell.comps.oversized");
             harmony.Patch(typeof(PawnRenderer).GetMethod("DrawEquipmentAiming"),
-                new HarmonyMethod(typeof(HarmonyCompOversizedWeapon).GetMethod("DrawEquipmentAimingPreFix")), null);
+                new HarmonyMethod(typeof(HarmonyCompOversizedWeapon).GetMethod(nameof(DrawEquipmentAimingPreFix))), null);
             harmony.Patch(AccessTools.Method(typeof(Thing), "get_DefaultGraphic"), null,
                 new HarmonyMethod(typeof(HarmonyCompOversizedWeapon), nameof(get_DefaultGraphic_PostFix)));
         }
@@ -24,76 +24,72 @@ namespace CompOversizedWeapon
         public static bool DrawEquipmentAimingPreFix(Pawn ___pawn, Thing eq, Vector3 drawLoc, float aimAngle)
         {
             if (___pawn == null) return true;
-            if (eq is ThingWithComps thingWithComps)
+            if (eq is ThingWithComps thingWithComps && thingWithComps.GetComp<CompOversizedWeapon>() is CompOversizedWeapon compOversizedWeapon)
             {
-                var compOversizedWeapon = thingWithComps.TryGetComp<CompOversizedWeapon>();
-                if (compOversizedWeapon != null)
+                //If the deflector is animating now, deflector handles drawing (and already has the drawSize fix).
+                if (compOversizedWeapon.CompDeflectorIsAnimatingNow) return false;
+
+                var flip = false;
+                var num = aimAngle - 90f;
+                    
+                if (aimAngle > 20f && aimAngle < 160f)
                 {
-                    //If the deflector is animating now, deflector handles drawing (and already has the drawSize fix).
-                    if (compOversizedWeapon.CompDeflectorIsAnimatingNow) return false;
-
-                    var flip = false;
-                    var num = aimAngle - 90f;
-                    
-                    if (aimAngle > 20f && aimAngle < 160f)
-                    {
-                        num += eq.def.equippedAngleOffset;
-                    }
-                    else if (aimAngle > 200f && aimAngle < 340f)
-                    {
-                        flip = true;
-                        num -= 180f;
-                        num -= eq.def.equippedAngleOffset;
-                    }
-                    else
-                    {
-                        num = AdjustOffsetAtPeace(eq, ___pawn, compOversizedWeapon, num);
-                    }
-                    
-                    if (!___pawn.IsFighting())
-                    {
-                        if (compOversizedWeapon.Props != null && compOversizedWeapon.Props.verticalFlipNorth && ___pawn.Rotation == Rot4.North)
-                        {
-                            num += 180f;
-                        }
-                        num = AdjustNonCombatRotation(___pawn, num, compOversizedWeapon);
-                    }
-                    num %= 360f;
-
-                    var graphic_StackCount = eq.Graphic as Graphic_StackCount;
-                    Material matSingle;
-                    if (graphic_StackCount != null)
-                        matSingle = graphic_StackCount.SubGraphicForStackCount(1, eq.def).MatSingle;
-                    else
-                        matSingle = eq.Graphic.MatSingle;
-
-                    var s = new Vector3(eq.def.graphicData.drawSize.x, 1f, eq.def.graphicData.drawSize.y);
-                    var matrix = default(Matrix4x4);
-
-                    Vector3 curOffset = AdjustRenderOffsetFromDir(___pawn, compOversizedWeapon);
-                    matrix.SetTRS(drawLoc + curOffset, Quaternion.AngleAxis(num, Vector3.up), s);                        
-                    
-                    Graphics.DrawMesh(!flip ? MeshPool.plane10 : MeshPool.plane10Flip, matrix, matSingle, 0);
-                    if (compOversizedWeapon.Props != null && compOversizedWeapon.Props.isDualWeapon)
-                    {
-                        curOffset = new Vector3(-1f * curOffset.x, curOffset.y, curOffset.z);
-                        Mesh curPool;
-                        if (___pawn.Rotation == Rot4.North || ___pawn.Rotation == Rot4.South)
-                        {
-                            num += 135f;
-                            num %= 360f;
-                            curPool = !flip ? MeshPool.plane10Flip : MeshPool.plane10;
-                        }
-                        else
-                        {
-                            curOffset = new Vector3(curOffset.x, curOffset.y - 0.1f, curOffset.z + 0.15f);
-                            curPool = !flip ? MeshPool.plane10 : MeshPool.plane10Flip;
-                        }
-                        matrix.SetTRS(drawLoc + curOffset, Quaternion.AngleAxis(num, Vector3.up), s);                        
-                        Graphics.DrawMesh(curPool, matrix, matSingle, 0);
-                    }
-                    return false;
+                    num += eq.def.equippedAngleOffset;
                 }
+                else if (aimAngle > 200f && aimAngle < 340f)
+                {
+                    flip = true;
+                    num -= 180f;
+                    num -= eq.def.equippedAngleOffset;
+                }
+                else
+                {
+                    num = AdjustOffsetAtPeace(eq, ___pawn, compOversizedWeapon, num);
+                }
+                    
+                if (!___pawn.IsFighting())
+                {
+                    if (compOversizedWeapon.Props != null && compOversizedWeapon.Props.verticalFlipNorth && ___pawn.Rotation == Rot4.North)
+                    {
+                        num += 180f;
+                    }
+                    num = AdjustNonCombatRotation(___pawn, num, compOversizedWeapon);
+                }
+                num %= 360f;
+
+                var graphic_StackCount = eq.Graphic as Graphic_StackCount;
+                Material matSingle;
+                if (graphic_StackCount != null)
+                    matSingle = graphic_StackCount.SubGraphicForStackCount(1, eq.def).MatSingle;
+                else
+                    matSingle = eq.Graphic.MatSingle;
+
+                var s = new Vector3(eq.def.graphicData.drawSize.x, 1f, eq.def.graphicData.drawSize.y);
+                var matrix = default(Matrix4x4);
+
+                Vector3 curOffset = AdjustRenderOffsetFromDir(___pawn, compOversizedWeapon);
+                matrix.SetTRS(drawLoc + curOffset, Quaternion.AngleAxis(num, Vector3.up), s);                        
+                    
+                Graphics.DrawMesh(!flip ? MeshPool.plane10 : MeshPool.plane10Flip, matrix, matSingle, 0);
+                if (compOversizedWeapon.Props != null && compOversizedWeapon.Props.isDualWeapon)
+                {
+                    curOffset = new Vector3(-1f * curOffset.x, curOffset.y, curOffset.z);
+                    Mesh curPool;
+                    if (___pawn.Rotation == Rot4.North || ___pawn.Rotation == Rot4.South)
+                    {
+                        num += 135f;
+                        num %= 360f;
+                        curPool = !flip ? MeshPool.plane10Flip : MeshPool.plane10;
+                    }
+                    else
+                    {
+                        curOffset = new Vector3(curOffset.x, curOffset.y - 0.1f, curOffset.z + 0.15f);
+                        curPool = !flip ? MeshPool.plane10 : MeshPool.plane10Flip;
+                    }
+                    matrix.SetTRS(drawLoc + curOffset, Quaternion.AngleAxis(num, Vector3.up), s);                        
+                    Graphics.DrawMesh(curPool, matrix, matSingle, 0);
+                }
+                return false;
             }
             return true;
         }
@@ -183,7 +179,7 @@ namespace CompOversizedWeapon
                     ___graphicInt.drawSize = __instance.def.graphicData.drawSize;
                     __result = ___graphicInt;
                 }
-                else
+                else // compOversizedWeapon.Props.groundGraphic != null
                 {
                     if (compOversizedWeapon.IsEquipped)
                     {
@@ -192,7 +188,7 @@ namespace CompOversizedWeapon
                     }
                     else
                     {
-                        if (compOversizedWeapon.Props?.groundGraphic?.GraphicColoredFor(__instance) is Graphic
+                        if (compOversizedWeapon.Props.groundGraphic.GraphicColoredFor(__instance) is Graphic
                             newResult)
                         {
                             newResult.drawSize = compOversizedWeapon.Props.groundGraphic.drawSize;

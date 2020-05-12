@@ -20,7 +20,6 @@ namespace JecsTools
             }
         }
 
-
         public override string TipStringExtra
         {
             get
@@ -28,11 +27,9 @@ namespace JecsTools
                 var stringBuilder = new StringBuilder();
                 if (base.TipStringExtra is string baseString && baseString != "")
                     stringBuilder.Append(baseString);
-                if (def.comps.FirstOrDefault(x => x is HediffCompProperties_VerbGiver) is HediffCompProperties_VerbGiver
-                        props &&
-                    props?.tools?.Count() > 0)
-                    for (var i = 0; i < props?.tools?.Count(); i++)
-                        stringBuilder.AppendLine("Damage".Translate() + ": " + props.tools[i].power);
+                if (def.comps.OfType<HediffCompProperties_VerbGiver>().FirstOrDefault()?.tools is List<Tool> tools)
+                    for (var i = 0; i < tools.Count; i++)
+                        stringBuilder.AppendLine("Damage".Translate() + ": " + tools[i].power);
                 return stringBuilder.ToString();
             }
         }

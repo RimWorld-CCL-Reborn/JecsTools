@@ -37,14 +37,10 @@ namespace JecsTools
         public override void WorldComponentTick()
         {
             base.WorldComponentTick();
-            if (jobTrackers != null && jobTrackers.Count > 0)
-            {
-                Caravan_JobTracker toRemove = null;
-                foreach (var t in jobTrackers)
-                    if (t.Caravan == null || !t.Caravan.Spawned) toRemove = t;
+            if (jobTrackers != null)
+                foreach (var t in jobTrackers.ToList()) // note: enumerate over copy while removing from original list
+                    if (t.Caravan == null || !t.Caravan.Spawned) jobTrackers.Remove(t);
                     else t.JobTrackerTick();
-                if (toRemove != null) jobTrackers.Remove(toRemove);
-            }
         }
 
         //private List<Caravan> jobTrackersKeysWorkingList;

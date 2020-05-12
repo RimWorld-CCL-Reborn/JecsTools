@@ -66,13 +66,10 @@ namespace JecsTools
         {
             if (!p.sown || p.def.plant.IsTree || !p.FlammableNow || !CanTrash(pawn, p))
                 return false;
-            var iterator = CellRect.CenteredOn(p.Position, 2).ClipInsideMap(p.Map).GetIterator();
-            while (!iterator.Done())
+            foreach (var current in CellRect.CenteredOn(p.Position, 2).ClipInsideMap(p.Map))
             {
-                var current = iterator.Current;
                 if (current.InBounds(p.Map) && current.ContainsStaticFire(p.Map))
                     return false;
-                iterator.MoveNext();
             }
             return p.Position.Roofed(p.Map) || p.Map.weatherManager.RainRate <= 0.25f;
         }

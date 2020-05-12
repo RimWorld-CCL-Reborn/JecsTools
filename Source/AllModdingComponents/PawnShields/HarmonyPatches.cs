@@ -1,11 +1,10 @@
-﻿using HarmonyLib;
-using RimWorld;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Text;
+using HarmonyLib;
+using RimWorld;
 using UnityEngine;
 using Verse;
 using Verse.Sound;
@@ -199,10 +198,8 @@ namespace PawnShields
             ThingWithComps shield = pawn.GetShield();
             if (shield != null)
             {
-                float value = shield.def.equippedStatOffsets.GetStatOffsetFromList(stat);
                 return shield.def.equippedStatOffsets.GetStatOffsetFromList(stat);
             }
-
             return 0f;
         }
 
@@ -212,14 +209,15 @@ namespace PawnShields
             if(pawn != null)
                 __result += StatWorkerInjection_AddShieldValue(pawn, StatDefField_StatWorker(__instance));
         }
-//
+
         public static IEnumerable<CodeInstruction> Transpiler_StatWorker_GetValueUnfinalized(IEnumerable<CodeInstruction> instructions, ILGenerator il)
         {
             List<CodeInstruction> instructionList = new List<CodeInstruction>(instructions);
             List<CodeInstruction> instructionInjectionList = new List<CodeInstruction>();
 
             //Look for the Primary part.
-            int desiredPosition = instructionList.FirstIndexOf(instruction => instruction.opcode == OpCodes.Ldfld && instruction.operand == typeof(Pawn).GetField("skills"));
+            int desiredPosition = instructionList.FirstIndexOf(instruction => instruction.opcode == OpCodes.Ldfld &&
+                instruction.operand as FieldInfo == typeof(Pawn).GetField("skills"));
 
             //Log.Message("#1: desiredPosition is at: " + desiredPosition);
 
@@ -295,19 +293,20 @@ namespace PawnShields
             List<CodeInstruction> instructionInjectionList = new List<CodeInstruction>();
 
             //Look for the Primary part.
-            int desiredPosition = instructionList.FirstIndexOf(instruction => instruction.opcode == OpCodes.Callvirt && instruction.operand == typeof(Pawn_EquipmentTracker).GetProperty("Primary").GetGetMethod());
+            int desiredPosition = instructionList.FirstIndexOf(instruction => instruction.opcode == OpCodes.Callvirt &&
+                instruction.operand as MethodInfo == typeof(Pawn_EquipmentTracker).GetProperty("Primary").GetGetMethod());
 
             //Log.Message("#1: desiredPosition is at: " + desiredPosition);
 
             //Now go forward two System.Text.StringBuilder::AppendLine() calls.
             MethodInfo appendLineMethod1 = typeof(StringBuilder).GetMethod("AppendLine", new Type[] { typeof(string) });
-            MethodInfo appendLineMethod2 = typeof(StringBuilder).GetMethod("AppendLine", new Type[] {});
+            MethodInfo appendLineMethod2 = typeof(StringBuilder).GetMethod("AppendLine", Type.EmptyTypes);
 
             int calls = 0;
             for(int i = desiredPosition; i < instructionList.Count; i++)
             {
                 CodeInstruction cil = instructionList[i];
-                if (cil.opcode == OpCodes.Callvirt && (cil.operand == appendLineMethod1 || cil.operand == appendLineMethod2))
+                if (cil.opcode == OpCodes.Callvirt && (cil.operand as MethodInfo == appendLineMethod1 || cil.operand as MethodInfo == appendLineMethod2))
                     calls++;
 
                 if (calls >= 2)
@@ -431,7 +430,7 @@ namespace PawnShields
             //Notify of agressor
             DamageInfo violence = new DamageInfo(dinfo);
             violence.SetAmount(0);
-            pawn?.mindState.Notify_DamageTaken(violence);
+            pawn.mindState.Notify_DamageTaken(violence);
 
             //Log.Message("Pawn got. " + pawn.Name);
 

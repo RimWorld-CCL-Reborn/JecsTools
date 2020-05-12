@@ -116,16 +116,16 @@ namespace AbilityUser
             if (!IsInitialized && TryTransformPawn())
                 Initialize();
             if (IsInitialized)
-                if (AbilityData?.AllPowers != null && AbilityData?.AllPowers.Count > 0)
+                if (AbilityData.AllPowers != null)
                     foreach (var power in AbilityData.AllPowers)
                         power.Tick();
         }
 
         public override IEnumerable<Gizmo> CompGetGizmosExtra()
         {
-            for (var i = 0; i < AbilityData?.AllPowers.Count; i++)
+            for (var i = 0; i < AbilityData.AllPowers.Count; i++)
             {
-                var ability = AbilityData?.AllPowers[i];
+                var ability = AbilityData.AllPowers[i];
                 if (ability.ShouldShowGizmo())
                     yield return ability.GetGizmo();
             }
@@ -139,13 +139,12 @@ namespace AbilityUser
             if (Scribe.mode == LoadSaveMode.PostLoadInit)
             {
                 var tempAbilities = new List<PawnAbility>(AbilityData.Powers);
-                if (!tempAbilities.NullOrEmpty())
-                    foreach (var pa in tempAbilities)
-                        if (pa.Def.abilityClass != pa.GetType())
-                        {
-                            RemovePawnAbility(pa.Def);
-                            AddPawnAbility(pa.Def);
-                        }
+                foreach (var pa in tempAbilities)
+                    if (pa.Def.abilityClass != pa.GetType())
+                    {
+                        RemovePawnAbility(pa.Def);
+                        AddPawnAbility(pa.Def);
+                    }
             }
         }
 
@@ -155,10 +154,11 @@ namespace AbilityUser
             {
                 //this.AbilityVerbs.Clear();
                 var abList = new List<PawnAbility>();
-                if (!AbilityData.Powers.NullOrEmpty()) abList.AddRange(AbilityData.Powers);
-                if (!AbilityData.TemporaryWeaponPowers.NullOrEmpty())
+                if (AbilityData.Powers != null)
+                    abList.AddRange(AbilityData.Powers);
+                if (AbilityData.TemporaryWeaponPowers != null)
                     abList.AddRange(AbilityData.TemporaryWeaponPowers);
-                if (!AbilityData.TemporaryApparelPowers.NullOrEmpty())
+                if (AbilityData.TemporaryApparelPowers != null)
                     abList.AddRange(AbilityData.TemporaryApparelPowers);
 
                 AbilityData.AllPowers = abList;
