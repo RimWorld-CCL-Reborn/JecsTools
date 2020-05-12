@@ -44,7 +44,7 @@ namespace CompSlotLoadable
                     if (Slots.Count > 0)
                         secondColorChangingSlot =
                             Slots.FirstOrDefault(x => ((SlotLoadableDef) x.def).doesChangeSecondColor);
-                return colorChangingSlot;
+                return secondColorChangingSlot;
             }
         }
 
