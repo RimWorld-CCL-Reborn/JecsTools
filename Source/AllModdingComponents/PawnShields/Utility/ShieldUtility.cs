@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 using Verse;
 
 namespace PawnShields
@@ -20,8 +17,7 @@ namespace PawnShields
         {
             if (pawn.equipment == null)
                 return null;
-
-            return pawn.equipment.AllEquipmentListForReading.FirstOrDefault(thing => thing.TryGetComp<CompShield>() != null);
+            return pawn.equipment.GetShield();
         }
 
         /// <summary>
@@ -31,7 +27,7 @@ namespace PawnShields
         /// <returns>Shield if tracker has any or null if there is no shield.</returns>
         public static ThingWithComps GetShield(this Pawn_EquipmentTracker eqTracker)
         {
-            return eqTracker.AllEquipmentListForReading.FirstOrDefault(thing => thing.TryGetComp<CompShield>() != null);
+            return eqTracker.AllEquipmentListForReading.FirstOrDefault(thing => thing.GetComp<CompShield>() != null);
         }
     }
 }
