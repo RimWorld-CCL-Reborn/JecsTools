@@ -14,7 +14,7 @@ namespace JecsTools
         {
             if (t is Plant)
             {
-                var job = new Job(JobDefOf.AttackMelee, t);
+                var job = JobMaker.MakeJob(JobDefOf.AttackMelee, t);
                 FinalizeTrashJob(job);
                 return job;
             }
@@ -22,12 +22,12 @@ namespace JecsTools
                 foreach (var current in pawn.equipment.AllEquipmentVerbs)
                     if (current.verbProps.ai_IsBuildingDestroyer)
                     {
-                        var job2 = new Job(JobDefOf.UseVerbOnThing, t);
+                        var job2 = JobMaker.MakeJob(JobDefOf.UseVerbOnThing, t);
                         job2.verbToUse = current;
                         FinalizeTrashJob(job2);
                         return job2;
                     }
-            var job3 = new Job(JobDefOf.AttackMelee, t);
+            var job3 = JobMaker.MakeJob(JobDefOf.AttackMelee, t);
             FinalizeTrashJob(job3);
             return job3;
         }

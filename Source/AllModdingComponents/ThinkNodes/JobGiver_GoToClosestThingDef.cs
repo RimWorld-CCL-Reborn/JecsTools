@@ -26,11 +26,10 @@ namespace ThinkNodes
                 {
                     return null;
                 }
-                
-                return new Job(JobDefOf.Goto, (LocalTargetInfo) thing.Position)
-                {
-                    locomotionUrgency = LocomotionUrgency.Sprint
-                };
+
+                var job = JobMaker.MakeJob(JobDefOf.Goto, (LocalTargetInfo) thing.Position);
+                job.locomotionUrgency = LocomotionUrgency.Sprint;
+                return job;
             }
             else
                 return null;

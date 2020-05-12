@@ -68,7 +68,7 @@ namespace CompSlotLoadable
                                     itemSlotLoadable = new FloatMenuOption(text2, delegate
                                     {
                                         loadableThing.SetForbidden(false, true);
-                                        pawn.jobs.TryTakeOrderedJob(new Job(
+                                        pawn.jobs.TryTakeOrderedJob(JobMaker.MakeJob(
                                             DefDatabase<JobDef>.GetNamed("GatherSlotItem"),
                                             loadableThing));
                                         MoteMaker.MakeStaticMote(loadableThing.DrawPos, loadableThing.Map,

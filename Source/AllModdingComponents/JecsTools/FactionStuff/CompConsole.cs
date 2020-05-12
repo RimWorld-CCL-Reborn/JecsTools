@@ -16,7 +16,7 @@ namespace JecsTools
 
 		private void UseAct(Pawn myPawn, ICommunicable commTarget)
 		{
-			var job = new Job(DefDatabase<JobDef>.GetNamed("JecsTools_UseConsole"), this.parent);
+			var job = JobMaker.MakeJob(DefDatabase<JobDef>.GetNamed("JecsTools_UseConsole"), this.parent);
 			job.commTarget = commTarget;
 			myPawn.jobs.TryTakeOrderedJob(job);
 			PlayerKnowledgeDatabase.KnowledgeDemonstrated(ConceptDefOf.OpeningComms, KnowledgeAmount.Total);

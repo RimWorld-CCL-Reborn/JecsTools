@@ -36,7 +36,7 @@ namespace JecsTools
 
         private int lastJobGivenAtFrame = -1;
 
-        private bool startingErrorRecoverJob;
+        //private bool startingErrorRecoverJob;
 
         public Caravan_JobTracker()
         {
@@ -65,15 +65,15 @@ namespace JecsTools
         {
             jobsGivenThisTick = 0;
             jobsGivenThisTickTextual = string.Empty;
-            if (caravan.IsHashIntervalTick(30))
-            {
-                //ThinkResult thinkResult = this.DetermineNextConstantThinkTreeJob();
-                //if (thinkResult.IsValid && this.ShouldStartJobFromThinkTree(thinkResult))
-                //{
-                //    this.CheckLeaveJoinableLordBecauseJobIssued(thinkResult);
-                //    this.StartJob(thinkResult.Job, JobCondition.InterruptForced, thinkResult.SourceNode, false, false, null, null); //this.caravan.thinker.ConstantThinkTree, thinkResult.Tag);
-                //}
-            }
+            //if (caravan.IsHashIntervalTick(30))
+            //{
+            //    ThinkResult thinkResult = this.DetermineNextConstantThinkTreeJob();
+            //    if (thinkResult.IsValid && this.ShouldStartJobFromThinkTree(thinkResult))
+            //    {
+            //        this.CheckLeaveJoinableLordBecauseJobIssued(thinkResult);
+            //        this.StartJob(thinkResult.Job, JobCondition.InterruptForced, thinkResult.SourceNode, false, false, null, null); //this.caravan.thinker.ConstantThinkTree, thinkResult.Tag);
+            //    }
+            //}
             if (curDriver != null)
                 curDriver.DriverTick();
             if (curJob == null && //!this.caravan.Dead && this.caravan.mindState.Active && 
@@ -310,24 +310,24 @@ namespace JecsTools
             Log.Error(text);
             if (curJob != null)
                 EndCurrentJob(JobCondition.Errored, false);
-            if (startingErrorRecoverJob)
-            {
-                Log.Error(
-                    "An error occurred while starting an error recover job. We have to stop now to avoid infinite loops. This means that the Caravan is now jobless which can cause further bugs. Caravan=" +
-                    caravan.ToStringSafe());
-            }
-            else
-            {
-                startingErrorRecoverJob = true;
-                try
-                {
-                    //this.StartJob(new Job(JobDefOf.Wait, 150, false), JobCondition.None, null, false, true, null, null);
-                }
-                finally
-                {
-                    startingErrorRecoverJob = false;
-                }
-            }
+            //if (startingErrorRecoverJob)
+            //{
+            //    Log.Error(
+            //        "An error occurred while starting an error recover job. We have to stop now to avoid infinite loops. This means that the Caravan is now jobless which can cause further bugs. Caravan=" +
+            //        caravan.ToStringSafe());
+            //}
+            //else
+            //{
+            //    startingErrorRecoverJob = true;
+            //    try
+            //    {
+            //        this.StartJob(JobMaker.MakeJob(JobDefOf.Wait, 150, false), JobCondition.None, null, false, true, null, null);
+            //    }
+            //    finally
+            //    {
+            //        startingErrorRecoverJob = false;
+            //    }
+            //}
         }
 
         //private void CheckLeaveJoinableLordBecauseJobIssued(ThinkResult result)

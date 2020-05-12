@@ -41,19 +41,19 @@ namespace AbilityUser
             {
                 case AbilityTargetCategory.TargetSelf:
                 {
-                    return new Job(AbilityDefOf.CastAbilitySelf, target);
+                    return JobMaker.MakeJob(AbilityDefOf.CastAbilitySelf, target);
                 }
                 case AbilityTargetCategory.TargetAoE:
                 {
-                    return new Job(AbilityDefOf.CastAbilityVerb, target);
+                    return JobMaker.MakeJob(AbilityDefOf.CastAbilityVerb, target);
                 }
                 case AbilityTargetCategory.TargetThing:
                 {
-                    return new Job(AbilityDefOf.CastAbilityVerb, target);
+                    return JobMaker.MakeJob(AbilityDefOf.CastAbilityVerb, target);
                 }
                 default:
                 {
-                    return new Job(AbilityDefOf.CastAbilityVerb, target);
+                    return JobMaker.MakeJob(AbilityDefOf.CastAbilityVerb, target);
                 }
             }
         }

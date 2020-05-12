@@ -33,8 +33,8 @@ namespace ThinkNodes
                 return null;
             }
 
-            var job = new Job(JobDefOf.Capture, victim, buildingBed) {count = 1};
-
+            var job = JobMaker.MakeJob(JobDefOf.Capture, victim, buildingBed);
+            job.count = 1;
             return job;
         }
     }

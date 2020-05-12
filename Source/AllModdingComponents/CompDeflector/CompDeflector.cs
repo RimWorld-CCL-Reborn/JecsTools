@@ -346,25 +346,23 @@ namespace CompDeflector
         {
             try
             {
-                if (!(dinfo.Instigator is Pawn pawn2)) return;
-                var job = new Job(CompDeflectorDefOf.CastDeflectVerb)
-                {
-                    playerForced = true,
-                    locomotionUrgency = LocomotionUrgency.Sprint
-                };
-                var compEquipVerb = pawn2.equipment?.PrimaryEq?.PrimaryVerb;
+                if (!(dinfo.Instigator is Pawn pawn)) return;
+                var job = JobMaker.MakeJob(CompDeflectorDefOf.CastDeflectVerb);
+                job.playerForced = true;
+                job.locomotionUrgency = LocomotionUrgency.Sprint;
+                var compEquipVerb = pawn.equipment?.PrimaryEq?.PrimaryVerb;
                 if (compEquipVerb == null) return;
                 var thisPawn = GetPawn;
                 var verbToUse = (Verb_Deflected) CopyAndReturnNewVerb(compEquipVerb);
                 verbToUse = (Verb_Deflected) ReflectionHandler(deflectVerb);
                 verbToUse.lastShotReflected = lastShotReflected;
                 verbToUse.verbTracker = thisPawn.VerbTracker;
-                pawn2 = ResolveDeflectionTarget(pawn2);
-                CriticalFailureHandler(dinfo, pawn2, out var shouldContinue);
+                pawn = ResolveDeflectionTarget(pawn);
+                CriticalFailureHandler(dinfo, pawn, out var shouldContinue);
                 if (!shouldContinue) return;
-                job.targetA = pawn2;
+                job.targetA = pawn;
                 job.verbToUse = verbToUse;
-                job.killIncappedTarget = pawn2.Downed;
+                job.killIncappedTarget = pawn.Downed;
                 thisPawn.jobs.TryTakeOrderedJob(job);
             }
             catch (NullReferenceException)

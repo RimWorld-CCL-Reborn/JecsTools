@@ -4,7 +4,6 @@ using System.Text;
 using RimWorld;
 using UnityEngine;
 using Verse;
-using Verse.AI;
 
 namespace CompSlotLoadable
 {
@@ -115,10 +114,8 @@ namespace CompSlotLoadable
                 {
                     isGathering = true;
 
-                    var job = new Job(CompSlotLoadableDefOf.GatherSlotItem, itemToLoad)
-                    {
-                        count = 1
-                    };
+                    var job = JobMaker.MakeJob(CompSlotLoadableDefOf.GatherSlotItem, itemToLoad);
+                    job.count = 1;
                     GetPawn.jobs.TryTakeOrderedJob(job);
                     //GetPawn.jobs.jobQueue.EnqueueFirst(job);
                     //GetPawn.jobs.EndCurrentJob(JobCondition.InterruptForced);
