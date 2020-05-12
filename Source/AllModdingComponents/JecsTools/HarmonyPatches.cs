@@ -114,7 +114,7 @@ namespace JecsTools
             try
             {
 
-                if (__instance?.EquipmentCompSource?.PrimaryVerb?.verbProps?.defaultProjectile?
+                if (__instance.EquipmentCompSource?.PrimaryVerb?.verbProps?.defaultProjectile?
                     .GetModExtension<ProjectileExtension>() is ProjectileExtension ext)
                 {
                     if (ext.passesWalls)
@@ -133,7 +133,7 @@ namespace JecsTools
         //Ignores all structures as part of objects that disallow being fired through.
         public static void CanHit_PostFix(Projectile __instance, Thing thing, ref bool __result)
         {
-            if (!__result && __instance?.def?.GetModExtension<ProjectileExtension>() is ProjectileExtension ext)
+            if (!__result && __instance.def?.GetModExtension<ProjectileExtension>() is ProjectileExtension ext)
             {
                 //Mods will often have their own walls, so we cannot do a def check for 
                 //ThingDefOf.Wall
@@ -304,7 +304,7 @@ namespace JecsTools
             if (!dinfo.HasValue) return true;
             if (!(dinfo.Value.Instigator is Pawn instigator)) return true;
 
-            var notLeader = __instance?.leader != member;
+            var notLeader = __instance.leader != member;
 
             var notPlayerKiller = instigator.Faction != Faction.OfPlayerSilentFail;
 

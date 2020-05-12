@@ -54,7 +54,6 @@ namespace CompSlotLoadable
         /// </summary>
         public static void PostApplyDamage_PostFix(Pawn __instance)
         {
-            if (__instance == null) return;
             if (__instance.Dead || __instance.equipment == null) return;
             var thingWithComps = __instance.equipment.Primary;
             if (thingWithComps != null)

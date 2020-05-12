@@ -15,18 +15,12 @@ namespace CompToggleDef
         {
             get
             {
-#pragma warning disable IDE0019 // Use pattern matching
-                var selected = SelThing as ThingWithComps;
-#pragma warning restore IDE0019 // Use pattern matching
-                if (selected != null)
+                var td = SelThing.TryGetComp<CompToggleDef>();
+                if (td != null)
                 {
-                    var td = selected.GetComp<CompToggleDef>();
-                    if (td != null)
-                    {
-                        //Log.Message("ITab_isvisible");
-                        labelKey = td.LabelKey; // defined by the Comp
-                        return true;
-                    }
+                    //Log.Message("ITab_isvisible");
+                    labelKey = td.LabelKey; // defined by the Comp
+                    return true;
                 }
                 return false;
             }
@@ -34,11 +28,12 @@ namespace CompToggleDef
 
         protected override void FillTab()
         {
-            var selected = Find.Selector.SingleSelectedThing as ThingWithComps;
-            var td = selected.GetComp<CompToggleDef>();
-            if (td == null) Log.Warning("selected thing has no CompToggleDef for ITab_ToggleDef");
-            labelKey = ((CompProperties_ToggleDef) td.props).labelKey; //"UM_TabToggleDef";//.Translate();
-            if (labelKey == null) labelKey = "TOGGLEDEF";
+            if (!(Find.Selector.SingleSelectedThing is ThingWithComps selected && selected.GetComp<CompToggleDef>() is CompToggleDef td))
+            {
+                Log.Warning("selected thing has no CompToggleDef for ITab_ToggleDef");
+                return;
+            }
+            labelKey = td.LabelKey ?? "TOGGLEDEF";
             var rect = new Rect(17f, 17f, ToggleDefCardUtility.CardSize.x, ToggleDefCardUtility.CardSize.y);
             ToggleDefCardUtility.DrawCard(rect, selected);
         }

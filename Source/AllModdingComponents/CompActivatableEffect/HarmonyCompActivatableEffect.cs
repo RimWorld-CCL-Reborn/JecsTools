@@ -41,14 +41,14 @@ namespace CompActivatableEffect
         // Verse.Pawn_EquipmentTracker
         public static void TryDropEquipment_PreFix(Pawn_EquipmentTracker __instance)
         {
-            if (__instance?.Primary?.GetComp<CompActivatableEffect>() is CompActivatableEffect compActivatableEffect &&
+            if (__instance.Primary?.GetComp<CompActivatableEffect>() is CompActivatableEffect compActivatableEffect &&
                 compActivatableEffect.CurrentState == CompActivatableEffect.State.Activated)
                 compActivatableEffect.TryDeactivate();
         }
 
         public static void ExitMap_PreFix(Pawn __instance)
         {
-            if (__instance?.equipment?.Primary?.GetComp<CompActivatableEffect>() is CompActivatableEffect compActivatableEffect &&
+            if (__instance.equipment?.Primary?.GetComp<CompActivatableEffect>() is CompActivatableEffect compActivatableEffect &&
                 compActivatableEffect.CurrentState == CompActivatableEffect.State.Activated)
                 compActivatableEffect.TryDeactivate();
         }

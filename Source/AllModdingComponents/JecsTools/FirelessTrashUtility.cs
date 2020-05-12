@@ -12,10 +12,7 @@ namespace JecsTools
         // RimWorld.TrashUtility
         public static Job TrashJob(Pawn pawn, Thing t)
         {
-#pragma warning disable IDE0019 // Use pattern matching
-            var plant = t as Plant;
-#pragma warning restore IDE0019 // Use pattern matching
-            if (plant != null)
+            if (t is Plant)
             {
                 var job = new Job(JobDefOf.AttackMelee, t);
                 FinalizeTrashJob(job);
@@ -30,7 +27,6 @@ namespace JecsTools
                         FinalizeTrashJob(job2);
                         return job2;
                     }
-            var value = Rand.Value;
             var job3 = new Job(JobDefOf.AttackMelee, t);
             FinalizeTrashJob(job3);
             return job3;
@@ -43,7 +39,6 @@ namespace JecsTools
             job.checkOverrideOnExpire = true;
             job.expireRequiresEnemiesNearby = true;
         }
-
 
         // RimWorld.TrashUtility
         public static bool ShouldTrashBuilding(Pawn pawn, Building b)
@@ -59,7 +54,6 @@ namespace JecsTools
             }
             return (!b.def.building.isTrap && pawn.HostileTo(b));
         }
-
 
         // RimWorld.TrashUtility
         public static bool ShouldTrashPlant(Pawn pawn, Plant p)
