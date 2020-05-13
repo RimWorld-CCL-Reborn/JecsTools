@@ -20,18 +20,18 @@ namespace CompSlotLoadable
             var harmony = new Harmony("jecstools.jecrell.comps.slotloadable");
             
             var type = typeof(HarmonyCompSlotLoadable);
-            harmony.Patch(AccessTools.Method(typeof(Pawn), nameof(Pawn.GetGizmos)), null,
-                new HarmonyMethod(type, nameof(GetGizmos_PostFix)));
-            harmony.Patch(AccessTools.Method(typeof(StatExtension), nameof(StatExtension.GetStatValue)), null,
-                new HarmonyMethod(type, nameof(GetStatValue_PostFix)));
-            harmony.Patch(AccessTools.Method(typeof(Verb_MeleeAttackDamage), "DamageInfosToApply"), null,
-                new HarmonyMethod(type, nameof(DamageInfosToApply_PostFix)), null);
-            harmony.Patch(AccessTools.Method(typeof(ITab_Pawn_Gear), "DrawThingRow"), null,
-                new HarmonyMethod(type, nameof(DrawThingRow_PostFix)), null);
-            harmony.Patch(AccessTools.Method(typeof(Pawn), nameof(Pawn.PostApplyDamage)), null,
-                new HarmonyMethod(type, nameof(PostApplyDamage_PostFix)), null);
-            harmony.Patch(AccessTools.Method(typeof(StatWorker), "StatOffsetFromGear"), null,
-                new HarmonyMethod(type, nameof(StatOffsetFromGear_PostFix)));
+            harmony.Patch(AccessTools.Method(typeof(Pawn), nameof(Pawn.GetGizmos)),
+                postfix: new HarmonyMethod(type, nameof(GetGizmos_PostFix)));
+            harmony.Patch(AccessTools.Method(typeof(StatExtension), nameof(StatExtension.GetStatValue), new[] { typeof(Thing), typeof(StatDef), typeof(bool) }),
+                postfix: new HarmonyMethod(type, nameof(GetStatValue_PostFix)));
+            harmony.Patch(AccessTools.Method(typeof(Verb_MeleeAttackDamage), "DamageInfosToApply"),
+                postfix: new HarmonyMethod(type, nameof(DamageInfosToApply_PostFix)));
+            harmony.Patch(AccessTools.Method(typeof(ITab_Pawn_Gear), "DrawThingRow"),
+                postfix: new HarmonyMethod(type, nameof(DrawThingRow_PostFix)));
+            harmony.Patch(AccessTools.Method(typeof(Pawn), nameof(Pawn.PostApplyDamage)),
+                postfix: new HarmonyMethod(type, nameof(PostApplyDamage_PostFix)));
+            harmony.Patch(AccessTools.Method(typeof(StatWorker), "StatOffsetFromGear"),
+                postfix: new HarmonyMethod(type, nameof(StatOffsetFromGear_PostFix)));
         }
 
         //try to extend this
