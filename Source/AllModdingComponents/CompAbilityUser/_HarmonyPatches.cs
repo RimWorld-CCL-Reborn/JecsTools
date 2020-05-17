@@ -183,7 +183,7 @@ namespace AbilityUser
                 var removedCharacters = new List<Pawn>();
                 while (previousPoints < tempAvgCombatPoints.Sum(x => x.Value) + tempSpecCombatPoints.Sum(x => x.Value))
                 {
-                    //Log.Message("------------------");                                
+                    //Log.Message("------------------");
                     //Log.Message("Rebalance Attempt # " + (initTryLimit - tryLimit + 1));
                     //Log.Message("------------------");
                     //Log.Message("Scenario Points: " + previousPoints + ". Total Points: " + tempAvgCombatPoints.Sum(x => x.Value) + tempSpecCombatPoints.Sum(x => x.Value));

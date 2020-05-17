@@ -1,7 +1,7 @@
 ﻿using Verse;
 using Verse.AI;
 
-/* 
+/*
  * Author: ChJees
  * Created: 2017-10-19
  */

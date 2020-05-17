@@ -209,7 +209,7 @@ namespace AbilityUser
                     {
                         if (attempt == true) result = true;
                         if (attempt == false) result = false;
-                    }   
+                    }
                 }
                 else //melee attacks WON'T have projectiles
                 {
@@ -223,7 +223,7 @@ namespace AbilityUser
                             //Log.Message("Yes victim is pawn");
                             AbilityEffectUtility.ApplyMentalStates(pawnVictim, CasterPawn, UseAbilityProps.mentalStatesToApply, UseAbilityProps.abilityDef, null);
                             AbilityEffectUtility.ApplyHediffs(pawnVictim, CasterPawn, UseAbilityProps.hediffsToApply, null);
-                            AbilityEffectUtility.SpawnSpawnables(UseAbilityProps.thingsToSpawn, pawnVictim, victim.MapHeld, victim.PositionHeld);   
+                            AbilityEffectUtility.SpawnSpawnables(UseAbilityProps.thingsToSpawn, pawnVictim, victim.MapHeld, victim.PositionHeld);
                         }
                     }
                     else
@@ -283,7 +283,7 @@ namespace AbilityUser
                 UseAbilityProps.mentalStatesToApply, UseAbilityProps.thingsToSpawn);
             return true;
         }
-      
+
         protected bool? TryLaunchProjectile(ThingDef projectileDef, LocalTargetInfo launchTarget)
         {
             if (TryLaunchProjectileCheck(projectileDef, launchTarget))

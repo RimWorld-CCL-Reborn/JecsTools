@@ -14,7 +14,7 @@ namespace JecsTools
         LayingSurface,
         LayingInBed
     }
-    
+
     public abstract class CaravanJobDriver : ICaravanJobEndable, IExposable
     {
         public bool asleep;

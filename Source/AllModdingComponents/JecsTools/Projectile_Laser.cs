@@ -448,7 +448,7 @@ namespace JecsTools
                 BattleLogEntry_RangedImpact battleLogEntry_RangedImpact = new BattleLogEntry_RangedImpact(this.launcher,
                     hitThing, this.intendedTarget.Thing, this.equipmentDef, this.def, this.targetCoverDef);
                 Find.BattleLog.Add(battleLogEntry_RangedImpact);
-                
+
                     int damageAmountBase = this.def.projectile.GetDamageAmount(1f);
                     DamageDef damageDef = this.def.projectile.damageDef;
                     int amount = damageAmountBase;
@@ -458,7 +458,7 @@ namespace JecsTools
                     DamageInfo dinfo = new DamageInfo(damageDef, amount, this.def.projectile.GetArmorPenetration(1f), y, launcher, null, equipmentDef,
                         DamageInfo.SourceCategory.ThingOrUnknown);
                     hitThing.TakeDamage(dinfo).AssociateWithLog(battleLogEntry_RangedImpact);
-                
+
                 //int damageAmountBase = this.def.projectile.DamageAmount;
                 //DamageInfo dinfo = new DamageInfo(this.def.projectile.damageDef, damageAmountBase, this.ExactRotation.eulerAngles.y, this.launcher, null, equipmentDef);
                 //hitThing.TakeDamage(dinfo);

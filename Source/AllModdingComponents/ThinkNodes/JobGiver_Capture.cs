@@ -18,14 +18,14 @@ namespace ThinkNodes
                 return pawn3.Downed && hostileTo && !pawn3.InBed() && pawn.CanReserve(pawn3) && !pawn3.IsForbidden(pawn);
             }
 
-            Pawn victim = (Pawn)GenClosest.ClosestThingReachable(pawn.Position, pawn.Map, 
+            Pawn victim = (Pawn)GenClosest.ClosestThingReachable(pawn.Position, pawn.Map,
                 ThingRequest.ForGroup(ThingRequestGroup.Pawn), PathEndMode.OnCell, TraverseParms.For(pawn),
                 targetAcquireRadius, Validator);
             if (victim == null)
             {
                 return null;
             }
-            
+
             Building_Bed buildingBed = RestUtility.FindBedFor(victim, pawn, true, false) ??
                                        RestUtility.FindBedFor(victim, pawn, true, false, true);
             if (buildingBed == null)

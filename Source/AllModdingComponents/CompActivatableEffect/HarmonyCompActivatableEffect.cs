@@ -13,10 +13,10 @@ namespace CompActivatableEffect
         static HarmonyCompActivatableEffect()
         {
             var harmony = new Harmony("jecstools.jecrell.comps.activator");
-            
+
             harmony.Patch(typeof(Pawn).GetMethod("GetGizmos"), null,
                 new HarmonyMethod(typeof(HarmonyCompActivatableEffect).GetMethod(nameof(GetGizmosPrefix))));
-            
+
             harmony.Patch(typeof(PawnRenderer).GetMethod("DrawEquipmentAiming"), null,
                 new HarmonyMethod(typeof(HarmonyCompActivatableEffect), nameof(DrawEquipmentAimingPostFix)));
 

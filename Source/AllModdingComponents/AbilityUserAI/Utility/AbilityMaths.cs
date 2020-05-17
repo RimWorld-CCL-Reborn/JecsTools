@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Verse;
 
-/* 
+/*
  * Author: ChJees
  * Created: 2017-11-04
  */

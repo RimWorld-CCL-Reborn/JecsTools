@@ -102,7 +102,7 @@ namespace CompAnimated
                 curGraphic = proxyGraphic;
                 NotifyGraphicsChange();
             }
-           
+
             return resolveCurGraphic ?? curGraphic;
         }
 
@@ -122,7 +122,7 @@ namespace CompAnimated
             {
                 /*Start Pawn*/
                 pawnGraphicSet.ClearCache();
-                
+
                 if (pPawn.pather?.MovingNow ?? false)
                 {
                     result = pProps.movingFrames[pCurIndex].Graphic;

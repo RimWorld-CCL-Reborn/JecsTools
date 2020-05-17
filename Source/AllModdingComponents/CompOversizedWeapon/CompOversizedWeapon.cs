@@ -46,7 +46,7 @@ namespace CompOversizedWeapon
                 return compEquippable;
             }
         }
-        
+
         public Pawn GetPawn => GetEquippable?.verbTracker?.PrimaryVerb?.CasterPawn;
 
         public bool CompDeflectorIsAnimatingNow

@@ -85,7 +85,7 @@ namespace PawnShields
             }
 
 
-            
+
             //StatWorker //TODO - Needs fixing for 1.0
             {
                 Type type = typeof(StatWorker);

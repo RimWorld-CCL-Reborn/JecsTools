@@ -7,7 +7,7 @@ using HarmonyLib;
 
 namespace JecsTools
 {
-    
+
 
     //Pulled from erdelf's Alien Races 2.0
     //Original credit and work belong to erdelf (https://github.com/erdelf)

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using AbilityUser;
 using Verse;
 
-/* 
+/*
  * Author: ChJees
  * Created: 2017-09-20
  */

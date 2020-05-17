@@ -14,11 +14,11 @@ namespace PawnShields
     {
         public override bool ShouldShowFor(StatRequest req)
         {
-            var def = req.Def as ThingDef; 
+            var def = req.Def as ThingDef;
             if (def != null && def.HasComp(typeof(CompShield)))
                 return true;
             return false;
         }
-        
+
     }
 }

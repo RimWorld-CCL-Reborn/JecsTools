@@ -22,7 +22,7 @@ namespace JecsTools
                 reportString = JobDefOf.UseCommsConsole.reportString
             };
             DefDatabase<JobDef>.Add(newDef);
-        }        
-        
+        }
+
     }
 }

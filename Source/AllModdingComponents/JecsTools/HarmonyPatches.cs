@@ -52,7 +52,7 @@ namespace JecsTools
             instance.Patch(AccessTools.Method(typeof(ArmorUtility), nameof(ArmorUtility.GetPostArmorDamage)), null,
                 new HarmonyMethod(type, nameof(Post_GetPostArmorDamage)));
 
-            //Allows for adding additional HediffSets when characters spawn using the StartWithHediff class. 
+            //Allows for adding additional HediffSets when characters spawn using the StartWithHediff class.
             instance.Patch(
                 AccessTools.Method(typeof(PawnGenerator), "GeneratePawn", new[] {typeof(PawnGenerationRequest)}), null,
                 new HarmonyMethod(type, nameof(Post_GeneratePawn)));
@@ -135,7 +135,7 @@ namespace JecsTools
         {
             if (!__result && __instance.def?.GetModExtension<ProjectileExtension>() is ProjectileExtension ext)
             {
-                //Mods will often have their own walls, so we cannot do a def check for 
+                //Mods will often have their own walls, so we cannot do a def check for
                 //ThingDefOf.Wall
                 //Most "walls" should either be in the structure category or be able to hold walls.
                 if (thing?.def is ThingDef def)
@@ -317,7 +317,7 @@ namespace JecsTools
             if (isPhoneFaction &&
                 inTime &&
                 notLeader &&
-                notPlayerKiller) // && 
+                notPlayerKiller) // &&
                 //notAttackingPlayer)
             {
                 return false;
@@ -595,10 +595,10 @@ namespace JecsTools
 
                     //Null, here, means "all damage types"
                     //So Null should pass this check.
-                    if (soakSetting.damageType != null && soakSetting.damageType != dinfo.Def) 
+                    if (soakSetting.damageType != null && soakSetting.damageType != dinfo.Def)
                     {
                         DebugMessage($"c6c:: {dinfo.Def.label.CapitalizeFirst()} is not in soak settings.");
-                        continue; 
+                        continue;
                     }
 
                     if (soakSetting.damageTypesToExclude != null &&

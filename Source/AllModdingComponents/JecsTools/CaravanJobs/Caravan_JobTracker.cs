@@ -76,7 +76,7 @@ namespace JecsTools
             //}
             if (curDriver != null)
                 curDriver.DriverTick();
-            if (curJob == null && //!this.caravan.Dead && this.caravan.mindState.Active && 
+            if (curJob == null && //!this.caravan.Dead && this.caravan.mindState.Active &&
                 CanDoAnyJob())
             {
                 if (debugLog)

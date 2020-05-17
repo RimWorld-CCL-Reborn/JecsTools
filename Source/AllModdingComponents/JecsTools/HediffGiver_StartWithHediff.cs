@@ -13,7 +13,7 @@ namespace JecsTools
         public float maleCommonality = 100.0f;
         public float femaleCommonality = 100.0f;
         public HediffExpandedDef expandedDef;
-        
+
         public void GiveHediff(Pawn pawn)
         {
             //If the random number is not within the chance range, exit.
@@ -29,7 +29,7 @@ namespace JecsTools
                 HealthUtility.AdjustSeverity(pawn, expandedDef, 1f);
             else
                 HealthUtility.AdjustSeverity(pawn, this.hediff, 1f);
-            
+
         }
     }
 }

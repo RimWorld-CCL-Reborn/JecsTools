@@ -26,7 +26,7 @@ namespace CompAnimated
             {
                 yield return "Forgot to define stillFrame > li or movingFrame > li";
             }
-            
+
             if (secondsBetweenFrames<=0f)
             {
                 yield return "Forgot to define secondsBetweenFrames";

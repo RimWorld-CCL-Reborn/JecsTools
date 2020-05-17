@@ -17,14 +17,14 @@ namespace CompBalloon
 
 
         private float MaxTicks => (Props.secondsBetweenCycles * 60);
-        
+
         private float Range => Props.balloonRange.max - Props.balloonRange.min;
-        
+
         public void ResolveBaseGraphic()
         {
             var sizeFactor = 1.0f;
             var curSizeAdjustment = curTicks * Range;
-            
+
             //Initialize or Deflate
             if (curTicks == Int32.MinValue ||
                 (!deflating && curTicks >= MaxTicks))
@@ -48,13 +48,13 @@ namespace CompBalloon
             {
                 sizeFactor = Props.balloonRange.min + curSizeAdjustment;
             }
-            
+
             if (Ballooner.Drawer?.renderer?.graphics is PawnGraphicSet pawnGraphicSet)
             {
                 pawnGraphicSet.ClearCache();
-                
+
                 var nakedGraphicDrawSize = pawnGraphicSet.nakedGraphic.drawSize;
-                
+
                 //Duplicated code from -> Verse.PawnGrapic -> ResolveAllGraphics
                 var curKindLifeStage = Ballooner.ageTracker.CurKindLifeStage;
                 if (Ballooner.gender != Gender.Female || curKindLifeStage.femaleGraphicData == null)
@@ -82,7 +82,7 @@ namespace CompBalloon
         {
             ResolveBaseGraphic();
         }
-        
+
 
         public override void PostExposeData()
         {

@@ -113,6 +113,6 @@ namespace CompDeflector
                 GetManipulationModifier(optionalReq, true).ToStringPercent(),
                 finalized);
         }
-       
+
     }
 }

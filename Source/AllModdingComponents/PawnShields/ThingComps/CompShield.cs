@@ -135,9 +135,9 @@ namespace PawnShields
         /// <param name="pawn">Shield bearer.</param>
         public virtual void RenderShield(Vector3 loc, Rot4 rot, Pawn pawn, Thing thing)
         {
-            bool carryShieldOpenly = 
-                (pawn.carryTracker == null || pawn.carryTracker.CarriedThing == null) && 
-                (pawn.Drafted || (pawn.CurJob != null && pawn.CurJob.def.alwaysShowWeapon) || 
+            bool carryShieldOpenly =
+                (pawn.carryTracker == null || pawn.carryTracker.CarriedThing == null) &&
+                (pawn.Drafted || (pawn.CurJob != null && pawn.CurJob.def.alwaysShowWeapon) ||
                 (pawn.mindState.duty != null && pawn.mindState.duty.def.alwaysShowWeapon));
 
             if (!ShieldProps.renderProperties.renderWhenPeaceful && !carryShieldOpenly)

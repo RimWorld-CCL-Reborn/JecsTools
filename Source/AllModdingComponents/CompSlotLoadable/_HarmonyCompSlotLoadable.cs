@@ -18,7 +18,7 @@ namespace CompSlotLoadable
         static HarmonyCompSlotLoadable()
         {
             var harmony = new Harmony("jecstools.jecrell.comps.slotloadable");
-            
+
             var type = typeof(HarmonyCompSlotLoadable);
             harmony.Patch(AccessTools.Method(typeof(Pawn), nameof(Pawn.GetGizmos)),
                 postfix: new HarmonyMethod(type, nameof(GetGizmos_PostFix)));
@@ -111,7 +111,7 @@ namespace CompSlotLoadable
                         {
                             vampiricPawn.TakeDamage(new DamageInfo(DamageDefOf.Burn, new IntRange(5, 10).RandomInRange,
                                 1f, 1, vampiricPawn, rec));
-                            
+
                             maxInjuriesToMake--;
                         }
                 }

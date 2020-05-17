@@ -47,7 +47,7 @@ namespace CompVehicle
 
         public float fuelConsumptionRate = 80f; //Stores what the fuel usage rate is, i.e. how much fuel is lost
         public List<VehicleHandlerGroup> handlers = new List<VehicleHandlerGroup>();
-        public Rot4 lastDirection = Rot4.South; //J Stores the last direction a vehicle was facing. 
+        public Rot4 lastDirection = Rot4.South; //J Stores the last direction a vehicle was facing.
         public ManipulationState manipulationStatus = ManipulationState.able;
 
         public MovingState movingStatus = MovingState.able;
@@ -329,7 +329,7 @@ namespace CompVehicle
                 manipulationStatus = ManipulationState.frozen;
 
             // ------ ADB Swenzi -------
-            //If it can move and it's in a caravan wandering than it might be stuck 
+            //If it can move and it's in a caravan wandering than it might be stuck
             //aka the movement thing hasn't kicked in. Change draft status just to be safe.
 
             //Fixes bug where weapon tries to fire even after gunner is removed

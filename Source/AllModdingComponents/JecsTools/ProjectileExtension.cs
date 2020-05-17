@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Verse;
 using Verse.AI;
 
@@ -6,7 +6,7 @@ namespace JecsTools
 {
     /// <summary>
     /// Projectile Extension allows extra control over
-    /// damage 
+    /// damage
     /// </summary>
     public class ProjectileExtension : DefModExtension
     {

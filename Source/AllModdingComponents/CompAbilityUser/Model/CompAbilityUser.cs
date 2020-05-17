@@ -173,7 +173,7 @@ namespace AbilityUser
         {
             return false;
         }
-        
+
         // Allows inherited classes to determine "true" combat points for characters that spawn with these components
         public virtual float CombatPoints()
         {
@@ -184,7 +184,7 @@ namespace AbilityUser
         //To avoid this, a special check occurs to disable the ability user, should this situation occur.
         public virtual void DisableAbilityUser()
         {
-            
+
         }
 
         #region virtual

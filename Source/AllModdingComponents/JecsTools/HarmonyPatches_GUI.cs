@@ -25,8 +25,8 @@ namespace JecsTools
         {
             if (!bubblesEnabled) __result = null;
         }
-        
-        private static int TryGetLocalIndexOfConstructedObject(IEnumerable<CodeInstruction> instructions, Type constructedType, Type[] constructorParams = null) { 
+
+        private static int TryGetLocalIndexOfConstructedObject(IEnumerable<CodeInstruction> instructions, Type constructedType, Type[] constructorParams = null) {
             var constructor = AccessTools.Constructor(constructedType, constructorParams);
             int localIndex = -1;
             if (constructor == null) {

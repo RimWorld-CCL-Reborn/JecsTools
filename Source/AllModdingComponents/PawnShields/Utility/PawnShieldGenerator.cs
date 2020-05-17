@@ -73,8 +73,8 @@ namespace PawnShields
                                 {
                                     workingShields.Add(w);
                                 }
-                                
-                            }   
+
+                            }
                         }
                 }
             if (workingShields.NullOrEmpty())

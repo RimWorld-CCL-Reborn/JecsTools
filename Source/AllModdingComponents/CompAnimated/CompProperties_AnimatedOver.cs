@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Verse;
 
 namespace CompAnimated
@@ -18,12 +18,12 @@ namespace CompAnimated
                 yield return error;
             }
 
-            if (xScale <= 0f) 
+            if (xScale <= 0f)
             {
                 xScale = 0f;
                 yield return "xScale must be positive";
             }
-            
+
             if (yScale <= 0f)
             {
                 yScale = 0f;

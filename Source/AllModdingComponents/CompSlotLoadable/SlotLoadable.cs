@@ -31,7 +31,7 @@ namespace CompSlotLoadable
             ThingIDMaker.GiveIDTo(this);
             slot = new ThingOwner<Thing>(this, false, LookMode.Deep);
         }
-        
+
         public Texture2D SlotIcon()
         {
             if (SlotOccupant != null)

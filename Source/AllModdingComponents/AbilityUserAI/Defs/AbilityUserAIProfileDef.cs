@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using RimWorld;
 using Verse;
 
-/* 
+/*
  * Author: ChJees
  * Created: 2017-09-22
  */

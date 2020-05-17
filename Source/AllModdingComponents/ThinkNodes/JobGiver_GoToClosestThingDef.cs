@@ -12,7 +12,7 @@ namespace ThinkNodes
         protected override Job TryGiveJob(Pawn pawn)
         {
             var thing = ThingToDo(pawn);
-            
+
             if (thing != null)
             {
                 if (!thing.Position.IsValid)

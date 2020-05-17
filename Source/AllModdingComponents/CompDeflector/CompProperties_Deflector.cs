@@ -24,7 +24,7 @@ namespace CompDeflector
         public bool useManipulationInCalc = false;
 
         public bool useSkillInCalc = false;
-        
+
         public CompProperties_Deflector()
         {
             compClass = typeof(CompDeflector);

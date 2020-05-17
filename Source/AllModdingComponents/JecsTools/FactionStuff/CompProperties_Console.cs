@@ -2,7 +2,7 @@
 
 namespace JecsTools
 {
-    
+
     public class CompProperties_Console : CompProperties
     {
         public bool usesPower = true;

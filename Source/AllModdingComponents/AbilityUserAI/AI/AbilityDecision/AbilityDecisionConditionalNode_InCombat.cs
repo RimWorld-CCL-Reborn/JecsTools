@@ -1,6 +1,6 @@
 ﻿using Verse;
 
-/* 
+/*
  * Author: ChJees
  * Created: 2017-09-23
  */

@@ -1,4 +1,4 @@
-using HarmonyLib;
+﻿using HarmonyLib;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -31,7 +31,7 @@ namespace CompOversizedWeapon
 
                 var flip = false;
                 var num = aimAngle - 90f;
-                    
+
                 if (aimAngle > 20f && aimAngle < 160f)
                 {
                     num += eq.def.equippedAngleOffset;
@@ -46,7 +46,7 @@ namespace CompOversizedWeapon
                 {
                     num = AdjustOffsetAtPeace(eq, ___pawn, compOversizedWeapon, num);
                 }
-                    
+
                 if (!___pawn.IsFighting())
                 {
                     if (compOversizedWeapon.Props != null && compOversizedWeapon.Props.verticalFlipNorth && ___pawn.Rotation == Rot4.North)
@@ -68,8 +68,8 @@ namespace CompOversizedWeapon
                 var matrix = default(Matrix4x4);
 
                 Vector3 curOffset = AdjustRenderOffsetFromDir(___pawn, compOversizedWeapon);
-                matrix.SetTRS(drawLoc + curOffset, Quaternion.AngleAxis(num, Vector3.up), s);                        
-                    
+                matrix.SetTRS(drawLoc + curOffset, Quaternion.AngleAxis(num, Vector3.up), s);
+
                 Graphics.DrawMesh(!flip ? MeshPool.plane10 : MeshPool.plane10Flip, matrix, matSingle, 0);
                 if (compOversizedWeapon.Props != null && compOversizedWeapon.Props.isDualWeapon)
                 {
@@ -86,7 +86,7 @@ namespace CompOversizedWeapon
                         curOffset = new Vector3(curOffset.x, curOffset.y - 0.1f, curOffset.z + 0.15f);
                         curPool = !flip ? MeshPool.plane10 : MeshPool.plane10Flip;
                     }
-                    matrix.SetTRS(drawLoc + curOffset, Quaternion.AngleAxis(num, Vector3.up), s);                        
+                    matrix.SetTRS(drawLoc + curOffset, Quaternion.AngleAxis(num, Vector3.up), s);
                     Graphics.DrawMesh(curPool, matrix, matSingle, 0);
                 }
                 return false;
@@ -132,12 +132,12 @@ namespace CompOversizedWeapon
         private static Vector3 AdjustRenderOffsetFromDir(Pawn pawn, CompOversizedWeapon compOversizedWeapon)
         {
             var curDir = pawn.Rotation;
-         
+
             Vector3 curOffset = Vector3.zero;
-         
+
             if (compOversizedWeapon.Props != null)
             {
-         
+
                 curOffset = compOversizedWeapon.Props.northOffset;
                 if (curDir == Rot4.East)
                 {
@@ -152,7 +152,7 @@ namespace CompOversizedWeapon
                     curOffset = compOversizedWeapon.Props.westOffset;
                 }
             }
-         
+
             return curOffset;
         }
 

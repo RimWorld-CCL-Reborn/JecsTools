@@ -179,13 +179,13 @@ namespace AbilityUser
             var reason = "";
             if (!CanCastPowerCheck(context, out reason))
                 return false;
-           
+
             //If we're a player, let's target.
             if (context == AbilityContext.Player)
             {
                 var targeter = Find.Targeter;
                 if (verb.CasterIsPawn && targeter.targetingSource != null )
-                    // Tad : Commented out for now. 
+                    // Tad : Commented out for now.
                     // && targeter.targetingSource.targetParams .verbProps == verb.verbProps)
                 {
                     var casterPawn = verb.CasterPawn;

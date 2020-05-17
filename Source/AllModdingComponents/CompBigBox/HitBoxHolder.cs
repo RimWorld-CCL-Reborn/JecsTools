@@ -33,7 +33,7 @@ namespace DefModExtension_BigBox
 
             }
         }
-        
+
         public override void ExposeData()
         {
             base.ExposeData();

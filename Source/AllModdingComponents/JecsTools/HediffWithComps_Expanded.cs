@@ -7,7 +7,7 @@ namespace JecsTools
     public class HediffWithComps_Expanded : HediffWithComps
     {
         private HediffExpandedDef Def => def as HediffExpandedDef;
-        
+
         public override string TipStringExtra
         {
             get

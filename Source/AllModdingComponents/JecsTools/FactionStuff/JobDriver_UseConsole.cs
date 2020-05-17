@@ -58,7 +58,7 @@ namespace JecsTools
                 ts.Goods.OfType<Pawn>(), ref empty, ref empty2, "LetterRelatedPawnsTradeShip".Translate());
             if (!empty2.NullOrEmpty())
                 Find.LetterStack.ReceiveLetter(empty, empty2, LetterDefOf.PositiveEvent, null);
-            TutorUtility.DoModalDialogIfNotKnown(ConceptDefOf.TradeGoodsMustBeNearBeacon);                
+            TutorUtility.DoModalDialogIfNotKnown(ConceptDefOf.TradeGoodsMustBeNearBeacon);
         }
     }
 }

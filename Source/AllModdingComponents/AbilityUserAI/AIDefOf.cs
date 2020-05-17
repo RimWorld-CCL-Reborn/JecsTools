@@ -1,6 +1,6 @@
 ﻿using RimWorld;
 
-/* 
+/*
  * Author: ChJees
  * Created: 2017-09-24
  */

@@ -268,7 +268,7 @@ namespace CompVehicle
 //                    nameof(GetTicksPerMove_PostFix)));
 
 
-//            //harmony.Patch(AccessTools.Method(typeof(RimWorld.Planet.CaravanMaker), "MakeCaravan"), null, new HarmonyMethod(typeof(HarmonyCompVehicle), 
+//            //harmony.Patch(AccessTools.Method(typeof(RimWorld.Planet.CaravanMaker), "MakeCaravan"), null, new HarmonyMethod(typeof(HarmonyCompVehicle),
 //            //    nameof(MakeCaravan_PostFix)));
 ////            harmony.Patch(AccessTools.Method(typeof(CaravanExitMapUtility), "ExitMapAndJoinOrCreateCaravan"),
 ////                new HarmonyMethod(typeof(HarmonyCompVehicle),
@@ -306,7 +306,7 @@ namespace CompVehicle
 //            /// TESTS
 //            /// This is for testing or debugging for errors.
 //            /// Most of these methods are prefix detours to make tests.
-//            /// 
+//            ///
 
 
 //            //harmony.Patch(AccessTools.Method(typeof(CaravanExitMapUtility), "ExitMapAndCreateCaravan", new Type[] { typeof(IEnumerable<Pawn>), typeof(Faction), typeof(int) }), new HarmonyMethod(typeof(HarmonyCompVehicle),
@@ -340,7 +340,7 @@ namespace CompVehicle
         //    return true;
         //}
 
-        // J This patch allows colonists to freely join vehicles 
+        // J This patch allows colonists to freely join vehicles
         //   without having their factions randomly switched around.
         // RimWorld.PawnUtility
         public static void PreventAssigningRandomFaction(ref bool __result, Pawn pawn)
@@ -412,7 +412,7 @@ namespace CompVehicle
             return true;
         }
 
-        //S Patches FloatingMenuMakerMap so that null reference errors don't occur when generating the GUI for 
+        //S Patches FloatingMenuMakerMap so that null reference errors don't occur when generating the GUI for
         //pawns that don't have worksettings
 //        public static IEnumerable<CodeInstruction> AddUndraftedOrders_Transpiler(
 //            IEnumerable<CodeInstruction> instructions)
@@ -769,7 +769,7 @@ namespace CompVehicle
 
         #region ErrorHandlingMethods
 
-        // J This patch allows colonists to freely join vehicles 
+        // J This patch allows colonists to freely join vehicles
         //   without having their factions randomly switched around.
         // RimWorld.PawnUtility
 
@@ -856,7 +856,7 @@ namespace CompVehicle
                     p.Faction == Faction.OfPlayer && (p.TryGetComp<CompVehicle>()?.AllOccupants.Any() ?? false));
         }
 
-        //J Prevents characters from finding beds to "rescue" vehicles. 
+        //J Prevents characters from finding beds to "rescue" vehicles.
         public static void DontRescueVehicles(ref Building_Bed __result, Pawn sleeper)
         {
             __result = sleeper?.GetComp<CompVehicle>() is CompVehicle compVehicle ? null : __result;
@@ -1040,7 +1040,7 @@ namespace CompVehicle
         {
             if (Find.TickManager.TicksGame % 100 == 0)
             {
-                
+
                 List<Pawn> ownedPawns = __instance.lord.ownedPawns;
                 var meetingPoint = Traverse.Create(__instance).Field("meetingPoint").GetValue<IntVec3>();
                 GatherAnimalsAndSlavesForCaravanUtility.CheckArrived(__instance.lord, ownedPawns,  meetingPoint, "AllSlavesGathered",
@@ -1545,12 +1545,12 @@ namespace CompVehicle
 
         /* S Modifies caravan movement speed if vehicles are present
         S The math on this is sound, I just don't know what the game is doing to turn the result into tiny values
-        
+
         Purpose: Modifies caravan speed if vehicles are present
-        Logic: If a vehicle is present than the caravan should move faster, if there are multiple vehicles it should be an average, 
+        Logic: If a vehicle is present than the caravan should move faster, if there are multiple vehicles it should be an average,
         Improvements:Different algorithm for calculating world movement speed?
         Algorithm explanation:
-         given 5 pawns with vehicle status denoted with V and their corresponding ticks per speed being: 
+         given 5 pawns with vehicle status denoted with V and their corresponding ticks per speed being:
          100V, 150, 200V, 250, 300V
          The none modified ticks per move would be 190f * sigma(100,150,200,250,300)/5 aka the average (200) * 190f or 38,000
          Since 190f is a constant we can remove that number and our postfixed calculations will be modified from sigma(100,150,200,250,300)/5 aka 200
@@ -1604,7 +1604,7 @@ namespace CompVehicle
          will move at the speed of the slowest pawn.So therefore, we should check firstly to see if characters are outside
          the vehicles.If they are, do not apply vehicle bonus speed.If everyone is inside vehicles, then we should consider
          which vehicle is the slowest and then make caravan speed go at that rate.
-        
+
         //RimWorld.Planet.CaravanTicksPerMoveUtility
         */
         public static void GetTicksPerMove_PostFix(List<Pawn> pawns, ref int __result)
@@ -1703,7 +1703,7 @@ namespace CompVehicle
         /*S Remove pawns from the vehicle when making a caravan
         Purpose: Remove pawns from the vehicle when making a caravan
         Logic: Pawns should be displayable while in the caravan, this allows needs to be calculated by the game instead of through ResolveNeeds()
-        Improvements: Make pawn cards appear while in a vehicle but not in the caravan? 
+        Improvements: Make pawn cards appear while in a vehicle but not in the caravan?
         Modify vehicle Needs card while not in caravan to display needs of pawns inside it?
 
 
@@ -1901,7 +1901,7 @@ namespace CompVehicle
         }
 
         //S Modifies the caravan inspect string so fuel is shown
-        //Purpose: Modifies the caravan inspect string so fuel is shown 
+        //Purpose: Modifies the caravan inspect string so fuel is shown
         //Logic: Players should be able to see how much fuel their caravan is carrying
         //Improvements: None I can think of
         //7/3/17 Jec- Bugfix for end of line errors.
@@ -1920,7 +1920,7 @@ namespace CompVehicle
             }
             else
             {
-                //Display how much fuel the caravan has left, over 1000 is infinite (game mechanic) 
+                //Display how much fuel the caravan has left, over 1000 is infinite (game mechanic)
                 if (AnythingNeedsFuel(__instance, out var needfuel))
                 {
                     //Call function that calculates the amount of fuel left
@@ -2625,7 +2625,7 @@ namespace CompVehicle
             return false;
         }
 
-        //Purpose: Find fuel for the vehicle 
+        //Purpose: Find fuel for the vehicle
         //Corresponding Patch Class: RimWorld.Planet.CaravanPawnsNeedsUtility
         //Corresponding Patch Method: TrySatisfyPawnNeeds_PreFix
         //Improvements: None I can think of
