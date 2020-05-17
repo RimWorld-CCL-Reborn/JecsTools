@@ -32,7 +32,7 @@ namespace CompAnimated
             curGraphic.Draw(drawPos, Rot4.North, this.parent, 0f);
         }
 
-        public CompProperties_Animated Props => (CompProperties_Animated) props;
+        public CompProperties_Animated Props => (CompProperties_Animated)props;
 
         public Graphic CurGraphic
         {
@@ -137,7 +137,8 @@ namespace CompAnimated
                 {
                     result = pProps.movingFrames[pCurIndex].Graphic;
                 }
-            } /*Start Non Pawn*/ else if (!pProps.stillFrames.NullOrEmpty())
+            } /*Start Non Pawn*/
+            else if (!pProps.stillFrames.NullOrEmpty())
             {
                 result = pProps.stillFrames[pCurIndex].Graphic;
             }

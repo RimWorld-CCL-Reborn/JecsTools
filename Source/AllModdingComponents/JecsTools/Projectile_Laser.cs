@@ -249,7 +249,7 @@ namespace JecsTools
             if (preFiringDuration != 0)
             {
                 drawingIntensity = preFiringInitialIntensity + (preFiringFinalIntensity - preFiringInitialIntensity) *
-                                   (float) tickCounter / (float) preFiringDuration;
+                                   (float)tickCounter / (float)preFiringDuration;
             }
         }
 
@@ -262,7 +262,7 @@ namespace JecsTools
             {
                 drawingIntensity = postFiringInitialIntensity +
                                    (postFiringFinalIntensity - postFiringInitialIntensity) *
-                                   (((float) tickCounter - (float) preFiringDuration) / (float) postFiringDuration);
+                                   (((float)tickCounter - (float)preFiringDuration) / (float)postFiringDuration);
             }
         }
 
@@ -273,7 +273,7 @@ namespace JecsTools
         {
             // We split the trajectory into small segments of approximatively 1 cell size.
             Vector3 trajectory = (this.destination - this.origin);
-            int numberOfSegments = (int) trajectory.magnitude;
+            int numberOfSegments = (int)trajectory.magnitude;
             Vector3 trajectorySegment = (trajectory / trajectory.magnitude);
 
             Vector3
@@ -342,7 +342,7 @@ namespace JecsTools
                             {
                                 this.destination = testedPosition.ToVector3Shifted() +
                                                    new Vector3(Rand.Range(-0.3f, 0.3f), 0f, Rand.Range(-0.3f, 0.3f));
-                                this.hitThing = (Thing) pawn;
+                                this.hitThing = (Thing)pawn;
                                 break;
                             }
                         }
@@ -449,15 +449,15 @@ namespace JecsTools
                     hitThing, this.intendedTarget.Thing, this.equipmentDef, this.def, this.targetCoverDef);
                 Find.BattleLog.Add(battleLogEntry_RangedImpact);
 
-                    int damageAmountBase = this.def.projectile.GetDamageAmount(1f);
-                    DamageDef damageDef = this.def.projectile.damageDef;
-                    int amount = damageAmountBase;
-                    float y = this.ExactRotation.eulerAngles.y;
-                    Thing launcher = this.launcher;
-                    ThingDef equipmentDef = this.equipmentDef;
-                    DamageInfo dinfo = new DamageInfo(damageDef, amount, this.def.projectile.GetArmorPenetration(1f), y, launcher, null, equipmentDef,
-                        DamageInfo.SourceCategory.ThingOrUnknown);
-                    hitThing.TakeDamage(dinfo).AssociateWithLog(battleLogEntry_RangedImpact);
+                int damageAmountBase = this.def.projectile.GetDamageAmount(1f);
+                DamageDef damageDef = this.def.projectile.damageDef;
+                int amount = damageAmountBase;
+                float y = this.ExactRotation.eulerAngles.y;
+                Thing launcher = this.launcher;
+                ThingDef equipmentDef = this.equipmentDef;
+                DamageInfo dinfo = new DamageInfo(damageDef, amount, this.def.projectile.GetArmorPenetration(1f), y, launcher, null, equipmentDef,
+                    DamageInfo.SourceCategory.ThingOrUnknown);
+                hitThing.TakeDamage(dinfo).AssociateWithLog(battleLogEntry_RangedImpact);
 
                 //int damageAmountBase = this.def.projectile.DamageAmount;
                 //DamageInfo dinfo = new DamageInfo(this.def.projectile.damageDef, damageAmountBase, this.ExactRotation.eulerAngles.y, this.launcher, null, equipmentDef);

@@ -44,7 +44,7 @@ namespace JecsTools
             lastOptsID = "1";
             foreach (var current in typeof(FloatMenuPatch).AllSubclassesNonAbstract())
             {
-                var item = (FloatMenuPatch) Activator.CreateInstance(current);
+                var item = (FloatMenuPatch)Activator.CreateInstance(current);
 
                 DebugMessage("FMOL :: Enter Loop Step");
                 var floatMenus = item.GetFloatMenus();
@@ -67,7 +67,7 @@ namespace JecsTools
                             DebugMessage("FMOL :: Existing condition not found for " + floatMenu.Key +
                                          " adding key and actions to dictionary.");
                             FloatMenuOptionList.Add(floatMenu.Key,
-                                new List<Func<Vector3, Pawn, Thing, List<FloatMenuOption>>> {floatMenu.Value});
+                                new List<Func<Vector3, Pawn, Thing, List<FloatMenuOption>>> { floatMenu.Value });
                         }
                     }
                 }
@@ -196,7 +196,7 @@ namespace JecsTools
                         return true;
                     break;
                 case _ConditionType.IsTypeStringMatch:
-                    if (toCheck.GetType().ToString() == (string) toCheck)
+                    if (toCheck.GetType().ToString() == (string)toCheck)
                         return true;
                     break;
                 case _ConditionType.ThingHasComp:

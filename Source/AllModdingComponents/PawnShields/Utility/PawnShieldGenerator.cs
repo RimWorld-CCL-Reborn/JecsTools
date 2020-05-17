@@ -55,7 +55,7 @@ namespace PawnShields
                 return;
             }
             if (pawn.story != null && pawn.WorkTagIsDisabled(WorkTags.Violent))
-               return;
+                return;
 
             var generatorPropsShieldMoney = generatorProps.shieldMoney;
             float randomInRange = generatorPropsShieldMoney.RandomInRange;
@@ -86,7 +86,7 @@ namespace PawnShields
             if (workingShields.TryRandomElementByWeight(w => w.Commonality * w.Price, out var thingStuffPair))
             {
                 ThingWithComps thingWithComps =
-                    (ThingWithComps) ThingMaker.MakeThing(thingStuffPair.thing, thingStuffPair.stuff);
+                    (ThingWithComps)ThingMaker.MakeThing(thingStuffPair.thing, thingStuffPair.stuff);
                 PawnGenerator.PostProcessGeneratedGear(thingWithComps, pawn);
                 pawn.equipment?.AddEquipment(thingWithComps);
                 //Log.Message(pawn.Label + " added shield " + thingWithComps.Label);

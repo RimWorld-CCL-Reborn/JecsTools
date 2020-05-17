@@ -40,10 +40,10 @@ namespace CompActivatableEffect
                 if (deflector != null)
                 {
                     compDeflectorIsAnimatingNow =
-                        (Func<bool>) AccessTools.PropertyGetter(deflector.GetType(), "IsAnimatingNow").CreateDelegate(
+                        (Func<bool>)AccessTools.PropertyGetter(deflector.GetType(), "IsAnimatingNow").CreateDelegate(
                             typeof(Func<bool>), deflector);
                     compDeflectorAnimationDeflectionTicks =
-                        (Func<int>) AccessTools.PropertyGetter(deflector.GetType(), "AnimationDeflectionTicks").CreateDelegate(
+                        (Func<int>)AccessTools.PropertyGetter(deflector.GetType(), "AnimationDeflectionTicks").CreateDelegate(
                             typeof(Func<int>), deflector);
                 }
                 initComps = true;
@@ -59,7 +59,7 @@ namespace CompActivatableEffect
             }
         }
 
-        public Pawn GetPawn =>  GetEquippable.verbTracker.PrimaryVerb.CasterPawn;
+        public Pawn GetPawn => GetEquippable.verbTracker.PrimaryVerb.CasterPawn;
 
         //public List<Verb> GetVerbs => GetEquippable.verbTracker.AllVerbs;
 
@@ -262,7 +262,7 @@ namespace CompActivatableEffect
             }
         }
 
-        public CompProperties_ActivatableEffect Props => (CompProperties_ActivatableEffect) props;
+        public CompProperties_ActivatableEffect Props => (CompProperties_ActivatableEffect)props;
 
         public virtual Graphic Graphic
         {

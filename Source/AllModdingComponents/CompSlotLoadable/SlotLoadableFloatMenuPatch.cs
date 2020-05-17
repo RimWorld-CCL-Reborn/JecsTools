@@ -36,7 +36,7 @@ namespace CompSlotLoadable
 
                         foreach (var slot in compSlotLoadable.Slots)
                         {
-                            var loadableThing = (slot.CanLoad(curThing.def)) ? curThing : null ;
+                            var loadableThing = (slot.CanLoad(curThing.def)) ? curThing : null;
                             if (loadableThing != null)
                             {
                                 FloatMenuOption itemSlotLoadable;

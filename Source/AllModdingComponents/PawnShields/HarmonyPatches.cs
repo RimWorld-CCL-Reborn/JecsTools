@@ -90,7 +90,7 @@ namespace PawnShields
             {
                 Type type = typeof(StatWorker);
 
-                infoTextLineFromGear = (Func<Thing, StatDef, string>) AccessTools.Method(type, "InfoTextLineFromGear")
+                infoTextLineFromGear = (Func<Thing, StatDef, string>)AccessTools.Method(type, "InfoTextLineFromGear")
                     .CreateDelegate(typeof(Func<Thing, StatDef, string>));
 
                 MethodInfo patchMethod = type.GetMethod("GetExplanationUnfinalized"); //StatRequest req, ToStringNumberSense numberSense
@@ -109,17 +109,17 @@ namespace PawnShields
             }
         }
 
-//        public static void Patch_ThingDef_SpecialDisplayStats(ThingDef __instance, ref IEnumerable<StatDrawEntry> __result)
-//        {
-//            if (__instance.HasComp(typeof(CompShield)))
-//            {
-//                List<StatDrawEntry> result = new List<StatDrawEntry>(__result);
-//
-//                new StatDrawEntry(StatCategoryDefOf.Apparel, "Covers".Translate(), coveredParts, 100, string.Empty);
-//
-//                __result = result;
-//            }
-//        }
+        //public static void Patch_ThingDef_SpecialDisplayStats(ThingDef __instance, ref IEnumerable<StatDrawEntry> __result)
+        //{
+        //    if (__instance.HasComp(typeof(CompShield)))
+        //    {
+        //        List<StatDrawEntry> result = new List<StatDrawEntry>(__result);
+
+        //        new StatDrawEntry(StatCategoryDefOf.Apparel, "Covers".Translate(), coveredParts, 100, string.Empty);
+
+        //        __result = result;
+        //    }
+        //}
 
         public static void Patch_PawnGenerator_GenerateGearFor(Pawn pawn, ref PawnGenerationRequest request)
         {

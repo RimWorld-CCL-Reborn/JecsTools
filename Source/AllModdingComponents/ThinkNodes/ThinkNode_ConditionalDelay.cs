@@ -6,7 +6,7 @@ namespace ThinkNodes
 {
     public class ThinkNode_ConditionalDelay : ThinkNode_Conditional
     {
-        public int min = 1000, max= 2000;
+        public int min = 1000, max = 2000;
 
         private Dictionary<string, int> delays = new Dictionary<string, int>();
         protected override bool Satisfied(Pawn pawn)

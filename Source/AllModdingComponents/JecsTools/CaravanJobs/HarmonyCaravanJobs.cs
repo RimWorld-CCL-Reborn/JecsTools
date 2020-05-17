@@ -22,7 +22,7 @@ namespace JecsTools
                 new HarmonyMethod(typeof(HarmonyCaravanPatches), nameof(GetGizmos_Jobs)), null);
             harmony.Patch(
                 AccessTools.Method(typeof(WorldSelector), "SelectableObjectsUnderMouse",
-                    new[] {typeof(bool).MakeByRefType(), typeof(bool).MakeByRefType()}),
+                    new[] { typeof(bool).MakeByRefType(), typeof(bool).MakeByRefType() }),
                 null, new HarmonyMethod(typeof(HarmonyCaravanPatches),
                     nameof(SelectableObjectsUnderMouse_InvisHandler)), null);
         }

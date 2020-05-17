@@ -13,7 +13,7 @@ namespace AbilityUser
 
         private Graphic Overlay;
 
-        public CompProperties_AbilityItem Props => (CompProperties_AbilityItem) props;
+        public CompProperties_AbilityItem Props => (CompProperties_AbilityItem)props;
 
         public void GetOverlayGraphic()
         {

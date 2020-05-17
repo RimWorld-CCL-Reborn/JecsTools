@@ -42,7 +42,7 @@ namespace AbilityUser
         {
             get
             {
-                var b = (destination - origin) * (1f - ticksToImpact / (float) StartingTicksToImpact);
+                var b = (destination - origin) * (1f - ticksToImpact / (float)StartingTicksToImpact);
                 return origin + b + Vector3.up * def.Altitude;
             }
         }

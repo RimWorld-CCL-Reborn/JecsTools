@@ -241,7 +241,7 @@ namespace JecsTools
             var result = 0f;
             try
             {
-                ((Action) (() =>
+                ((Action)(() =>
                 {
                     var abilityUsers = pawn.GetComps<CompAbilityUser>();
                     foreach (var a in abilityUsers)

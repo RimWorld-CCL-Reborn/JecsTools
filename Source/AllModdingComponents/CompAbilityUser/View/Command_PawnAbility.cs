@@ -132,7 +132,7 @@ namespace AbilityUser
             }
             if (pawnAbility.CooldownTicksLeft != -1 && pawnAbility.CooldownTicksLeft < pawnAbility.MaxCastingTicks)
             {
-                var math = curTicks / (float) pawnAbility.MaxCastingTicks;
+                var math = curTicks / (float)pawnAbility.MaxCastingTicks;
                 Widgets.FillableBar(rect, math, AbilityButtons.FullTex, AbilityButtons.EmptyTex, false);
             }
             if (!HighlightTag.NullOrEmpty() && (Find.WindowStack.FloatMenu == null ||

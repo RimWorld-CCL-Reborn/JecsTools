@@ -131,7 +131,7 @@ namespace CompVehicle
             }
         }
 
-        public CompProperties_Vehicle Props => (CompProperties_Vehicle) props;
+        public CompProperties_Vehicle Props => (CompProperties_Vehicle)props;
 
         public void ResolveITab()
         {
@@ -164,7 +164,7 @@ namespace CompVehicle
 
             var request = new PawnGenerationRequest(newPawnKind, Pawn.Faction, PawnGenerationContext.NonPlayer,
                 Pawn.Map.Tile, false, false, false, false, true, true, 1f, false, true, true, false, false, false,
-                false, false, 0, null, (0-1), null, null, null, null);
+                false, false, 0, null, (0 - 1), null, null, null, null);
             var item = PawnGenerator.GeneratePawn(request);
             return item;
         }
@@ -532,18 +532,21 @@ namespace CompVehicle
             base.PostDraw();
         }
         //Draw the drivers in the vehicle if drawDrivers is true
-        public void ResolveGraphics(){
-            if(Props.drawDrivers){
+        public void ResolveGraphics()
+        {
+            if (Props.drawDrivers)
+            {
                 List<Pawn> haulers = new List<Pawn>();
                 if (handlers != null && handlers.Count > 0)
                 {
                     //Amass a list of drivers that are alive and in a slot modifying movement
                     foreach (var group in handlers)
                     {
-                        if (group.handlers != null && group.handlers.Count > 0){
+                        if (group.handlers != null && group.handlers.Count > 0)
+                        {
                             if (group.role != null && (group.role.handlingTypes & HandlingTypeFlags.Movement) != HandlingTypeFlags.None)
                             {
-                                if (group.handlers.Any((Pawn x) =>  !x.Downed && !x.Dead))
+                                if (group.handlers.Any((Pawn x) => !x.Downed && !x.Dead))
                                 {
                                     foreach (Pawn p in group.handlers)
                                     {
@@ -556,28 +559,32 @@ namespace CompVehicle
                             }
                         }
                     }
-                    if(haulers.Count > 0){
+                    if (haulers.Count > 0)
+                    {
                         //Display the drivers that are in the vehicle
                         Pawn p = parent as Pawn;
                         float width = p.ageTracker.CurKindLifeStage.bodyGraphicData.drawSize.x;
                         float height = p.ageTracker.CurKindLifeStage.bodyGraphicData.drawSize.y;
                         float xMod = -width / 4;
                         float yMod = 0;
-                        foreach(Pawn d in haulers){
+                        foreach (Pawn d in haulers)
+                        {
                             d.Rotation = parent.Rotation;
                             //If it's the last driver to be displayed and on a new row, put it in the center
                             if (haulers.Count % 2 == 1 && d == haulers.Last())
                             {
                                 d.Drawer.renderer.RenderPawnAt(ResolveOffset(ResolveOffset(p.Drawer.DrawPos, new Vector3(0, 0, yMod), parent.Rotation), Props.drawOffset, parent.Rotation));
                             }
-                            else{
+                            else
+                            {
                                 //Draw drivers in 2 x 1 rows
-                                        d.Drawer.renderer.RenderPawnAt(ResolveOffset(ResolveOffset(p.Drawer.DrawPos,new Vector3(xMod, 0, yMod),parent.Rotation), Props.drawOffset, parent.Rotation));
-                                        xMod += 2 * width/4;
-                                        if(xMod > 2 * width / 4){
-                                            xMod = -width/3;
-                                            yMod += height/3;
-                                        }
+                                d.Drawer.renderer.RenderPawnAt(ResolveOffset(ResolveOffset(p.Drawer.DrawPos, new Vector3(xMod, 0, yMod), parent.Rotation), Props.drawOffset, parent.Rotation));
+                                xMod += 2 * width / 4;
+                                if (xMod > 2 * width / 4)
+                                {
+                                    xMod = -width / 3;
+                                    yMod += height / 3;
+                                }
                             }
                         }
                     }
@@ -585,18 +592,23 @@ namespace CompVehicle
             }
         }
 
-        public Vector3 ResolveOffset(Vector3 oldPos, Vector3 offset, Rot4 rot){
+        public Vector3 ResolveOffset(Vector3 oldPos, Vector3 offset, Rot4 rot)
+        {
             Vector3 newPos = oldPos;
-            if(rot == Rot4.North){
+            if (rot == Rot4.North)
+            {
                 newPos = new Vector3(oldPos.x + offset.x, oldPos.y, oldPos.z + offset.z);
             }
-            if(rot == Rot4.East){
+            if (rot == Rot4.East)
+            {
                 newPos = new Vector3(oldPos.x + offset.z, oldPos.y, oldPos.z - offset.x);
             }
-            if(rot == Rot4.South){
+            if (rot == Rot4.South)
+            {
                 newPos = new Vector3(oldPos.x - offset.x, oldPos.y, oldPos.z - offset.z);
             }
-            if(rot == Rot4.West){
+            if (rot == Rot4.West)
+            {
                 newPos = new Vector3(oldPos.x - offset.z, oldPos.y, oldPos.z + offset.x);
             }
             return newPos;
@@ -640,7 +652,9 @@ namespace CompVehicle
                         {
                             validator = ti => ti.Thing is Pawn p && p.Faction != null && p.Faction.IsPlayer && p.training != null && p.training.HasLearned(DefDatabase<TrainableDef>.GetNamed("Haul")) && p.BodySize > Props.minBodySize
                         }, delegate (LocalTargetInfo target) { GiveLoadJob(target.Thing, group); }, null, null, null);
-                }else{
+                }
+                else
+                {
                     Find.Targeter.BeginTargeting(
                         new TargetingParameters
                         {
@@ -657,7 +671,8 @@ namespace CompVehicle
 
                 //Additions by Swenzi 1/1/2018
                 //Allow animals to ride in vehicles or pull vehicles (animals only allowed to be in slots that allow movement)
-                if(Props.animalDrivers && (group.role.handlingTypes & HandlingTypeFlags.Movement) != HandlingTypeFlags.None){
+                if (Props.animalDrivers && (group.role.handlingTypes & HandlingTypeFlags.Movement) != HandlingTypeFlags.None)
+                {
                     list.Add(new FloatMenuOption(text, delegate
                     {
                         SoundDefOf.Tick_Tiny.PlayOneShotOnCamera(null);
@@ -669,7 +684,8 @@ namespace CompVehicle
                             }, delegate (LocalTargetInfo target) { GiveLoadJob(target.Thing, group); }, null, null, null);
                     }, MenuOptionPriority.Default, null, null, 29f, null, null));
                 }
-                else{
+                else
+                {
                     list.Add(new FloatMenuOption(text, delegate
                     {
                         SoundDefOf.Tick_Tiny.PlayOneShotOnCamera(null);

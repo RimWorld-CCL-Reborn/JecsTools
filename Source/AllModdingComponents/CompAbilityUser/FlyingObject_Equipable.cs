@@ -25,7 +25,7 @@ namespace AbilityUser
             ThingWithComps thingWithComps2;
             if (thingWithComps.def.stackLimit > 1 && thingWithComps.stackCount > 1)
             {
-                thingWithComps2 = (ThingWithComps) thingWithComps.SplitOff(1);
+                thingWithComps2 = (ThingWithComps)thingWithComps.SplitOff(1);
             }
             else
             {

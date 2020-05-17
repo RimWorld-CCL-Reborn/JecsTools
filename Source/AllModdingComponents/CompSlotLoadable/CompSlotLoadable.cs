@@ -28,7 +28,7 @@ namespace CompSlotLoadable
             {
                 if (colorChangingSlot != null) return colorChangingSlot;
                 if (slots != null)
-                    colorChangingSlot = slots.FirstOrDefault(x => ((SlotLoadableDef) x.def).doesChangeColor);
+                    colorChangingSlot = slots.FirstOrDefault(x => ((SlotLoadableDef)x.def).doesChangeColor);
                 return colorChangingSlot;
             }
         }
@@ -39,7 +39,7 @@ namespace CompSlotLoadable
             {
                 if (secondColorChangingSlot != null) return secondColorChangingSlot;
                 if (slots != null)
-                    secondColorChangingSlot = slots.FirstOrDefault(x => ((SlotLoadableDef) x.def).doesChangeSecondColor);
+                    secondColorChangingSlot = slots.FirstOrDefault(x => ((SlotLoadableDef)x.def).doesChangeSecondColor);
                 return secondColorChangingSlot;
             }
         }
@@ -72,7 +72,7 @@ namespace CompSlotLoadable
         public Pawn GetPawn => GetEquippable.verbTracker.PrimaryVerb.CasterPawn;
 
 
-        public CompProperties_SlotLoadable Props => (CompProperties_SlotLoadable) props;
+        public CompProperties_SlotLoadable Props => (CompProperties_SlotLoadable)props;
 
         public void Initialize()
         {
@@ -180,7 +180,7 @@ namespace CompSlotLoadable
             }
             if (!slot.IsEmpty())
             {
-                var text = string.Format(StringOf.Unload, new object[] {slot.SlotOccupant.Label});
+                var text = string.Format(StringOf.Unload, new object[] { slot.SlotOccupant.Label });
                 //Func<Rect, bool> extraPartOnGUI = (Rect rect) => Widgets.InfoCardButton(rect.x + 5f, rect.y + (rect.height - 24f) / 2f, current);
                 floatList.Add(new FloatMenuOption(text, delegate { TryEmptySlot(slot); }, MenuOptionPriority.Default,
                     null, null, 29f, null, null));
@@ -233,14 +233,14 @@ namespace CompSlotLoadable
             if (!slot.IsEmpty())
             {
                 s.AppendLine();
-                s.AppendLine(string.Format(StringOf.CurrentlyLoaded, new object[] {slot.SlotOccupant.LabelCap}));
-                if (((SlotLoadableDef) slot.def).doesChangeColor)
+                s.AppendLine(string.Format(StringOf.CurrentlyLoaded, new object[] { slot.SlotOccupant.LabelCap }));
+                if (((SlotLoadableDef)slot.def).doesChangeColor)
                 {
                     s.AppendLine();
                     s.AppendLine(StringOf.Effects);
                     s.AppendLine("  " + StringOf.ChangesPrimaryColor);
                 }
-                if (((SlotLoadableDef) slot.def).doesChangeStats)
+                if (((SlotLoadableDef)slot.def).doesChangeStats)
                 {
                     var slotBonus = slot.SlotOccupant.TryGetComp<CompSlottedBonus>();
                     if (slotBonus?.Props != null)
@@ -278,7 +278,7 @@ namespace CompSlotLoadable
                         if (damageDef != null)
                         {
                             s.AppendLine();
-                            s.AppendLine(string.Format(StringOf.DamageType, new object[] {damageDef.LabelCap}));
+                            s.AppendLine(string.Format(StringOf.DamageType, new object[] { damageDef.LabelCap }));
                         }
                         var defHealChance = slotBonus.Props.defensiveHealChance;
                         if (defHealChance != null)

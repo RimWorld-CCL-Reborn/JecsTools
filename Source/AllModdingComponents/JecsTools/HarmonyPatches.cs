@@ -34,10 +34,10 @@ namespace JecsTools
 
             //Debug Line
             //------------
-//            instance.Patch(
-//                AccessTools.Method(typeof(PawnGroupKindWorker_Normal),
-//                    nameof(PawnGroupKindWorker_Normal.MinPointsToGenerateAnything)),
-//                new HarmonyMethod(type, nameof(MinPointsTest)), null);
+            //instance.Patch(
+            //    AccessTools.Method(typeof(PawnGroupKindWorker_Normal),
+            //        nameof(PawnGroupKindWorker_Normal.MinPointsToGenerateAnything)),
+            //    new HarmonyMethod(type, nameof(MinPointsTest)), null);
             //------------
 
             //Adds HediffCompProperties_DamageSoak checks to damage
@@ -54,7 +54,7 @@ namespace JecsTools
 
             //Allows for adding additional HediffSets when characters spawn using the StartWithHediff class.
             instance.Patch(
-                AccessTools.Method(typeof(PawnGenerator), "GeneratePawn", new[] {typeof(PawnGenerationRequest)}), null,
+                AccessTools.Method(typeof(PawnGenerator), "GeneratePawn", new[] { typeof(PawnGenerationRequest) }), null,
                 new HarmonyMethod(type, nameof(Post_GeneratePawn)));
 
             //Checks apparel that uses the ApparelExtension
@@ -264,7 +264,7 @@ namespace JecsTools
                     sc.swapWhenGender is Gender gen &&
                     gen != Gender.None && gen == pawn.gender)
                 {
-                    Apparel apparel = (Apparel) ThingMaker.MakeThing(sc.swapTo, swap.Stuff);
+                    Apparel apparel = (Apparel)ThingMaker.MakeThing(sc.swapTo, swap.Stuff);
                     PawnGenerator.PostProcessGeneratedGear(apparel, pawn);
                     if (ApparelUtility.HasPartsToWear(pawn, apparel.def))
                     {
@@ -475,7 +475,7 @@ namespace JecsTools
                 }
             }
 
-            tempDamageAmount = (int) dinfo.Amount;
+            tempDamageAmount = (int)dinfo.Amount;
             absorbed = false;
             DebugMessage($"c6c:: === Exit Harmony Prefix --- PreApplyDamage_ApplyExtraDamages ===");
             return true;
@@ -491,7 +491,7 @@ namespace JecsTools
                 {
                     if (knockerProps.explosiveKnockback)
                     {
-                        var explosion = (Explosion) GenSpawn.Spawn(ThingDefOf.Explosion,
+                        var explosion = (Explosion)GenSpawn.Spawn(ThingDefOf.Explosion,
                             instigator.PositionHeld, instigator.MapHeld);
                         explosion.radius = knockerProps.explosionSize;
                         explosion.damType = knockerProps.explosionDmg;
@@ -508,7 +508,7 @@ namespace JecsTools
                         explosion.applyDamageToExplosionCellsNeighbors = false;
                         explosion.chanceToStartFire = 0f;
                         explosion.damageFalloff = false; // dealMoreDamageAtCenter = false;
-                        explosion.StartExplosion(null,null);
+                        explosion.StartExplosion(null, null);
                     }
 
                     if (pawn != instigator && !pawn.Dead && !pawn.Downed && pawn.Spawned)
@@ -586,9 +586,11 @@ namespace JecsTools
                 DebugMessage("c6c:: Soak Damage Hediff checked.");
 
                 var soakSetting = fortitudeHediff.TryGetComp<HediffComp_DamageSoak>()?.Props;
-                if (soakSetting == null) {
+                if (soakSetting == null)
+                {
                     DebugMessage("c6c:: Soak Damage Hediff has no damage soak XML properties.");
-                    continue; }
+                    continue;
+                }
                 if (soakSetting.settings.NullOrEmpty())
                 {
                     DebugMessage("c6c:: Soak Damage Hediff has no damage soak settings.");
@@ -739,7 +741,7 @@ namespace JecsTools
                     bool applyDamage;
                     var loc = PushResult(Caster, target, distance, out applyDamage);
                     //if (((Pawn)target).RaceProps.Humanlike) ((Pawn)target).needs.mood.thoughts.memories.TryGainMemory(ThoughtDef.Named("PJ_ThoughtPush"), null);
-                    var flyingObject = (FlyingObject) GenSpawn.Spawn(ThingDef.Named("JT_FlyingObject"), p.PositionHeld,
+                    var flyingObject = (FlyingObject)GenSpawn.Spawn(ThingDef.Named("JT_FlyingObject"), p.PositionHeld,
                         p.MapHeld);
                     if (applyDamage && damageOnCollision)
                         flyingObject.Launch(Caster, new LocalTargetInfo(loc.ToIntVec3()), target,
@@ -751,29 +753,29 @@ namespace JecsTools
 
         //added 2018/12/13 - Mehni.
         //Uses CutoutComplex shader for apparel that wants it.
-     // private static IEnumerable<CodeInstruction> CutOutComplexApparel_Transpiler(IEnumerable<CodeInstruction> instructions)
-     // {
-     //    MethodInfo shader = AccessTools.Method(typeof(HarmonyPatches), nameof(HarmonyPatches.Shader));
-     //       FieldInfo cutOut = AccessTools.Field(typeof(ShaderDatabase), nameof(ShaderDatabase.Cutout));
-     //
-     //      foreach (CodeInstruction codeInstruction in instructions)
-     //      {
-     //          if (codeInstruction.opcode == OpCodes.Ldsfld && codeInstruction.operand == cutOut)
-     //          {
-     //              yield return new CodeInstruction(OpCodes.Ldarg_0); //apparel
-     //              yield return new CodeInstruction(OpCodes.Call, shader); //return shader type
-       //             continue; //skip instruction.
-       //         }
-       //         yield return codeInstruction;
-       //     }
-       // }
+        //private static IEnumerable<CodeInstruction> CutOutComplexApparel_Transpiler(IEnumerable<CodeInstruction> instructions)
+        //{
+        //    MethodInfo shader = AccessTools.Method(typeof(HarmonyPatches), nameof(HarmonyPatches.Shader));
+        //    FieldInfo cutOut = AccessTools.Field(typeof(ShaderDatabase), nameof(ShaderDatabase.Cutout));
 
-      //  private static Shader Shader (Apparel apparel)
-      //  {
-      //      if (apparel.def.graphicData.shaderType.Shader == ShaderDatabase.CutoutComplex)
-      //          return ShaderDatabase.CutoutComplex;
-      //
-      //      return ShaderDatabase.Cutout;
-      //  }
+        //    foreach (CodeInstruction codeInstruction in instructions)
+        //    {
+        //        if (codeInstruction.opcode == OpCodes.Ldsfld && codeInstruction.operand == cutOut)
+        //        {
+        //            yield return new CodeInstruction(OpCodes.Ldarg_0); //apparel
+        //            yield return new CodeInstruction(OpCodes.Call, shader); //return shader type
+        //            continue; //skip instruction.
+        //        }
+        //        yield return codeInstruction;
+        //    }
+        //}
+
+        //private static Shader Shader(Apparel apparel)
+        //{
+        //    if (apparel.def.graphicData.shaderType.Shader == ShaderDatabase.CutoutComplex)
+        //        return ShaderDatabase.CutoutComplex;
+
+        //    return ShaderDatabase.Cutout;
+        //}
     }
 }

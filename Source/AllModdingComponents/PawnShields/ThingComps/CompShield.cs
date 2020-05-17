@@ -65,7 +65,7 @@ namespace PawnShields
             bool absorbedDamage = false;
 
             //Check if we blocked the attack at all.
-            if(ShieldProps.canBlockMelee && !ranged)
+            if (ShieldProps.canBlockMelee && !ranged)
             {
                 //Melee
                 float baseStat = defender.GetStatValue(ShieldStatsDefOf.MeleeShieldBlockChance, true);
@@ -74,7 +74,8 @@ namespace PawnShields
                 //Log.Message("Melee block chance: " + chance.ToStringPercent());
                 if (Rand.Chance(chance))
                     absorbedDamage = true;
-            } else if (ShieldProps.canBlockRanged && ranged)
+            }
+            else if (ShieldProps.canBlockRanged && ranged)
             {
                 //Ranged
                 float baseStat = defender.GetStatValue(ShieldStatsDefOf.RangedShieldBlockChance, true);
@@ -89,7 +90,7 @@ namespace PawnShields
                 return false;
 
             //Fatigue damage.
-            if(absorbedDamage && ShieldProps.useFatigue)
+            if (absorbedDamage && ShieldProps.useFatigue)
             {
                 float finalDamage = (float)dinfo.Amount * ShieldProps.damageToFatigueFactor;
                 HealthUtility.AdjustSeverity(defender, ShieldHediffDefOf.ShieldFatigue, finalDamage);
@@ -106,7 +107,7 @@ namespace PawnShields
             }
 
             //Absorb damage if shield is still intact.
-            if(parent.HitPoints > 0)
+            if (parent.HitPoints > 0)
             {
                 MakeBlockEffect(defender, dinfo, ranged);
                 return true;
@@ -145,13 +146,13 @@ namespace PawnShields
 
             if (ShieldProps.wieldedGraphic != null && ShieldProps.wieldedGraphic.Graphic.MatSingle != null)
             {
-                if(rot == Rot4.North)
+                if (rot == Rot4.North)
                 {
                     float angle = -thing.def.equippedAngleOffset;
                     if (ShieldProps.renderProperties.flipRotation)
                         angle = -angle;
 
-                    if(ShieldProps.useColoredVersion)
+                    if (ShieldProps.useColoredVersion)
                         ShieldProps.wieldedGraphic.GraphicColoredFor(thing).Draw(loc, rot, thing, angle);
                     else
                         ShieldProps.wieldedGraphic.Graphic.Draw(loc, rot, thing, angle);

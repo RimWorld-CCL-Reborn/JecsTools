@@ -1,7 +1,6 @@
 ﻿using System;
 using UnityEngine;
 using Verse;
-using Verse.Sound;
 
 namespace CompBalloon
 {
@@ -13,7 +12,7 @@ namespace CompBalloon
 
         public Pawn Ballooner => parent as Pawn;
 
-        public CompProperties_Balloon Props => (CompProperties_Balloon) props;
+        public CompProperties_Balloon Props => (CompProperties_Balloon)props;
 
 
         private float MaxTicks => (Props.secondsBetweenCycles * 60);

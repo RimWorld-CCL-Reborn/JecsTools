@@ -1,16 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Reflection.Emit;
-using System.Runtime.CompilerServices;
 using System.Text;
 using HarmonyLib;
 using RimWorld;
-using RimWorld.BaseGen;
 using RimWorld.Planet;
 using UnityEngine;
-using UnityEngine.AI;
 using Verse;
 using Verse.AI;
 using Verse.AI.Group;
@@ -24,297 +19,297 @@ namespace CompVehicle
         static HarmonyCompVehicle()
         {
 
-//            var harmony = new Harmony("jecstools.jecrell.comps.vehicle");
-//            //HarmonyInstance.DEBUG = true;
+            //var harmony = new Harmony("jecstools.jecrell.comps.vehicle");
+            ////HarmonyInstance.DEBUG = true;
 
-//            #region Functions
+            //#region Functions
 
-//            ///
-//            /// VEHICLE FUNCTIONS
-//            /// Implements new systems to RimWorld when
-//            /// vehicles are present.
-//            ///
-//            harmony.Patch(
-//                AccessTools.Method(typeof(Pawn_RotationTracker), nameof(Pawn_RotationTracker.RotationTrackerTick)),
-//                new HarmonyMethod(
-//                    typeof(HarmonyCompVehicle),
-//                    nameof(VehicleRotatorTick)), null);
+            /////
+            ///// VEHICLE FUNCTIONS
+            ///// Implements new systems to RimWorld when
+            ///// vehicles are present.
+            /////
+            //harmony.Patch(
+            //    AccessTools.Method(typeof(Pawn_RotationTracker), nameof(Pawn_RotationTracker.RotationTrackerTick)),
+            //    new HarmonyMethod(
+            //        typeof(HarmonyCompVehicle),
+            //        nameof(VehicleRotatorTick)), null);
 
-//            harmony.Patch(
-//                typeof(DamageWorker_AddInjury).GetMethods(bindingAttr: AccessTools.all).First(
-//                    mi => mi.ReturnType == typeof(float) &&
-//                          mi.GetParameters().ElementAt(1).ParameterType == typeof(Hediff_Injury)
-////                    new[]
-////                    {
-////                        typeof(Pawn), typeof(Hediff_Injury), typeof(DamageInfo),
-////                        AccessTools.TypeByName("DamageWorker.DamageResult").MakeByRefType(), typeof(float)
-////                    }
-//                ), null,
-//                new HarmonyMethod(typeof(HarmonyCompVehicle),
-//                    nameof(TryInjureVehicleOccupants)));
-//            harmony.Patch(AccessTools.Method(typeof(HealthUtility), nameof(HealthUtility.GetGeneralConditionLabel)),
-//                new HarmonyMethod(typeof(HarmonyCompVehicle),
-//                    nameof(ReplaceConditionLabel)), null);
-//            //TODO: Fix for 1.0
-//            //harmony.Patch(AccessTools.Method(typeof(HealthCardUtility), "DrawOverviewTab"),
-//            //    new HarmonyMethod(typeof(HarmonyCompVehicle),
-//            //        nameof(DisplayOperationalSystems)), null);
-//            harmony.Patch(
-//                AccessTools.Property(typeof(MapPawns), nameof(MapPawns.FreeColonistsSpawnedCount)).GetGetMethod(), null,
-//                new HarmonyMethod(typeof(HarmonyCompVehicle),
-//                    nameof(IncludeVehicleOccupantsInMapPawns)));
-//            harmony.Patch(
-//                AccessTools.Property(typeof(MapPawns),
-//                    nameof(MapPawns.FreeColonistsSpawnedOrInPlayerEjectablePodsCount)).GetGetMethod(), null,
-//                new HarmonyMethod(typeof(HarmonyCompVehicle),
-//                    nameof(IncludeVehicleOccupantsInMapPawns)));
-//            harmony.Patch(AccessTools.Method(typeof(Pawn_HealthTracker), "ShouldBeDowned"),
-//                new HarmonyMethod(typeof(HarmonyCompVehicle),
-//                    nameof(VehicleShouldBeDowned)), null);
-//            harmony.Patch(AccessTools.Method(typeof(PawnDownedWiggler), nameof(PawnDownedWiggler.WigglerTick)),
-//                new HarmonyMethod(typeof(HarmonyCompVehicle),
-//                    nameof(VehicleShouldWiggle)), null);
-////            harmony.Patch(AccessTools.Method(typeof(FloatMenuUtility), nameof(FloatMenuUtility.GetRangedAttackAction)),
-////                null, null,
-////                new HarmonyMethod(typeof(HarmonyCompVehicle),
-////                    nameof(FightActionTranspiler)));
-////            harmony.Patch(AccessTools.Method(typeof(FloatMenuUtility), nameof(FloatMenuUtility.GetMeleeAttackAction)),
-////                null, null,
-////                new HarmonyMethod(typeof(HarmonyCompVehicle),
-////                    nameof(FightActionTranspiler)));
-//            //Not enough experience Disabled
-//            harmony.Patch(AccessTools.Method(typeof(VerbTracker), nameof(VerbTracker.GetVerbsCommands)),
-//                new HarmonyMethod(typeof(HarmonyCompVehicle),
-//                    nameof(GetVerbsCommands_PreFix)), null, null);
-//            //Not enough experience Disabled
-//            //    harmony.Patch(AccessTools.Method(typeof(PathFinder), "FindPath",new[] { typeof(IntVec3),typeof(LocalTargetInfo),typeof(TraverseParms),typeof(PathEndMode) }), new HarmonyMethod(typeof(HarmonyCompVehicle),
-//            //nameof(FindPath_PreFix)), null, null);
+            //harmony.Patch(
+            //    typeof(DamageWorker_AddInjury).GetMethods(bindingAttr: AccessTools.all).First(
+            //        mi => mi.ReturnType == typeof(float) &&
+            //              mi.GetParameters().ElementAt(1).ParameterType == typeof(Hediff_Injury)
+            //        //new[]
+            //        //{
+            //        //    typeof(Pawn), typeof(Hediff_Injury), typeof(DamageInfo),
+            //        //    AccessTools.TypeByName("DamageWorker.DamageResult").MakeByRefType(), typeof(float)
+            //        //}
+            //    ), null,
+            //    new HarmonyMethod(typeof(HarmonyCompVehicle),
+            //        nameof(TryInjureVehicleOccupants)));
+            //harmony.Patch(AccessTools.Method(typeof(HealthUtility), nameof(HealthUtility.GetGeneralConditionLabel)),
+            //    new HarmonyMethod(typeof(HarmonyCompVehicle),
+            //        nameof(ReplaceConditionLabel)), null);
+            ////TODO: Fix for 1.0
+            ////harmony.Patch(AccessTools.Method(typeof(HealthCardUtility), "DrawOverviewTab"),
+            ////    new HarmonyMethod(typeof(HarmonyCompVehicle),
+            ////        nameof(DisplayOperationalSystems)), null);
+            //harmony.Patch(
+            //    AccessTools.Property(typeof(MapPawns), nameof(MapPawns.FreeColonistsSpawnedCount)).GetGetMethod(), null,
+            //    new HarmonyMethod(typeof(HarmonyCompVehicle),
+            //        nameof(IncludeVehicleOccupantsInMapPawns)));
+            //harmony.Patch(
+            //    AccessTools.Property(typeof(MapPawns),
+            //        nameof(MapPawns.FreeColonistsSpawnedOrInPlayerEjectablePodsCount)).GetGetMethod(), null,
+            //    new HarmonyMethod(typeof(HarmonyCompVehicle),
+            //        nameof(IncludeVehicleOccupantsInMapPawns)));
+            //harmony.Patch(AccessTools.Method(typeof(Pawn_HealthTracker), "ShouldBeDowned"),
+            //    new HarmonyMethod(typeof(HarmonyCompVehicle),
+            //        nameof(VehicleShouldBeDowned)), null);
+            //harmony.Patch(AccessTools.Method(typeof(PawnDownedWiggler), nameof(PawnDownedWiggler.WigglerTick)),
+            //    new HarmonyMethod(typeof(HarmonyCompVehicle),
+            //        nameof(VehicleShouldWiggle)), null);
+            ////harmony.Patch(AccessTools.Method(typeof(FloatMenuUtility), nameof(FloatMenuUtility.GetRangedAttackAction)),
+            ////    null, null,
+            ////    new HarmonyMethod(typeof(HarmonyCompVehicle),
+            ////        nameof(FightActionTranspiler)));
+            ////harmony.Patch(AccessTools.Method(typeof(FloatMenuUtility), nameof(FloatMenuUtility.GetMeleeAttackAction)),
+            ////    null, null,
+            ////    new HarmonyMethod(typeof(HarmonyCompVehicle),
+            ////        nameof(FightActionTranspiler)));
+            ////Not enough experience Disabled
+            //harmony.Patch(AccessTools.Method(typeof(VerbTracker), nameof(VerbTracker.GetVerbsCommands)),
+            //    new HarmonyMethod(typeof(HarmonyCompVehicle),
+            //        nameof(GetVerbsCommands_PreFix)), null, null);
+            ////Not enough experience Disabled
+            ////    harmony.Patch(AccessTools.Method(typeof(PathFinder), "FindPath",new[] { typeof(IntVec3),typeof(LocalTargetInfo),typeof(TraverseParms),typeof(PathEndMode) }), new HarmonyMethod(typeof(HarmonyCompVehicle),
+            ////nameof(FindPath_PreFix)), null, null);
 
-//            #endregion Functions
+            //#endregion Functions
 
-//            #region ErrorHandling
+            //#region ErrorHandling
 
-//            ///
-//            /// VEHICLE ERROR HANDLING
-//            /// These patches help integrate vehicles safely
-//            /// into existing/new games and handle errors / exceptions.
-//            ///
+            /////
+            ///// VEHICLE ERROR HANDLING
+            ///// These patches help integrate vehicles safely
+            ///// into existing/new games and handle errors / exceptions.
+            /////
 
-//            //harmony.Patch(AccessTools.)
-//            harmony.Patch(
-//                AccessTools.Method(typeof(PawnUtility), nameof(PawnUtility.IsTravelingInTransportPodWorldObject)), null,
-//                new HarmonyMethod(typeof(HarmonyCompVehicle),
-//                    nameof(PreventAssigningRandomFaction)));
-//            harmony.Patch(AccessTools.Method(typeof(SocialCardUtility), "Recache"), new HarmonyMethod(
-//                typeof(HarmonyCompVehicle),
-//                nameof(SocialTabNullHandling)), null);
-//            harmony.Patch(AccessTools.Property(typeof(Pawn), nameof(Pawn.IsColonistPlayerControlled)).GetGetMethod(),
-//                null, new HarmonyMethod(
-//                    typeof(HarmonyCompVehicle),
-//                    nameof(IncludeVehiclesInIsColonistPlayerControlled)));
-//            harmony.Patch(AccessTools.Method(typeof(Pawn), nameof(Pawn.CurrentlyUsableForBills)), null,
-//                new HarmonyMethod(
-//                    typeof(HarmonyCompVehicle),
-//                    nameof(CantUseMovingVehicles)));
-//            harmony.Patch(
-//                AccessTools.Property(typeof(Pawn_DraftController), nameof(Pawn_DraftController.Drafted)).GetSetMethod(),
-//                new HarmonyMethod(
-//                    typeof(HarmonyCompVehicle),
-//                    nameof(DraftedVehiclesCanMove)), null);
-//            //TODO: Fix for 1.0
-//            //harmony.Patch(AccessTools.Method(typeof(Pawn_PathFollower), nameof(Pawn_PathFollower.StartPath)),
-//            //    new HarmonyMethod(
-//            //        typeof(HarmonyCompVehicle),
-//            //        nameof(CanVehicleMove)), null);
-//            harmony.Patch(AccessTools.Method(typeof(Verb_Shoot), "TryCastShot"), new HarmonyMethod(
-//                typeof(HarmonyCompVehicle),
-//                nameof(CanVehicleShoot)), null);
-//            harmony.Patch(AccessTools.Method(typeof(GameEnder), "IsPlayerControlledWithFreeColonist"), null,
-//                new HarmonyMethod(typeof(HarmonyCompVehicle),
-//                    nameof(CanEndGame)));
-//            harmony.Patch(
-//                typeof(RestUtility).GetMethods(BindingFlags.Public | BindingFlags.Static)
-//                    .First(mi => mi.Name == "FindBedFor" && mi.GetParameters().Count() > 1), null, new HarmonyMethod(
-//                    typeof(HarmonyCompVehicle),
-//                    nameof(DontRescueVehicles)), null);
-//            harmony.Patch(AccessTools.Method(typeof(FloatMenuMakerMap), "AddHumanlikeOrders"), null, new HarmonyMethod(
-//                typeof(HarmonyCompVehicle),
-//                nameof(DontRescueVehiclesInFloatMenus)));
+            ////harmony.Patch(AccessTools.)
+            //harmony.Patch(
+            //    AccessTools.Method(typeof(PawnUtility), nameof(PawnUtility.IsTravelingInTransportPodWorldObject)), null,
+            //    new HarmonyMethod(typeof(HarmonyCompVehicle),
+            //        nameof(PreventAssigningRandomFaction)));
+            //harmony.Patch(AccessTools.Method(typeof(SocialCardUtility), "Recache"), new HarmonyMethod(
+            //    typeof(HarmonyCompVehicle),
+            //    nameof(SocialTabNullHandling)), null);
+            //harmony.Patch(AccessTools.Property(typeof(Pawn), nameof(Pawn.IsColonistPlayerControlled)).GetGetMethod(),
+            //    null, new HarmonyMethod(
+            //        typeof(HarmonyCompVehicle),
+            //        nameof(IncludeVehiclesInIsColonistPlayerControlled)));
+            //harmony.Patch(AccessTools.Method(typeof(Pawn), nameof(Pawn.CurrentlyUsableForBills)), null,
+            //    new HarmonyMethod(
+            //        typeof(HarmonyCompVehicle),
+            //        nameof(CantUseMovingVehicles)));
+            //harmony.Patch(
+            //    AccessTools.Property(typeof(Pawn_DraftController), nameof(Pawn_DraftController.Drafted)).GetSetMethod(),
+            //    new HarmonyMethod(
+            //        typeof(HarmonyCompVehicle),
+            //        nameof(DraftedVehiclesCanMove)), null);
+            ////TODO: Fix for 1.0
+            ////harmony.Patch(AccessTools.Method(typeof(Pawn_PathFollower), nameof(Pawn_PathFollower.StartPath)),
+            ////    new HarmonyMethod(
+            ////        typeof(HarmonyCompVehicle),
+            ////        nameof(CanVehicleMove)), null);
+            //harmony.Patch(AccessTools.Method(typeof(Verb_Shoot), "TryCastShot"), new HarmonyMethod(
+            //    typeof(HarmonyCompVehicle),
+            //    nameof(CanVehicleShoot)), null);
+            //harmony.Patch(AccessTools.Method(typeof(GameEnder), "IsPlayerControlledWithFreeColonist"), null,
+            //    new HarmonyMethod(typeof(HarmonyCompVehicle),
+            //        nameof(CanEndGame)));
+            //harmony.Patch(
+            //    typeof(RestUtility).GetMethods(BindingFlags.Public | BindingFlags.Static)
+            //        .First(mi => mi.Name == "FindBedFor" && mi.GetParameters().Count() > 1), null, new HarmonyMethod(
+            //        typeof(HarmonyCompVehicle),
+            //        nameof(DontRescueVehicles)), null);
+            //harmony.Patch(AccessTools.Method(typeof(FloatMenuMakerMap), "AddHumanlikeOrders"), null, new HarmonyMethod(
+            //    typeof(HarmonyCompVehicle),
+            //    nameof(DontRescueVehiclesInFloatMenus)));
 
-//            harmony.Patch(
-//                typeof(SymbolResolver_RandomMechanoidGroup).GetMethods(BindingFlags.NonPublic | BindingFlags.Static)
-//                    .First(mi =>
-//                        mi.HasAttribute<CompilerGeneratedAttribute>() && mi.ReturnType == typeof(bool) &&
-//                        mi.GetParameters().Count() == 1 && mi.GetParameters()[0].ParameterType == typeof(PawnKindDef)),
-//                null, new HarmonyMethod(typeof(HarmonyCompVehicle),
-//                    nameof(MechanoidsFixerAncient)));
+            //harmony.Patch(
+            //    typeof(SymbolResolver_RandomMechanoidGroup).GetMethods(BindingFlags.NonPublic | BindingFlags.Static)
+            //        .First(mi =>
+            //            mi.HasAttribute<CompilerGeneratedAttribute>() && mi.ReturnType == typeof(bool) &&
+            //            mi.GetParameters().Count() == 1 && mi.GetParameters()[0].ParameterType == typeof(PawnKindDef)),
+            //    null, new HarmonyMethod(typeof(HarmonyCompVehicle),
+            //        nameof(MechanoidsFixerAncient)));
 
-////  Tad Patched out the Mechanoid on damaged method as its no longer recognised.
-////            harmony.Patch(
-////                typeof(CompSpawnerMechanoidsOnDamaged).GetMethods(BindingFlags.NonPublic | BindingFlags.Instance).First(
-////                    mi => mi.HasAttribute<CompilerGeneratedAttribute>() && mi.ReturnType == typeof(bool) &&
-////                          mi.GetParameters().Count() == 1 &&
-////                          mi.GetParameters()[0].ParameterType == typeof(PawnKindDef)), null, new HarmonyMethod(
-////                    typeof(HarmonyCompVehicle),
-////                    nameof(MechanoidsFixer)));
+            ////  Tad Patched out the Mechanoid on damaged method as its no longer recognised.
+            ////harmony.Patch(
+            ////    typeof(CompSpawnerMechanoidsOnDamaged).GetMethods(BindingFlags.NonPublic | BindingFlags.Instance).First(
+            ////        mi => mi.HasAttribute<CompilerGeneratedAttribute>() && mi.ReturnType == typeof(bool) &&
+            ////              mi.GetParameters().Count() == 1 &&
+            ////              mi.GetParameters()[0].ParameterType == typeof(PawnKindDef)), null, new HarmonyMethod(
+            ////        typeof(HarmonyCompVehicle),
+            ////        nameof(MechanoidsFixer)));
 
-////            harmony.Patch(AccessTools.Method(typeof(JobDriver_Wait), "CheckForAutoAttack"), null, null,
-////                new HarmonyMethod(typeof(HarmonyCompVehicle),
-////                    nameof(CheckForAutoAttackTranspiler)));
-//            //harmony.Patch(
-//            //AccessTools.Method(
-//            //    typeof(VerbTracker).GetNestedTypes(BindingFlags.NonPublic | BindingFlags.Instance)
-//            //        .First(t => AccessTools.Method(t, "MoveNext") != null), "MoveNext"), null, null,
-//            //new HarmonyMethod(typeof(HarmonyCompVehicle),
-//            //nameof(GetVerbsCommandsTranspiler)));
-//            harmony.Patch(AccessTools.Method(typeof(ThinkNode_ConditionalColonist), "Satisfied"), null,
-//                new HarmonyMethod(typeof(HarmonyCompVehicle),
-//                    nameof(Satisfied_PostFix)), null);
-////            harmony.Patch(AccessTools.Method(typeof(FloatMenuMakerMap), "AddUndraftedOrders"), null, null,new HarmonyMethod(typeof(HarmonyCompVehicle),
-////                    nameof(AddUndraftedOrders_Transpiler)));
-//            harmony.Patch(AccessTools.Method(typeof(JobGiver_Haul), "TryGiveJob"), new HarmonyMethod(
-//                typeof(HarmonyCompVehicle),
-//                nameof(TryGiveJob_PreFix)), null, null);
+            ////harmony.Patch(AccessTools.Method(typeof(JobDriver_Wait), "CheckForAutoAttack"), null, null,
+            ////    new HarmonyMethod(typeof(HarmonyCompVehicle),
+            ////        nameof(CheckForAutoAttackTranspiler)));
+            ////harmony.Patch(
+            ////AccessTools.Method(
+            ////    typeof(VerbTracker).GetNestedTypes(BindingFlags.NonPublic | BindingFlags.Instance)
+            ////        .First(t => AccessTools.Method(t, "MoveNext") != null), "MoveNext"), null, null,
+            ////new HarmonyMethod(typeof(HarmonyCompVehicle),
+            ////nameof(GetVerbsCommandsTranspiler)));
+            //harmony.Patch(AccessTools.Method(typeof(ThinkNode_ConditionalColonist), "Satisfied"), null,
+            //    new HarmonyMethod(typeof(HarmonyCompVehicle),
+            //        nameof(Satisfied_PostFix)), null);
+            ////harmony.Patch(AccessTools.Method(typeof(FloatMenuMakerMap), "AddUndraftedOrders"), null, null, new HarmonyMethod(typeof(HarmonyCompVehicle),
+            ////        nameof(AddUndraftedOrders_Transpiler)));
+            //harmony.Patch(AccessTools.Method(typeof(JobGiver_Haul), "TryGiveJob"), new HarmonyMethod(
+            //    typeof(HarmonyCompVehicle),
+            //    nameof(TryGiveJob_PreFix)), null, null);
 
-//            #endregion ErrorHandling
+            //#endregion ErrorHandling
 
-//            #region AIHandling
+            //#region AIHandling
 
-//            /// AI HANDLING
-//            /// Handles various AI issues for vehicles to function
-//            /// properly.
+            ///// AI HANDLING
+            ///// Handles various AI issues for vehicles to function
+            ///// properly.
 
-//            harmony.Patch(AccessTools.Method(typeof(JobGiver_Orders), "TryGiveJob"), null, new HarmonyMethod(
-//                typeof(HarmonyCompVehicle),
-//                nameof(PreventWaitAttackError)));
+            //harmony.Patch(AccessTools.Method(typeof(JobGiver_Orders), "TryGiveJob"), null, new HarmonyMethod(
+            //    typeof(HarmonyCompVehicle),
+            //    nameof(PreventWaitAttackError)));
 
-//            harmony.Patch(
-//                AccessTools.Method(typeof(LordToil_PrepareCaravan_GatherItems),
-//                    nameof(LordToil_PrepareCaravan_GatherItems.UpdateAllDuties)),
-//                new HarmonyMethod(typeof(HarmonyCompVehicle),
-//                    nameof(GiveVehiclesLoadItemDuties)), null);
+            //harmony.Patch(
+            //    AccessTools.Method(typeof(LordToil_PrepareCaravan_GatherItems),
+            //        nameof(LordToil_PrepareCaravan_GatherItems.UpdateAllDuties)),
+            //    new HarmonyMethod(typeof(HarmonyCompVehicle),
+            //        nameof(GiveVehiclesLoadItemDuties)), null);
 
-//            harmony.Patch(
-//                AccessTools.Method(typeof(LordToil_PrepareCaravan_GatherAnimals),
-//                    nameof(LordToil_PrepareCaravan_GatherAnimals.UpdateAllDuties)),
-//                new HarmonyMethod(typeof(HarmonyCompVehicle),
-//                    nameof(GiveVehiclesLoadAnimalDuties)), null);
+            //harmony.Patch(
+            //    AccessTools.Method(typeof(LordToil_PrepareCaravan_GatherAnimals),
+            //        nameof(LordToil_PrepareCaravan_GatherAnimals.UpdateAllDuties)),
+            //    new HarmonyMethod(typeof(HarmonyCompVehicle),
+            //        nameof(GiveVehiclesLoadAnimalDuties)), null);
 
-//            harmony.Patch(
-//                AccessTools.Method(typeof(LordToil_PrepareCaravan_GatherSlaves),
-//                    nameof(LordToil_PrepareCaravan_GatherSlaves.LordToilTick)),
-//                new HarmonyMethod(typeof(HarmonyCompVehicle),
-//                    nameof(GiveVehiclesLoadSlaveDuties)), null);
+            //harmony.Patch(
+            //    AccessTools.Method(typeof(LordToil_PrepareCaravan_GatherSlaves),
+            //        nameof(LordToil_PrepareCaravan_GatherSlaves.LordToilTick)),
+            //    new HarmonyMethod(typeof(HarmonyCompVehicle),
+            //        nameof(GiveVehiclesLoadSlaveDuties)), null);
 
-//            harmony.Patch(
-//                AccessTools.Method(typeof(LordToil_PrepareCaravan_GatherItems),
-//                    nameof(LordToil_PrepareCaravan_GatherItems.LordToilTick)),
-//                new HarmonyMethod(typeof(HarmonyCompVehicle),
-//                    nameof(GiveVehiclesLoadItemToil)), null);
+            //harmony.Patch(
+            //    AccessTools.Method(typeof(LordToil_PrepareCaravan_GatherItems),
+            //        nameof(LordToil_PrepareCaravan_GatherItems.LordToilTick)),
+            //    new HarmonyMethod(typeof(HarmonyCompVehicle),
+            //        nameof(GiveVehiclesLoadItemToil)), null);
 
-//            harmony.Patch(AccessTools.Method(typeof(Caravan_NeedsTracker), "TrySatisfyPawnNeeds"),
-//                new HarmonyMethod(typeof(HarmonyCompVehicle),
-//                    nameof(TrySatisfyFuelNeeds)), null);
-//            //Reminder to check this code....
+            //harmony.Patch(AccessTools.Method(typeof(Caravan_NeedsTracker), "TrySatisfyPawnNeeds"),
+            //    new HarmonyMethod(typeof(HarmonyCompVehicle),
+            //        nameof(TrySatisfyFuelNeeds)), null);
+            ////Reminder to check this code....
 
-//            harmony.Patch(AccessTools.Method(typeof(JobGiver_PrepareCaravan_GatherItems), "TryGiveJob"),
-//                new HarmonyMethod(typeof(HarmonyCompVehicle),
-//                    nameof(TryGiveItemJob_PreFix)), null);
+            //harmony.Patch(AccessTools.Method(typeof(JobGiver_PrepareCaravan_GatherItems), "TryGiveJob"),
+            //    new HarmonyMethod(typeof(HarmonyCompVehicle),
+            //        nameof(TryGiveItemJob_PreFix)), null);
 
-//            #endregion AIHandling
+            //#endregion AIHandling
 
-//            #region CaravanHandling
+            //#region CaravanHandling
 
-//            ///
-//            /// CARAVAN HANDLING
-//            /// These patches handle exceptions and
-//            /// cases involving vehicles and caravans.
-//            ///
+            /////
+            ///// CARAVAN HANDLING
+            ///// These patches handle exceptions and
+            ///// cases involving vehicles and caravans.
+            /////
 
-//            harmony.Patch(AccessTools.Method(typeof(Caravan), nameof(Caravan.AddPawn)), new HarmonyMethod(
-//                typeof(HarmonyCompVehicle),
-//                nameof(AddVehiclePawnsToCaravan)), null);
-//            harmony.Patch(AccessTools.Method(typeof(Dialog_SplitCaravan), "CheckForErrors"), new HarmonyMethod(
-//                typeof(HarmonyCompVehicle),
-//                nameof(DontSplitCaravansWithVehicles)), null);
-//            harmony.Patch(AccessTools.Method(typeof(Dialog_FormCaravan), "CheckForErrors"), new HarmonyMethod(
-//                typeof(HarmonyCompVehicle),
-//                nameof(CheckForErrors_PreFix)), null);
+            //harmony.Patch(AccessTools.Method(typeof(Caravan), nameof(Caravan.AddPawn)), new HarmonyMethod(
+            //    typeof(HarmonyCompVehicle),
+            //    nameof(AddVehiclePawnsToCaravan)), null);
+            //harmony.Patch(AccessTools.Method(typeof(Dialog_SplitCaravan), "CheckForErrors"), new HarmonyMethod(
+            //    typeof(HarmonyCompVehicle),
+            //    nameof(DontSplitCaravansWithVehicles)), null);
+            //harmony.Patch(AccessTools.Method(typeof(Dialog_FormCaravan), "CheckForErrors"), new HarmonyMethod(
+            //    typeof(HarmonyCompVehicle),
+            //    nameof(CheckForErrors_PreFix)), null);
 
-//            //TODO New patch
-//            //harmony.Patch(AccessTools.Method(typeof(CaravanPeopleAndItemsTabUtility), "DoRows"), new HarmonyMethod(
-//            //    typeof(HarmonyCompVehicle),
-//            //    nameof(DoRows_PreFix)), null);
-//            harmony.Patch(AccessTools.Method(typeof(CaravanUIUtility), nameof(CaravanUIUtility.AddPawnsSections)), null,
-//                new HarmonyMethod(
-//                    typeof(HarmonyCompVehicle),
-//                    nameof(AddPawnsSections_PostFix)));
+            ////TODO New patch
+            ////harmony.Patch(AccessTools.Method(typeof(CaravanPeopleAndItemsTabUtility), "DoRows"), new HarmonyMethod(
+            ////    typeof(HarmonyCompVehicle),
+            ////    nameof(DoRows_PreFix)), null);
+            //harmony.Patch(AccessTools.Method(typeof(CaravanUIUtility), nameof(CaravanUIUtility.AddPawnsSections)), null,
+            //    new HarmonyMethod(
+            //        typeof(HarmonyCompVehicle),
+            //        nameof(AddPawnsSections_PostFix)));
 
-//            harmony.Patch(
-//                AccessTools.Method(typeof(CaravanExitMapUtility),
-//                    nameof(CaravanExitMapUtility.CanExitMapAndJoinOrCreateCaravanNow)),
-//                null, new HarmonyMethod(typeof(HarmonyCompVehicle),
-//                    nameof(CanExit_PostFix)), null);
+            //harmony.Patch(
+            //    AccessTools.Method(typeof(CaravanExitMapUtility),
+            //        nameof(CaravanExitMapUtility.CanExitMapAndJoinOrCreateCaravanNow)),
+            //    null, new HarmonyMethod(typeof(HarmonyCompVehicle),
+            //        nameof(CanExit_PostFix)), null);
 
-//            harmony.Patch(AccessTools.Method(typeof(MassUtility), nameof(MassUtility.Capacity)), null,
-//                new HarmonyMethod(
-//                    typeof(HarmonyCompVehicle),
-//                    nameof(Capacity_PostFix)), null);
+            //harmony.Patch(AccessTools.Method(typeof(MassUtility), nameof(MassUtility.Capacity)), null,
+            //    new HarmonyMethod(
+            //        typeof(HarmonyCompVehicle),
+            //        nameof(Capacity_PostFix)), null);
 
-//            harmony.Patch(
-//                typeof(CaravanTicksPerMoveUtility).GetMethods().First(mi =>
-//                    mi.GetParameters().ElementAt(0).ParameterType == typeof(List<Pawn>)),
-//                null, new HarmonyMethod(typeof(HarmonyCompVehicle),
-//                    nameof(GetTicksPerMove_PostFix)));
-
-
-//            //harmony.Patch(AccessTools.Method(typeof(RimWorld.Planet.CaravanMaker), "MakeCaravan"), null, new HarmonyMethod(typeof(HarmonyCompVehicle),
-//            //    nameof(MakeCaravan_PostFix)));
-////            harmony.Patch(AccessTools.Method(typeof(CaravanExitMapUtility), "ExitMapAndJoinOrCreateCaravan"),
-////                new HarmonyMethod(typeof(HarmonyCompVehicle),
-////                    nameof(ExitMapAndJoinOrCreateCaravan_PreFix)), null);
-//            harmony.Patch(
-//                AccessTools.Method(typeof(CaravanEnterMapUtility), nameof(CaravanEnterMapUtility.Enter),
-//                    new[]
-//                    {
-//                        typeof(Caravan), typeof(Map), typeof(Func<Pawn, IntVec3>), typeof(CaravanDropInventoryMode),
-//                        typeof(bool)
-//                    }), new HarmonyMethod(typeof(HarmonyCompVehicle),
-//                    nameof(Enter_PreFix)), null, null);
-//            harmony.Patch(AccessTools.Method(typeof(Caravan), "GetInspectString"), null, new HarmonyMethod(
-//                typeof(HarmonyCompVehicle),
-//                nameof(GetInspectString_PostFix)));
-
-//            //TODO New patch
-////            harmony.Patch(
-////                AccessTools.Method(typeof(CaravanPeopleAndItemsTabUtility), "DoRow",
-////                    new[]
-////                    {
-////                        typeof(Rect), typeof(Thing), typeof(Caravan), typeof(Pawn).MakeByRefType(), typeof(bool),
-////                        typeof(bool)
-////                    }), null, null, new HarmonyMethod(typeof(HarmonyCompVehicle),
-////                    nameof(DoRow_Transpiler)));
-//            //harmony.Patch(AccessTools.Method(typeof(Dialog_FormCaravan), "DoWindowContents"), new HarmonyMethod(
-//            //    typeof(HarmonyCompVehicle),
-//            //    nameof(DoWindowContents_PreFix)), null);
-
-//            #endregion CaravanHandling
-
-//            #region Tests
-
-//            ///
-//            /// TESTS
-//            /// This is for testing or debugging for errors.
-//            /// Most of these methods are prefix detours to make tests.
-//            ///
+            //harmony.Patch(
+            //    typeof(CaravanTicksPerMoveUtility).GetMethods().First(mi =>
+            //        mi.GetParameters().ElementAt(0).ParameterType == typeof(List<Pawn>)),
+            //    null, new HarmonyMethod(typeof(HarmonyCompVehicle),
+            //        nameof(GetTicksPerMove_PostFix)));
 
 
-//            //harmony.Patch(AccessTools.Method(typeof(CaravanExitMapUtility), "ExitMapAndCreateCaravan", new Type[] { typeof(IEnumerable<Pawn>), typeof(Faction), typeof(int) }), new HarmonyMethod(typeof(HarmonyCompVehicle),
-//            //nameof(ExitMapAndCreateCaravan_Test)), null);
-//            //harmony.Patch(AccessTools.Method(typeof(Pawn_PathFollower), "TrySetNewPath"), new HarmonyMethod(typeof(HarmonyCompVehicle),
-//            //nameof(TrySetNewPath_Test)), null);
+            ////harmony.Patch(AccessTools.Method(typeof(RimWorld.Planet.CaravanMaker), "MakeCaravan"), null, new HarmonyMethod(typeof(HarmonyCompVehicle),
+            ////    nameof(MakeCaravan_PostFix)));
+            ////            harmony.Patch(AccessTools.Method(typeof(CaravanExitMapUtility), "ExitMapAndJoinOrCreateCaravan"),
+            ////                new HarmonyMethod(typeof(HarmonyCompVehicle),
+            ////                    nameof(ExitMapAndJoinOrCreateCaravan_PreFix)), null);
+            //harmony.Patch(
+            //    AccessTools.Method(typeof(CaravanEnterMapUtility), nameof(CaravanEnterMapUtility.Enter),
+            //        new[]
+            //        {
+            //            typeof(Caravan), typeof(Map), typeof(Func<Pawn, IntVec3>), typeof(CaravanDropInventoryMode),
+            //            typeof(bool)
+            //        }), new HarmonyMethod(typeof(HarmonyCompVehicle),
+            //        nameof(Enter_PreFix)), null, null);
+            //harmony.Patch(AccessTools.Method(typeof(Caravan), "GetInspectString"), null, new HarmonyMethod(
+            //    typeof(HarmonyCompVehicle),
+            //    nameof(GetInspectString_PostFix)));
 
-//            #endregion
+            ////TODO New patch
+            ////harmony.Patch(
+            ////    AccessTools.Method(typeof(CaravanPeopleAndItemsTabUtility), "DoRow",
+            ////        new[]
+            ////        {
+            ////                        typeof(Rect), typeof(Thing), typeof(Caravan), typeof(Pawn).MakeByRefType(), typeof(bool),
+            ////                        typeof(bool)
+            ////        }), null, null, new HarmonyMethod(typeof(HarmonyCompVehicle),
+            ////        nameof(DoRow_Transpiler)));
+            ////harmony.Patch(AccessTools.Method(typeof(Dialog_FormCaravan), "DoWindowContents"), new HarmonyMethod(
+            ////    typeof(HarmonyCompVehicle),
+            ////    nameof(DoWindowContents_PreFix)), null);
+
+            //#endregion CaravanHandling
+
+            //#region Tests
+
+            /////
+            ///// TESTS
+            ///// This is for testing or debugging for errors.
+            ///// Most of these methods are prefix detours to make tests.
+            /////
+
+
+            ////harmony.Patch(AccessTools.Method(typeof(CaravanExitMapUtility), "ExitMapAndCreateCaravan", new Type[] { typeof(IEnumerable<Pawn>), typeof(Faction), typeof(int) }), new HarmonyMethod(typeof(HarmonyCompVehicle),
+            ////nameof(ExitMapAndCreateCaravan_Test)), null);
+            ////harmony.Patch(AccessTools.Method(typeof(Pawn_PathFollower), "TrySetNewPath"), new HarmonyMethod(typeof(HarmonyCompVehicle),
+            ////nameof(TrySetNewPath_Test)), null);
+
+            //#endregion
         }
 
         /// CODE LEGEND
@@ -356,7 +351,7 @@ namespace CompVehicle
         //Patches Pawn_PathFollower to create custom pathing based off of a vehicles stats, i.e. boats can only be in water
         public static bool CostToMoveIntoCell_PreFix(IntVec3 c, ref int __result, Pawn_PathFollower __instance)
         {
-            Pawn pawn = (Pawn) AccessTools.Field(typeof(Pawn_PathFollower), "pawn").GetValue(__instance);
+            Pawn pawn = (Pawn)AccessTools.Field(typeof(Pawn_PathFollower), "pawn").GetValue(__instance);
             if (pawn.GetComp<CompVehicle>() != null)
             {
                 int num;
@@ -373,7 +368,7 @@ namespace CompVehicle
                 Building edifice = c.GetEdifice(pawn.Map);
                 if (edifice != null)
                 {
-                    num += (int) edifice.PathWalkCostFor(pawn);
+                    num += (int)edifice.PathWalkCostFor(pawn);
                 }
                 if (num > 450)
                 {
@@ -401,7 +396,7 @@ namespace CompVehicle
                             num = num;
                             break;
                         case LocomotionUrgency.Sprint:
-                            num = Mathf.RoundToInt((float) num * 0.75f);
+                            num = Mathf.RoundToInt((float)num * 0.75f);
                             break;
                     }
                 }
@@ -414,25 +409,25 @@ namespace CompVehicle
 
         //S Patches FloatingMenuMakerMap so that null reference errors don't occur when generating the GUI for
         //pawns that don't have worksettings
-//        public static IEnumerable<CodeInstruction> AddUndraftedOrders_Transpiler(
-//            IEnumerable<CodeInstruction> instructions)
-//        {
-//            var instructionList = instructions.ToList();
-//            var workSettings = AccessTools.Field(typeof(Pawn), nameof(Pawn.workSettings));
-//            for (var i = 0; i < instructionList.Count; i++)
-//            {
-//                var instruction = instructionList[i];
-//
-//                yield return instruction;
-//                if (instruction.operand == workSettings)
-//                {
-//                    yield return new CodeInstruction(OpCodes.Brfalse_S, instructionList[i + 3].operand);
-//                    yield return new CodeInstruction(instructionList[i - 2]) {labels = new List<Label>()};
-//                    yield return new CodeInstruction(instructionList[i - 1]);
-//                    yield return new CodeInstruction(instruction);
-//                }
-//            }
-//        }
+        //public static IEnumerable<CodeInstruction> AddUndraftedOrders_Transpiler(
+        //    IEnumerable<CodeInstruction> instructions)
+        //{
+        //    var instructionList = instructions.ToList();
+        //    var workSettings = AccessTools.Field(typeof(Pawn), nameof(Pawn.workSettings));
+        //    for (var i = 0; i < instructionList.Count; i++)
+        //    {
+        //        var instruction = instructionList[i];
+
+        //        yield return instruction;
+        //        if (instruction.operand == workSettings)
+        //        {
+        //            yield return new CodeInstruction(OpCodes.Brfalse_S, instructionList[i + 3].operand);
+        //            yield return new CodeInstruction(instructionList[i - 2]) { labels = new List<Label>() };
+        //            yield return new CodeInstruction(instructionList[i - 1]);
+        //            yield return new CodeInstruction(instruction);
+        //        }
+        //    }
+        //}
 
         //S Patches JobGiver_Haul so that jobs aren't assigned to vehicles that can't move so that a better suited pawn can take the job
         //Couldn't get a transpiler to work for this one
@@ -462,7 +457,7 @@ namespace CompVehicle
                         return false;
                     //this.FaceAdjacentCell(thisPawn.pather.nextCell);
                     AccessTools.Method(typeof(Pawn_RotationTracker), "FaceAdjacentCell")
-                        .Invoke(__instance, new object[] {thisPawn.pather.nextCell});
+                        .Invoke(__instance, new object[] { thisPawn.pather.nextCell });
                     //Traverse.Create(__instance).Method("FaceAdjacentCell", new object[] { thisPawn.pather.nextCell });
                     //compVehicle.lastDirection = thisPawn.Rotation;
                     return false;
@@ -472,10 +467,10 @@ namespace CompVehicle
                 {
                     if (stance_Busy.focusTarg.HasThing)
                         AccessTools.Method(typeof(Pawn_RotationTracker), "Face").Invoke(__instance,
-                            new object[] {stance_Busy.focusTarg.Thing.DrawPos});
+                            new object[] { stance_Busy.focusTarg.Thing.DrawPos });
                     else
                         AccessTools.Method(typeof(Pawn_RotationTracker), "FaceCell")
-                            .Invoke(__instance, new object[] {stance_Busy.focusTarg.Cell});
+                            .Invoke(__instance, new object[] { stance_Busy.focusTarg.Cell });
                     return false;
                 }
                 if (thisPawn?.jobs?.curJob != null)
@@ -489,33 +484,33 @@ namespace CompVehicle
                             var c = default(IntVec3);
                             var cellRect = target.Thing.OccupiedRect();
                             for (var i = cellRect.minZ; i <= cellRect.maxZ; i++)
-                            for (var j = cellRect.minX; j <= cellRect.maxX; j++)
-                                if (thisPawn.Position == new IntVec3(j, 0, i))
-                                {
-                                    //this.Face(target.Thing.DrawPos);
-                                    //Traverse.Create(__instance).Method("Face", new object[] { target.Thing.DrawPos });
-                                    AccessTools.Method(typeof(Pawn_RotationTracker), "Face")
-                                        .Invoke(__instance, new object[] {target.Thing.DrawPos});
-                                    return false;
-                                }
+                                for (var j = cellRect.minX; j <= cellRect.maxX; j++)
+                                    if (thisPawn.Position == new IntVec3(j, 0, i))
+                                    {
+                                        //this.Face(target.Thing.DrawPos);
+                                        //Traverse.Create(__instance).Method("Face", new object[] { target.Thing.DrawPos });
+                                        AccessTools.Method(typeof(Pawn_RotationTracker), "Face")
+                                            .Invoke(__instance, new object[] { target.Thing.DrawPos });
+                                        return false;
+                                    }
                             for (var k = cellRect.minZ; k <= cellRect.maxZ; k++)
-                            for (var l = cellRect.minX; l <= cellRect.maxX; l++)
-                            {
-                                var intVec = new IntVec3(l, 0, k);
-                                if (intVec.AdjacentToCardinal(thisPawn.Position))
+                                for (var l = cellRect.minX; l <= cellRect.maxX; l++)
                                 {
-                                    //this.FaceAdjacentCell(intVec);
-                                    AccessTools.Method(typeof(Pawn_RotationTracker), "FaceAdjacentCell")
-                                        .Invoke(__instance, new object[] {intVec});
-                                    //Traverse.Create(__instance).Method("FaceAdjacentCell", new object[] { intVec });
-                                    return false;
+                                    var intVec = new IntVec3(l, 0, k);
+                                    if (intVec.AdjacentToCardinal(thisPawn.Position))
+                                    {
+                                        //this.FaceAdjacentCell(intVec);
+                                        AccessTools.Method(typeof(Pawn_RotationTracker), "FaceAdjacentCell")
+                                            .Invoke(__instance, new object[] { intVec });
+                                        //Traverse.Create(__instance).Method("FaceAdjacentCell", new object[] { intVec });
+                                        return false;
+                                    }
+                                    if (intVec.AdjacentTo8Way(thisPawn.Position))
+                                    {
+                                        flag = true;
+                                        c = intVec;
+                                    }
                                 }
-                                if (intVec.AdjacentTo8Way(thisPawn.Position))
-                                {
-                                    flag = true;
-                                    c = intVec;
-                                }
-                            }
                             if (flag)
                             {
                                 if (DebugViewSettings.drawPawnRotatorTarget)
@@ -525,12 +520,12 @@ namespace CompVehicle
                                 }
                                 //this.FaceAdjacentCell(c);
                                 AccessTools.Method(typeof(Pawn_RotationTracker), "FaceAdjacentCell")
-                                    .Invoke(__instance, new object[] {c});
+                                    .Invoke(__instance, new object[] { c });
                                 //Traverse.Create(__instance).Method("FaceAdjacentCell", new object[] { c });
                                 return false;
                             }
                             AccessTools.Method(typeof(Pawn_RotationTracker), "Face")
-                                .Invoke(__instance, new object[] {target.Thing.DrawPos});
+                                .Invoke(__instance, new object[] { target.Thing.DrawPos });
                             //Traverse.Create(__instance).Method("Face", new object[] { target.Thing.DrawPos });
                             return false;
                         }
@@ -547,7 +542,7 @@ namespace CompVehicle
                             }
                             //this.FaceAdjacentCell(target.Cell);
                             AccessTools.Method(typeof(Pawn_RotationTracker), "FaceAdjacentCell")
-                                .Invoke(__instance, new object[] {target.Cell});
+                                .Invoke(__instance, new object[] { target.Cell });
                             //Traverse.Create(__instance).Method("FaceAdjacentCell", new object[] { target.Cell });
                             return false;
                         }
@@ -556,7 +551,7 @@ namespace CompVehicle
                             //this.Face(target.Cell.ToVector3());
                             //Traverse.Create(__instance).Method("Face", new object[] { target.Cell.ToVector3() });
                             AccessTools.Method(typeof(Pawn_RotationTracker), "Face")
-                                .Invoke(__instance, new object[] {target.Cell.ToVector3()});
+                                .Invoke(__instance, new object[] { target.Cell.ToVector3() });
                             return false;
                         }
                     }
@@ -594,7 +589,7 @@ namespace CompVehicle
                     var criticalBonus = 0f;
                     if (Rand.Value < compPilotable.Props.seatHitCriticalHitChance) criticalBonus = dinfo.Amount * 2;
                     var newDamFloat = dinfo.Amount * compPilotable.Props.seatHitDamageFactor + criticalBonus;
-                    newDamageInfo.SetAmount((int) newDamFloat);
+                    newDamageInfo.SetAmount((int)newDamFloat);
                     affectedPawns.RandomElement().TakeDamage(newDamageInfo);
                 }
             }
@@ -712,7 +707,7 @@ namespace CompVehicle
         // Verse.Pawn_HealthTracker
         public static bool VehicleShouldBeDowned(Pawn_HealthTracker __instance, ref bool __result)
         {
-            var pawn = (Pawn) AccessTools.Field(typeof(Pawn_HealthTracker), "pawn").GetValue(__instance);
+            var pawn = (Pawn)AccessTools.Field(typeof(Pawn_HealthTracker), "pawn").GetValue(__instance);
             if (pawn != null)
             {
                 var compPilotable = pawn.GetComp<CompVehicle>();
@@ -741,29 +736,29 @@ namespace CompVehicle
         }
 
         //E Right click attack options allowed.
-//        public static IEnumerable<CodeInstruction> FightActionTranspiler(IEnumerable<CodeInstruction> instructions,
-//            ILGenerator il)
-//        {
-//            var storyInfo = AccessTools.Field(typeof(Pawn), nameof(Pawn.story));
-//            var done = false;
-//            var instructionList = instructions.ToList();
-//            for (var i = 0; i < instructionList.Count; i++)
-//            {
-//                var instruction = instructionList[i];
-//
-//                if (!done && instruction.operand == storyInfo)
-//                {
-//                    yield return instruction;
-//                    yield return new CodeInstruction(instructionList[i + 3]);
-//                    yield return new CodeInstruction(instructionList[i - 2]) {labels = new List<Label>()};
-//                    yield return new CodeInstruction(instructionList[i - 1]);
-//                    instruction = new CodeInstruction(instruction);
-//                    done = true;
-//                }
-//
-//                yield return instruction;
-//            }
-//        }
+        //public static IEnumerable<CodeInstruction> FightActionTranspiler(IEnumerable<CodeInstruction> instructions,
+        //    ILGenerator il)
+        //{
+        //    var storyInfo = AccessTools.Field(typeof(Pawn), nameof(Pawn.story));
+        //    var done = false;
+        //    var instructionList = instructions.ToList();
+        //    for (var i = 0; i < instructionList.Count; i++)
+        //    {
+        //        var instruction = instructionList[i];
+
+        //        if (!done && instruction.operand == storyInfo)
+        //        {
+        //            yield return instruction;
+        //            yield return new CodeInstruction(instructionList[i + 3]);
+        //            yield return new CodeInstruction(instructionList[i - 2]) { labels = new List<Label>() };
+        //            yield return new CodeInstruction(instructionList[i - 1]);
+        //            instruction = new CodeInstruction(instruction);
+        //            done = true;
+        //        }
+
+        //        yield return instruction;
+        //    }
+        //}
 
         #endregion FunctionsMethods
 
@@ -820,7 +815,7 @@ namespace CompVehicle
         // Verse.AI.Pawn_PathFollower
         public static bool CanVehicleMove(Pawn_PathFollower __instance, LocalTargetInfo dest, PathEndMode peMode)
         {
-            var pawn = (Pawn) AccessTools.Field(typeof(Pawn_PathFollower), "pawn").GetValue(__instance);
+            var pawn = (Pawn)AccessTools.Field(typeof(Pawn_PathFollower), "pawn").GetValue(__instance);
             if (pawn != null)
             {
                 var compPilotable = pawn.GetComp<CompVehicle>();
@@ -896,62 +891,62 @@ namespace CompVehicle
 
         //E Stops verb exceptions.
         //Logic: Checks for NREs that can result from the original method's check for a StoryTracker.
-//        public static IEnumerable<CodeInstruction> CheckForAutoAttackTranspiler(
-//            IEnumerable<CodeInstruction> instructions)
-//        {
-//            var playerFactionInfo = AccessTools.Property(typeof(Faction), nameof(Faction.OfPlayer)).GetGetMethod();
-//            var done = false;
-//            var instructionList = instructions.ToList();
-//            for (var i = 0; i < instructionList.Count; i++)
-//            {
-//                var instruction = instructionList[i];
-//
-//                if (!done && instruction.operand == playerFactionInfo)
-//                {
-//                    done = true;
-//                    yield return instruction;
-//                    yield return instructionList[i + 1];
-//                    yield return instructionList[i + 2];
-//                    yield return instructionList[i + 3];
-//                    yield return instructionList[i + 4];
-//                    instruction = new CodeInstruction(OpCodes.Brfalse_S, instructionList[i + 1].operand);
-//                    i++;
-//                }
-//
-//                yield return instruction;
-//            }
-//        }
+        //public static IEnumerable<CodeInstruction> CheckForAutoAttackTranspiler(
+        //    IEnumerable<CodeInstruction> instructions)
+        //{
+        //    var playerFactionInfo = AccessTools.Property(typeof(Faction), nameof(Faction.OfPlayer)).GetGetMethod();
+        //    var done = false;
+        //    var instructionList = instructions.ToList();
+        //    for (var i = 0; i < instructionList.Count; i++)
+        //    {
+        //        var instruction = instructionList[i];
 
-//        public static IEnumerable<CodeInstruction> GetVerbsCommandsTranspiler(IEnumerable<CodeInstruction> instructions)
-//        {
-//            var storyInfo = AccessTools.Field(typeof(Pawn), nameof(Pawn.story));
-//            Log.Error(storyInfo.ToString());
-//            var done = false;
-//            var instructionList = instructions.ToList();
-//            for (var i = 0; i < instructionList.Count; i++)
-//            {
-//                var instruction = instructionList[i];
-//                Log.Error(instruction.ToString());
-//                if (!done && instruction.operand == storyInfo)
-//                {
-//                    Log.Error("Patching");
-//                    Log.Error(instruction.ToString());
-//                    Log.Error(instructionList[i + 3].operand.ToString());
-//                    Log.Error(instructionList[i - 3].ToString());
-//                    Log.Error(instructionList[i - 2].ToString());
-//                    Log.Error(instructionList[i - 1].ToString());
-//                    yield return instruction;
-//                    yield return new CodeInstruction(OpCodes.Brfalse_S, instructionList[i + 3].operand);
-//                    yield return new CodeInstruction(instructionList[i - 3]);
-//                    yield return new CodeInstruction(instructionList[i - 2]);
-//                    yield return new CodeInstruction(instructionList[i - 1]);
-//                    instruction = new CodeInstruction(instruction);
-//                    done = true;
-//                }
-//
-//                yield return instruction;
-//            }
-//        }
+        //        if (!done && instruction.operand == playerFactionInfo)
+        //        {
+        //            done = true;
+        //            yield return instruction;
+        //            yield return instructionList[i + 1];
+        //            yield return instructionList[i + 2];
+        //            yield return instructionList[i + 3];
+        //            yield return instructionList[i + 4];
+        //            instruction = new CodeInstruction(OpCodes.Brfalse_S, instructionList[i + 1].operand);
+        //            i++;
+        //        }
+
+        //        yield return instruction;
+        //    }
+        //}
+
+        //public static IEnumerable<CodeInstruction> GetVerbsCommandsTranspiler(IEnumerable<CodeInstruction> instructions)
+        //{
+        //    var storyInfo = AccessTools.Field(typeof(Pawn), nameof(Pawn.story));
+        //    Log.Error(storyInfo.ToString());
+        //    var done = false;
+        //    var instructionList = instructions.ToList();
+        //    for (var i = 0; i < instructionList.Count; i++)
+        //    {
+        //        var instruction = instructionList[i];
+        //        Log.Error(instruction.ToString());
+        //        if (!done && instruction.operand == storyInfo)
+        //        {
+        //            Log.Error("Patching");
+        //            Log.Error(instruction.ToString());
+        //            Log.Error(instructionList[i + 3].operand.ToString());
+        //            Log.Error(instructionList[i - 3].ToString());
+        //            Log.Error(instructionList[i - 2].ToString());
+        //            Log.Error(instructionList[i - 1].ToString());
+        //            yield return instruction;
+        //            yield return new CodeInstruction(OpCodes.Brfalse_S, instructionList[i + 3].operand);
+        //            yield return new CodeInstruction(instructionList[i - 3]);
+        //            yield return new CodeInstruction(instructionList[i - 2]);
+        //            yield return new CodeInstruction(instructionList[i - 1]);
+        //            instruction = new CodeInstruction(instruction);
+        //            done = true;
+        //        }
+
+        //        yield return instruction;
+        //    }
+        //}
 
         //J Vehicles with a movement handler are considered colonists.
         //public class ThinkNode_ConditionalColonist : ThinkNode_Conditional
@@ -1043,7 +1038,7 @@ namespace CompVehicle
 
                 List<Pawn> ownedPawns = __instance.lord.ownedPawns;
                 var meetingPoint = Traverse.Create(__instance).Field("meetingPoint").GetValue<IntVec3>();
-                GatherAnimalsAndSlavesForCaravanUtility.CheckArrived(__instance.lord, ownedPawns,  meetingPoint, "AllSlavesGathered",
+                GatherAnimalsAndSlavesForCaravanUtility.CheckArrived(__instance.lord, ownedPawns, meetingPoint, "AllSlavesGathered",
                     x => !x.IsColonist &&
                          !(x.GetComp<CompVehicle>() is CompVehicle compVehicle && compVehicle.CanMove) &&
                          !x.RaceProps.Animal, x => GatherAnimalsAndSlavesForCaravanUtility.IsFollowingAnyone(x));
@@ -1283,14 +1278,14 @@ namespace CompVehicle
                             compVehicle?.PawnsInVehicle is List<VehicleHandlerTemp> vehicleHandlers &&
                             !vehicleHandlers.NullOrEmpty())
                             foreach (var temp in vehicleHandlers)
-                            foreach (var o in pawns)
-                                if (temp?.handlers?.Contains(o) ?? false)
-                                {
-                                    Messages.Message("CompVehicle_CannotSplitWhileInVehicles".Translate(),
-                                        MessageTypeDefOf.RejectInput);
-                                    __result = false;
-                                    return false;
-                                }
+                                foreach (var o in pawns)
+                                    if (temp?.handlers?.Contains(o) ?? false)
+                                    {
+                                        Messages.Message("CompVehicle_CannotSplitWhileInVehicles".Translate(),
+                                            MessageTypeDefOf.RejectInput);
+                                        __result = false;
+                                        return false;
+                                    }
             }
             return true;
         }
@@ -1381,135 +1376,135 @@ namespace CompVehicle
         // ??? NEEDS A TRANSPILER ???
         // This is a lazy prefix to reroute the code to use our list if they have a vehicle in the list.
         // RimWorld.Planet.CaravanPeopleAndItemsTabUtility
-//        public static bool DoRows_PreFix(Vector2 size, ref List<Thing> things, Caravan caravan,
-//            ref Vector2 scrollPosition, ref float scrollViewHeight, bool alwaysShowItemsSection,
-//            ref Pawn specificNeedsTabForPawn, bool doNeeds = true)
-//        {
-//            if (things.Any(x => x is Pawn p && p.TryGetComp<CompVehicle>() != null))
-//            {
-//                if (specificNeedsTabForPawn != null &&
-//                    (!things.Contains(specificNeedsTabForPawn) || specificNeedsTabForPawn.Dead))
-//                    specificNeedsTabForPawn = null;
-//                var methodDoRow = typeof(CaravanPeopleAndItemsTabUtility)
-//                    .GetMethods(BindingFlags.NonPublic | BindingFlags.Static)
-//                    .First(mi => mi.Name == "DoRow" && mi.GetParameters().Count() == 9);
-//                var methodAnyItemOrEmpty =
-//                    AccessTools.Method(typeof(CaravanPeopleAndItemsTabUtility), "AnyItemOrEmpty");
-//
-//                Text.Font = GameFont.Small;
-//                var rect = new Rect(0f, 0f, size.x, size.y).ContractedBy(10f);
-//                var viewRect = new Rect(0f, 0f, rect.width - 16f, scrollViewHeight);
-//                var listingUsesAbandonSpecificCountButtons =
-//                    (bool) methodAnyItemOrEmpty.Invoke(null, new object[] {things});
-//                Widgets.BeginScrollView(rect, ref scrollPosition, viewRect, true);
-//                var num = 0f;
-//                var flag = false;
-//                for (var i = 0; i < things.Count; i++)
-//                {
-//#pragma warning disable IDE0019 // Use pattern matching
-//                    var pawn = things[i] as Pawn;
-//#pragma warning restore IDE0019 // Use pattern matching
-//                    if (pawn != null && pawn.IsColonist)
-//                    {
-//                        if (!flag)
-//                        {
-//                            Widgets.ListSeparator(ref num, viewRect.width, "CaravanColonists".Translate());
-//                            flag = true;
-//                        }
-//                        var args = new object[]
-//                        {
-//                            num, viewRect, rect, scrollPosition, pawn, caravan, specificNeedsTabForPawn, doNeeds,
-//                            listingUsesAbandonSpecificCountButtons
-//                        };
-//                        methodDoRow.Invoke(null, args);
-//                        num = (float) args[0];
-//                        specificNeedsTabForPawn = (Pawn) args[6];
-//                    }
-//                }
-//                var flagV = false;
-//                for (var k = 0; k < things.Count; k++)
-//                {
-//#pragma warning disable IDE0019 // Use pattern matching
-//                    var pawnV = things[k] as Pawn;
-//#pragma warning restore IDE0019 // Use pattern matching
-//                    if (pawnV != null && pawnV.TryGetComp<CompVehicle>() != null)
-//                    {
-//                        if (!flagV)
-//                        {
-//                            Widgets.ListSeparator(ref num, viewRect.width, "CompVehicle_VehicleSection".Translate());
-//                            flagV = true;
-//                        }
-//                        var args = new object[]
-//                        {
-//                            num, viewRect, rect, scrollPosition, pawnV, caravan, specificNeedsTabForPawn, doNeeds,
-//                            listingUsesAbandonSpecificCountButtons
-//                        };
-//                        methodDoRow.Invoke(null, args);
-//                        num = (float) args[0];
-//                        specificNeedsTabForPawn = (Pawn) args[6];
-//                    }
-//                }
-//
-//                var flag2 = false;
-//                for (var j = 0; j < things.Count; j++)
-//                {
-//#pragma warning disable IDE0019 // Use pattern matching
-//                    var pawn2 = things[j] as Pawn;
-//#pragma warning restore IDE0019 // Use pattern matching
-//                    if (pawn2 != null && !pawn2.IsColonist && pawn2.TryGetComp<CompVehicle>() == null)
-//                    {
-//                        if (!flag2)
-//                        {
-//                            Widgets.ListSeparator(ref num, viewRect.width, "CaravanPrisonersAndAnimals".Translate());
-//                            flag2 = true;
-//                        }
-//                        var args = new object[]
-//                        {
-//                            num, viewRect, rect, scrollPosition, pawn2, caravan, specificNeedsTabForPawn, doNeeds,
-//                            listingUsesAbandonSpecificCountButtons
-//                        };
-//                        methodDoRow.Invoke(null, args);
-//                        num = (float) args[0];
-//                        specificNeedsTabForPawn = (Pawn) args[6];
-//                    }
-//                }
-//                var flag3 = false;
-//                if (alwaysShowItemsSection)
-//                    Widgets.ListSeparator(ref num, viewRect.width, "CaravanItems".Translate());
-//                for (var k = 0; k < things.Count; k++)
-//                    if (!(things[k] is Pawn))
-//                    {
-//                        if (!flag3)
-//                        {
-//                            if (!alwaysShowItemsSection)
-//                                Widgets.ListSeparator(ref num, viewRect.width, "CaravanItems".Translate());
-//                            flag3 = true;
-//                        }
-//                        var args = new object[]
-//                        {
-//                            num, viewRect, rect, scrollPosition, things[k], caravan, specificNeedsTabForPawn, doNeeds,
-//                            listingUsesAbandonSpecificCountButtons
-//                        };
-//                        methodDoRow.Invoke(null, args);
-//                        num = (float) args[0];
-//                        specificNeedsTabForPawn = (Pawn) args[6];
-//                    }
-//                if (alwaysShowItemsSection && !flag3)
-//                {
-//                    GUI.color = Color.gray;
-//                    Text.Anchor = TextAnchor.UpperCenter;
-//                    Widgets.Label(new Rect(0f, num, viewRect.width, 25f), "NoneBrackets".Translate());
-//                    Text.Anchor = TextAnchor.UpperLeft;
-//                    num += 25f;
-//                    GUI.color = Color.white;
-//                }
-//                if (Event.current.type == EventType.Layout)
-//                    scrollViewHeight = num + 30f;
-//                Widgets.EndScrollView();
-//                return false;
-//            }
-//            return true;
-//        }
+        //public static bool DoRows_PreFix(Vector2 size, ref List<Thing> things, Caravan caravan,
+        //    ref Vector2 scrollPosition, ref float scrollViewHeight, bool alwaysShowItemsSection,
+        //    ref Pawn specificNeedsTabForPawn, bool doNeeds = true)
+        //{
+        //    if (things.Any(x => x is Pawn p && p.TryGetComp<CompVehicle>() != null))
+        //    {
+        //        if (specificNeedsTabForPawn != null &&
+        //            (!things.Contains(specificNeedsTabForPawn) || specificNeedsTabForPawn.Dead))
+        //            specificNeedsTabForPawn = null;
+        //        var methodDoRow = typeof(CaravanPeopleAndItemsTabUtility)
+        //            .GetMethods(BindingFlags.NonPublic | BindingFlags.Static)
+        //            .First(mi => mi.Name == "DoRow" && mi.GetParameters().Count() == 9);
+        //        var methodAnyItemOrEmpty =
+        //            AccessTools.Method(typeof(CaravanPeopleAndItemsTabUtility), "AnyItemOrEmpty");
+
+        //        Text.Font = GameFont.Small;
+        //        var rect = new Rect(0f, 0f, size.x, size.y).ContractedBy(10f);
+        //        var viewRect = new Rect(0f, 0f, rect.width - 16f, scrollViewHeight);
+        //        var listingUsesAbandonSpecificCountButtons =
+        //            (bool) methodAnyItemOrEmpty.Invoke(null, new object[] {things});
+        //        Widgets.BeginScrollView(rect, ref scrollPosition, viewRect, true);
+        //        var num = 0f;
+        //        var flag = false;
+        //        for (var i = 0; i < things.Count; i++)
+        //        {
+        //            #pragma warning disable IDE0019 // Use pattern matching
+        //            var pawn = things[i] as Pawn;
+        //            #pragma warning restore IDE0019 // Use pattern matching
+        //            if (pawn != null && pawn.IsColonist)
+        //            {
+        //                if (!flag)
+        //                {
+        //                    Widgets.ListSeparator(ref num, viewRect.width, "CaravanColonists".Translate());
+        //                    flag = true;
+        //                }
+        //                var args = new object[]
+        //                {
+        //                    num, viewRect, rect, scrollPosition, pawn, caravan, specificNeedsTabForPawn, doNeeds,
+        //                    listingUsesAbandonSpecificCountButtons
+        //                };
+        //                methodDoRow.Invoke(null, args);
+        //                num = (float) args[0];
+        //                specificNeedsTabForPawn = (Pawn) args[6];
+        //            }
+        //        }
+        //        var flagV = false;
+        //        for (var k = 0; k < things.Count; k++)
+        //        {
+        //            #pragma warning disable IDE0019 // Use pattern matching
+        //            var pawnV = things[k] as Pawn;
+        //            #pragma warning restore IDE0019 // Use pattern matching
+        //            if (pawnV != null && pawnV.TryGetComp<CompVehicle>() != null)
+        //            {
+        //                if (!flagV)
+        //                {
+        //                    Widgets.ListSeparator(ref num, viewRect.width, "CompVehicle_VehicleSection".Translate());
+        //                    flagV = true;
+        //                }
+        //                var args = new object[]
+        //                {
+        //                    num, viewRect, rect, scrollPosition, pawnV, caravan, specificNeedsTabForPawn, doNeeds,
+        //                    listingUsesAbandonSpecificCountButtons
+        //                };
+        //                methodDoRow.Invoke(null, args);
+        //                num = (float) args[0];
+        //                specificNeedsTabForPawn = (Pawn) args[6];
+        //            }
+        //        }
+
+        //        var flag2 = false;
+        //        for (var j = 0; j < things.Count; j++)
+        //        {
+        //            #pragma warning disable IDE0019 // Use pattern matching
+        //            var pawn2 = things[j] as Pawn;
+        //            #pragma warning restore IDE0019 // Use pattern matching
+        //            if (pawn2 != null && !pawn2.IsColonist && pawn2.TryGetComp<CompVehicle>() == null)
+        //            {
+        //                if (!flag2)
+        //                {
+        //                    Widgets.ListSeparator(ref num, viewRect.width, "CaravanPrisonersAndAnimals".Translate());
+        //                    flag2 = true;
+        //                }
+        //                var args = new object[]
+        //                {
+        //                    num, viewRect, rect, scrollPosition, pawn2, caravan, specificNeedsTabForPawn, doNeeds,
+        //                    listingUsesAbandonSpecificCountButtons
+        //                };
+        //                methodDoRow.Invoke(null, args);
+        //                num = (float) args[0];
+        //                specificNeedsTabForPawn = (Pawn) args[6];
+        //            }
+        //        }
+        //        var flag3 = false;
+        //        if (alwaysShowItemsSection)
+        //            Widgets.ListSeparator(ref num, viewRect.width, "CaravanItems".Translate());
+        //        for (var k = 0; k < things.Count; k++)
+        //            if (!(things[k] is Pawn))
+        //            {
+        //                if (!flag3)
+        //                {
+        //                    if (!alwaysShowItemsSection)
+        //                        Widgets.ListSeparator(ref num, viewRect.width, "CaravanItems".Translate());
+        //                    flag3 = true;
+        //                }
+        //                var args = new object[]
+        //                {
+        //                    num, viewRect, rect, scrollPosition, things[k], caravan, specificNeedsTabForPawn, doNeeds,
+        //                    listingUsesAbandonSpecificCountButtons
+        //                };
+        //                methodDoRow.Invoke(null, args);
+        //                num = (float) args[0];
+        //                specificNeedsTabForPawn = (Pawn) args[6];
+        //            }
+        //        if (alwaysShowItemsSection && !flag3)
+        //        {
+        //            GUI.color = Color.gray;
+        //            Text.Anchor = TextAnchor.UpperCenter;
+        //            Widgets.Label(new Rect(0f, num, viewRect.width, 25f), "NoneBrackets".Translate());
+        //            Text.Anchor = TextAnchor.UpperLeft;
+        //            num += 25f;
+        //            GUI.color = Color.white;
+        //        }
+        //        if (Event.current.type == EventType.Layout)
+        //            scrollViewHeight = num + 30f;
+        //        Widgets.EndScrollView();
+        //        return false;
+        //    }
+        //    return true;
+        //}
 
         //J Adds a vehicles section to Caravan forming UI.
         // RimWorld.CaravanUIUtility
@@ -1520,8 +1515,8 @@ namespace CompVehicle
                 where x.ThingDef.category == ThingCategory.Pawn
                 select x;
             widget.AddSection("CompVehicle_VehicleSection".Translate(), from x in source
-                where ((Pawn) x.AnyThing).GetComp<CompVehicle>() != null &&
-                      ((Pawn) x.AnyThing).GetComp<CompVehicle>().MovementHandlerAvailable
+                where ((Pawn)x.AnyThing).GetComp<CompVehicle>() != null &&
+                      ((Pawn)x.AnyThing).GetComp<CompVehicle>().MovementHandlerAvailable
                 select x);
         }
 
@@ -1645,7 +1640,7 @@ namespace CompVehicle
                 foreach (var vehicle in vehicles)
                     slowestLandSpeed = Math.Min(vehicle.GetComp<CompVehicle>().Props.worldSpeedFactor,
                         slowestLandSpeed);
-                __result = (int) (__result / slowestLandSpeed);
+                __result = (int)(__result / slowestLandSpeed);
             }
 
             //Previous code.
@@ -1765,94 +1760,94 @@ namespace CompVehicle
         //RimWorld.Planet.CaravanExitMapUtility
 
         //Bad code, needs transpiler cause i nuked vanilla code again
-//        public static bool ExitMapAndJoinOrCreateCaravan_PreFix(Pawn pawn)
-//        {
-//            if (pawn.GetComp<CompVehicle>() is CompVehicle compVehicle)
-//            {
-//                //Vanilla code start
-//                ////Log.Message("EMJOC_1");
-//                var caravan = CaravanExitMapUtility.FindCaravanToJoinFor(pawn);
-//                ////Log.Message("EMJOC_2");
-//
-//                if (caravan != null)
-//                {
-//                    ////Log.Message("EMJOC_3a");
-//
-//                    pawn.DeSpawn();
-//                    ////Log.Message("EMJOC_3b");
-//
-//                    caravan.AddPawn(pawn, true);
-//                    ////Log.Message("EMJOC_3c");
-//
-//                    pawn.ExitMap(false);
-//                    ////Log.Message("EMJOC_3d");
-//                }
-//                //Vanilla code edit transpiler here for if statement
-//                ////Log.Message("EMJOC_4");
-//
-//                var list = CaravanExitMapUtility.AvailableExitTilesAt(pawn.Map);
-//                ////Log.Message("EMJOC_4a");
-//
-//                var caravan2 = CaravanExitMapUtility.ExitMapAndCreateCaravan(Gen.YieldSingle(pawn), pawn.Faction,
-//                    pawn.Map.Tile, !list.Any() ? pawn.Map.Tile : list.RandomElement());
-//                ////Log.Message("EMJOC_4b");
-//
-//                caravan2.autoJoinable = true;
-//                ////Log.Message("EMJOC_4c");
-//
-//                if (pawn.Faction == Faction.OfPlayer)
-//                    Messages.Message("MessagePawnLeftMapAndCreatedCaravan".Translate(pawn.LabelShort).CapitalizeFirst(),
-//                        caravan2, MessageTypeDefOf.PositiveEvent);
-//                ////Log.Message("EMJOC_4f");
-//
-//                //Vanilla Code end
-//
-//                //Apparently commenting out this code fixed the errors from JobDriver when
-//                //leaving an invasion map
-//                //caravan = CaravanExitMapUtility.FindCaravanToJoinFor(pawn);
-//                //if (!compVehicle.AllOccupants.NullOrEmpty())
-//                //{
-//                //    if (compVehicle.PawnsInVehicle == null)
-//                //    {
-//                //        compVehicle.PawnsInVehicle = new List<VehicleHandlerTemp>();
-//                //        foreach (VehicleHandlerGroup group in compVehicle.handlers)
-//                //        {
-//                //            ////Log.Message("Adding group to " + compVehicle.Pawn.ToString());
-//                //            compVehicle.PawnsInVehicle.Add(new VehicleHandlerTemp(group));
-//                //        }
-//                //    }
-//                //}
-//                //if (vehicle.handlers != null && vehicle.handlers.Count > 0)
-//                //{
-//                //    foreach (VehicleHandlerGroup group in vehicle.handlers)
-//                //    {
-//                //        for (int i = 0; i < group.handlers.Count; i++)
-//                //        {
-//                //            Pawn tpawn = group.handlers[i];
-//                //            //Store vehicle handler group structure in comp variable
-//                //            if (vehicle.AllOccupants.Count > 0)
-//                //            {
-//                //                //Add pawns to the comp variable for usage on reentering the map
-//                //                foreach (VehicleHandlerGroup vgroup in vehicle.PawnsInVehicle)
-//                //                {
-//                //                    if (vgroup.role == group.role)
-//                //                    {
-//                //                        vgroup.handlers.Add(tpawn);
-//                //                    }
-//                //                }
-//                //            }
-//                //            //Remove the pawn from the vehicle and add it to the caravan
-//                //            caravan.AddPawn(tpawn, true);
-//                //            group.handlers.Remove(tpawn);
-//                //        }
-//                //    }
-//                //}
-//                //Log.Message("EMJOC_6");
-//
-//                return false;
-//            }
-//            return true;
-//        }
+        //public static bool ExitMapAndJoinOrCreateCaravan_PreFix(Pawn pawn)
+        //{
+        //    if (pawn.GetComp<CompVehicle>() is CompVehicle compVehicle)
+        //    {
+        //        //Vanilla code start
+        //        ////Log.Message("EMJOC_1");
+        //        var caravan = CaravanExitMapUtility.FindCaravanToJoinFor(pawn);
+        //        ////Log.Message("EMJOC_2");
+
+        //        if (caravan != null)
+        //        {
+        //            ////Log.Message("EMJOC_3a");
+
+        //            pawn.DeSpawn();
+        //            ////Log.Message("EMJOC_3b");
+
+        //            caravan.AddPawn(pawn, true);
+        //            ////Log.Message("EMJOC_3c");
+
+        //            pawn.ExitMap(false);
+        //            ////Log.Message("EMJOC_3d");
+        //        }
+        //        //Vanilla code edit transpiler here for if statement
+        //        ////Log.Message("EMJOC_4");
+
+        //        var list = CaravanExitMapUtility.AvailableExitTilesAt(pawn.Map);
+        //        ////Log.Message("EMJOC_4a");
+
+        //        var caravan2 = CaravanExitMapUtility.ExitMapAndCreateCaravan(Gen.YieldSingle(pawn), pawn.Faction,
+        //            pawn.Map.Tile, !list.Any() ? pawn.Map.Tile : list.RandomElement());
+        //        ////Log.Message("EMJOC_4b");
+
+        //        caravan2.autoJoinable = true;
+        //        ////Log.Message("EMJOC_4c");
+
+        //        if (pawn.Faction == Faction.OfPlayer)
+        //            Messages.Message("MessagePawnLeftMapAndCreatedCaravan".Translate(pawn.LabelShort).CapitalizeFirst(),
+        //                caravan2, MessageTypeDefOf.PositiveEvent);
+        //        ////Log.Message("EMJOC_4f");
+
+        //        //Vanilla Code end
+
+        //        //Apparently commenting out this code fixed the errors from JobDriver when
+        //        //leaving an invasion map
+        //        //caravan = CaravanExitMapUtility.FindCaravanToJoinFor(pawn);
+        //        //if (!compVehicle.AllOccupants.NullOrEmpty())
+        //        //{
+        //        //    if (compVehicle.PawnsInVehicle == null)
+        //        //    {
+        //        //        compVehicle.PawnsInVehicle = new List<VehicleHandlerTemp>();
+        //        //        foreach (VehicleHandlerGroup group in compVehicle.handlers)
+        //        //        {
+        //        //            ////Log.Message("Adding group to " + compVehicle.Pawn.ToString());
+        //        //            compVehicle.PawnsInVehicle.Add(new VehicleHandlerTemp(group));
+        //        //        }
+        //        //    }
+        //        //}
+        //        //if (vehicle.handlers != null && vehicle.handlers.Count > 0)
+        //        //{
+        //        //    foreach (VehicleHandlerGroup group in vehicle.handlers)
+        //        //    {
+        //        //        for (int i = 0; i < group.handlers.Count; i++)
+        //        //        {
+        //        //            Pawn tpawn = group.handlers[i];
+        //        //            //Store vehicle handler group structure in comp variable
+        //        //            if (vehicle.AllOccupants.Count > 0)
+        //        //            {
+        //        //                //Add pawns to the comp variable for usage on reentering the map
+        //        //                foreach (VehicleHandlerGroup vgroup in vehicle.PawnsInVehicle)
+        //        //                {
+        //        //                    if (vgroup.role == group.role)
+        //        //                    {
+        //        //                        vgroup.handlers.Add(tpawn);
+        //        //                    }
+        //        //                }
+        //        //            }
+        //        //            //Remove the pawn from the vehicle and add it to the caravan
+        //        //            caravan.AddPawn(tpawn, true);
+        //        //            group.handlers.Remove(tpawn);
+        //        //        }
+        //        //    }
+        //        //}
+        //        //Log.Message("EMJOC_6");
+
+        //        return false;
+        //    }
+        //    return true;
+        //}
 
         //S Add pawns back to the vehicle and remove them from the caravan when entering the map
         //S Converted to prefix which should fix map enter cloning (Cloning did occur previously but clones were removed via resolve ejection)
@@ -1873,26 +1868,26 @@ namespace CompVehicle
                 if (vehicle != null && vehicle.PawnsInVehicle != null && vehicle.PawnsInVehicle.Count > 0)
                 {
                     for (var j = 0; j < members.Count; j++)
-                    for (var l = 0; l < vehicle.PawnsInVehicle.Count; l++)
-                    {
-                        var group = vehicle.PawnsInVehicle[l];
-                        for (var k = 0; k < group.handlers.Count; k++)
+                        for (var l = 0; l < vehicle.PawnsInVehicle.Count; l++)
                         {
-                            //Is the pawn still in the caravan?
-                            var pawn = group.handlers[k];
-                            if (pawn == members[j])
-                                foreach (var vgroup in vehicle.handlers)
-                                    if (vgroup.role.label == group.role.label)
-                                    {
+                            var group = vehicle.PawnsInVehicle[l];
+                            for (var k = 0; k < group.handlers.Count; k++)
+                            {
+                                //Is the pawn still in the caravan?
+                                var pawn = group.handlers[k];
+                                if (pawn == members[j])
+                                    foreach (var vgroup in vehicle.handlers)
+                                        if (vgroup.role.label == group.role.label)
+                                        {
                                             vgroup.handlers.TryAdd(pawn);
                                             caravan.RemovePawn(pawn);
-                                        ////Log.Message("RemovedPawn " + pawn.LabelShort);
-                                        ////Log.Message(caravan.PawnsListForReading.ToString());
-                                        //if (pawn.IsWorldPawn()) Find.WorldPawns.RemovePawn(pawn);
-                                        break;
-                                    }
+                                            ////Log.Message("RemovedPawn " + pawn.LabelShort);
+                                            ////Log.Message(caravan.PawnsListForReading.ToString());
+                                            //if (pawn.IsWorldPawn()) Find.WorldPawns.RemovePawn(pawn);
+                                            break;
+                                        }
+                            }
                         }
-                    }
                     //Clear the comp variable to allow an empty one to be created when forming a caravan/exiting map
                     vehicle.PawnsInVehicle = null;
                 }
@@ -1941,56 +1936,56 @@ namespace CompVehicle
         //S Modifies the Caravan Needs WITab to show vehicle fuel
         //Purpose: Modifies the Caravan Needs WITab to show vehicle fuel
         //Logic: Players should be able to see how much fuel each vehicle has
-//        public static IEnumerable<CodeInstruction> DoRow_Transpiler(IEnumerable<CodeInstruction> instructions,
-//            ILGenerator ilg)
-//        {
-//            var downedInfo = AccessTools.Property(typeof(Pawn), nameof(Pawn.Downed)).GetGetMethod();
-//            var getCompInfo = AccessTools.Method(typeof(ThingWithComps), nameof(Pawn.GetComp))
-//                .MakeGenericMethod(typeof(CompRefuelable));
-//            var thisMethodInfo = AccessTools.Method(typeof(CaravanPeopleAndItemsTabUtility), "DoRow",
-//                new[]
-//                {
-//                    typeof(Rect), typeof(Thing), typeof(Caravan), typeof(Pawn).MakeByRefType(), typeof(bool),
-//                    typeof(bool)
-//                });
-//
-//
-//            var instructionList = instructions.ToList();
-//
-//            for (var i = 0; i < instructionList.Count; i++)
-//            {
-//                var instruction = instructionList[i];
-//
-//                if (instruction.operand == downedInfo)
-//                {
-//                    yield return new CodeInstruction(OpCodes.Callvirt, getCompInfo);
-//                    yield return new CodeInstruction(OpCodes.Ldnull);
-//                    yield return new CodeInstruction(OpCodes.Cgt_Un);
-//                    var endLabel = ilg.DefineLabel();
-//                    yield return new CodeInstruction(OpCodes.Brfalse_S, endLabel);
-//                    yield return new CodeInstruction(OpCodes.Nop);
-//                    yield return new CodeInstruction(instructionList[i - 1]) {labels = new List<Label>()};
-//                    yield return new CodeInstruction(OpCodes.Callvirt, getCompInfo);
-//                    yield return new CodeInstruction(OpCodes.Ldc_R4, 135f);
-//                    yield return new CodeInstruction(OpCodes.Ldc_R4, 0.0f);
-//                    yield return new CodeInstruction(OpCodes.Ldc_R4, 100f);
-//                    yield return new CodeInstruction(OpCodes.Ldc_R4, 50f);
-//                    yield return new CodeInstruction(OpCodes.Newobj,
-//                        AccessTools.Constructor(typeof(Rect),
-//                            new[] {typeof(float), typeof(float), typeof(float), typeof(float)}));
-//                    yield return new CodeInstruction(OpCodes.Ldc_I4_1);
-//                    yield return new CodeInstruction(OpCodes.Ldc_I4_0);
-//                    yield return new CodeInstruction(OpCodes.Ldc_R4, 10f);
-//                    yield return new CodeInstruction(OpCodes.Ldc_I4_0);
-//                    yield return new CodeInstruction(OpCodes.Call,
-//                        AccessTools.Method(typeof(HarmonyCompVehicle), nameof(DrawOnGUI)));
-//                    yield return new CodeInstruction(OpCodes.Nop);
-//                    yield return new CodeInstruction(OpCodes.Nop);
-//                    yield return new CodeInstruction(instructionList[i - 1]) {labels = new List<Label> {endLabel}};
-//                }
-//                yield return instruction;
-//            }
-//        }
+        //public static IEnumerable<CodeInstruction> DoRow_Transpiler(IEnumerable<CodeInstruction> instructions,
+        //    ILGenerator ilg)
+        //{
+        //    var downedInfo = AccessTools.Property(typeof(Pawn), nameof(Pawn.Downed)).GetGetMethod();
+        //    var getCompInfo = AccessTools.Method(typeof(ThingWithComps), nameof(Pawn.GetComp))
+        //        .MakeGenericMethod(typeof(CompRefuelable));
+        //    var thisMethodInfo = AccessTools.Method(typeof(CaravanPeopleAndItemsTabUtility), "DoRow",
+        //        new[]
+        //        {
+        //            typeof(Rect), typeof(Thing), typeof(Caravan), typeof(Pawn).MakeByRefType(), typeof(bool),
+        //            typeof(bool)
+        //        });
+
+
+        //    var instructionList = instructions.ToList();
+
+        //    for (var i = 0; i < instructionList.Count; i++)
+        //    {
+        //        var instruction = instructionList[i];
+
+        //        if (instruction.operand == downedInfo)
+        //        {
+        //            yield return new CodeInstruction(OpCodes.Callvirt, getCompInfo);
+        //            yield return new CodeInstruction(OpCodes.Ldnull);
+        //            yield return new CodeInstruction(OpCodes.Cgt_Un);
+        //            var endLabel = ilg.DefineLabel();
+        //            yield return new CodeInstruction(OpCodes.Brfalse_S, endLabel);
+        //            yield return new CodeInstruction(OpCodes.Nop);
+        //            yield return new CodeInstruction(instructionList[i - 1]) { labels = new List<Label>() };
+        //            yield return new CodeInstruction(OpCodes.Callvirt, getCompInfo);
+        //            yield return new CodeInstruction(OpCodes.Ldc_R4, 135f);
+        //            yield return new CodeInstruction(OpCodes.Ldc_R4, 0.0f);
+        //            yield return new CodeInstruction(OpCodes.Ldc_R4, 100f);
+        //            yield return new CodeInstruction(OpCodes.Ldc_R4, 50f);
+        //            yield return new CodeInstruction(OpCodes.Newobj,
+        //                AccessTools.Constructor(typeof(Rect),
+        //                    new[] { typeof(float), typeof(float), typeof(float), typeof(float) }));
+        //            yield return new CodeInstruction(OpCodes.Ldc_I4_1);
+        //            yield return new CodeInstruction(OpCodes.Ldc_I4_0);
+        //            yield return new CodeInstruction(OpCodes.Ldc_R4, 10f);
+        //            yield return new CodeInstruction(OpCodes.Ldc_I4_0);
+        //            yield return new CodeInstruction(OpCodes.Call,
+        //                AccessTools.Method(typeof(HarmonyCompVehicle), nameof(DrawOnGUI)));
+        //            yield return new CodeInstruction(OpCodes.Nop);
+        //            yield return new CodeInstruction(OpCodes.Nop);
+        //            yield return new CodeInstruction(instructionList[i - 1]) { labels = new List<Label> { endLabel } };
+        //        }
+        //        yield return instruction;
+        //    }
+        //}
 
         //S Modifies the Caravan Contents Window when forming a caravan to show the fuel carried by the caravan
         //  ---------- BAD CODE...... but...... it works---------
@@ -2003,143 +1998,143 @@ namespace CompVehicle
         //__instance version of this was not working
         private static object tab;
 
-//        public static bool DoWindowContents_PreFix(Rect inRect, Dialog_FormCaravan __instance)
-//        {
-//            var traverseobj = Traverse.Create(__instance);
-//            var transferables = traverseobj.Field("transferables").GetValue<List<TransferableOneWay>>();
-//            var vehicleTransferrable = transferables?.FirstOrDefault(x =>
-//                x.HasAnyThing && x.AnyThing is Pawn p && p.GetComp<CompVehicle>() is CompVehicle vehicle);
-//            if (vehicleTransferrable != null)
-//            {
-//                //Create a traverse object and grab private variables from the instance
-//                var reform = traverseobj.Field("reform").GetValue<bool>();
-//                var tabsList = traverseobj.Field("tabsList").GetValue<List<TabRecord>>();
-//                var MassUsage = traverseobj.Property("MassUsage").GetValue<float>();
-//                var MassCapacity = traverseobj.Property("MassCapacity").GetValue<float>();
-//                var lastMassFlashTime = traverseobj.Field("lastMassFlashTime").GetValue<float>();
-//                var map = traverseobj.Field("map").GetValue<Map>();
-//                if (tab == null)
-//                    tab = traverseobj.Field("tab").GetValue();
-//
-//                var EnvironmentAllowsEatingVirtualPlantsNow =
-//                    traverseobj.Property("EnvironmentAllowsEatingVirtualPlantsNow").GetValue<bool>();
-//                var pawnsTransfer = traverseobj.Field("pawnsTransfer").GetValue<TransferableOneWayWidget>();
-//                var itemsTransfer = traverseobj.Field("itemsTransfer").GetValue<TransferableOneWayWidget>();
-//
-//
-//                var tmpThingCounts = new List<ThingCount>();
-//                var list = new List<Pawn>();
-//                for (var i = 0; i < transferables.Count; i++)
-//                {
-//                    var transferableOneWay = transferables[i];
-//                    if (transferableOneWay.HasAnyThing)
-//                        if (transferableOneWay.AnyThing is Pawn)
-//                            for (var l = 0; l < transferableOneWay.CountToTransfer; l++)
-//                            {
-//                                var pawn = (Pawn) transferableOneWay.things[l];
-//                                //Look at the contents of the vehicle and if it has any pawns in it, add it to the list
-//                                if (pawn.GetComp<CompVehicle>() != null &&
-//                                    pawn.GetComp<CompVehicle>().AllOccupants != null)
-//                                    for (var j = 0; j < pawn.GetComp<CompVehicle>().AllOccupants.Count; j++)
-//                                        list.Add(pawn.GetComp<CompVehicle>().AllOccupants[j]);
-//                            }
-//                        else
-//                            tmpThingCounts.Add(new ThingCount(transferableOneWay.ThingDef,
-//                                transferableOneWay.CountToTransfer));
-//                }
-//
-//                //Calculate days worth of food using the list with pawns in vehicles
-//                var DaysWorthOfFood = new Pair<float, float>(
-//                    (float) AccessTools
-//                        .Method(typeof(DaysWorthOfFoodCalculator), "ApproxDaysWorthOfFood",
-//                            new[]
-//                            {
-//                                typeof(List<Pawn>), typeof(List<ThingCount>), typeof(bool),
-//                                typeof(IgnorePawnsInventoryMode)
-//                            }).Invoke(__instance,
-//                            new object[]
-//                            {
-//                                list, tmpThingCounts, EnvironmentAllowsEatingVirtualPlantsNow,
-//                                IgnorePawnsInventoryMode.IgnoreIfAssignedToUnload
-//                            }),
-//                    DaysUntilRotCalculator.ApproxDaysUntilRot(transferables, map.Tile,
-//                        IgnorePawnsInventoryMode.IgnoreIfAssignedToUnload));
-//
-//                //Calculate the days worth of fuel
-//                var DaysWorthOfFuel =
-//                    ApproxDaysWorthOfFuel(transferables, IgnorePawnsInventoryMode.IgnoreIfAssignedToUnload);
-//                var rect = new Rect(0f, 0f, inRect.width, 40f);
-//                Text.Font = GameFont.Medium;
-//                Text.Anchor = TextAnchor.MiddleCenter;
-//                Widgets.Label(rect, (!reform ? "FormCaravan" : "ReformCaravan").Translate());
-//                Text.Font = GameFont.Small;
-//                Text.Anchor = TextAnchor.UpperLeft;
-//                tabsList.Clear();
-//                //Tabs: get the current tab
-//                tabsList.Add(new TabRecord("PawnsTab".Translate(), delegate
-//                {
-//                    Traverse.Create(tab).Field("value__").SetValue(0); //Since Tab.Pawns == 0
-//                }, tab.ToString() == "Pawns"));
-//                tabsList.Add(new TabRecord("ItemsTab".Translate(), delegate
-//                {
-//                    Traverse.Create(tab).Field("value__").SetValue(1); //Since Tab.Items == 1
-//                }, tab.ToString() == "Items"));
-//                if (!reform)
-//                    tabsList.Add(new TabRecord("CaravanConfigTab".Translate(), delegate
-//                    {
-//                        Traverse.Create(tab).Field("value__").SetValue(2); //Since Tab.Pawns == 3
-//                    }, tab.ToString() == "Config"));
-//                inRect.yMin += 72f;
-//                Widgets.DrawMenuSection(inRect);
-//                TabDrawer.DrawTabs(inRect, tabsList);
-//                inRect = inRect.ContractedBy(17f);
-//                GUI.BeginGroup(inRect);
-//                var rect2 = inRect.AtZero();
-//                //Show the info stuff if it's not the config tab
-//                if (tab.ToString() != "Config")
-//                {
-//                    var rect3 = rect2;
-//                    rect3.xMin += rect2.width - 515f;
-//                    rect3.y += 32f;
-//                    TransferableUIUtility.DrawMassInfo(rect3, MassUsage, MassCapacity,
-//                        "CaravanMassUsageTooltip".Translate(), lastMassFlashTime, true);
-//                    CaravanUIUtility.DrawDaysWorthOfFoodInfo(
-//                        new Rect(rect3.x, rect3.y + 19f, rect3.width, rect3.height), DaysWorthOfFood.First,
-//                        DaysWorthOfFood.Second, EnvironmentAllowsEatingVirtualPlantsNow, true, 3.40282347E+38f);
-//                    //Draw fuel info
-//                    DrawDaysWorthOfFuelInfo(new Rect(rect3.x, rect3.y + 38f, rect3.width, rect3.height),
-//                        DaysWorthOfFuel, true, 3.40282347E+38f);
-//                }
-//                DoBottomButtons(rect2, __instance, DaysWorthOfFood, traverseobj, reform, transferables, DaysWorthOfFuel,
-//                    StuffHasNoFuel(transferables, IgnorePawnsInventoryMode.IgnoreIfAssignedToUnload));
-//                var inRect2 = rect2;
-//                inRect2.yMax -= 59f;
-//                var flag = false;
-//                switch (tab.ToString())
-//                {
-//                    case "Pawns":
-//                        pawnsTransfer.OnGUI(inRect2, out flag);
-//                        break;
-//                    case "Items":
-//                        itemsTransfer.OnGUI(inRect2, out flag);
-//                        break;
-//                    case "Config":
-//                        //There was an issue calling the private method DrawConfig, I forget why
-//                        AccessTools.Method(typeof(Dialog_FormCaravan), "DrawConfig")
-//                            .Invoke(__instance, new object[] {rect2});
-//                        break;
-//                }
-//                if (flag)
-//                {
-//                    AccessTools.Method(typeof(Dialog_FormCaravan), "CountToTransferChanged")
-//                        .Invoke(__instance, new object[] { });
-//                    transferables = traverseobj.Field("transferables").GetValue<List<TransferableOneWay>>();
-//                }
-//                GUI.EndGroup();
-//                return false;
-//            }
-//            return true;
-//        }
+        //public static bool DoWindowContents_PreFix(Rect inRect, Dialog_FormCaravan __instance)
+        //{
+        //    var traverseobj = Traverse.Create(__instance);
+        //    var transferables = traverseobj.Field("transferables").GetValue<List<TransferableOneWay>>();
+        //    var vehicleTransferrable = transferables?.FirstOrDefault(x =>
+        //        x.HasAnyThing && x.AnyThing is Pawn p && p.GetComp<CompVehicle>() is CompVehicle vehicle);
+        //    if (vehicleTransferrable != null)
+        //    {
+        //        //Create a traverse object and grab private variables from the instance
+        //        var reform = traverseobj.Field("reform").GetValue<bool>();
+        //        var tabsList = traverseobj.Field("tabsList").GetValue<List<TabRecord>>();
+        //        var MassUsage = traverseobj.Property("MassUsage").GetValue<float>();
+        //        var MassCapacity = traverseobj.Property("MassCapacity").GetValue<float>();
+        //        var lastMassFlashTime = traverseobj.Field("lastMassFlashTime").GetValue<float>();
+        //        var map = traverseobj.Field("map").GetValue<Map>();
+        //        if (tab == null)
+        //            tab = traverseobj.Field("tab").GetValue();
+
+        //        var EnvironmentAllowsEatingVirtualPlantsNow =
+        //            traverseobj.Property("EnvironmentAllowsEatingVirtualPlantsNow").GetValue<bool>();
+        //        var pawnsTransfer = traverseobj.Field("pawnsTransfer").GetValue<TransferableOneWayWidget>();
+        //        var itemsTransfer = traverseobj.Field("itemsTransfer").GetValue<TransferableOneWayWidget>();
+
+
+        //        var tmpThingCounts = new List<ThingCount>();
+        //        var list = new List<Pawn>();
+        //        for (var i = 0; i < transferables.Count; i++)
+        //        {
+        //            var transferableOneWay = transferables[i];
+        //            if (transferableOneWay.HasAnyThing)
+        //                if (transferableOneWay.AnyThing is Pawn)
+        //                    for (var l = 0; l < transferableOneWay.CountToTransfer; l++)
+        //                    {
+        //                        var pawn = (Pawn) transferableOneWay.things[l];
+        //                        //Look at the contents of the vehicle and if it has any pawns in it, add it to the list
+        //                        if (pawn.GetComp<CompVehicle>() != null &&
+        //                            pawn.GetComp<CompVehicle>().AllOccupants != null)
+        //                            for (var j = 0; j < pawn.GetComp<CompVehicle>().AllOccupants.Count; j++)
+        //                                list.Add(pawn.GetComp<CompVehicle>().AllOccupants[j]);
+        //                    }
+        //                else
+        //                    tmpThingCounts.Add(new ThingCount(transferableOneWay.ThingDef,
+        //                        transferableOneWay.CountToTransfer));
+        //        }
+
+        //        //Calculate days worth of food using the list with pawns in vehicles
+        //        var DaysWorthOfFood = new Pair<float, float>(
+        //            (float) AccessTools
+        //                .Method(typeof(DaysWorthOfFoodCalculator), "ApproxDaysWorthOfFood",
+        //                    new[]
+        //                    {
+        //                        typeof(List<Pawn>), typeof(List<ThingCount>), typeof(bool),
+        //                        typeof(IgnorePawnsInventoryMode)
+        //                    }).Invoke(__instance,
+        //                    new object[]
+        //                    {
+        //                        list, tmpThingCounts, EnvironmentAllowsEatingVirtualPlantsNow,
+        //                        IgnorePawnsInventoryMode.IgnoreIfAssignedToUnload
+        //                    }),
+        //            DaysUntilRotCalculator.ApproxDaysUntilRot(transferables, map.Tile,
+        //                IgnorePawnsInventoryMode.IgnoreIfAssignedToUnload));
+
+        //        //Calculate the days worth of fuel
+        //        var DaysWorthOfFuel =
+        //            ApproxDaysWorthOfFuel(transferables, IgnorePawnsInventoryMode.IgnoreIfAssignedToUnload);
+        //        var rect = new Rect(0f, 0f, inRect.width, 40f);
+        //        Text.Font = GameFont.Medium;
+        //        Text.Anchor = TextAnchor.MiddleCenter;
+        //        Widgets.Label(rect, (!reform ? "FormCaravan" : "ReformCaravan").Translate());
+        //        Text.Font = GameFont.Small;
+        //        Text.Anchor = TextAnchor.UpperLeft;
+        //        tabsList.Clear();
+        //        //Tabs: get the current tab
+        //        tabsList.Add(new TabRecord("PawnsTab".Translate(), delegate
+        //        {
+        //            Traverse.Create(tab).Field("value__").SetValue(0); //Since Tab.Pawns == 0
+        //        }, tab.ToString() == "Pawns"));
+        //        tabsList.Add(new TabRecord("ItemsTab".Translate(), delegate
+        //        {
+        //            Traverse.Create(tab).Field("value__").SetValue(1); //Since Tab.Items == 1
+        //        }, tab.ToString() == "Items"));
+        //        if (!reform)
+        //            tabsList.Add(new TabRecord("CaravanConfigTab".Translate(), delegate
+        //            {
+        //                Traverse.Create(tab).Field("value__").SetValue(2); //Since Tab.Pawns == 3
+        //            }, tab.ToString() == "Config"));
+        //        inRect.yMin += 72f;
+        //        Widgets.DrawMenuSection(inRect);
+        //        TabDrawer.DrawTabs(inRect, tabsList);
+        //        inRect = inRect.ContractedBy(17f);
+        //        GUI.BeginGroup(inRect);
+        //        var rect2 = inRect.AtZero();
+        //        //Show the info stuff if it's not the config tab
+        //        if (tab.ToString() != "Config")
+        //        {
+        //            var rect3 = rect2;
+        //            rect3.xMin += rect2.width - 515f;
+        //            rect3.y += 32f;
+        //            TransferableUIUtility.DrawMassInfo(rect3, MassUsage, MassCapacity,
+        //                "CaravanMassUsageTooltip".Translate(), lastMassFlashTime, true);
+        //            CaravanUIUtility.DrawDaysWorthOfFoodInfo(
+        //                new Rect(rect3.x, rect3.y + 19f, rect3.width, rect3.height), DaysWorthOfFood.First,
+        //                DaysWorthOfFood.Second, EnvironmentAllowsEatingVirtualPlantsNow, true, 3.40282347E+38f);
+        //            //Draw fuel info
+        //            DrawDaysWorthOfFuelInfo(new Rect(rect3.x, rect3.y + 38f, rect3.width, rect3.height),
+        //                DaysWorthOfFuel, true, 3.40282347E+38f);
+        //        }
+        //        DoBottomButtons(rect2, __instance, DaysWorthOfFood, traverseobj, reform, transferables, DaysWorthOfFuel,
+        //            StuffHasNoFuel(transferables, IgnorePawnsInventoryMode.IgnoreIfAssignedToUnload));
+        //        var inRect2 = rect2;
+        //        inRect2.yMax -= 59f;
+        //        var flag = false;
+        //        switch (tab.ToString())
+        //        {
+        //            case "Pawns":
+        //                pawnsTransfer.OnGUI(inRect2, out flag);
+        //                break;
+        //            case "Items":
+        //                itemsTransfer.OnGUI(inRect2, out flag);
+        //                break;
+        //            case "Config":
+        //                //There was an issue calling the private method DrawConfig, I forget why
+        //                AccessTools.Method(typeof(Dialog_FormCaravan), "DrawConfig")
+        //                    .Invoke(__instance, new object[] { rect2 });
+        //                break;
+        //        }
+        //        if (flag)
+        //        {
+        //            AccessTools.Method(typeof(Dialog_FormCaravan), "CountToTransferChanged")
+        //                .Invoke(__instance, new object[] { });
+        //            transferables = traverseobj.Field("transferables").GetValue<List<TransferableOneWay>>();
+        //        }
+        //        GUI.EndGroup();
+        //        return false;
+        //    }
+        //    return true;
+        //}
 
         #endregion CaravanHandlingMethods
 
@@ -2156,13 +2151,13 @@ namespace CompVehicle
 
             ////Log.Message("MC2");
 
-            var tmpPawns = (List<Pawn>) AccessTools.Field(typeof(CaravanMaker), "tmpPawns").GetValue(null);
+            var tmpPawns = (List<Pawn>)AccessTools.Field(typeof(CaravanMaker), "tmpPawns").GetValue(null);
 
             tmpPawns.Clear();
             tmpPawns.AddRange(pawns);
             ////Log.Message("MC3");
 
-            var caravan = (Caravan) WorldObjectMaker.MakeWorldObject(WorldObjectDefOf.Caravan);
+            var caravan = (Caravan)WorldObjectMaker.MakeWorldObject(WorldObjectDefOf.Caravan);
             ////Log.Message("MC4");
 
             if (startingTile >= 0)
@@ -2226,203 +2221,203 @@ namespace CompVehicle
             return false;
         }
 
-//        // RimWorld.Planet.CaravanExitMapUtility
-//        public static bool ExitMapAndCreateCaravan_Test(ref Caravan __result, IEnumerable<Pawn> pawns, Faction faction,
-//            int startingTile)
-//        {
-//            //Log.Message("EMACC1");
-//            if (!GenWorldClosest.TryFindClosestPassableTile(startingTile, out startingTile))
-//            {
-//                Log.Error("Could not find any passable tile for a new caravan.");
-//                __result = null;
-//                return false;
-//            }
-//            //Log.Message("EMACC2");
-//
-//            var tmpPawns = (List<Pawn>) AccessTools.Field(typeof(CaravanExitMapUtility), "tmpPawns").GetValue(null);
-//            //Log.Message("EMACC3");
-//
-//            tmpPawns.Clear();
-//            tmpPawns.AddRange(pawns);
-//            //Log.Message("EMACC4");
-//
-//            Map map = null;
-//            for (var i = 0; i < tmpPawns.Count; i++)
-//            {
-//                map = tmpPawns[i].MapHeld;
-//                if (map != null)
-//                    break;
-//            }
-//            //Log.Message("EMACC5");
-//
-//            var caravan = CaravanMaker.MakeCaravan(tmpPawns, faction, startingTile, false);
-//            //Log.Message("EMACC6");
-//
-//            for (var j = 0; j < tmpPawns.Count; j++)
-//            {
-//                //Log.Message("EMACC7");
-//
-//                tmpPawns[j].ExitMap(false);
-//                //Log.Message("EMACC7b");
-//            }
-//            //Log.Message("EMACC8");
-//
-//            var pawnsListForReading = caravan.PawnsListForReading;
-//            //Log.Message("EMACC9");
-//
-//            for (var k = 0; k < pawnsListForReading.Count; k++)
-//            {
-//                //Log.Message("EMACC10a");
-//
-//                if (!pawnsListForReading[k].IsWorldPawn())
-//                {
-//                    //Log.Message("EMACC10b");
-//
-//                    Find.WorldPawns.PassToWorld(pawnsListForReading[k], PawnDiscardDecideMode.Decide);
-//                    //Log.Message("EMACC10c");
-//                }
-//            }
-//            if (map != null)
-//            {
-//                //Log.Message("EMACC11");
-//
-//                map.info.parent.Notify_CaravanFormed(caravan);
-//                //Log.Message("EMACC11b");
-//            }
-//            //Log.Message("EMACC12");
-//
-//            __result = caravan;
-//            return false;
-//        }
+        //// RimWorld.Planet.CaravanExitMapUtility
+        //public static bool ExitMapAndCreateCaravan_Test(ref Caravan __result, IEnumerable<Pawn> pawns, Faction faction,
+        //    int startingTile)
+        //{
+        //    //Log.Message("EMACC1");
+        //    if (!GenWorldClosest.TryFindClosestPassableTile(startingTile, out startingTile))
+        //    {
+        //        Log.Error("Could not find any passable tile for a new caravan.");
+        //        __result = null;
+        //        return false;
+        //    }
+        //    //Log.Message("EMACC2");
 
-//        // Verse.Pawn
-//        public static bool ExitMap_Test(Pawn __instance, bool allowedToJoinOrCreateCaravan)
-//        {
-//            if (__instance?.GetComp<CompVehicle>() is CompVehicle compVehicle)
-//            {
-//                //Log.Message("ExitMap1");
-//                if (__instance.IsWorldPawn())
-//                {
-//                    Log.Warning("Called ExitMap() on world pawn " + __instance);
-//                    return false;
-//                }
-//                if (allowedToJoinOrCreateCaravan &&
-//                    CaravanExitMapUtility.CanExitMapAndJoinOrCreateCaravanNow(__instance))
-//                {
-//                    //Log.Message("ExitMap2");
-//
-//                    CaravanExitMapUtility.ExitMapAndJoinOrCreateCaravan(__instance);
-//                    //Log.Message("ExitMap2b");
-//
-//                    return false;
-//                }
-//                var lord = __instance.GetLord();
-//                //Log.Message("ExitMap3");
-//
-//                if (lord != null)
-//                {
-//                    //Log.Message("ExitMap3a");
-//
-//                    lord.Notify_PawnLost(__instance, PawnLostCondition.ExitedMap);
-//                    //Log.Message("ExitMap3b");
-//                }
-//                if (__instance.carryTracker != null && __instance.carryTracker.CarriedThing != null)
-//                {
-//                    //Log.Message("ExitMap4");
-//
-//                    var carriedThing = __instance?.carryTracker?.CarriedThing;
-//                    //Log.Message("ExitMap4a");
-//
-//                    if (carriedThing is Pawn pawn)
-//                    {
-//                        //Log.Message("ExitMap4b");
-//
-//                        if (__instance.Faction != null && __instance.Faction != pawn.Faction)
-//                        {
-//                            //Log.Message("ExitMap4c");
-//
-//                            __instance.Faction.kidnapped.KidnapPawn(pawn, __instance);
-//                            //Log.Message("ExitMap4d");
-//                        }
-//                        else
-//                        {
-//                            //Log.Message("ExitMap4e");
-//
-//                            __instance.carryTracker.innerContainer.Remove(pawn);
-//                            //Log.Message("ExitMap4f");
-//
-//                            pawn.ExitMap(false);
-//                            //Log.Message("ExitMap4g");
-//                        }
-//                    }
-//                    else
-//                    {
-//                        //Log.Message("ExitMap4h");
-//
-//                        __instance.carryTracker.CarriedThing.Destroy(DestroyMode.Vanish);
-//                    }
-//                    //Log.Message("ExitMap4i");
-//
-//                    __instance.carryTracker.innerContainer.Clear();
-//                }
-//                //Log.Message("ExitMap5");
-//
-//                var flag = !__instance.IsCaravanMember() &&
-//                           !PawnUtility.IsTravelingInTransportPodWorldObject(__instance);
-//                //Log.Message("ExitMap5a");
-//
-//                if (flag && __instance.HostFaction != null && __instance.guest != null &&
-//                    (__instance.guest.Released || !__instance.IsPrisoner) && !__instance.InMentalState &&
-//                    __instance.health.hediffSet.BleedRateTotal < 0.001f && __instance.Faction.def.appreciative &&
-//                    !__instance.Faction.def.hidden)
-//                {
-//                    //Log.Message("ExitMap6");
-//
-//                    var num = 15f;
-//                    if (PawnUtility.IsFactionLeader(__instance))
-//                        num += 50f;
-//                    Messages.Message(
-//                        "MessagePawnExitMapRelationsGain".Translate(__instance.LabelShort, __instance.Faction.Name,
-//                            num.ToString("F0")), MessageTypeDefOf.PositiveEvent);
-//                    __instance.Faction.AffectGoodwillWith(__instance.HostFaction, num);
-//                }
-//                if (__instance.ownership != null)
-//                {
-//                    //Log.Message("ExitMap7");
-//
-//                    __instance.ownership.UnclaimAll();
-//                    //Log.Message("ExitMap7b");
-//                }
-//                if (__instance.guest != null && flag)
-//                {
-//                    //Log.Message("ExitMap8a");
-//
-//                    __instance.guest.SetGuestStatus(null, false);
-//                    //Log.Message("ExitMap8b");
-//                }
-//                if (__instance.Spawned)
-//                {
-//                    //Log.Message("ExitMap9a");
-//
-//                    __instance.DeSpawn();
-//                    //Log.Message("ExitMap9b");
-//                }
-//                __instance.inventory.UnloadEverything = false;
-//                //Log.Message("ExitMap10");
-//
-//                __instance.ClearMind(false);
-//                //Log.Message("ExitMap11");
-//
-//                __instance.ClearAllReservations(true);
-//                //Log.Message("ExitMap12");
-//
-//                Find.WorldPawns.PassToWorld(__instance, PawnDiscardDecideMode.Decide);
-//                //Log.Message("ExitMap13");
-//
-//                return false;
-//            }
-//            return true;
-//        }
+        //    var tmpPawns = (List<Pawn>) AccessTools.Field(typeof(CaravanExitMapUtility), "tmpPawns").GetValue(null);
+        //    //Log.Message("EMACC3");
+
+        //    tmpPawns.Clear();
+        //    tmpPawns.AddRange(pawns);
+        //    //Log.Message("EMACC4");
+
+        //    Map map = null;
+        //    for (var i = 0; i < tmpPawns.Count; i++)
+        //    {
+        //        map = tmpPawns[i].MapHeld;
+        //        if (map != null)
+        //            break;
+        //    }
+        //    //Log.Message("EMACC5");
+
+        //    var caravan = CaravanMaker.MakeCaravan(tmpPawns, faction, startingTile, false);
+        //    //Log.Message("EMACC6");
+
+        //    for (var j = 0; j < tmpPawns.Count; j++)
+        //    {
+        //        //Log.Message("EMACC7");
+
+        //        tmpPawns[j].ExitMap(false);
+        //        //Log.Message("EMACC7b");
+        //    }
+        //    //Log.Message("EMACC8");
+
+        //    var pawnsListForReading = caravan.PawnsListForReading;
+        //    //Log.Message("EMACC9");
+
+        //    for (var k = 0; k < pawnsListForReading.Count; k++)
+        //    {
+        //        //Log.Message("EMACC10a");
+
+        //        if (!pawnsListForReading[k].IsWorldPawn())
+        //        {
+        //            //Log.Message("EMACC10b");
+
+        //            Find.WorldPawns.PassToWorld(pawnsListForReading[k], PawnDiscardDecideMode.Decide);
+        //            //Log.Message("EMACC10c");
+        //        }
+        //    }
+        //    if (map != null)
+        //    {
+        //        //Log.Message("EMACC11");
+
+        //        map.info.parent.Notify_CaravanFormed(caravan);
+        //        //Log.Message("EMACC11b");
+        //    }
+        //    //Log.Message("EMACC12");
+
+        //    __result = caravan;
+        //    return false;
+        //}
+
+        //        // Verse.Pawn
+        //        public static bool ExitMap_Test(Pawn __instance, bool allowedToJoinOrCreateCaravan)
+        //        {
+        //            if (__instance?.GetComp<CompVehicle>() is CompVehicle compVehicle)
+        //            {
+        //                //Log.Message("ExitMap1");
+        //                if (__instance.IsWorldPawn())
+        //                {
+        //                    Log.Warning("Called ExitMap() on world pawn " + __instance);
+        //                    return false;
+        //                }
+        //                if (allowedToJoinOrCreateCaravan &&
+        //                    CaravanExitMapUtility.CanExitMapAndJoinOrCreateCaravanNow(__instance))
+        //                {
+        //                    //Log.Message("ExitMap2");
+        //
+        //                    CaravanExitMapUtility.ExitMapAndJoinOrCreateCaravan(__instance);
+        //                    //Log.Message("ExitMap2b");
+        //
+        //                    return false;
+        //                }
+        //                var lord = __instance.GetLord();
+        //                //Log.Message("ExitMap3");
+        //
+        //                if (lord != null)
+        //                {
+        //                    //Log.Message("ExitMap3a");
+        //
+        //                    lord.Notify_PawnLost(__instance, PawnLostCondition.ExitedMap);
+        //                    //Log.Message("ExitMap3b");
+        //                }
+        //                if (__instance.carryTracker != null && __instance.carryTracker.CarriedThing != null)
+        //                {
+        //                    //Log.Message("ExitMap4");
+        //
+        //                    var carriedThing = __instance?.carryTracker?.CarriedThing;
+        //                    //Log.Message("ExitMap4a");
+        //
+        //                    if (carriedThing is Pawn pawn)
+        //                    {
+        //                        //Log.Message("ExitMap4b");
+        //
+        //                        if (__instance.Faction != null && __instance.Faction != pawn.Faction)
+        //                        {
+        //                            //Log.Message("ExitMap4c");
+        //
+        //                            __instance.Faction.kidnapped.KidnapPawn(pawn, __instance);
+        //                            //Log.Message("ExitMap4d");
+        //                        }
+        //                        else
+        //                        {
+        //                            //Log.Message("ExitMap4e");
+        //
+        //                            __instance.carryTracker.innerContainer.Remove(pawn);
+        //                            //Log.Message("ExitMap4f");
+        //
+        //                            pawn.ExitMap(false);
+        //                            //Log.Message("ExitMap4g");
+        //                        }
+        //                    }
+        //                    else
+        //                    {
+        //                        //Log.Message("ExitMap4h");
+        //
+        //                        __instance.carryTracker.CarriedThing.Destroy(DestroyMode.Vanish);
+        //                    }
+        //                    //Log.Message("ExitMap4i");
+        //
+        //                    __instance.carryTracker.innerContainer.Clear();
+        //                }
+        //                //Log.Message("ExitMap5");
+        //
+        //                var flag = !__instance.IsCaravanMember() &&
+        //                           !PawnUtility.IsTravelingInTransportPodWorldObject(__instance);
+        //                //Log.Message("ExitMap5a");
+        //
+        //                if (flag && __instance.HostFaction != null && __instance.guest != null &&
+        //                    (__instance.guest.Released || !__instance.IsPrisoner) && !__instance.InMentalState &&
+        //                    __instance.health.hediffSet.BleedRateTotal < 0.001f && __instance.Faction.def.appreciative &&
+        //                    !__instance.Faction.def.hidden)
+        //                {
+        //                    //Log.Message("ExitMap6");
+        //
+        //                    var num = 15f;
+        //                    if (PawnUtility.IsFactionLeader(__instance))
+        //                        num += 50f;
+        //                    Messages.Message(
+        //                        "MessagePawnExitMapRelationsGain".Translate(__instance.LabelShort, __instance.Faction.Name,
+        //                            num.ToString("F0")), MessageTypeDefOf.PositiveEvent);
+        //                    __instance.Faction.AffectGoodwillWith(__instance.HostFaction, num);
+        //                }
+        //                if (__instance.ownership != null)
+        //                {
+        //                    //Log.Message("ExitMap7");
+        //
+        //                    __instance.ownership.UnclaimAll();
+        //                    //Log.Message("ExitMap7b");
+        //                }
+        //                if (__instance.guest != null && flag)
+        //                {
+        //                    //Log.Message("ExitMap8a");
+        //
+        //                    __instance.guest.SetGuestStatus(null, false);
+        //                    //Log.Message("ExitMap8b");
+        //                }
+        //                if (__instance.Spawned)
+        //                {
+        //                    //Log.Message("ExitMap9a");
+        //
+        //                    __instance.DeSpawn();
+        //                    //Log.Message("ExitMap9b");
+        //                }
+        //                __instance.inventory.UnloadEverything = false;
+        //                //Log.Message("ExitMap10");
+        //
+        //                __instance.ClearMind(false);
+        //                //Log.Message("ExitMap11");
+        //
+        //                __instance.ClearAllReservations(true);
+        //                //Log.Message("ExitMap12");
+        //
+        //                Find.WorldPawns.PassToWorld(__instance, PawnDiscardDecideMode.Decide);
+        //                //Log.Message("ExitMap13");
+        //
+        //                return false;
+        //            }
+        //            return true;
+        //        }
         public static bool GetVerbsCommands_PreFix(VerbTracker __instance, ref IEnumerable<Command> __result,
             KeyCode hotKey = 0)
         {
@@ -2443,9 +2438,9 @@ namespace CompVehicle
                         if (verb != null && verb.verbProps.hasStandardCommand && verb.CasterPawn != null &&
                             (!verb.CasterIsPawn || verb.CasterPawn.story != null))
                         {
-                            yield return (Verse.Command) AccessTools
+                            yield return (Verse.Command)AccessTools
                                                         .Method(typeof(VerbTracker), "CreateVerbTargetCommand")
-                                                        .Invoke(__instance, new object[] {ownerThing, verb});
+                                                        .Invoke(__instance, new object[] { ownerThing, verb });
                         }
                     }
 
@@ -2820,7 +2815,7 @@ namespace CompVehicle
                     if (transferableOneWay.AnyThing is Pawn)
                         for (var l = 0; l < transferableOneWay.CountToTransfer; l++)
                         {
-                            var pawn = (Pawn) transferableOneWay.things[l];
+                            var pawn = (Pawn)transferableOneWay.things[l];
                             if (pawn.GetComp<CompRefuelable>() != null)
                             {
                                 needsfuel.Add(pawn);
@@ -2935,7 +2930,7 @@ namespace CompVehicle
             if (Widgets.ButtonText(rect2, "AcceptButton".Translate(), true, false, true))
                 if (reform)
                 {
-                    if ((bool) traverseobj.Method("TryReformCaravan").GetValue(new object[] { }))
+                    if ((bool)traverseobj.Method("TryReformCaravan").GetValue(new object[] { }))
                     {
                         SoundDefOf.Tick_High.PlayOneShotOnCamera(null);
                         instance.Close(false);
@@ -2959,15 +2954,15 @@ namespace CompVehicle
 
                     if (!text.NullOrEmpty())
                     {
-                        if ((bool) AccessTools.Method(typeof(Dialog_FormCaravan), "CheckForErrors").Invoke(instance,
-                            new object[] {TransferableUtility.GetPawnsFromTransferables(transferables)}))
+                        if ((bool)AccessTools.Method(typeof(Dialog_FormCaravan), "CheckForErrors").Invoke(instance,
+                            new object[] { TransferableUtility.GetPawnsFromTransferables(transferables) }))
                             if (StuffHasNoFuel)
                                 Messages.Message("CaravanVehicleNoFuelWarningDialog".Translate(),
                                     MessageTypeDefOf.RejectInput);
                             else
                                 Find.WindowStack.Add(Dialog_MessageBox.CreateConfirmation(text, delegate
                                 {
-                                    if ((bool) AccessTools.Method(typeof(Dialog_FormCaravan), "TryFormAndSendCaravan")
+                                    if ((bool)AccessTools.Method(typeof(Dialog_FormCaravan), "TryFormAndSendCaravan")
                                         .Invoke(instance, new object[] { }))
                                     {
                                         instance.Close(false);
@@ -2975,7 +2970,7 @@ namespace CompVehicle
                                     }
                                 }, false, null));
                     }
-                    else if ((bool) AccessTools.Method(typeof(Dialog_FormCaravan), "TryFormAndSendCaravan")
+                    else if ((bool)AccessTools.Method(typeof(Dialog_FormCaravan), "TryFormAndSendCaravan")
                         .Invoke(instance, new object[] { }))
                     {
                         SoundDefOf.Tick_High.PlayOneShotOnCamera(null);
@@ -3015,7 +3010,7 @@ namespace CompVehicle
                 var width = 200f;
                 var num = BottomButtonSize.y / 2f;
                 var rect6 = new Rect(0f, rect.height - 55f, width, num);
-                if (Widgets.ButtonText(rect6, "Dev: Send instantly", true, false, true) && (bool) AccessTools
+                if (Widgets.ButtonText(rect6, "Dev: Send instantly", true, false, true) && (bool)AccessTools
                         .Method(typeof(Dialog_FormCaravan), "DebugTryFormCaravanInstantly")
                         .Invoke(instance, new object[] { }))
                 {
@@ -3048,7 +3043,7 @@ namespace CompVehicle
                         for (var l = 0; l < transferableOneWay.CountToTransfer; l++)
                         {
                             //Get a list of pawns that need fuel
-                            var pawn = (Pawn) transferableOneWay.things[l];
+                            var pawn = (Pawn)transferableOneWay.things[l];
                             if (pawn.GetComp<CompRefuelable>() != null)
                                 needsfuel.Add(pawn);
                         }

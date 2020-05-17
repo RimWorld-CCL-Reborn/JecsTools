@@ -50,7 +50,7 @@ namespace AbilityUser
             }
         }
 
-        public CompProperties_AbilityUser Props => (CompProperties_AbilityUser) props;
+        public CompProperties_AbilityUser Props => (CompProperties_AbilityUser)props;
 
         //public List<Verb_UseAbility> AbilityVerbs = new List<Verb_UseAbility>();
 
@@ -72,7 +72,7 @@ namespace AbilityUser
         private void AddAbilityInternal(AbilityDef abilityDef, List<PawnAbility> thelist, bool activenow,
             float savedTicks)
         {
-            var pa = (PawnAbility) Activator.CreateInstance(abilityDef.abilityClass);
+            var pa = (PawnAbility)Activator.CreateInstance(abilityDef.abilityClass);
             pa.Pawn = AbilityUser;
             pa.Def = abilityDef;
             thelist.Add(pa);

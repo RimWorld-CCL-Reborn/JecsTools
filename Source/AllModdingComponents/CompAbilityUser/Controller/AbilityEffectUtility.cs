@@ -21,7 +21,7 @@ static internal class AbilityEffectUtility
 
     public static PawnSummoned SpawnPawn(SpawnThings spawnables, Faction faction, Pawn caster, IntVec3 positionHeld)
     {
-        var newPawn = (PawnSummoned) PawnGenerator.GeneratePawn(spawnables.kindDef, faction);
+        var newPawn = (PawnSummoned)PawnGenerator.GeneratePawn(spawnables.kindDef, faction);
         newPawn.Spawner = caster;
         newPawn.Temporary = spawnables.temporary;
         if (newPawn.Faction != Faction.OfPlayerSilentFail && caster?.Faction is Faction f)
@@ -32,8 +32,8 @@ static internal class AbilityEffectUtility
             Lord lord = null;
             if (newPawn.Map.mapPawns.SpawnedPawnsInFaction(faction).Any(p => p != newPawn))
             {
-                Predicate<Thing> validator = p => p != newPawn && ((Pawn) p).GetLord() != null;
-                var p2 = (Pawn) GenClosest.ClosestThing_Global(newPawn.Position,
+                Predicate<Thing> validator = p => p != newPawn && ((Pawn)p).GetLord() != null;
+                var p2 = (Pawn)GenClosest.ClosestThing_Global(newPawn.Position,
                     newPawn.Map.mapPawns.SpawnedPawnsInFaction(faction), 99999f, validator);
                 lord = p2.GetLord();
             }
@@ -83,7 +83,7 @@ static internal class AbilityEffectUtility
             foreach (var spawnables in localSpawnThings)
                 //Log.Message("2S");
                 if (spawnables.spawnCount == 1)
-                    SingleSpawnLoop(spawnables,positionHeld, mapHeld, caster);
+                    SingleSpawnLoop(spawnables, positionHeld, mapHeld, caster);
                 else
                     for (var i = 0; i < spawnables.spawnCount; i++)
                         //Log.Message("3S");

@@ -94,7 +94,7 @@ namespace AbilityUserAI
             {
                 //Instantiate if null.
                 if (intWorkerClass == null)
-                    intWorkerClass = (AbilityWorker) Activator.CreateInstance(workerClass);
+                    intWorkerClass = (AbilityWorker)Activator.CreateInstance(workerClass);
 
                 return intWorkerClass;
             }

@@ -4,7 +4,7 @@ using Verse;
 
 namespace JecsTools
 {
-    public class StuffCategoryCountClass: IExposable
+    public class StuffCategoryCountClass : IExposable
     {
         public StuffCategoryDef stuffCatDef;
 

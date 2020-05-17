@@ -32,7 +32,7 @@ namespace CompVehicle
         }
 
 
-        protected int WorkDone => TotalNeededWork - (int) workLeft;
+        protected int WorkDone => TotalNeededWork - (int)workLeft;
 
         protected int TotalNeededWork
         {

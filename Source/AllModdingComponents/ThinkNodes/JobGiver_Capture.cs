@@ -12,7 +12,7 @@ namespace ThinkNodes
         {
             bool Validator(Thing t)
             {
-                Pawn pawn3 = (Pawn) t;
+                Pawn pawn3 = (Pawn)t;
                 if (pawn3 == null) return false;
                 var hostileTo = pawn3.Faction == null || pawn3.Faction.HostileTo(Faction.OfPlayer) || pawn3.Faction.def.hidden;
                 return pawn3.Downed && hostileTo && !pawn3.InBed() && pawn.CanReserve(pawn3) && !pawn3.IsForbidden(pawn);

@@ -13,7 +13,7 @@ namespace AbilityUser
         public Action<Thing> timeSavingActionVariable = null;
         public PawnAbility Ability { get; set; } = null;
 
-        public VerbProperties_Ability UseAbilityProps => (VerbProperties_Ability) verbProps;
+        public VerbProperties_Ability UseAbilityProps => (VerbProperties_Ability)verbProps;
         public ProjectileDef_Ability AbilityProjectileDef => UseAbilityProps.defaultProjectile as ProjectileDef_Ability;
         public CompAbilityUser AbilityUserComp => CasterPawn.GetComp<CompAbilityUser>();
 

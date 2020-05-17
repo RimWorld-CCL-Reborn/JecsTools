@@ -11,7 +11,7 @@ namespace CompLumbering
 
         public Pawn Lumberer => parent as Pawn;
 
-        public CompProperties_Lumbering Props => (CompProperties_Lumbering) props;
+        public CompProperties_Lumbering Props => (CompProperties_Lumbering)props;
 
         public void ResolveCycledGraphic()
         {

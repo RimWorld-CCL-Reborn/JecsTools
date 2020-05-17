@@ -46,7 +46,7 @@ namespace AbilityUser
                 if (st)
                 {
                     retval = true;
-                    var thingComp = (ThingComp) Activator.CreateInstance(t);
+                    var thingComp = (ThingComp)Activator.CreateInstance(t);
                     thingComp.parent = p;
                     compsField(p)?.Add(thingComp);
                     thingComp.Initialize(null);

@@ -91,7 +91,7 @@ namespace CompInstalledPart
 
         // Note: This is an open instance delegate where the first argument is the instance.
         private static readonly Func<ITab_Pawn_Gear, Pawn> itabPawnGearSelPawnForGearGetter =
-            (Func<ITab_Pawn_Gear, Pawn>) AccessTools.PropertyGetter(typeof(ITab_Pawn_Gear), "SelPawnForGear")
+            (Func<ITab_Pawn_Gear, Pawn>)AccessTools.PropertyGetter(typeof(ITab_Pawn_Gear), "SelPawnForGear")
             .CreateDelegate(typeof(Func<ITab_Pawn_Gear, Pawn>));
     }
 }

@@ -44,7 +44,7 @@ namespace AbilityUserAI
             }
 
             tag = xmlRoot.Name;
-            weight = (float) ParseHelper.FromString(xmlRoot.FirstChild.Value, typeof(float));
+            weight = (float)ParseHelper.FromString(xmlRoot.FirstChild.Value, typeof(float));
         }
 
         public override string ToString()
@@ -54,7 +54,7 @@ namespace AbilityUserAI
 
         public override int GetHashCode()
         {
-            return (tag.GetHashCode() + (int) weight) << 16;
+            return (tag.GetHashCode() + (int)weight) << 16;
         }
     }
 }

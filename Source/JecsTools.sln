@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26228.12
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30104.148
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompAbilityUser", "AllModdingComponents\CompAbilityUser\CompAbilityUser.csproj", "{417B8649-7A66-4580-8C75-473E46DA9C7A}"
 EndProject
@@ -40,6 +40,11 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThinkNodes", "AllModdingComponents\ThinkNodes\ThinkNodes.csproj", "{D7D21B4A-1DA7-41D8-B202-C58CA8FA62AA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DefModExtension_BigBox", "AllModdingComponents\CompBigBox\DefModExtension_BigBox.csproj", "{CB5B70DA-38FB-4C54-A816-7112CA045235}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{866CC95E-EC26-49B1-8E5C-2D312BE4BDC3}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -131,9 +131,9 @@ namespace JecsTools
 
         public void ExposeData()
         {
-            var loadReferenceable = (ILoadReferenceable) commTarget;
+            var loadReferenceable = (ILoadReferenceable)commTarget;
             Scribe_References.Look(ref loadReferenceable, "commTarget", false);
-            commTarget = (ICommunicable) loadReferenceable;
+            commTarget = (ICommunicable)loadReferenceable;
             Scribe_References.Look(ref verbToUse, "verbToUse", false);
             Scribe_References.Look(ref bill, "bill", false);
             Scribe_References.Look(ref lord, "lord", false);
@@ -226,7 +226,7 @@ namespace JecsTools
 
         public CaravanJobDriver MakeDriver(Caravan driverCaravan)
         {
-            var jobDriver = (CaravanJobDriver) Activator.CreateInstance(def.driverClass);
+            var jobDriver = (CaravanJobDriver)Activator.CreateInstance(def.driverClass);
             jobDriver.caravan = driverCaravan;
             Log.Message("JecsTools :: MakeDriver Called :: " + def.driverClass);
             return jobDriver;

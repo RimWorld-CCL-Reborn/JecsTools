@@ -31,7 +31,7 @@ namespace CompVehicle
         /// When assembled, be sure to spawn the vehicle and destroy this object.
         public void Notify_Assembled(Pawn assembler)
         {
-            var pawn = (Pawn) GenSpawn.Spawn(PawnGenerator.GeneratePawn(Props.vehicleToSpawn, assembler.Faction),
+            var pawn = (Pawn)GenSpawn.Spawn(PawnGenerator.GeneratePawn(Props.vehicleToSpawn, assembler.Faction),
                 Spawner.PositionHeld, Spawner.MapHeld);
             Spawner.Destroy(DestroyMode.KillFinalize);
         }

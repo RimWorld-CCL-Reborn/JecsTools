@@ -20,7 +20,7 @@ namespace CompActivatableEffect
             harmony.Patch(typeof(PawnRenderer).GetMethod("DrawEquipmentAiming"), null,
                 new HarmonyMethod(typeof(HarmonyCompActivatableEffect), nameof(DrawEquipmentAimingPostFix)));
 
-            harmony.Patch(AccessTools.Method(typeof(Verb), "TryStartCastOn", new[] { typeof(LocalTargetInfo), typeof(LocalTargetInfo), typeof(bool), typeof(bool)}),
+            harmony.Patch(AccessTools.Method(typeof(Verb), "TryStartCastOn", new[] { typeof(LocalTargetInfo), typeof(LocalTargetInfo), typeof(bool), typeof(bool) }),
                 new HarmonyMethod(typeof(HarmonyCompActivatableEffect), nameof(TryStartCastOnPrefix)), null);
 
             harmony.Patch(typeof(Pawn_DraftController).GetMethod("set_Drafted"), null,

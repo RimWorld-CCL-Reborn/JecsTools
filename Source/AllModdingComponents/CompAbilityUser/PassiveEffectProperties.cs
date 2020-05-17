@@ -19,7 +19,7 @@ namespace AbilityUser
             {
                 if (passiveEffectWorkerInt == null)
                 {
-                    passiveEffectWorkerInt = (PassiveEffectWorker) Activator.CreateInstance(worker);
+                    passiveEffectWorkerInt = (PassiveEffectWorker)Activator.CreateInstance(worker);
                     passiveEffectWorkerInt.Props = this;
                 }
                 return passiveEffectWorkerInt;

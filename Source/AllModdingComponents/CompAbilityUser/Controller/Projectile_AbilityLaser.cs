@@ -149,7 +149,7 @@ namespace AbilityUser
             if (postFiringDuration != 0)
                 drawingIntensity = postFiringInitialIntensity +
                                    (postFiringFinalIntensity - postFiringInitialIntensity) *
-                                   ((tickCounter - (float) preFiringDuration) / postFiringDuration);
+                                   ((tickCounter - (float)preFiringDuration) / postFiringDuration);
         }
 
         /// <summary>
@@ -159,7 +159,7 @@ namespace AbilityUser
         {
             // We split the trajectory into small segments of approximatively 1 cell size.
             var trajectory = destination - origin;
-            var numberOfSegments = (int) trajectory.magnitude;
+            var numberOfSegments = (int)trajectory.magnitude;
             var trajectorySegment = trajectory / trajectory.magnitude;
 
             var temporaryDestination = origin; // Last valid tested position in case of an out of boundaries shot.

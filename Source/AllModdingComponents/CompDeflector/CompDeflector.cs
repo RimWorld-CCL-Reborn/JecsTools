@@ -56,7 +56,7 @@ namespace CompDeflector
                 if (compActivatableEffect != null)
                 {
                     compActivatableEffectIsActive =
-                        (Func<bool>) AccessTools.Method(compActivatableEffect.GetType(), "IsActive").CreateDelegate(
+                        (Func<bool>)AccessTools.Method(compActivatableEffect.GetType(), "IsActive").CreateDelegate(
                             typeof(Func<bool>), compActivatableEffect);
                 }
                 initComps = true;
@@ -141,7 +141,7 @@ namespace CompDeflector
         public string ChanceToString => DeflectionChance.ToStringPercent();
 
 
-        public CompProperties_Deflector Props => (CompProperties_Deflector) props;
+        public CompProperties_Deflector Props => (CompProperties_Deflector)props;
 
         public void DeflectionSkillGain(SkillRecord skill)
         {
@@ -167,7 +167,7 @@ namespace CompDeflector
                     var skill = skills.GetSkill(Props.reflectSkill);
                     if (skill.Level > 0)
                     {
-                        modifier += (int) (Props.deflectRatePerSkillPoint * skill.Level);
+                        modifier += (int)(Props.deflectRatePerSkillPoint * skill.Level);
                         //Log.Message("Deflection mod: " + modifier.ToString());
                         ReflectionSkillGain(skill);
                     }
@@ -276,7 +276,7 @@ namespace CompDeflector
             if (newVerb != null)
             {
                 deflectVerb = null;
-                deflectVerb = (Verb_Deflected) Activator.CreateInstance(typeof(Verb_Deflected));
+                deflectVerb = (Verb_Deflected)Activator.CreateInstance(typeof(Verb_Deflected));
                 deflectVerb.caster = GetPawn;
 
                 //Initialize VerbProperties
@@ -298,7 +298,7 @@ namespace CompDeflector
             else
             {
                 if (deflectVerb != null) return deflectVerb;
-                deflectVerb = (Verb_Deflected) Activator.CreateInstance(typeof(Verb_Deflected));
+                deflectVerb = (Verb_Deflected)Activator.CreateInstance(typeof(Verb_Deflected));
                 deflectVerb.caster = GetPawn;
                 deflectVerb.verbProps = Props.DeflectVerb;
             }
@@ -321,7 +321,7 @@ namespace CompDeflector
                 return t is Pawn pawn3 && pawn3 != thisPawn;
             }
 
-            var closestPawn = (Pawn) GenClosest.ClosestThingReachable(thisPawn.Position, thisPawn.Map,
+            var closestPawn = (Pawn)GenClosest.ClosestThingReachable(thisPawn.Position, thisPawn.Map,
                 ThingRequest.ForGroup(ThingRequestGroup.Pawn), PathEndMode.InteractionCell,
                 TraverseParms.For(thisPawn, Danger.Deadly, TraverseMode.ByPawn, false), 9999f, Validator, null,
                 0, -1, false, RegionType.Set_Passable, false);
@@ -353,8 +353,8 @@ namespace CompDeflector
                 var compEquipVerb = pawn.equipment?.PrimaryEq?.PrimaryVerb;
                 if (compEquipVerb == null) return;
                 var thisPawn = GetPawn;
-                var verbToUse = (Verb_Deflected) CopyAndReturnNewVerb(compEquipVerb);
-                verbToUse = (Verb_Deflected) ReflectionHandler(deflectVerb);
+                var verbToUse = (Verb_Deflected)CopyAndReturnNewVerb(compEquipVerb);
+                verbToUse = (Verb_Deflected)ReflectionHandler(deflectVerb);
                 verbToUse.lastShotReflected = lastShotReflected;
                 verbToUse.verbTracker = thisPawn.VerbTracker;
                 pawn = ResolveDeflectionTarget(pawn);
@@ -391,7 +391,7 @@ namespace CompDeflector
                         }
                     }
                     var calc = DeflectionChance;
-                    var deflectThreshold = (int) (calc * 100); // 0.3f => 30
+                    var deflectThreshold = (int)(calc * 100); // 0.3f => 30
                     if (Rand.Range(1, 100) > deflectThreshold)
                     {
                         absorbed = false;

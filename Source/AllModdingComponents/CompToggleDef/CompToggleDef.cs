@@ -11,7 +11,7 @@ namespace CompToggleDef
         // Can change into these
         public List<ThingDef> toggleDefs;
 
-        public string LabelKey => ((CompProperties_ToggleDef) props).labelKey;
+        public string LabelKey => ((CompProperties_ToggleDef)props).labelKey;
 
         public override void Initialize(CompProperties props)
         {
@@ -52,7 +52,7 @@ namespace CompToggleDef
                 if (parent.def != null)
                     if (parent.def.defName != null)
                     {
-                        thematch = parent.def.defName.Split(new[] {TDTag}, StringSplitOptions.None);
+                        thematch = parent.def.defName.Split(new[] { TDTag }, StringSplitOptions.None);
                         if (thematch.Length == 2)
                             retval = true;
                         else

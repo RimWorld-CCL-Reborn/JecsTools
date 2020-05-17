@@ -184,7 +184,7 @@ namespace AbilityUser
                                     if (hediff.hediffDef.HasComp(typeof(HediffComp_Disappears)))
                                     {
                                         var intDuration =
-                                        ((HediffCompProperties_Disappears) hediff.hediffDef.CompPropsFor(
+                                        ((HediffCompProperties_Disappears)hediff.hediffDef.CompPropsFor(
                                             typeof(HediffComp_Disappears))).disappearsAfterTicks.max;
                                         duration = intDuration.TicksToSeconds();
                                     }

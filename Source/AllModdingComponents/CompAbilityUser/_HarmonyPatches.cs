@@ -271,7 +271,7 @@ namespace AbilityUser
         public static void Notify_EquipmentAdded_PostFix(Pawn_EquipmentTracker __instance, ThingWithComps eq)
         {
             //Log.Message("Notify_EquipmentAdded_PostFix 1 : " + eq);
-            var compAbilityUsers = ((Pawn) __instance.ParentHolder).GetComps<CompAbilityUser>();
+            var compAbilityUsers = ((Pawn)__instance.ParentHolder).GetComps<CompAbilityUser>();
             foreach (var cai in eq.GetComps<CompAbilityItem>())
             {
                 //Log.Message("  Found CompAbilityItem, for CompAbilityUser of " + cai.Props.AbilityUserClass);
@@ -291,7 +291,7 @@ namespace AbilityUser
         public static void Notify_EquipmentRemoved_PostFix(Pawn_EquipmentTracker __instance, ThingWithComps eq)
         {
             //Log.Message("Notify_EquipmentRemoved_PostFix : " + eq);
-            var compAbilityUsers = ((Pawn) __instance.ParentHolder).GetComps<CompAbilityUser>();
+            var compAbilityUsers = ((Pawn)__instance.ParentHolder).GetComps<CompAbilityUser>();
             foreach (var cai in eq.GetComps<CompAbilityItem>())
             {
                 //Log.Message("  Found CompAbilityItem, for CompAbilityUser of " + cai.Props.AbilityUserClass);
@@ -310,7 +310,7 @@ namespace AbilityUser
         public static void Notify_ApparelAdded_PostFix(Pawn_ApparelTracker __instance, Apparel apparel)
         {
             //Log.Message("Notify_ApparelAdded_PostFix : " + apparel);
-            var compAbilityUsers = ((Pawn) __instance.ParentHolder).GetComps<CompAbilityUser>();
+            var compAbilityUsers = ((Pawn)__instance.ParentHolder).GetComps<CompAbilityUser>();
             foreach (var cai in apparel.GetComps<CompAbilityItem>())
             {
                 //Log.Message("  Found CompAbilityItem, for CompAbilityUser of " + cai.Props.AbilityUserClass);
@@ -330,7 +330,7 @@ namespace AbilityUser
         public static void Notify_ApparelRemoved_PostFix(Pawn_ApparelTracker __instance, Apparel apparel)
         {
             //Log.Message("Notify_ApparelRemoved_PostFix 1 : " + apparel);
-            var compAbilityUsers = ((Pawn) __instance.ParentHolder).GetComps<CompAbilityUser>();
+            var compAbilityUsers = ((Pawn)__instance.ParentHolder).GetComps<CompAbilityUser>();
             foreach (var cai in apparel.GetComps<CompAbilityItem>())
             {
                 //Log.Message("  Found CompAbilityItem, for CompAbilityUser of " + cai.Props.AbilityUserClass);
@@ -414,9 +414,9 @@ namespace AbilityUser
 
         // Note: These are open instance delegates where the first argument is the instance.
         private static readonly Action<Targeter> targeterConfirmStillValidMethod =
-            (Action<Targeter>) AccessTools.Method(typeof(Targeter), "ConfirmStillValid").CreateDelegate(typeof(Action<Targeter>));
+            (Action<Targeter>)AccessTools.Method(typeof(Targeter), "ConfirmStillValid").CreateDelegate(typeof(Action<Targeter>));
         private static readonly Func<Targeter, bool, LocalTargetInfo> targeterCurrentTargetUnderMouseMethod =
-            (Func<Targeter, bool, LocalTargetInfo>) AccessTools.Method(typeof(Targeter), "CurrentTargetUnderMouse")
+            (Func<Targeter, bool, LocalTargetInfo>)AccessTools.Method(typeof(Targeter), "CurrentTargetUnderMouse")
             .CreateDelegate(typeof(Func<Targeter, bool, LocalTargetInfo>));
 
         public static void TargeterUpdate_PostFix(Targeter __instance)

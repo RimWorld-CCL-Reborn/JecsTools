@@ -108,8 +108,8 @@ namespace JecsTools
         private static int AmountSendableSilver(Map map)
         {
             return (from t in TradeUtility.AllLaunchableThingsForTrade(map)
-            where t.def == ThingDefOf.Silver
-            select t).Sum((Thing t) => t.stackCount);
+                where t.def == ThingDefOf.Silver
+                select t).Sum((Thing t) => t.stackCount);
         }
 
 
@@ -249,9 +249,9 @@ namespace JecsTools
                         JecsToolsFactionDialogMaker.megaTwo = new Func<IAttackTarget, bool>(GenHostility.IsActiveThreatToPlayer);
                     }
                     IEnumerable<Faction> source = (from pa in targetsHostileToColony2.Where(JecsToolsFactionDialogMaker.megaTwo)
-                    select ((Thing)pa).Faction into fa
-                    where fa != null && !fa.HostileTo(faction)
-                    select fa).Distinct<Faction>();
+                        select ((Thing)pa).Faction into fa
+                        where fa != null && !fa.HostileTo(faction)
+                        select fa).Distinct<Faction>();
                     var key = "MilitaryAidConfirmMutualEnemy";
                     var diaNode = new DiaNode(key.Translate(faction.Name,
                         GenText.ToCommaList(from fa in source select fa.Name, true)));
@@ -296,7 +296,7 @@ namespace JecsTools
             {
                 target = map,
                 faction = faction,
-                points = (float) Rand.Range(150, 400)
+                points = (float)Rand.Range(150, 400)
             };
             IncidentDefOf.RaidFriendly.Worker.TryExecute(incidentParms);
             HarmonyPatches.lastPhoneAideFaction = faction;

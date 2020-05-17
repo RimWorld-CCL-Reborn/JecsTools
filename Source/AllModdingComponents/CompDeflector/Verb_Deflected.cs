@@ -29,7 +29,7 @@ namespace CompDeflector
             if (verbProps.stopBurstWithoutLos && !flag)
                 return false;
             var drawPos = caster.DrawPos;
-            var projectile = (Projectile) GenSpawn.Spawn(verbProps.defaultProjectile, shootLine.Source, caster.Map);
+            var projectile = (Projectile)GenSpawn.Spawn(verbProps.defaultProjectile, shootLine.Source, caster.Map);
 
             ///MODIFIED SECTION
             ////////////////////////////////////////////

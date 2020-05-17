@@ -22,8 +22,8 @@ namespace JecsTools
                 if (t is Pawn p)
                 {
                     if (p.equipment?.Primary is ThingWithComps w)
-                        return (int) w.GetStatValue(StatDefOf.Mass);
-                    return (int) p.BodySize;
+                        return (int)w.GetStatValue(StatDefOf.Mass);
+                    return (int)p.BodySize;
                 }
                 return 1;
             }
@@ -51,9 +51,9 @@ namespace JecsTools
                                 for (var k = 0; cleaveAttacks > 0 && k < pawnsInCell.Count; k++)
                                 {
                                     --cleaveAttacks;
-                                    var p = (Pawn) pawnsInCell[k];
+                                    var p = (Pawn)pawnsInCell[k];
                                     p.TakeDamage(new DamageInfo(Def.cleaveDamage,
-                                        (int) (dinfo.Amount * Def.cleaveFactor), Def.armorPenetration, -1, dinfo.Instigator));
+                                        (int)(dinfo.Amount * Def.cleaveFactor), Def.armorPenetration, -1, dinfo.Instigator));
                                 }
                             }
                         }

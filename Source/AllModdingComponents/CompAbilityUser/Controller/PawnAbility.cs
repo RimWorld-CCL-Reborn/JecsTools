@@ -93,7 +93,7 @@ namespace AbilityUser
                 CooldownTicksLeft = -1;
         }
 
-        public int MaxCastingTicks => (int) (powerdef.MainVerb.SecondsToRecharge * GenTicks.TicksPerRealSecond);
+        public int MaxCastingTicks => (int)(powerdef.MainVerb.SecondsToRecharge * GenTicks.TicksPerRealSecond);
 
         public Verb_UseAbility Verb
         {
@@ -101,7 +101,7 @@ namespace AbilityUser
             {
                 if (verb == null)
                 {
-                    var newVerb = (Verb_UseAbility) Activator.CreateInstance(powerdef.MainVerb.verbClass);
+                    var newVerb = (Verb_UseAbility)Activator.CreateInstance(powerdef.MainVerb.verbClass);
                     newVerb.caster = AbilityUser.AbilityUser;
                     newVerb.Ability = this;
                     newVerb.verbProps = powerdef.MainVerb;
@@ -184,9 +184,9 @@ namespace AbilityUser
             if (context == AbilityContext.Player)
             {
                 var targeter = Find.Targeter;
-                if (verb.CasterIsPawn && targeter.targetingSource != null )
+                if (verb.CasterIsPawn && targeter.targetingSource != null)
                     // Tad : Commented out for now.
-                    // && targeter.targetingSource.targetParams .verbProps == verb.verbProps)
+                    // && targeter.targetingSource.targetParams.verbProps == verb.verbProps)
                 {
                     var casterPawn = verb.CasterPawn;
                     if (!targeter.IsPawnTargeting(casterPawn))

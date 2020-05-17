@@ -24,11 +24,11 @@ namespace CompInstalledPart
 
         protected CompInstalledPart InstallComp => PartToInstall.GetComp<CompInstalledPart>();
 
-        protected ThingWithComps PartToInstall => (ThingWithComps) job.targetA.Thing;
+        protected ThingWithComps PartToInstall => (ThingWithComps)job.targetA.Thing;
 
         protected Thing InstallTarget => job.targetB.Thing;
 
-        protected int WorkDone => TotalNeededWork - (int) workLeft;
+        protected int WorkDone => TotalNeededWork - (int)workLeft;
 
         protected int TotalNeededWork
         {

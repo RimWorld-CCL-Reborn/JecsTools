@@ -87,7 +87,7 @@ namespace PawnShields
         /// Default blocking sound if no sounds are defined.
         /// </summary>
         public SoundDef defaultSound = null;
-//SoundDefOf.MetalHitImportant;
+        //SoundDefOf.MetalHitImportant;
 
         /// <summary>
         /// Helps fetching sounds easier.
@@ -107,9 +107,9 @@ namespace PawnShields
             base.ResolveReferences(parentDef);
 
             //Setup dictionary.
-            if(sounds != null)
+            if (sounds != null)
             {
-                foreach(StuffedSound stuffedSound in sounds)
+                foreach (StuffedSound stuffedSound in sounds)
                 {
                     stuffedSounds[stuffedSound.stuffCategory] = stuffedSound.sound;
                 }

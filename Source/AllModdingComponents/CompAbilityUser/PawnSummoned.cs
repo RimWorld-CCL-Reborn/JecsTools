@@ -59,10 +59,10 @@ namespace AbilityUser
                         LocalTargetInfo target = this;
                         if (Spawned)
                             effecter.EffectTick(this, TargetInfo.Invalid);
-                        var mote = ((SubEffecter_ProgressBar) effecter.children[0]).mote;
+                        var mote = ((SubEffecter_ProgressBar)effecter.children[0]).mote;
                         if (mote != null)
                         {
-                            var result = 1f - (TicksToDestroy - ticksLeft) / (float) TicksToDestroy;
+                            var result = 1f - (TicksToDestroy - ticksLeft) / (float)TicksToDestroy;
 
                             mote.progress = Mathf.Clamp01(result);
                             mote.offsetZ = -0.5f;

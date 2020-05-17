@@ -7,7 +7,7 @@ namespace CompInstalledPart
     {
         public bool uninstalled;
 
-        public CompProperties_InstalledPart Props => (CompProperties_InstalledPart) props;
+        public CompProperties_InstalledPart Props => (CompProperties_InstalledPart)props;
 
         public void GiveInstallJob(Pawn actor, Thing target)
         {
@@ -52,7 +52,7 @@ namespace CompInstalledPart
                 if (parent.def.IsApparel && targetPawn.apparel != null)
                 {
                     parent.DeSpawn();
-                    targetPawn.apparel.Wear((Apparel) parent);
+                    targetPawn.apparel.Wear((Apparel)parent);
                 }
 
                 //Add equipment
@@ -90,8 +90,8 @@ namespace CompInstalledPart
                 {
                     //Remove apparel
                     if (parent.def.IsApparel && targetPawn.apparel is Pawn_ApparelTracker tracker &&
-                        tracker.WornApparel.Contains((Apparel) parent) &&
-                        tracker.TryDrop((Apparel) parent, out _))
+                        tracker.WornApparel.Contains((Apparel)parent) &&
+                        tracker.TryDrop((Apparel)parent, out _))
                     {
                     }
                     //Remove equipment

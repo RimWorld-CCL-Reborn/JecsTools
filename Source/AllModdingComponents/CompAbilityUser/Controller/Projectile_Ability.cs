@@ -49,7 +49,7 @@ namespace AbilityUser
                 var damageAmountBase = def.projectile.GetDamageAmount(1f);
                 var equipmentDef = this.equipmentDef;
                 var dinfo = new DamageInfo(def.projectile.damageDef, damageAmountBase, this.def.projectile.GetArmorPenetration(1f), ExactRotation.eulerAngles.y,
-                    launcher,  null, equipmentDef);
+                    launcher, null, equipmentDef);
                 hitThing.TakeDamage(dinfo);
                 PostImpactEffects(hitThing);
             }

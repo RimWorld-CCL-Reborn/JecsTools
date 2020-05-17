@@ -24,7 +24,7 @@ namespace JecsTools
                 if (progressBar == null)
                 {
                     progressBar =
-                        (WorldObject_ProgressBar) WorldObjectMaker.MakeWorldObject(
+                        (WorldObject_ProgressBar)WorldObjectMaker.MakeWorldObject(
                             DefDatabase<WorldObjectDef>.GetNamed("WorldObject_ProgressBar"));
                     progressBar.Tile = Find.World.GetComponent<CaravanJobGiver>().CurJob(CaravanToil.actor)
                         .GetTarget(ind).Tile;

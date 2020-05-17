@@ -47,7 +47,7 @@ namespace JecsTools
             for (var i = 0; i < Part.parts.Count; i++)
             {
                 var hediff_MissingPart =
-                    (Hediff_MissingPart) HediffMaker.MakeHediff(HediffDefOf.MissingBodyPart, pawn, null);
+                    (Hediff_MissingPart)HediffMaker.MakeHediff(HediffDefOf.MissingBodyPart, pawn, null);
                 hediff_MissingPart.IsFresh = false;
                 hediff_MissingPart.lastInjury = null;
                 hediff_MissingPart.Part = Part.parts[i];

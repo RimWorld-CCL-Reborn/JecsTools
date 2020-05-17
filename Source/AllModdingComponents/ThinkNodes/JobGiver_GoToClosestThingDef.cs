@@ -16,10 +16,10 @@ namespace ThinkNodes
             if (thing != null)
             {
                 if (!thing.Position.IsValid)
-                    return (Job) null;
-                if (!pawn.CanReach((LocalTargetInfo) thing.Position, PathEndMode.ClosestTouch, maxDanger))
+                    return (Job)null;
+                if (!pawn.CanReach((LocalTargetInfo)thing.Position, PathEndMode.ClosestTouch, maxDanger))
                 {
-                    return (Job) null;
+                    return (Job)null;
                 }
 
                 if (IntVec3Utility.DistanceTo(thing.Position, pawn.Position) < 10f)
@@ -27,7 +27,7 @@ namespace ThinkNodes
                     return null;
                 }
 
-                var job = JobMaker.MakeJob(JobDefOf.Goto, (LocalTargetInfo) thing.Position);
+                var job = JobMaker.MakeJob(JobDefOf.Goto, (LocalTargetInfo)thing.Position);
                 job.locomotionUrgency = LocomotionUrgency.Sprint;
                 return job;
             }

@@ -1,6 +1,4 @@
-﻿using System.Linq;
-using RimWorld;
-using Verse;
+﻿using Verse;
 
 namespace JecsTools
 {
@@ -9,9 +7,8 @@ namespace JecsTools
         //Tad Changed - Again override was modified with additional checks.
         public override AcceptanceReport AllowsPlacing(BuildableDef checkingDef, IntVec3 loc, Rot4 rot, Map map, Thing thingToIgnore = null, Thing thing = null)
         {
-                return base.AllowsPlacing(checkingDef, loc, rot, map, thingToIgnore, thing);
+            return base.AllowsPlacing(checkingDef, loc, rot, map, thingToIgnore, thing);
         }
-    }
         //public override AcceptanceReport AllowsPlacing(BuildableDef checkingDef, IntVec3 loc, Rot4 rot, Map map,
         //    Thing thingToIgnore = null)
         //{
@@ -19,4 +16,5 @@ namespace JecsTools
         //        return new AcceptanceReport("JT_PlaceWorker_UnderCeiling".Translate());
         //    return true;
         //}
+    }
 }

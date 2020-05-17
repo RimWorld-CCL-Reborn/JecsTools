@@ -5,7 +5,7 @@ namespace JecsTools
 {
     public class HediffComp_ExtraMeleeDamages : HediffComp
     {
-        public HediffCompProperties_ExtraMeleeDamages Props => (HediffCompProperties_ExtraMeleeDamages) props;
+        public HediffCompProperties_ExtraMeleeDamages Props => (HediffCompProperties_ExtraMeleeDamages)props;
 
         public override string CompTipStringExtra
         {

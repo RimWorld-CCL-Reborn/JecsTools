@@ -23,11 +23,11 @@ namespace CompInstalledPart
 
         protected CompInstalledPart UninstallComp => PartToUninstall.GetComp<CompInstalledPart>();
 
-        protected ThingWithComps PartToUninstall => (ThingWithComps) job.targetA.Thing;
+        protected ThingWithComps PartToUninstall => (ThingWithComps)job.targetA.Thing;
 
         protected Thing UninstallTarget => job.targetB.Thing;
 
-        protected int WorkDone => TotalNeededWork - (int) workLeft;
+        protected int WorkDone => TotalNeededWork - (int)workLeft;
 
         protected int TotalNeededWork
         {

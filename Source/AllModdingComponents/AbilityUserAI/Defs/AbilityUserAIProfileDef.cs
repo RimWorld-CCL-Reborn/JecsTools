@@ -60,7 +60,7 @@ namespace AbilityUserAI
             {
                 //Instantiate if null.
                 if (intWorkerClass == null)
-                    intWorkerClass = (AbilityProfileWorker) Activator.CreateInstance(workerClass);
+                    intWorkerClass = (AbilityProfileWorker)Activator.CreateInstance(workerClass);
 
                 return intWorkerClass;
             }

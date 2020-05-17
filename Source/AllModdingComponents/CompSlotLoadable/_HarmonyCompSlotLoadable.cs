@@ -96,7 +96,7 @@ namespace CompSlotLoadable
                                 select injury)
                             if (current.CanHealNaturally() && !current.IsPermanent()) // isOld // basically check for scars and old wounds
                             {
-                                current.Heal((int) current.Severity + 1);
+                                current.Heal((int)current.Severity + 1);
                                 maxInjuries--;
                             }
 
@@ -155,7 +155,7 @@ namespace CompSlotLoadable
             {
                 List<DamageInfo> newList = null;
                 var statSlots = slots.FindAll(z =>
-                    !z.IsEmpty() && ((SlotLoadableDef) z.def).doesChangeStats);
+                    !z.IsEmpty() && ((SlotLoadableDef)z.def).doesChangeStats);
                 foreach (var slot in statSlots)
                 {
                     var slotBonus = slot.SlotOccupant.TryGetComp<CompSlottedBonus>();

@@ -237,7 +237,7 @@ namespace CompSlotLoadable
                         {
                             SlotOccupant = thingToLoad;
                             //slot.TryAdd(thingToLoad, false);
-                            if (((SlotLoadableDef) def).doesChangeColor)
+                            if (((SlotLoadableDef)def).doesChangeColor)
                                 owner.Notify_ColorChanged();
                             return true;
                         }

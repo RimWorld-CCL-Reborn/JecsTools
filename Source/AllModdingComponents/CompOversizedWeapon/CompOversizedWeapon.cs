@@ -31,7 +31,7 @@ namespace CompOversizedWeapon
                 if (deflector != null)
                 {
                     compDeflectorIsAnimatingNow =
-                        (Func<bool>) AccessTools.PropertyGetter(deflector.GetType(), "IsAnimatingNow").CreateDelegate(
+                        (Func<bool>)AccessTools.PropertyGetter(deflector.GetType(), "IsAnimatingNow").CreateDelegate(
                             typeof(Func<bool>), deflector);
                 }
                 initComps = true;
