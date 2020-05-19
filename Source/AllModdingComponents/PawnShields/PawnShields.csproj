@@ -35,6 +35,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="HarmonyPatches.cs" />
+    <Compile Include="MiscExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Mod Extensions\ShieldPawnGeneratorProperties.cs" />
     <Compile Include="Shields.cs" />
@@ -46,6 +47,7 @@
     <Compile Include="ThingComps\CompShield.cs" />
     <Compile Include="ThingComps\Properties\ShieldRenderProperties.cs" />
     <Compile Include="ThingComps\Properties\StuffedSound.cs" />
+    <Compile Include="Workers\StatPart_ShieldStatFactor.cs" />
     <Compile Include="Workers\StatWorker_Shield.cs" />
   </ItemGroup>
   <ItemGroup>

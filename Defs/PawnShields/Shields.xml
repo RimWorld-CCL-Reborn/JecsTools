@@ -8,10 +8,11 @@
 	
 	<StatDef>
 		<defName>Shield_BaseMeleeBlockChance</defName>
-		<label>melee block chance</label>
+		<label>melee block chance multiplier</label>
 		<description>Shield users melee block chance is multiplied by this. The higher the better.</description>
 		<category>Shield</category>
-		<workerClass>PawnShields.StatWorker_Shield</workerClass>
+		<displayPriorityInCategory>5</displayPriorityInCategory>
+		<workerClass>PawnShields.StatWorker_Shield_BaseMeleeBlockChance</workerClass>
 		<defaultBaseValue>1</defaultBaseValue>
 		<minValue>0.05</minValue>
 		<toStringStyle>PercentZero</toStringStyle>
@@ -20,10 +21,11 @@
 	
 	<StatDef>
 		<defName>Shield_BaseRangedBlockChance</defName>
-		<label>ranged block chance</label>
+		<label>ranged block chance multiplier</label>
 		<description>Shield users ranged block chance is multiplied by this. The higher the better.</description>
 		<category>Shield</category>
-		<workerClass>PawnShields.StatWorker_Shield</workerClass>
+		<displayPriorityInCategory>4</displayPriorityInCategory>
+		<workerClass>PawnShields.StatWorker_Shield_BaseRangedBlockChance</workerClass>
 		<defaultBaseValue>0.5</defaultBaseValue>
 		<minValue>0.05</minValue>
 		<toStringStyle>PercentZero</toStringStyle>
@@ -33,9 +35,10 @@
 	<StatDef>
 		<defName>Shield_DamageAbsorbed</defName>
 		<label>damage absorption</label>
-		<description>How much damage the shield absorbs from a blocked attack.</description>
+		<description>How much percent of damage the shield's hit points absorbs from a blocked attack. Note: a blocked attack deals no damage to the shield wielder.</description>
 		<category>Shield</category>
-		<workerClass>PawnShields.StatWorker_Shield</workerClass>
+		<displayPriorityInCategory>3</displayPriorityInCategory>
+		<workerClass>PawnShields.StatWorker_Shield_DamageAbsorbed</workerClass>
 		<defaultBaseValue>1</defaultBaseValue>
 		<minValue>0.05</minValue>
 		<toStringStyle>PercentZero</toStringStyle>
@@ -116,22 +119,27 @@
 	<!-- Melee Block -->
 	<StatDef>
 		<defName>MeleeShieldBlockChance</defName>
-		<label>melee block chance</label>
-		<description>Chance to block a melee attack that would've otherwise hit.</description>
+		<label>melee shield block chance</label>
+		<description>Chance to block with a shield a melee attack that would've otherwise hit.</description>
 		<category>PawnCombat</category>
 		<displayPriorityInCategory>99</displayPriorityInCategory>
 		<neverDisabled>false</neverDisabled>
-		<defaultBaseValue>0.3</defaultBaseValue>
+		<defaultBaseValue>0</defaultBaseValue> <!-- actual base value is in SkillNeed_BaseBonus below since defaultBaseValue is erroneously displayed as a % (not using toStringStyleUnfinalized) -->
 		<toStringStyle>PercentZero</toStringStyle>
 		<toStringStyleUnfinalized>FloatOne</toStringStyleUnfinalized>
 		<noSkillOffset>0</noSkillOffset>
 		<skillNeedOffsets>
 			<li Class="SkillNeed_BaseBonus">
 				<skill>Melee</skill>
-				<baseValue>5</baseValue>
+				<baseValue>35</baseValue>
 				<bonusPerLevel>7</bonusPerLevel>
 			</li>
 		</skillNeedOffsets>
+		<parts>
+			<li Class="PawnShields.StatPart_ShieldStatFactor">
+				<shieldStat>Shield_BaseMeleeBlockChance</shieldStat>
+			</li>
+		</parts>
 		<capacityOffsets>
 			<li>
 				<capacity>Moving</capacity>
@@ -145,6 +153,7 @@
 		</capacityOffsets>
 		<postProcessCurve>
 			<points>
+				<li>(0, 0.0)</li> <!-- allow final value of 0% -->
 				<li>(5, 0.10)</li>
 				<li>(20, 0.30)</li>
 				<li>(60, 0.50)</li>
@@ -157,19 +166,19 @@
 	<!-- Ranged Block -->
 	<StatDef>
 		<defName>RangedShieldBlockChance</defName>
-		<label>ranged block chance</label>
-		<description>Chance to block a ranged attack that would've otherwise hit.</description>
+		<label>ranged shield block chance</label>
+		<description>Chance to block with a shield a ranged attack that would've otherwise hit.</description>
 		<category>PawnCombat</category>
-		<displayPriorityInCategory>99</displayPriorityInCategory>
+		<displayPriorityInCategory>98</displayPriorityInCategory>
 		<neverDisabled>false</neverDisabled>
-		<defaultBaseValue>0.1</defaultBaseValue>
+		<defaultBaseValue>0</defaultBaseValue> <!-- actual base value is in SkillNeed_BaseBonus below since defaultBaseValue is erroneously displayed as a % (not using toStringStyleUnfinalized) -->
 		<toStringStyle>PercentZero</toStringStyle>
 		<toStringStyleUnfinalized>FloatOne</toStringStyleUnfinalized>
 		<noSkillOffset>0</noSkillOffset>
 		<skillNeedOffsets>
 			<li Class="SkillNeed_BaseBonus">
 				<skill>Melee</skill>
-				<baseValue>5</baseValue>
+				<baseValue>15</baseValue>
 				<bonusPerLevel>3</bonusPerLevel>
 			</li>
 		</skillNeedOffsets>
@@ -184,8 +193,14 @@
 				<max>1.4</max>
 			</li>
 		</capacityOffsets>
+		<parts>
+			<li Class="PawnShields.StatPart_ShieldStatFactor">
+				<shieldStat>Shield_BaseRangedBlockChance</shieldStat>
+			</li>
+		</parts>
 		<postProcessCurve>
 			<points>
+				<li>(0, 0.0)</li> <!-- allow final value of 0% -->
 				<li>(5, 0.05)</li>
 				<li>(20, 0.10)</li>
 				<li>(60, 0.30)</li>

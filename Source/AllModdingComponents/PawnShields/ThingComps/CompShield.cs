@@ -67,20 +67,14 @@ namespace PawnShields
             //Check if we blocked the attack at all.
             if (ShieldProps.canBlockMelee && !ranged)
             {
-                //Melee
-                float baseStat = defender.GetStatValue(ShieldStatsDefOf.MeleeShieldBlockChance, true);
-                float chance = baseStat * parent.GetStatValue(ShieldStatsDefOf.Shield_BaseMeleeBlockChance);
-
+                float chance = defender.GetStatValue(ShieldStatsDefOf.MeleeShieldBlockChance, true);
                 //Log.Message("Melee block chance: " + chance.ToStringPercent());
                 if (Rand.Chance(chance))
                     absorbedDamage = true;
             }
             else if (ShieldProps.canBlockRanged && ranged)
             {
-                //Ranged
-                float baseStat = defender.GetStatValue(ShieldStatsDefOf.RangedShieldBlockChance, true);
-                float chance = baseStat * parent.GetStatValue(ShieldStatsDefOf.Shield_BaseRangedBlockChance);
-
+                float chance = defender.GetStatValue(ShieldStatsDefOf.RangedShieldBlockChance, true);
                 //Log.Message("Ranged block chance: " + chance.ToStringPercent());
                 if (Rand.Chance(chance))
                     absorbedDamage = true;

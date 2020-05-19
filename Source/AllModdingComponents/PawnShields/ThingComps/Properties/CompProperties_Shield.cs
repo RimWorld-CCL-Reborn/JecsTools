@@ -26,14 +26,11 @@ namespace PawnShields
         public ShieldRenderProperties renderProperties = new ShieldRenderProperties();
 
         /// <summary>
-        /// Do the shield take damage when blocking?
+        /// Does the shield take damage when blocking?
         /// </summary>
         public bool shieldTakeDamage = true;
 
-        /// <summary>
-        /// How much of the damage the shield absorbs upon successful block.
-        /// </summary>
-        [Obsolete]
+        [Obsolete("use the Shield_DamageAbsorbed stat")]
         public float shieldTakeDamageFactor = 0.8f;
 
         /// <summary>
@@ -46,35 +43,29 @@ namespace PawnShields
         /// </summary>
         public bool canBlockMelee = true;
 
-        /// <summary>
-        /// Melee block chance factor the shield provides which is multiplied by the relevant statistic. 1.0 is equivalent to unchanged.
-        /// </summary>
-        [Obsolete]
+        [Obsolete("use the Shield_BaseMeleeBlockChance stat")]
         public float meleeBlockChanceFactor = 1.0f;
 
-        /// <summary>
-        /// Ranged block chance factor the shield provides which is multiplied by the relevant statistic. 1.0 is equivalent to unchanged.
-        /// </summary>
-        [Obsolete]
+        [Obsolete("use the Shield_BaseRangedBlockChance stat")]
         public float rangedBlockChanceFactor = 0.5f;
 
         /// <summary>
-        /// Determines whether the shield can be automatically discarded by a pawn or not.
+        /// Determines whether the shield can be automatically discarded by the shield wielder or not.
         /// </summary>
         public bool canBeAutoDiscarded = true;
 
         /// <summary>
-        /// The % threshold when the shield is automatically discarded by the pawn.
+        /// The hit points percentage threshold when the shield is automatically discarded by the shield wielder.
         /// </summary>
         public float healthAutoDiscardThreshold = 0.19f;
 
         /// <summary>
-        /// If true the shield user gets fatigued when blocking with the shield.
+        /// If true the shield wielder gets fatigued from a blocked attack.
         /// </summary>
         public bool useFatigue = false;
 
         /// <summary>
-        /// How much damage is converted to fatigue damage on successful block.
+        /// How much percent of the damage is converted to fatigue damage on a blocked attack.
         /// </summary>
         public float damageToFatigueFactor = 0.05f;
 
@@ -95,12 +86,20 @@ namespace PawnShields
         [Unsaved]
         public Dictionary<StuffCategoryDef, SoundDef> stuffedSounds = new Dictionary<StuffCategoryDef, SoundDef>();
 
-        /*public override IEnumerable<StatDrawEntry> SpecialDisplayStats()
+        public override IEnumerable<StatDrawEntry> SpecialDisplayStats(StatRequest req)
         {
-            yield return new StatDrawEntry(ShieldStatsDefOf.Shield, ShieldStatsDefOf.Shield_BaseMeleeBlockChance);
-            yield return new StatDrawEntry(ShieldStatsDefOf.Shield, ShieldStatsDefOf.Shield_BaseRangedBlockChance);
-            yield return new StatDrawEntry(ShieldStatsDefOf.Shield, ShieldStatsDefOf.Shield_DamageAbsorbed);
-        }*/
+            yield return GetStatDrawEntry("ShieldHitPointAutoDiscardThreshold", canBeAutoDiscarded, healthAutoDiscardThreshold, 2);
+            yield return GetStatDrawEntry("ShieldDamageToFatigueFactor", useFatigue, damageToFatigueFactor, 1);
+        }
+
+        private static StatDrawEntry GetStatDrawEntry(string baseKey, bool enabled, float value, int displayPriorityWithinCategory)
+        {
+            var valueString = (enabled ? value : 0f).ToStringPercent();
+            var reportText = $"{(baseKey + "Ex").Translate()}\n\n{"StatsReport_FinalValue".Translate()}: {valueString}";
+            if (!enabled)
+                reportText += $" ({(baseKey + "Never").Translate()})";
+            return new StatDrawEntry(ShieldStatsDefOf.Shield, baseKey.Translate(), valueString, reportText, displayPriorityWithinCategory);
+        }
 
         public override void ResolveReferences(ThingDef parentDef)
         {
