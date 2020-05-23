@@ -6,6 +6,7 @@ using System.Reflection.Emit;
 using System.Text;
 using HarmonyLib;
 using RimWorld;
+using RimWorld.Planet;
 using UnityEngine;
 using Verse;
 using Verse.Sound;
@@ -29,6 +30,11 @@ namespace PawnShields
                 new Type[] { typeof(Vector3), typeof(RotDrawMode), typeof(bool), typeof(bool) }),
                 postfix: new HarmonyMethod(typeof(HarmonyPatches), nameof(Patch_PawnRenderer_RenderPawnAt)));
 
+            harmony.Patch(AccessTools.Method(typeof(Pawn), nameof(Pawn.DropAndForbidEverything)),
+                postfix: new HarmonyMethod(typeof(HarmonyPatches), nameof(Patch_Pawn_DropAndForbidEverything)));
+
+            harmony.Patch(AccessTools.Method(typeof(Pawn_HealthTracker), nameof(Pawn_HealthTracker.CheckForStateChange)),
+                postfix: new HarmonyMethod(typeof(HarmonyPatches), nameof(Patch_Pawn_HealthTracker_CheckForStateChance)));
             harmony.Patch(AccessTools.Method(typeof(Pawn_HealthTracker), nameof(Pawn_HealthTracker.PreApplyDamage)),
                 prefix: new HarmonyMethod(typeof(HarmonyPatches), nameof(Patch_Pawn_HealthTracker_PreApplyDamage)));
 
@@ -200,6 +206,45 @@ namespace PawnShields
             }
         }
 
+        public static void Patch_Pawn_DropAndForbidEverything(Pawn __instance)
+        {
+            if (__instance.InContainerEnclosed && __instance.GetShield() is ThingWithComps shield)
+            {
+                __instance.equipment.TryTransferEquipmentToContainer(shield, __instance.holdingOwner);
+            }
+        }
+
+        public static void Patch_Pawn_HealthTracker_CheckForStateChance(Pawn_HealthTracker __instance, Pawn ___pawn)
+        {
+            if (!__instance.Downed && !__instance.capacities.CapableOf(PawnCapacityDefOf.Manipulation) && ___pawn.GetShield() is ThingWithComps shield)
+            {
+                if (___pawn.kindDef.destroyGearOnDrop)
+                {
+                    ___pawn.equipment.DestroyEquipment(shield);
+                }
+                else if (___pawn.InContainerEnclosed)
+                {
+                    ___pawn.equipment.TryTransferEquipmentToContainer(shield, ___pawn.holdingOwner);
+                }
+                else if (___pawn.SpawnedOrAnyParentSpawned)
+                {
+                    ___pawn.equipment.TryDropEquipment(shield, out var _, ___pawn.PositionHeld);
+                }
+                else if (___pawn.IsCaravanMember())
+                {
+                    ___pawn.equipment.Remove(shield);
+                    if (!___pawn.inventory.innerContainer.TryAdd(shield))
+                    {
+                        shield.Destroy();
+                    }
+                }
+                else
+                {
+                    ___pawn.equipment.DestroyEquipment(shield);
+                }
+            }
+        }
+
         public static bool Patch_Pawn_HealthTracker_PreApplyDamage(Pawn ___pawn, ref DamageInfo dinfo, out bool absorbed)
         {
             absorbed = false;
@@ -255,7 +300,8 @@ namespace PawnShields
                 }
             }
 
-            if (shieldComp.ShieldProps.useFatigue && ___pawn.health.hediffSet.GetFirstHediffOfDef(ShieldHediffDefOf.ShieldFatigue) is Hediff hediff && hediff.Severity >= hediff.def.maxSeverity)
+            if (shieldComp.ShieldProps.useFatigue && ___pawn.health.hediffSet.GetFirstHediffOfDef(ShieldHediffDefOf.ShieldFatigue) is Hediff hediff &&
+                hediff.Severity >= hediff.def.maxSeverity)
             {
                 discardShield = true;
             }
@@ -273,10 +319,7 @@ namespace PawnShields
                 }
             }
 
-            if (absorbed)
-                return false;
-
-            return true;
+            return !absorbed;
         }
     }
 }
