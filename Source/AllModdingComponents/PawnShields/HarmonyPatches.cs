@@ -22,9 +22,6 @@ namespace PawnShields
         {
             var harmony = new Harmony("jecstools.chjees.shields");
 
-            harmony.Patch(AccessTools.Method(typeof(Pawn), nameof(Pawn.Tick)),
-                postfix: new HarmonyMethod(typeof(HarmonyPatches), nameof(Patch_Pawn_Tick)));
-
             harmony.Patch(AccessTools.Method(typeof(PawnGenerator), "GenerateGearFor"),
                 postfix: new HarmonyMethod(typeof(HarmonyPatches), nameof(Patch_PawnGenerator_GenerateGearFor)));
 
@@ -200,16 +197,6 @@ namespace PawnShields
                         Log.Error(___pawn + " couldn't make room for shield " + eq);
                     }
                 }
-            }
-        }
-
-        public static void Patch_Pawn_Tick(Pawn __instance)
-        {
-            if (__instance.equipment != null && __instance.ParentHolder != null && !ThingOwnerUtility.ContentsSuspended(__instance.ParentHolder))
-            {
-                //Tick shield.
-                ThingWithComps shield = __instance.GetShield();
-                shield?.Tick();
             }
         }
 

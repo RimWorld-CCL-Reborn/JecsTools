@@ -3,9 +3,6 @@ using Verse;
 
 namespace PawnShields
 {
-    /// <summary>
-    /// Worker class specifically made to show off the snazzy stats for shields.
-    /// </summary>
     public abstract class StatWorker_Shield : StatWorker
     {
         public override void FinalizeValue(StatRequest req, ref float val, bool applyPostProcess)

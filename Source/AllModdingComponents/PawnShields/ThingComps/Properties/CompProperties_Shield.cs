@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using RimWorld;
+using UnityEngine;
 using Verse;
 
 namespace PawnShields
@@ -105,7 +106,7 @@ namespace PawnShields
         {
             base.ResolveReferences(parentDef);
 
-            //Setup dictionary.
+            // Setup stuffed sounds dictionary.
             if (sounds != null)
             {
                 foreach (StuffedSound stuffedSound in sounds)
@@ -113,6 +114,23 @@ namespace PawnShields
                     stuffedSounds[stuffedSound.stuffCategory] = stuffedSound.sound;
                 }
             }
+
+            // Default missing stat bases to obsolete field values.
+#pragma warning disable CS0618 // Type or member is obsolete
+            SetDefaultStatBaseValue(parentDef, ShieldStatsDefOf.Shield_DamageAbsorbed, shieldTakeDamageFactor);
+            // Note: Some existing mods use erroneous numbers like 10.0 or treat it like a percentage (0-100 rather than 0-1),
+            // and never noticed any issues because the melee/rangedBlockChanceFactor fields never actually worked
+            // (Shield_BaseMeleeBlockChance defaulted to 1 (100%) and Shield_BaseRangedBlockChance defaulted to 0.5 (50%),
+            // so to prevent a sudden buff in block chance for pawns with poor melee skills, cap melee/RangedBlockChanceFactor values at 1 (100%).
+            SetDefaultStatBaseValue(parentDef, ShieldStatsDefOf.Shield_BaseMeleeBlockChance, Mathf.Min(meleeBlockChanceFactor, 1.0f));
+            SetDefaultStatBaseValue(parentDef, ShieldStatsDefOf.Shield_BaseRangedBlockChance, Mathf.Min(rangedBlockChanceFactor, 1.0f));
+#pragma warning restore CS0618 // Type or member is obsolete
+        }
+
+        private static void SetDefaultStatBaseValue(ThingDef parentDef, StatDef statDef, float defaultBaseValue)
+        {
+            if (!parentDef.StatBaseDefined(statDef))
+                parentDef.SetStatBaseValue(statDef, defaultBaseValue);
         }
 
         public CompProperties_Shield()

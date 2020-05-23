@@ -176,12 +176,5 @@ namespace PawnShields
                 thing.Graphic.Draw(loc, rot, thing);
             }
         }
-
-        /*public override void CompTick()
-        {
-            base.CompTick();
-
-            Log.Message("Shield tick!");
-        }*/
     }
 }
