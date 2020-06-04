@@ -3,7 +3,12 @@ using Verse;
 
 namespace PawnShields
 {
-    public abstract class StatWorker_Shield : StatWorker
+    // XXX: This should be an abstract class. It's only non-abstract for compatibility with stale bundled versions of PawnShields
+    // in other mods, and those stale versions have StatDefs that directly reference StatWorker_Shield.
+    // RimWorld as of version 1.1 has earlier loaded assemblies and later loaded XMLs have higher precedence, leading to a situation
+    // where a user can end up loading this version of PawnShields.dll and an outdated version of the StatDefs that still directly
+    // references StatWorker_Shield. So StatWorker_Shield must be a concrete class rather than an abstract one.
+    public class StatWorker_Shield : StatWorker
     {
         public override void FinalizeValue(StatRequest req, ref float val, bool applyPostProcess)
         {
@@ -48,9 +53,9 @@ namespace PawnShields
             return false;
         }
 
-        protected abstract bool IsDisabledForShield(CompProperties_Shield shieldProps);
+        protected virtual bool IsDisabledForShield(CompProperties_Shield shieldProps) => false;
 
-        protected abstract string GetDisabledExplanation();
+        protected virtual string GetDisabledExplanation() => "";
     }
 
     public class StatWorker_Shield_BaseMeleeBlockChance : StatWorker_Shield
