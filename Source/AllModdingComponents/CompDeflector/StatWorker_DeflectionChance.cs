@@ -102,15 +102,17 @@ namespace CompDeflector
             return stringBuilder.ToString();
         }
 
-        public override string GetStatDrawEntryLabel(StatDef stat, float value, ToStringNumberSense numberSense,
-            StatRequest optionalReq)
+        // Tad changed missing additional final parameter on the end, the "finalized" bool.
+        public override string GetStatDrawEntryLabel(StatDef stat, float value, ToStringNumberSense numberSense, StatRequest optionalReq, bool finalized = true)
         {
             return string.Format("{0} (({1} + ( {2} * {3} )) / {4} )",
                 value.ToStringByStyle(stat.toStringStyle, numberSense),
                 GetBaseDeflectionChance(optionalReq, true).ToStringPercent(),
                 GetSkillLevel(optionalReq, true).ToString("0"),
                 GetDeflectPerSkillLevel(optionalReq, true).ToStringPercent("0.##"),
-                GetManipulationModifier(optionalReq, true).ToStringPercent());
+                GetManipulationModifier(optionalReq, true).ToStringPercent(),
+                finalized);
         }
+       
     }
 }

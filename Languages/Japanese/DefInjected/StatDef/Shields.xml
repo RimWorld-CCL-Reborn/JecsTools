@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+
+  <Shield_BaseMeleeBlockChance.label>近接防御補正</Shield_BaseMeleeBlockChance.label>
+  <Shield_BaseMeleeBlockChance.description>シールドを構えた者の近接攻撃を防ぐ確率はこの値で補正乗算されます。より高いほど防御率が高い。</Shield_BaseMeleeBlockChance.description>
+
+  <Shield_BaseRangedBlockChance.label>遠距離防御補正</Shield_BaseRangedBlockChance.label>
+  <Shield_BaseRangedBlockChance.description>シールドを構えた者の遠距離攻撃を防ぐ確率はこの値で補正乗算されます。より高いほど防御率が高い。</Shield_BaseRangedBlockChance.description>
+
+  <Shield_DamageAbsorbed.label>ダメージ吸収</Shield_DamageAbsorbed.label>
+  <Shield_DamageAbsorbed.description>防御した攻撃からシールドがどれだけのダメージを吸収できるか。</Shield_DamageAbsorbed.description>
+
+
+  <!-- Melee Block -->
+
+  <MeleeShieldBlockChance.label>近接防御率</MeleeShieldBlockChance.label>
+  <MeleeShieldBlockChance.description>近接攻撃を阻止する確立で、失敗すると攻撃が命中します。</MeleeShieldBlockChance.description>
+
+
+  <!-- Ranged Block -->
+
+  <RangedShieldBlockChance.label>遠距離防御率</RangedShieldBlockChance.label>
+  <RangedShieldBlockChance.description>遠距離攻撃を阻止する確立で、失敗すると攻撃が命中します。</RangedShieldBlockChance.description>
+
+</LanguageData>

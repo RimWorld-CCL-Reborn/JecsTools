@@ -53,8 +53,8 @@ namespace JecsTools
             }
             Find.WindowStack.Add(new Dialog_Trade(actor, ts));
             LessonAutoActivator.TeachOpportunity(ConceptDefOf.BuildOrbitalTradeBeacon, OpportunityType.Critical);
-            var empty = string.Empty;
-            var empty2 = string.Empty;
+            var empty = TaggedString.Empty;
+            var empty2 = TaggedString.Empty;
             PawnRelationUtility.Notify_PawnsSeenByPlayer_Letter(
                 ts.Goods.OfType<Pawn>(), ref empty, ref empty2, "LetterRelatedPawnsTradeShip".Translate());
             if (!empty2.NullOrEmpty())

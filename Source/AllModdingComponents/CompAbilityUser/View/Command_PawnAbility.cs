@@ -1,5 +1,5 @@
 ﻿using System;
-using Harmony;
+using HarmonyLib;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -34,8 +34,11 @@ namespace AbilityUser
             Texture2D mouseAttachment = null)
         {
             verbToAdd.timeSavingActionVariable = this.action;
-            Find.Targeter.targetingVerb = verbToAdd;
-            Find.Targeter.targetingVerbAdditionalPawns = null;
+            // Tad changed
+            // Find.Targeter.targetingVerb = verbToAdd;
+            // Find.Targeter.targetingVerbAdditionalPawns = null;
+            Find.Targeter.targetingSource = verbToAdd;
+            Find.Targeter.targetingSourceAdditionalPawns = null;
             AccessTools.Field(typeof(Targeter), "action").SetValue(Find.Targeter, action);
             AccessTools.Field(typeof(Targeter), "targetParams").SetValue(Find.Targeter, targetParams);
             AccessTools.Field(typeof(Targeter), "caster").SetValue(Find.Targeter, caster);

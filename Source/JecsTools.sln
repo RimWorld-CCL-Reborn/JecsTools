@@ -39,6 +39,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompBalloon", "AllModdingCo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThinkNodes", "AllModdingComponents\ThinkNodes\ThinkNodes.csproj", "{D7D21B4A-1DA7-41D8-B202-C58CA8FA62AA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DefModExtension_BigBox", "AllModdingComponents\CompBigBox\DefModExtension_BigBox.csproj", "{CB5B70DA-38FB-4C54-A816-7112CA045235}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -117,8 +119,15 @@ Global
 		{D7D21B4A-1DA7-41D8-B202-C58CA8FA62AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D7D21B4A-1DA7-41D8-B202-C58CA8FA62AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D7D21B4A-1DA7-41D8-B202-C58CA8FA62AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CB5B70DA-38FB-4C54-A816-7112CA045235}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CB5B70DA-38FB-4C54-A816-7112CA045235}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CB5B70DA-38FB-4C54-A816-7112CA045235}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CB5B70DA-38FB-4C54-A816-7112CA045235}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3B2E7643-26CC-403B-B61C-EAEB6734264E}
 	EndGlobalSection
 EndGlobal

@@ -3,14 +3,14 @@
 ==============================
 
 JecsTools Update
-v1.1.0.13 (11-03-2018)
+v1.1.1.0 (03-15-2020)
 ====================
 
-Removed unneeded assemblies from source. Properly includes ThinkNode.dll in the correct location for public usage.
+AbilityUser should now report when line of sight failure takes place for abilities. Extra damages no longer gives errors in combat logs.
 --------------------
 
 Download now on...
-- Patreon: https://www.patreon.com/posts/22139730
+- Patreon: https://www.patreon.com/posts/34452021
 - GitHub: https://github.com/jecrell/JecsTools
 - Steam: https://steamcommunity.com/sharedfiles/filedetails/?id=932008009
 Discuss the mod on...
@@ -25,12 +25,12 @@ Discuss the mod on...
 [img width=260]https://raw.githubusercontent.com/jecrell/JecsTools/master/About/Preview.png[/img]
 [hr]
 [b]JecsTools
-Version: 1.1.0.13
-Updated: 11-03-2018
-Description: [color=orange]Removed unneeded assemblies from source. Properly includes ThinkNode.dll in the correct location for public usage.[/color]
+Version: 1.1.1.0
+Updated: 03-15-2020
+Description: [color=orange]AbilityUser should now report when line of sight failure takes place for abilities. Extra damages no longer gives errors in combat logs.[/color]
 [hr]
 [b]Download now on...[/b]
-[url=https://www.patreon.com/posts/22139730]Patreon[/url]
+[url=https://www.patreon.com/posts/34452021]Patreon[/url]
 [url=https://github.com/jecrell/JecsTools]GitHub[/url]
 [url=https://steamcommunity.com/sharedfiles/filedetails/?id=932008009]Steam[/url]
 [b]Discuss the mod on...[/b]

@@ -1,6 +1,38 @@
+1.1.1.2 (03-29-2020)
+========================
+Activatable weapons now activate in defense thanks to code from qadsad.
+
+1.1.1.1 (03-20-2020)
+========================
+Fixed issues with damage soak and extra damages. Extra damage should now be dealt properly and damage soak should now deflect damage properly.
+
+1.1.1.0 (03-15-2020)
+========================
+AbilityUser should now report when line of sight failure takes place for abilities. Extra damages no longer gives errors in combat logs.
+
+1.1.0.20 (03-07-2020)
+========================
+DefModExtension_ExtraSounds is now processed in the CompExtraSounds Harmony patch. Different pawns with DefModExtension_ExtraSounds in their PawnKindDef can make extra on-hit attack sounds.
+
+1.1.0.19 (02-29-2020)
+========================
+Hotfix for adding compatibility between the newest version of RimWorld and the previous version of 1.0.
+
+1.1.0.18 (02-29-2020)
+========================
+Added cross compatibility for RimWorld 1.0 as well as RimWorld 1.1.
+
+1.1.0.17 (02-29-2020)
+========================
+Updates JecsTools for use in RimWorld 1.1
+
+1.1.0.16 (11-16-2019)
+========================
+Adds in various work-in-progress code changes. Adds a belated Japanese translation update from Proxyer. Adds a force user code fix from Mehni. Adds BigBox - a solution for larger selection boxes for oversized pawns (such as dragons).
+
 1.1.0.15 (12-14-2018)
 ========================
-Removed apparel detour -- replaced with proper patched
+Removes apparel detour and replaces it with a harmony patch (thanks to Mehni)
 
 1.1.0.14 (11-18-2018)
 ========================

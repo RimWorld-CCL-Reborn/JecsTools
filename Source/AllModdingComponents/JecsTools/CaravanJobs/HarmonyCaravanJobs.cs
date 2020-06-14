@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Harmony;
+using HarmonyLib;
 using RimWorld;
 using RimWorld.Planet;
 using Verse;
@@ -12,7 +12,7 @@ namespace JecsTools
     {
         static HarmonyCaravanPatches()
         {
-            var harmony = HarmonyInstance.Create("rimworld.jecrell.caravanjobs");
+            var harmony = new Harmony("jecstools.jecrell.caravanjobs");
 
             harmony.Patch(AccessTools.Method(typeof(Caravan), "GetInspectString"), null,
                 new HarmonyMethod(typeof(HarmonyCaravanPatches), nameof(GetInspectString_Jobs)), null);

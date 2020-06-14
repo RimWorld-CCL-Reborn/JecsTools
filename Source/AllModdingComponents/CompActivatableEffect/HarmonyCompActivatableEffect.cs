@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Harmony;
+using HarmonyLib;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -13,20 +13,31 @@ namespace CompActivatableEffect
     {
         static HarmonyCompActivatableEffect()
         {
-            var harmony = HarmonyInstance.Create("rimworld.jecrell.comps.activator");
-
+            var harmony = new Harmony("jecstools.jecrell.comps.activator");
+            
             harmony.Patch(typeof(Pawn).GetMethod("GetGizmos"), null,
                 new HarmonyMethod(typeof(HarmonyCompActivatableEffect).GetMethod("GetGizmosPrefix")));
+            
             harmony.Patch(typeof(PawnRenderer).GetMethod("DrawEquipmentAiming"), null,
                 new HarmonyMethod(typeof(HarmonyCompActivatableEffect), nameof(DrawEquipmentAimingPostFix)));
-            harmony.Patch(typeof(Verb).GetMethod("TryStartCastOn"),
+            
+
+            harmony.Patch(AccessTools.Method(typeof(Verb), "TryStartCastOn", new[] { typeof(LocalTargetInfo), typeof(LocalTargetInfo), typeof(bool), typeof(bool)}),
                 new HarmonyMethod(typeof(HarmonyCompActivatableEffect), nameof(TryStartCastOnPrefix)), null);
+
+            
             harmony.Patch(typeof(Pawn_DraftController).GetMethod("set_Drafted"), null,
-                new HarmonyMethod(typeof(HarmonyCompActivatableEffect).GetMethod("set_Drafted_PostFix")));
+                new HarmonyMethod(typeof(HarmonyCompActivatableEffect).GetMethod("set_DraftedPostFix")));
+
+            
             harmony.Patch(typeof(Pawn).GetMethod("ExitMap"),
                 new HarmonyMethod(typeof(HarmonyCompActivatableEffect).GetMethod("ExitMap_PreFix")), null);
+
+            
             harmony.Patch(typeof(Pawn_EquipmentTracker).GetMethod("TryDropEquipment"),
                 new HarmonyMethod(typeof(HarmonyCompActivatableEffect).GetMethod("TryDropEquipment_PreFix")), null);
+
+            
             harmony.Patch(typeof(Pawn_DraftController).GetMethod("set_Drafted"), null,
                 new HarmonyMethod(typeof(HarmonyCompActivatableEffect).GetMethod("set_DraftedPostFix")));
         }
@@ -95,8 +106,10 @@ namespace CompActivatableEffect
                 {
                 }
 
-                if (compActivatableEffect.CurrentState == CompActivatableEffect.State.Activated) return true;
-                
+                if (compActivatableEffect.CurrentState == CompActivatableEffect.State.Activated)
+                    return true;
+                else if (compActivatableEffect.TryActivate())
+                    return true;
                 if (Find.TickManager.TicksGame % 250 == 0)
                     Messages.Message("DeactivatedWarning".Translate(pawn.Label),
                         MessageTypeDefOf.RejectInput);

@@ -164,7 +164,7 @@ namespace CompVehicle
 
             var request = new PawnGenerationRequest(newPawnKind, Pawn.Faction, PawnGenerationContext.NonPlayer,
                 Pawn.Map.Tile, false, false, false, false, true, true, 1f, false, true, true, false, false, false,
-                false, null, null, null, null);
+                false, false, 0, null, (0-1), null, null, null, null);
             var item = PawnGenerator.GeneratePawn(request);
             return item;
         }

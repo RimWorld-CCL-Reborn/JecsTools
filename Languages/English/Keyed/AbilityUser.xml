@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <LanguageData>
 
-<AU_NoTargets>No targets available.</AU_NoTargets>
+<AU_NoLineOfSight>No line of sight</AU_NoLineOfSight>
+
+<AU_NoTargets>No targets available</AU_NoTargets>
 
 <AU_DISABLED>DISABLED</AU_DISABLED>
 

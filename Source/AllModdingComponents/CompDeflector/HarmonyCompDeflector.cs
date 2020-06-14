@@ -1,5 +1,5 @@
 ﻿using System;
-using Harmony;
+using HarmonyLib;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -11,8 +11,7 @@ namespace CompDeflector
     {
         static HarmonyCompDeflector()
         {
-            var harmony = HarmonyInstance.Create("rimworld.jecrell.comps.deflector");
-
+            var harmony = new Harmony("jecstools.jecrell.comps.deflector");
             harmony.Patch(AccessTools.Method(typeof(Thing), nameof(Thing.TakeDamage)),
                 new HarmonyMethod(typeof(HarmonyCompDeflector), nameof(TakeDamage_PreFix)), null);
             harmony.Patch(AccessTools.Method(typeof(PawnRenderer), nameof(PawnRenderer.DrawEquipmentAiming)), null,

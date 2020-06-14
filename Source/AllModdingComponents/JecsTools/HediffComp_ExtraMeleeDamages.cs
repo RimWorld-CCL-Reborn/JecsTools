@@ -15,11 +15,11 @@ namespace JecsTools
                 var b = base.CompTipStringExtra;
                 if (b != "")
                     s.Append(b);
-                if ((Props?.extraDamages?.Count ?? 0) > 0)
+                if ((Props?.ExtraDamages?.Count ?? 0) > 0)
                 {
                     s.AppendLine("JT_HI_ExtraDamages".Translate());
-                    for (var i = 0; i < Props.extraDamages.Count; i++)
-                        s.AppendLine("  +" + Props.extraDamages[i].amount + " " + Props.extraDamages[i].def.LabelCap);
+                    for (var i = 0; i < Props.ExtraDamages.Count; i++)
+                        s.AppendLine("  +" + Props.ExtraDamages[i].amount + " " + Props.ExtraDamages[i].def.LabelCap);
                 }
                 return s.ToString().TrimEndNewlines();
             }

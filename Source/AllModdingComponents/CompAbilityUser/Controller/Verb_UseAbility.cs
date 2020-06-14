@@ -22,7 +22,7 @@ namespace AbilityUser
         public override float HighlightFieldRadiusAroundTarget(out bool needLOSToCenter)
         {
             needLOSToCenter = true;
-            var result = verbProps.defaultProjectile.projectile.explosionRadius;
+            var result = verbProps?.defaultProjectile?.projectile?.explosionRadius ?? 1;
             if (UseAbilityProps.abilityDef.MainVerb.TargetAoEProperties != null)
                 if (UseAbilityProps.abilityDef.MainVerb.TargetAoEProperties.showRangeOnSelect)
                     result = UseAbilityProps.abilityDef.MainVerb.TargetAoEProperties.range;
@@ -91,10 +91,96 @@ namespace AbilityUser
             }
         }
 
+        private bool CausesTimeSlowdown(LocalTargetInfo castTarg)
+        {
+            if (!verbProps.CausesTimeSlowdown)
+            {
+                return false;
+            }
+            if (!castTarg.HasThing)
+            {
+                return false;
+            }
+            Thing thing = castTarg.Thing;
+            if (thing.def.category != ThingCategory.Pawn && (thing.def.building == null || !thing.def.building.IsTurret))
+            {
+                return false;
+            }
+            bool flag = (thing as Pawn)?.Downed ?? false;
+            if (thing.Faction != Faction.OfPlayer || !caster.HostileTo(Faction.OfPlayer))
+            {
+                if (caster.Faction == Faction.OfPlayer && thing.HostileTo(Faction.OfPlayer))
+                {
+                    return !flag;
+                }
+                return false;
+            }
+            return true;
+        }
+
+        public bool PreCastShotCheck(LocalTargetInfo castTarg, LocalTargetInfo destTarg, bool surpriseAttack, bool canHitNonTargetPawns)
+        {
+            if (caster == null)
+            {
+                Log.Error("Verb " + GetUniqueLoadID() + " needs caster to work (possibly lost during saving/loading).");
+                return false;
+            }
+            if (!caster.Spawned)
+            {
+                return false;
+            }
+            if (state == VerbState.Bursting || (!CanHitTarget(castTarg) && verbProps.requireLineOfSight))
+            {
+                return false;
+            }
+            if (CausesTimeSlowdown(castTarg))
+            {
+                Find.TickManager.slower.SignalForceNormalSpeed();
+            }
+
+            this.surpriseAttack = surpriseAttack;
+            this.canHitNonTargetPawnsNow = canHitNonTargetPawns;
+            this.currentTarget = castTarg;
+            this.currentDestination = destTarg;
+            if (CasterIsPawn && verbProps.warmupTime > 0f)
+            {
+                if (verbProps.requireLineOfSight)
+                {
+                    ShootLine resultingLine;
+                    if (!TryFindShootLineFromTo(caster.Position, castTarg, out resultingLine))
+                    {
+                        Messages.Message("AU_NoLineOfSight".Translate(), MessageTypeDefOf.RejectInput);
+                        return false;
+                    }
+                    CasterPawn.Drawer.Notify_WarmingCastAlongLine(resultingLine, caster.Position);
+                }
+                float statValue = CasterPawn.GetStatValue(StatDefOf.AimingDelayFactor);
+                int ticks = (verbProps.warmupTime * statValue).SecondsToTicks();
+                CasterPawn.stances.SetStance(new Stance_Warmup(ticks, castTarg, this));
+            }
+            else
+            {
+                WarmupComplete();
+            }
+            return true;
+        }
+
+        public bool PreCastShot(LocalTargetInfo castTarg, LocalTargetInfo destTarg, bool surpriseAttack, bool canHitNonTargetPawns)
+        {
+            if (PreCastShotCheck(castTarg, destTarg, surpriseAttack, canHitNonTargetPawns))
+            {
+                return true;
+            }
+            Ability.Notify_AbilityFailed(true);
+            return false;
+        }
+
         public virtual void PostCastShot(bool inResult, out bool outResult)
         {
             outResult = inResult;
         }
+
+        public override bool Available() => true;
 
         protected override bool TryCastShot()
         {
@@ -115,52 +201,47 @@ namespace AbilityUser
             {
                 //                for (int j = 0; j < burstshots; j++)
                 //                {
-                var attempt = TryLaunchProjectile(verbProps.defaultProjectile, TargetsAoE[i]);
-                ////Log.Message(TargetsAoE[i].ToString());
-                if (attempt != null)
+                if (verbProps.defaultProjectile != null) //ranged attacks WILL have projectiles
                 {
-                    if (attempt == true) result = true;
-                    if (attempt == false) result = false;
+                    //Log.Message("Yes Projectile");
+                    var attempt = TryLaunchProjectile(verbProps.defaultProjectile, TargetsAoE[i]);
+                    ////Log.Message(TargetsAoE[i].ToString());
+                    if (attempt != null)
+                    {
+                        if (attempt == true) result = true;
+                        if (attempt == false) result = false;
+                    }   
+                }
+                else //melee attacks WON'T have projectiles
+                {
+                    //Log.Message("No Projectile");
+                    var victim = TargetsAoE[i].Thing;
+                    if (victim != null)
+                    {
+                        //Log.Message("Yes victim");
+                        if (victim is Pawn pawnVictim)
+                        {
+                            //Log.Message("Yes victim is pawn");
+                            AbilityEffectUtility.ApplyMentalStates(pawnVictim, CasterPawn, UseAbilityProps.mentalStatesToApply, UseAbilityProps.abilityDef, null);
+                            AbilityEffectUtility.ApplyHediffs(pawnVictim, CasterPawn, UseAbilityProps.hediffsToApply, null);
+                            AbilityEffectUtility.SpawnSpawnables(UseAbilityProps.thingsToSpawn, pawnVictim, victim.MapHeld, victim.PositionHeld);   
+                        }
+                    }
+                    else
+                    {
+                        //Log.Message("Victim is null");
+                        AbilityEffectUtility.SpawnSpawnables(UseAbilityProps.thingsToSpawn, CasterPawn, CasterPawn.MapHeld, CasterPawn.PositionHeld);
+                    }
                 }
                 //                }
             }
 
-            // here, might want to have this set each time so people don't force stop on last burst and not hit the cooldown?
-            //this.burstShotsLeft = 0;
-            //if (this.burstShotsLeft == 0)
-            //{
-            //}
             PostCastShot(result, out result);
             if (result == false)
             {
                 Ability.Notify_AbilityFailed(UseAbilityProps.refundsPointsAfterFailing);
             }
             return result;
-            //bool result = false;
-            //this.TargetsAoE.Clear();
-            //UpdateTargets();
-            //int burstshots = this.ShotsPerBurst;
-            //if (this.UseAbilityProps.AbilityTargetCategory != AbilityTargetCategory.TargetAoE && this.TargetsAoE.Count > 1)
-            //{
-            //    this.TargetsAoE.RemoveRange(0, this.TargetsAoE.Count - 1);
-            //}
-            //for (int i = 0; i < this.TargetsAoE.Count; i++)
-            //{
-            //    for (int j = 0; j < burstshots; j++)
-            //    {
-            //        bool? attempt = TryLaunchProjectile(this.verbProps.projectileDef, this.TargetsAoE[i]);
-            //        if (attempt != null)
-            //        {
-            //            if (attempt == true)
-            //                result = true;
-            //            if (attempt == false)
-            //                result = false;
-            //        }
-            //    }
-            //}
-            //this.burstShotsLeft = 0;
-            //PostCastShot(result, out result);
-            //return result;
         }
 
         private bool debugMode = false;
@@ -171,70 +252,21 @@ namespace AbilityUser
         }
 
 
-        protected bool? TryLaunchProjectile(ThingDef projectileDef, LocalTargetInfo launchTarget)
+        public bool TryLaunchProjectileCheck(ThingDef projectileDef, LocalTargetInfo launchTarget)
         {
             DebugMessage(launchTarget.ToString());
             var flag = TryFindShootLineFromTo(caster.Position, launchTarget, out var shootLine);
-            if (verbProps.stopBurstWithoutLos && !flag)
+            if (verbProps.requireLineOfSight && verbProps.stopBurstWithoutLos && !flag)
             {
-                DebugMessage("Targeting cancelled");
+                Messages.Message("AU_NoLineOfSight".Translate(), MessageTypeDefOf.RejectInput);
                 return false;
             }
             var drawPos = caster.DrawPos;
-            var projectile = (Projectile_AbilityBase) GenSpawn.Spawn(projectileDef, shootLine.Source, caster.Map);
+            var projectile = (Projectile_AbilityBase)GenSpawn.Spawn(projectileDef, shootLine.Source, caster.Map);
             projectile.extraDamages = UseAbilityProps.extraDamages;
             projectile.localSpawnThings = UseAbilityProps.thingsToSpawn;
-
-            //projectile. FreeIntercept = canFreeInterceptNow && !projectile.def.projectile.flyOverhead;
-            //var shotReport = ShotReport.HitReportFor(caster, this, launchTarget);
             verbProps.soundCast?.PlayOneShot(new TargetInfo(caster.Position, caster.Map, false));
             verbProps.soundCastTail?.PlayOneShotOnCamera();
-//            if (!UseAbilityProps.AlwaysHits)
-//            {
-//                Thing randomCoverToMissInto = shotReport.GetRandomCoverToMissInto();
-//                ThingDef targetCoverDef = (randomCoverToMissInto == null) ? null : randomCoverToMissInto.def;
-//                if (!Rand.Chance(shotReport.ChanceToNotGoWild_IgnoringPosture))
-//                {
-//                    if (DebugViewSettings.drawShooting)
-//                        MoteMaker.ThrowText(caster.DrawPos, caster.Map, "ToWild", -1f);
-//                    shootLine.ChangeDestToMissWild();
-//                    ProjectileHitFlags projectileHitFlags2;
-//                    if (Rand.Chance(0.5f))
-//                    {
-//                        projectileHitFlags2 = ProjectileHitFlags.NonTargetWorld;
-//                    }
-//                    else
-//                    {
-//                        projectileHitFlags2 = ProjectileHitFlags.NonTargetWorld;
-//                        if (this.canHitNonTargetPawnsNow)
-//                        {
-//                            projectileHitFlags2 |= ProjectileHitFlags.NonTargetPawns;
-//                        }
-//                    }
-//                    projectile.Launch(caster, Ability.Def, drawPos, shootLine.Dest, projectileHitFlags2, EquipmentSource,
-//                        UseAbilityProps.hediffsToApply, UseAbilityProps.mentalStatesToApply,
-//                        UseAbilityProps.thingsToSpawn);
-//                    return true;
-//                }
-//                if (!Rand.Chance(shotReport.ChanceToNotHitCover))
-//                {
-//                    if (DebugViewSettings.drawShooting)
-//                        MoteMaker.ThrowText(caster.DrawPos, caster.Map, "ToCover", -1f);
-//                    if (launchTarget.Thing != null && launchTarget.Thing.def.category == ThingCategory.Pawn)
-//                    {
-//                        randomCoverToMissInto = shotReport.GetRandomCoverToMissInto();
-//                        ProjectileHitFlags projectileHitFlags3 = ProjectileHitFlags.NonTargetWorld;
-//                        if (this.canHitNonTargetPawnsNow)
-//                        {
-//                            projectileHitFlags3 |= ProjectileHitFlags.NonTargetPawns;
-//                        }
-//                        projectile.Launch(caster, Ability.Def, drawPos, randomCoverToMissInto, projectileHitFlags3, null,
-//                            UseAbilityProps.hediffsToApply, UseAbilityProps.mentalStatesToApply,
-//                            UseAbilityProps.thingsToSpawn);
-//                        return true;
-//                    }
-//                }
-//            }
             if (DebugViewSettings.drawShooting)
                 MoteMaker.ThrowText(caster.DrawPos, caster.Map, "ToHit", -1f);
             ProjectileHitFlags projectileHitFlags4 = ProjectileHitFlags.IntendedTarget;
@@ -251,6 +283,16 @@ namespace AbilityUser
                 UseAbilityProps.hediffsToApply,
                 UseAbilityProps.mentalStatesToApply, UseAbilityProps.thingsToSpawn);
             return true;
+        }
+      
+        protected bool? TryLaunchProjectile(ThingDef projectileDef, LocalTargetInfo launchTarget)
+        {
+            if (TryLaunchProjectileCheck(projectileDef, launchTarget))
+            {
+                return true;
+            }
+            Ability.Notify_AbilityFailed(true);
+            return false;
         }
 
         public override void WarmupComplete()
