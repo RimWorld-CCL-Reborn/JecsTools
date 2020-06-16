@@ -73,9 +73,6 @@
     <Compile Include="TransformedPart.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="WeaponStuff\" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\CompAbilityUser\CompAbilityUser.csproj">
       <Project>{417b8649-7a66-4580-8c75-473e46da9c7a}</Project>
       <Name>CompAbilityUser</Name>

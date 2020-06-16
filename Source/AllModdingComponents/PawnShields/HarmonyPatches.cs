@@ -69,7 +69,7 @@ namespace PawnShields
             //      StatWorkerInjection_AddShieldValue(ref result, pawn.equipment, stat);
             //  }
 
-            var instructionList = instructions.ToList();
+            var instructionList = instructions.AsList();
 
             var pawnEquipmentIndex = instructionList.FindSequenceIndex(
                 instruction => instruction.IsLdloc(),
@@ -123,7 +123,7 @@ namespace PawnShields
             //      StatWorkerInjection_BuildShieldString(stringBuilder, pawn.equipment, stat);
             //  }
 
-            var instructionList = instructions.ToList();
+            var instructionList = instructions.AsList();
 
             var pawnEquipmentIndex = instructionList.FindSequenceIndex(
                 instruction => instruction.IsLdloc(),
