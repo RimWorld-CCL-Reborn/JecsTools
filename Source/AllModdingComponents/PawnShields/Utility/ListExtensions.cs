@@ -8,6 +8,32 @@ namespace PawnShields
         public static List<T> AsList<T>(this IEnumerable<T> enumerable) =>
             enumerable is List<T> list ? list : new List<T>(enumerable);
 
+        public static void ReplaceRange<T>(this List<T> list, int startIndex, int count, IEnumerable<T> newItems)
+        {
+            var enumerator = newItems.GetEnumerator();
+            var index = startIndex;
+            var endIndex = Math.Min(startIndex + count, list.Count);
+            while (index < endIndex)
+            {
+                if (!enumerator.MoveNext())
+                {
+                    list.RemoveRange(index, endIndex - index);
+                    return;
+                }
+                list[index] = enumerator.Current;
+                index++;
+            }
+            if (enumerator.MoveNext())
+            {
+                var remainingItems = new List<T> { enumerator.Current };
+                while (enumerator.MoveNext())
+                {
+                    remainingItems.Add(enumerator.Current);
+                }
+                list.InsertRange(index, remainingItems);
+            }
+        }
+
         public static List<T> PopAll<T>(this ICollection<T> collection)
         {
             var list = new List<T>(collection);

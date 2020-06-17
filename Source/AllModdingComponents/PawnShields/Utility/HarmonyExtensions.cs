@@ -14,74 +14,188 @@ namespace PawnShields
         {
             var origInstruction = instructions[insertionIndex];
             instructions.InsertRange(insertionIndex, newInstructions);
-            var newInstruction = instructions[insertionIndex];
+            instructions[insertionIndex].TransferLabelsAndBlocksFrom(origInstruction, labelsToTransfer, blocksToTransfer);
+        }
+
+        public static void SafeReplaceRange(this List<CodeInstruction> instructions, int insertionIndex, int count, IEnumerable<CodeInstruction> newInstructions,
+            IEnumerable<Label> labelsToTransfer = null, IEnumerable<ExceptionBlock> blocksToTransfer = null)
+        {
+            var origInstruction = instructions[insertionIndex];
+            instructions.ReplaceRange(insertionIndex, count, newInstructions);
+            instructions[insertionIndex].TransferLabelsAndBlocksFrom(origInstruction, labelsToTransfer, blocksToTransfer);
+        }
+
+        public static CodeInstruction TransferLabelsAndBlocksFrom(this CodeInstruction instruction, CodeInstruction otherInstruction,
+            IEnumerable<Label> labelsToTransfer = null, IEnumerable<ExceptionBlock> blocksToTransfer = null)
+        {
             if (labelsToTransfer == null)
-                newInstruction.labels.AddRange(origInstruction.labels.PopAll());
+                instruction.labels.AddRange(otherInstruction.labels.PopAll());
             else
-                newInstruction.labels.AddRange(labelsToTransfer.Where(origInstruction.labels.Remove));
+                instruction.labels.AddRange(labelsToTransfer.Where(otherInstruction.labels.Remove));
             if (blocksToTransfer == null)
-                newInstruction.blocks.AddRange(origInstruction.blocks.PopAll());
+                instruction.blocks.AddRange(otherInstruction.blocks.PopAll());
             else
-                newInstruction.blocks.AddRange(blocksToTransfer.Where(origInstruction.blocks.Remove));
+                instruction.blocks.AddRange(blocksToTransfer.Where(otherInstruction.blocks.Remove));
+            return instruction;
         }
 
         public static bool IsBrfalse(this CodeInstruction instruction)
         {
             return instruction.opcode == OpCodes.Brfalse_S || instruction.opcode == OpCodes.Brfalse;
         }
+    }
 
-        public static bool IsLdloc(this CodeInstruction instruction, Type localType, MethodBase method = null)
+    public class Locals
+    {
+        private readonly IList<LocalVariableInfo> locals;
+        private readonly ILGenerator ilGenerator;
+
+        public Locals(MethodBase method, ILGenerator ilGenerator)
         {
-            return instruction.IsLdloc() && LocalVar.From(instruction, method).LocalType == localType;
+            locals = method.GetMethodBody().LocalVariables;
+            this.ilGenerator = ilGenerator;
         }
 
-        public static bool IsStloc(this CodeInstruction instruction, Type localType, MethodBase method = null)
+        public LocalVar FromLdloc(CodeInstruction instruction)
         {
-            return instruction.IsStloc() && LocalVar.From(instruction, method).LocalType == localType;
+            if (IsLdloc(instruction, out var local))
+                return local;
+            throw new ArgumentException("Expected ldloc-type instruction, actual instruction: " + instruction);
+        }
+
+        public bool IsLdlocOrLdloca(CodeInstruction instruction)
+        {
+            return instruction.IsLdloc();
+        }
+
+        public bool IsLdloc(CodeInstruction instruction)
+        {
+            return
+                instruction.opcode == OpCodes.Ldloc ||
+                instruction.opcode == OpCodes.Ldloc_S ||
+                instruction.opcode == OpCodes.Ldloc_0 ||
+                instruction.opcode == OpCodes.Ldloc_1 ||
+                instruction.opcode == OpCodes.Ldloc_2 ||
+                instruction.opcode == OpCodes.Ldloc_3;
+        }
+
+        public bool IsLdloc(CodeInstruction instruction, out LocalVar local)
+        {
+            if (instruction.opcode == OpCodes.Ldloc || instruction.opcode == OpCodes.Ldloc_S)
+                local = new LocalVar((LocalVariableInfo)instruction.operand); // note: LocalBuilder derives from LocalVariableInfo
+            else if (instruction.opcode == OpCodes.Ldloc_0)
+                local = new LocalVar(locals[0]);
+            else if (instruction.opcode == OpCodes.Ldloc_1)
+                local = new LocalVar(locals[1]);
+            else if (instruction.opcode == OpCodes.Ldloc_2)
+                local = new LocalVar(locals[2]);
+            else if (instruction.opcode == OpCodes.Ldloc_3)
+                local = new LocalVar(locals[3]);
+            else
+            {
+                local = default;
+                return false;
+            }
+            return true;
+        }
+
+        public bool IsLdloc(CodeInstruction instruction, LocalVar local)
+        {
+            return IsLdloc(instruction, out var otherLocal) && local == otherLocal;
+        }
+
+        public LocalVar FromLdloca(CodeInstruction instruction)
+        {
+            if (IsLdloca(instruction, out var local))
+                return local;
+            throw new ArgumentException("Expected ldloca-type instruction, actual instruction: " + instruction);
+        }
+
+        public bool IsLdloca(CodeInstruction instruction)
+        {
+            return instruction.opcode == OpCodes.Ldloca || instruction.opcode == OpCodes.Ldloca_S;
+        }
+
+        public bool IsLdloca(CodeInstruction instruction, out LocalVar local)
+        {
+            if (instruction.opcode == OpCodes.Ldloca || instruction.opcode == OpCodes.Ldloca_S)
+            {
+                local = new LocalVar((LocalVariableInfo)instruction.operand); // note: LocalBuilder derives from LocalVariableInfo
+                return true;
+            }
+            else
+            {
+                local = default;
+                return false;
+            }
+        }
+
+        public bool IsLdloca(CodeInstruction instruction, LocalVar local)
+        {
+            return IsLdloca(instruction, out var otherLocal) && local == otherLocal;
+        }
+
+        public LocalVar FromStloc(CodeInstruction instruction)
+        {
+            if (IsStloc(instruction, out var local))
+                return local;
+            throw new ArgumentException("Expected stloc-type instruction, actual instruction: " + instruction);
+        }
+
+        public bool IsStloc(CodeInstruction instruction)
+        {
+            return instruction.IsStloc();
+        }
+
+        public bool IsStloc(CodeInstruction instruction, out LocalVar local)
+        {
+            if (instruction.opcode == OpCodes.Stloc || instruction.opcode == OpCodes.Stloc_S)
+                local = new LocalVar((LocalVariableInfo)instruction.operand); // note: LocalBuilder derives from LocalVariableInfo
+            else if (instruction.opcode == OpCodes.Stloc_0)
+                local = new LocalVar(locals[0]);
+            else if (instruction.opcode == OpCodes.Stloc_1)
+                local = new LocalVar(locals[1]);
+            else if (instruction.opcode == OpCodes.Stloc_2)
+                local = new LocalVar(locals[2]);
+            else if (instruction.opcode == OpCodes.Stloc_3)
+                local = new LocalVar(locals[3]);
+            else
+            {
+                local = default;
+                return false;
+            }
+            return true;
+        }
+
+        public bool IsStloc(CodeInstruction instruction, LocalVar local)
+        {
+            return IsStloc(instruction, out var otherLocal) && local == otherLocal;
+        }
+
+        public LocalVar DeclareLocal(Type localType)
+        {
+            return new LocalVar(ilGenerator.DeclareLocal(localType));
         }
     }
 
-    public class LocalVar : LocalVariableInfo
+    public struct LocalVar : IEquatable<LocalVar>
     {
-        private readonly bool pinned;
-        private readonly int index;
-        private readonly Type type;
+        private readonly LocalVariableInfo local;
 
-        public override bool IsPinned => pinned;
+        public bool IsPinned => local.IsPinned;
 
-        public override int LocalIndex => index;
+        public int LocalIndex => local.LocalIndex;
 
-        public override Type LocalType => type;
+        public Type LocalType => local.LocalType;
 
-        protected LocalVar(bool pinned, int index, Type type)
-        {
-            this.pinned = pinned;
-            this.index = index;
-            this.type = type;
-        }
-
-        public static LocalVar From(CodeInstruction instruction, MethodBase method)
-        {
-            if (!(instruction.operand is LocalVariableInfo localVar)) // also matches LocalBuilder
-            {
-                int index;
-                if (instruction.opcode == OpCodes.Ldloc_0 || instruction.opcode == OpCodes.Stloc_0)
-                    index = 0;
-                else if (instruction.opcode == OpCodes.Ldloc_1 || instruction.opcode == OpCodes.Stloc_1)
-                    index = 1;
-                else if (instruction.opcode == OpCodes.Ldloc_2 || instruction.opcode == OpCodes.Stloc_2)
-                    index = 2;
-                else if (instruction.opcode == OpCodes.Ldloc_3 || instruction.opcode == OpCodes.Stloc_3)
-                    index = 3;
-                else
-                    return null;
-                localVar = method.GetMethodBody().LocalVariables[index];
-            }
-            return new LocalVar(localVar.IsPinned, localVar.LocalIndex, localVar.LocalType);
-        }
+        internal LocalVar(LocalVariableInfo local) => this.local = local;
 
         public CodeInstruction ToLdloc()
         {
+            // ILGenerator.Emit(OpCodes.Ldloc, LocalBuilder) automatically emits the proper opcode and operand.
+            if (local is LocalBuilder localBuilder)
+                return new CodeInstruction(OpCodes.Ldloc, localBuilder);
+            var index = LocalIndex;
             switch (index)
             {
                 case 0:
@@ -93,17 +207,31 @@ namespace PawnShields
                 case 3:
                     return new CodeInstruction(OpCodes.Ldloc_3);
                 default:
-                    return new CodeInstruction(index <= byte.MaxValue ? OpCodes.Ldloc_S : OpCodes.Ldloc, index);
+                    if (index <= byte.MaxValue)
+                        return new CodeInstruction(OpCodes.Ldloc_S, (byte)index);
+                    else
+                        return new CodeInstruction(OpCodes.Ldloc, (short)index);
             }
         }
 
         public CodeInstruction ToLdloca()
         {
-            return new CodeInstruction(index <= byte.MaxValue ? OpCodes.Ldloca_S : OpCodes.Ldloca, index);
+            // ILGenerator.Emit(OpCodes.Ldloca, LocalBuilder) automatically emits the proper opcode and operand.
+            if (local is LocalBuilder localBuilder)
+                return new CodeInstruction(OpCodes.Ldloca, localBuilder);
+            var index = LocalIndex;
+            if (index <= byte.MaxValue)
+                return new CodeInstruction(OpCodes.Ldloca_S, (byte)index);
+            else
+                return new CodeInstruction(OpCodes.Ldloca, (short)index);
         }
 
         public CodeInstruction ToStloc()
         {
+            // ILGenerator.Emit(OpCodes.Stloc, LocalBuilder) automatically emits the proper opcode and operand.
+            if (local is LocalBuilder localBuilder)
+                return new CodeInstruction(OpCodes.Stloc, localBuilder);
+            var index = LocalIndex;
             switch (index)
             {
                 case 0:
@@ -115,27 +243,23 @@ namespace PawnShields
                 case 3:
                     return new CodeInstruction(OpCodes.Stloc_3);
                 default:
-                    return new CodeInstruction(index <= byte.MaxValue ? OpCodes.Stloc_S : OpCodes.Stloc, index);
+                    if (index <= byte.MaxValue)
+                        return new CodeInstruction(OpCodes.Stloc_S, (byte)index);
+                    else
+                        return new CodeInstruction(OpCodes.Stloc, (short)index);
             }
         }
 
-        public override bool Equals(object obj)
-        {
-            return obj is LocalVar other && index == other.index;
-        }
+        public override bool Equals(object obj) => obj is LocalVar other && LocalIndex == other.LocalIndex;
 
-        public override int GetHashCode()
-        {
-            return index;
-        }
+        public bool Equals(LocalVar other) => LocalIndex == other.LocalIndex;
 
-        public override string ToString()
-        {
-            if (pinned)
-            {
-                return $"{type} ({index}) (pinned)";
-            }
-            return $"{type} ({index})";
-        }
+        public static bool operator ==(LocalVar lhs, LocalVar rhs) => lhs.LocalIndex == rhs.LocalIndex;
+
+        public static bool operator !=(LocalVar lhs, LocalVar rhs) => lhs.LocalIndex != rhs.LocalIndex;
+
+        public override int GetHashCode() => LocalIndex;
+
+        public override string ToString() => local.ToString();
     }
 }

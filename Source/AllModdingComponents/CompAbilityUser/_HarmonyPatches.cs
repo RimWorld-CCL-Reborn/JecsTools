@@ -53,18 +53,13 @@ namespace AbilityUser
                     new Type[] { typeof(PawnGroupMakerParms), typeof(PawnGroupMaker), typeof(bool) }), null,
                 new HarmonyMethod(typeof(AbilityUserMod), nameof(GeneratePawns_PostFix)));
 
-            //RimWorld v1.0.1964
-            harmony.Patch(AccessTools.Property(typeof(Verb), nameof(Verb.UIIcon)).GetGetMethod(),
+            harmony.Patch(AccessTools.PropertyGetter(typeof(Verb), nameof(Verb.UIIcon)),
                 new HarmonyMethod(typeof(AbilityUserMod), nameof(get_UIIcon)), null);
 
-            harmony.Patch(
-                AccessTools.Property(typeof(Verb_LaunchProjectile), nameof(Verb_LaunchProjectile.Projectile))
-                    .GetGetMethod(),
+            harmony.Patch(AccessTools.PropertyGetter(typeof(Verb_LaunchProjectile), nameof(Verb_LaunchProjectile.Projectile)),
                 new HarmonyMethod(typeof(AbilityUserMod), nameof(get_Projectile_Prefix)), null);
 
-            harmony.Patch(
-                AccessTools.Property(typeof(Verb), nameof(Verb.DirectOwner))
-                    .GetGetMethod(),
+            harmony.Patch(AccessTools.PropertyGetter(typeof(Verb), nameof(Verb.DirectOwner)),
                 new HarmonyMethod(typeof(AbilityUserMod), nameof(get_DirectOwner_Prefix)), null);
 
             harmony.Patch(

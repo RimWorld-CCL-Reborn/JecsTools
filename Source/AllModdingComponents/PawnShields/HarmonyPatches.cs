@@ -54,7 +54,7 @@ namespace PawnShields
         }
 
         public static IEnumerable<CodeInstruction> Transpiler_StatWorker_GetValueUnfinalized(IEnumerable<CodeInstruction> instructions,
-            MethodBase method)
+            MethodBase method, ILGenerator ilGen)
         {
             // Transforms following:
             //  if (pawn.equipment != null && pawn.equipment.Primary != null)
@@ -70,15 +70,16 @@ namespace PawnShields
             //  }
 
             var instructionList = instructions.AsList();
+            var locals = new Locals(method, ilGen);
 
             var pawnEquipmentIndex = instructionList.FindSequenceIndex(
-                instruction => instruction.IsLdloc(),
+                instruction => locals.IsLdloc(instruction),
                 instruction => instruction.LoadsField(pawnEquipmentField),
                 instruction => instruction.IsBrfalse());
             var targetLabel = (Label)instructionList[pawnEquipmentIndex + 2].operand;
 
             var resultStoreIndex = instructionList.FindIndex(pawnEquipmentIndex + 3,
-                instruction => instruction.IsStloc(typeof(float), method));
+                instruction => locals.IsStloc(instruction, out var local) && local.LocalType == typeof(float));
 
             var insertionIndex = instructionList.FindIndex(pawnEquipmentIndex + 3,
                 instruction => instruction.labels.Contains(targetLabel));
@@ -87,7 +88,7 @@ namespace PawnShields
                 .Where(instruction => instruction.operand is Label).Select(instruction => (Label)instruction.operand);
             instructionList.SafeInsertRange(insertionIndex, new[]
             {
-                LocalVar.From(instructionList[resultStoreIndex], method).ToLdloca(), // &result
+                locals.FromStloc(instructionList[resultStoreIndex]).ToLdloca(), // &result
                 instructionList[pawnEquipmentIndex].Clone(), // pawn...
                 instructionList[pawnEquipmentIndex + 1].Clone(), // ...equipment
                 new CodeInstruction(OpCodes.Ldarg_0), // this...
@@ -108,7 +109,7 @@ namespace PawnShields
         }
 
         public static IEnumerable<CodeInstruction> Transpiler_StatWorker_GetExplanationUnfinalized(IEnumerable<CodeInstruction> instructions,
-            MethodBase method)
+            MethodBase method, ILGenerator ilGen)
         {
             // Transforms following:
             //  if (pawn.equipment != null && pawn.equipment.Primary != null && GearAffectsStat(pawn.equipment.Primary.def, stat))
@@ -124,15 +125,16 @@ namespace PawnShields
             //  }
 
             var instructionList = instructions.AsList();
+            var locals = new Locals(method, ilGen);
 
             var pawnEquipmentIndex = instructionList.FindSequenceIndex(
-                instruction => instruction.IsLdloc(),
+                instruction => locals.IsLdloc(instruction),
                 instruction => instruction.LoadsField(pawnEquipmentField),
                 instruction => instruction.IsBrfalse());
             var targetLabel = (Label)instructionList[pawnEquipmentIndex + 2].operand;
 
             var stringBuilderIndex = instructionList.FindIndex(pawnEquipmentIndex + 3,
-                instruction => instruction.IsLdloc(typeof(StringBuilder), method));
+                instruction => locals.IsLdloc(instruction, out var local) && local.LocalType == typeof(StringBuilder));
 
             var insertionIndex = instructionList.FindIndex(pawnEquipmentIndex + 3,
                 instruction => instruction.labels.Contains(targetLabel));
