@@ -1,6 +1,7 @@
 #About/PublishedFileId.txt # shouldn't be ignored; needed to ensure same Steam workshop item is updated (and is ignored outside of Steam anyway)
 Source/DiscordWebhookToken.txt
 updateinfo
+RimworldModReleaseTool.exe
 
 # Ensure RimWorld/Unity assemblies are ignored
 Assemblies/Assembly-CSharp*.dll
