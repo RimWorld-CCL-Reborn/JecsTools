@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="http://i64.tinypic.com/2qtwqjt.png" alt="JecsTools" />
+    <img src="About/Preview.png" alt="JecsTools" />
 </p>
 
 <p align="center">
