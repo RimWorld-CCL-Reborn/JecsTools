@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
 using RimWorld;
@@ -19,8 +18,9 @@ namespace CompDeflector
             CriticalSuccess
         }
 
-        private int animationDeflectionTicks;
+        public CompProperties_Deflector Props => (CompProperties_Deflector)props;
 
+        private int animationDeflectionTicks;
 
         public Verb_Deflected deflectVerb;
         public AccuracyRoll lastAccuracyRoll = AccuracyRoll.Failure;
@@ -32,14 +32,7 @@ namespace CompDeflector
             get => animationDeflectionTicks;
         }
 
-        public bool IsAnimatingNow
-        {
-            get
-            {
-                if (animationDeflectionTicks >= 0) return true;
-                return false;
-            }
-        }
+        public bool IsAnimatingNow => animationDeflectionTicks >= 0;
 
         private bool initComps;
         private CompEquippable compEquippable;
@@ -72,7 +65,7 @@ namespace CompDeflector
             }
         }
 
-        public Pawn GetPawn => GetEquippable.verbTracker.PrimaryVerb.CasterPawn;
+        public Pawn GetPawn => GetEquippable?.verbTracker.PrimaryVerb.CasterPawn;
 
         public ThingComp GetActivatableEffect
         {
@@ -90,90 +83,153 @@ namespace CompDeflector
             get
             {
                 InitCompsAsNeeded();
-                if (compActivatableEffectIsActive != null)
-                    return compActivatableEffectIsActive();
-                return false;
+                return compActivatableEffectIsActive?.Invoke() ?? false;
             }
         }
 
-        public float DeflectionChance
+        internal class DeflectionChanceCalculator
         {
-            get
+            private readonly CompDeflector compDeflector;
+            private readonly Pawn pawn;
+            private readonly CompProperties_Deflector props;
+            private readonly bool fixedRandSeed;
+
+            public DeflectionChanceCalculator(CompDeflector compDeflector, bool fixedRandSeed)
             {
-                var calc = Props.baseDeflectChance;
+                this.compDeflector = compDeflector;
+                this.fixedRandSeed = fixedRandSeed;
+                pawn = compDeflector.GetPawn;
+                props = compDeflector.Props;
+            }
 
-                if (GetEquippable != null)
-                    if (GetPawn is Pawn pawn)
+            public float BeforeInfixValue { get; private set; }
+            public float InfixValue { get; private set; }
+
+            public float Calculate()
+            {
+                var calc = props.baseDeflectChance;
+                if (pawn != null)
+                {
+                    if (UseSkill(out var deflectSkill))
+                        calc += deflectSkill.Level * props.deflectRatePerSkillPoint;
+                    BeforeInfixValue = calc;
+                    // Due to possibility of DeflectionChance_InFix implementation using Rand, option to use a fixed Random seed.
+                    if (fixedRandSeed)
                     {
-                        //This handles if a deflection skill is defined.
-                        //Example, melee skill of 20.
-                        if (Props.useSkillInCalc)
+                        Rand.PushState(0);
+                        try
                         {
-                            var skillToCheck = Props.deflectSkill;
-                            if (skillToCheck != null)
-                            {
-                                var skillRecord = pawn.skills?.GetSkill(skillToCheck);
-                                if (skillRecord != null)
-                                {
-                                    var param = Props.deflectRatePerSkillPoint;
-                                    if (param != 0)
-                                        calc += skillRecord.Level * param; //Makes the skill into float percent
-                                    else
-                                        Log.Error(
-                                            "CompDeflector :: deflectRatePerSkillPoint is set to 0, but useSkillInCalc is set to true.");
-                                }
-                            }
+                            calc = compDeflector.DeflectionChance_InFix(calc);
                         }
-
-                        calc = DeflectionChance_InFix(calc);
-
-                        //This handles if manipulation needs to be checked.
-                        if (!Props.useManipulationInCalc) return Mathf.Clamp(calc, 0, 1.0f);
-                        if (pawn.health.capacities.CapableOf(PawnCapacityDefOf.Manipulation))
-                            calc *= pawn.health.capacities.GetLevel(PawnCapacityDefOf.Manipulation);
-                        else
-                            calc = 0f;
+                        finally
+                        {
+                            Rand.PopState();
+                        }
                     }
+                    else
+                        calc = compDeflector.DeflectionChance_InFix(calc);
+                    InfixValue = calc;
+                    if (UseManipulation(out var capable) && capable)
+                        calc *= pawn.health.capacities.GetLevel(PawnCapacityDefOf.Manipulation);
+                }
                 return Mathf.Clamp(calc, 0, 1.0f);
             }
+
+            public bool UseSkill(out SkillRecord skill)
+            {
+                skill = null;
+                if (props.useSkillInCalc && props.deflectSkill != null)
+                    skill = pawn.skills?.GetSkill(props.deflectSkill);
+                return skill != null;
+            }
+
+            public bool UseManipulation(out bool capable)
+            {
+                capable = props.useManipulationInCalc && pawn.health.capacities.CapableOf(PawnCapacityDefOf.Manipulation);
+                return props.useManipulationInCalc;
+            }
         }
+
+        internal DeflectionChanceCalculator GetDeflectionChanceCalculator(bool fixedRandSeed) => new DeflectionChanceCalculator(this, fixedRandSeed);
+
+        public float DeflectionChance => GetDeflectionChanceCalculator(fixedRandSeed: false).Calculate();
 
         public string ChanceToString => DeflectionChance.ToStringPercent();
 
-
-        public CompProperties_Deflector Props => (CompProperties_Deflector)props;
-
+        // TODO: This is never called (and Props.deflectSkillLearnRate is never used) - should it be called upon deflection success?
+        // or whenever deflection is rolled ala reflection skill (though this would mean every received hit would result in skill gain)?
         public void DeflectionSkillGain(SkillRecord skill)
         {
             GetPawn.skills?.Learn(Props.deflectSkill, Props.deflectSkillLearnRate, false);
         }
-
 
         public void ReflectionSkillGain(SkillRecord skill)
         {
             GetPawn.skills?.Learn(Props.reflectSkill, Props.reflectSkillLearnRate, false);
         }
 
-        //Accuracy Roll Calculator
+        // TODO: Use this in a StatWorker_ReflectionAccuracy.
+        internal class ReflectionAccuracyCalculator
+        {
+            private readonly CompDeflector compDeflector;
+            private readonly Pawn pawn;
+            private readonly CompProperties_Deflector props;
+            private readonly bool fixedRandSeed;
+
+            public ReflectionAccuracyCalculator(CompDeflector compDeflector, bool fixedRandSeed)
+            {
+                this.compDeflector = compDeflector;
+                this.fixedRandSeed = fixedRandSeed;
+                pawn = compDeflector.GetPawn;
+                props = compDeflector.Props;
+            }
+
+            public void Calculate(out int modifier, out int difficulty, out SkillRecord skill)
+            {
+                modifier = 0;
+                difficulty = 80;
+                if (UseSkill(out skill))
+                {
+                    modifier += (int)(props.reflectRatePerSkillPoint * skill.Level);
+                    //Log.Message("Deflection mod: " + modifier.ToString());
+                }
+                // Due to possibility of ReflectionAccuracy_InFix implementation using Rand, option to use a fixed Random seed.
+                if (fixedRandSeed)
+                {
+                    Rand.PushState(0);
+                    try
+                    {
+                        compDeflector.ReflectionAccuracy_InFix(ref modifier, ref difficulty);
+                    }
+                    finally
+                    {
+                        Rand.PopState();
+                    }
+                }
+                else
+                    compDeflector.ReflectionAccuracy_InFix(ref modifier, ref difficulty);
+            }
+
+            public bool UseSkill(out SkillRecord skill)
+            {
+                skill = null;
+                if (props.reflectSkill != null)
+                    skill = pawn.skills?.GetSkill(props.reflectSkill);
+                return skill != null;
+            }
+        }
+
+        internal ReflectionAccuracyCalculator GetReflectionAccuracyCalculator(bool fixedRandSeed) => new ReflectionAccuracyCalculator(this, fixedRandSeed);
+
         public AccuracyRoll ReflectionAccuracy()
         {
             var d100 = Rand.Range(1, 100);
-            var modifier = 0;
-            var difficulty = 80;
-            if (GetPawn?.skills is Pawn_SkillTracker skills)
+            GetReflectionAccuracyCalculator(fixedRandSeed: false).Calculate(out var modifier, out var difficulty, out var skill);
+            if (skill != null)
             {
-                if (Props.reflectSkill != null)
-                {
-                    var skill = skills.GetSkill(Props.reflectSkill);
-                    if (skill.Level > 0)
-                    {
-                        modifier += (int)(Props.deflectRatePerSkillPoint * skill.Level);
-                        //Log.Message("Deflection mod: " + modifier.ToString());
-                        ReflectionSkillGain(skill);
-                    }
-                }
+                // TODO: This means the skill is leveled regardless of reflection success - is this correct?
+                ReflectionSkillGain(skill);
             }
-            ReflectionAccuracy_InFix(ref modifier, ref difficulty);
 
             var subtotal = d100 + modifier;
             if (subtotal >= 90)
@@ -198,11 +254,6 @@ namespace CompDeflector
         public virtual float DeflectionChance_InFix(float calc)
         {
             return calc;
-        }
-
-        public override IEnumerable<StatDrawEntry> SpecialDisplayStats()
-        {
-            yield return new StatDrawEntry(StatCategoryDefOf.Basics, CompDeflectorDefOf.MeleeWeapon_DeflectionChance, DeflectionChance, StatRequest.ForEmpty());
         }
 
         public virtual Verb ReflectionHandler(Verb newVerb)
@@ -266,6 +317,7 @@ namespace CompDeflector
             return newVerb;
         }
 
+        // TODO: This is never called - still needed?
         public virtual Verb CopyAndReturnNewVerb_PostFix(Verb newVerb)
         {
             return newVerb;
@@ -275,7 +327,6 @@ namespace CompDeflector
         {
             if (newVerb != null)
             {
-                deflectVerb = null;
                 deflectVerb = (Verb_Deflected)Activator.CreateInstance(typeof(Verb_Deflected));
                 deflectVerb.caster = GetPawn;
 
@@ -365,8 +416,9 @@ namespace CompDeflector
                 job.killIncappedTarget = pawn.Downed;
                 thisPawn.jobs.TryTakeOrderedJob(job);
             }
-            catch (NullReferenceException)
+            catch (NullReferenceException e) // TODO: Is this still needed?
             {
+                Log.Message(e.ToString());
             }
             ////Log.Message("TryToTakeOrderedJob Called");
         }

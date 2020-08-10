@@ -15,6 +15,7 @@ namespace AbilityUser
     {
         public static List<Type> abilityUserChildren;
 
+        // TODO: Replace with GenTypes.AllSubclassesNonAbstract
         public static List<Type> GetAllChildrenOf(Type pType)
         {
             var retval = new List<Type>();

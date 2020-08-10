@@ -113,8 +113,9 @@ namespace CompDeflector
                         }
                 }
             }
-            catch (NullReferenceException)
+            catch (NullReferenceException e) // TODO: Is this still needed?
             {
+                Log.Message(e.ToString());
             }
             return true;
         }

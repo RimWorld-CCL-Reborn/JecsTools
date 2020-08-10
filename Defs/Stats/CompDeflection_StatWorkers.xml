@@ -9,9 +9,10 @@
     <category>PawnCombat</category>
     <defaultBaseValue>0</defaultBaseValue>
     <minValue>0</minValue>
+    <maxValue>1</maxValue>
     <toStringStyle>PercentZero</toStringStyle>
-    <showIfUndefined>true</showIfUndefined>
     <displayPriorityInCategory>10</displayPriorityInCategory>
+    <forInformationOnly>true</forInformationOnly>
   </StatDef>
 
 </Defs>
