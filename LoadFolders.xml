@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <loadFolders>
-  <default>
-    <li>/</li>
-  </default>
-  <v1.0>
+  <v1.0> <!-- this isn't actually used - RW 1.0's own multi-version support loads from 1.0 folder for non-Languages/Textures/Sounds subfolders -->
     <li>1.0</li>
     <li>/</li>
   </v1.0>
+  <v1.1>
+    <li>/</li>
+  </v1.1>
+  <v1.2>
+    <li>/</li> <!-- 1.1 version still works with 1.2 -->
+  </v1.2>
 </loadFolders>
