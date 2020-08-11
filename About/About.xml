@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ModMetaData>
-  <name>JecsTools</name>
-  <author>jecrell</author>
   <packageId>jecrell.jecstools</packageId>
+  <name>JecsTools</name>
+  <author>jecrell and contributors</author>
   <url>https://discord.gg/AaVFA7V</url>
   <supportedVersions>
     <li>1.0</li>
@@ -17,7 +17,7 @@
       <downloadUrl>https://github.com/pardeike/HarmonyRimWorld/releases/latest</downloadUrl>
     </li>
   </modDependencies>
-  <description>1.1.1.2 (03-29-2020)
+  <description>1.1.2.0 (08-11-2020)
 
 Adds modding components to RimWorld: vehicles, spell casting, weapon slots, oversized weapons, and more!
 
@@ -64,18 +64,23 @@ Additions by ChJees
 Additions by roxxploxx
 Additions by Swenzi
 Additions and transpilers by Erdelf
-Extensive hours of testing, debugging, and fixes by Xen.
+Extensive hours of testing, debugging, and fixes by Xen
+Improvements by lbmaian
 "Hey, should we make this into a public toolset for people to take advantage of all this cool stuff?" - Jecrell
 "Hell yes - this is awesome stuff - people will love it!" - Xen
 
 Thank you to my Patrons for supporting me in my efforts. Without you, none of this would be possible.
 
-These are the most excellent rim dwellers who support me: 
+These are the most excellent rim dwellers who support me:
 Cade Perkinson, Jay Sacane, John Pahl, Tankok1998 also known as the Shermanlover, Vahl Kilmer, Zsolt Biró, Genaeve, JD2.0, Olteanu Laurentiu, Penelope Charli Whitman, Charlie Garnham, Steven Pretswell, Sultan Saltlick, RainerWingel, Daniel Paseka, Kyben, Charles Morris, Chris Seieroe, Robin Gleeson, Lea Stannard, Teres, David Silberstein, Kiya Nicoll, Matt Harris, Paul Fenwick, Michael Whitehead, Robert Alessi, Elodie, Gothi, Audrin Navarro, Михаил Юрченко, Calum, Tim Stillson, Populous25, Don Homer, Adam Bliss, Maaxar, Christopher, TinyFloatingTurtle, John Kanady, Midgeman, Nathan Getman, Sharp Spook, LionsFate, Cristina Shaver, Mark, George Chong Chuang Ming, Oliver White, roxxploxx, Emily Shaw, Justin Andres, Robin Hager, Kevin Reagan, Austin Harbert, Marcus Regan, E_T, Alex Mederer, Alexander, Toss Antilles
 
 ========================
 Changelog
 ========================
+1.1.2.0 (08-11-2020)
+========================
+Performance improvements, various fixes, improved stats display for shields and deflectors, code cleanup (full changelog in https://github.com/jecrell/JecsTools/pull/15)
+
 1.1.1.2 (03-29-2020)
 ========================
 Activatable weapons now activate in defense thanks to code from qadsad.

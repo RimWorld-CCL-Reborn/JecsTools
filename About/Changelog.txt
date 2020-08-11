@@ -1,3 +1,7 @@
+1.1.2.0 (08-11-2020)
+========================
+Performance improvements, various fixes, improved stats display for shields and deflectors, code cleanup (full changelog in https://github.com/jecrell/JecsTools/pull/15)
+
 1.1.1.2 (03-29-2020)
 ========================
 Activatable weapons now activate in defense thanks to code from qadsad.
