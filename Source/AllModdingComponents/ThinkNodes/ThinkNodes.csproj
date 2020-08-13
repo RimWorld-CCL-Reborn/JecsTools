@@ -1,21 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <!-- Following import also imports ..\Directory.Build.props, which contains common contents between all the csproj files -->
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- See also ..\Directory.Build.props, which contains common contents between all the csproj files -->
   <PropertyGroup>
-    <ProjectGuid>{D7D21B4A-1DA7-41D8-B202-C58CA8FA62AA}</ProjectGuid>
-    <RootNamespace>ThinkNodes</RootNamespace>
     <AssemblyName>ThinkNodes</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="JobGiver_Capture.cs" />
-    <Compile Include="JobGiver_GoToClosestThingDef.cs" />
-    <Compile Include="ThinkNode_ConditionalDelay.cs" />
-    <Compile Include="ThinkNode_ConditionalHediff.cs" />
-    <Compile Include="ThinkNode_ConditionalHunter.cs" />
-    <Compile Include="ThinkNode_ConditionalMissingWeapon.cs" />
-    <Compile Include="ThinkNode_ConditionalWorkTypesDef.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Remove="ThinkNode_ConditionalCombatCapable.cs" />
+    <Compile Remove="ThinkNode_ConditionalIsHuntingTarget.cs" />
+    <Compile Remove="ThinkNode_ConditionalShouldBeDestructive.cs" />
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <None Include="ThinkNode_ConditionalCombatCapable.cs" />
+    <None Include="ThinkNode_ConditionalIsHuntingTarget.cs" />
+    <None Include="ThinkNode_ConditionalShouldBeDestructive.cs" />
+  </ItemGroup>
 </Project>

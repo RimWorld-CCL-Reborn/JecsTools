@@ -1,26 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <!-- Following import also imports ..\Directory.Build.props, which contains common contents between all the csproj files -->
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- See also ..\Directory.Build.props, which contains common contents between all the csproj files -->
   <PropertyGroup>
-    <ProjectGuid>{6ADE9377-5108-4C79-A3E8-034A7EBCC37F}</ProjectGuid>
-    <RootNamespace>CompInstalledPart</RootNamespace>
     <AssemblyName>CompInstalledPart</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="CompInstalledPart.cs" />
-    <Compile Include="CompProperties_InstalledPart.cs" />
-    <Compile Include="HarmonyCompInstalledPart.cs" />
-    <Compile Include="InstalledPartFloatMenuPatch.cs" />
-    <Compile Include="JobDriver_InstallPart.cs" />
-    <Compile Include="JobDriver_UninstallPart.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <ProjectReference Include="..\JecsTools\JecsTools.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\JecsTools\JecsTools.csproj">
-      <Project>{106bf102-0379-41cf-9c5d-e21aac5f051b}</Project>
-      <Name>JecsTools</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

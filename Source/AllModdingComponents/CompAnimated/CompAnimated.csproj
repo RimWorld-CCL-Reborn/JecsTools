@@ -1,18 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <!-- Following import also imports ..\Directory.Build.props, which contains common contents between all the csproj files -->
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- See also ..\Directory.Build.props, which contains common contents between all the csproj files -->
   <PropertyGroup>
-    <ProjectGuid>{29E2AEA4-3154-42DF-87CF-AEAFF042F2E0}</ProjectGuid>
-    <RootNamespace>CompAnimated</RootNamespace>
     <AssemblyName>CompAnimated</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="CompAnimated.cs" />
-    <Compile Include="CompAnimatedOver.cs" />
-    <Compile Include="CompProperties_Animated.cs" />
-    <Compile Include="CompProperties_AnimatedOver.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Remove="HarmonyCompLumbering.cs" />
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <None Include="HarmonyCompLumbering.cs" />
+  </ItemGroup>
 </Project>

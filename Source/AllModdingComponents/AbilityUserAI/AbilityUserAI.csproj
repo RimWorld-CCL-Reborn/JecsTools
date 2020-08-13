@@ -1,45 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <!-- Following import also imports ..\Directory.Build.props, which contains common contents between all the csproj files -->
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- See also ..\Directory.Build.props, which contains common contents between all the csproj files -->
   <PropertyGroup>
-    <ProjectGuid>{4FC16277-5CB6-4A78-90FB-27F09888708A}</ProjectGuid>
-    <RootNamespace>AbilityUserAI</RootNamespace>
     <AssemblyName>AbilityUserAI</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="AIDefOf.cs" />
-    <Compile Include="AI\AbilityDecision\AbilityDecisionConditionalNode_CasterHealth.cs" />
-    <Compile Include="AI\AbilityDecision\AbilityDecisionConditionalNode_EnemyTargetCover.cs" />
-    <Compile Include="AI\AbilityDecision\AbilityDecisionConditionalNode_EnemyTargetDistance.cs" />
-    <Compile Include="AI\AbilityDecision\AbilityDecisionConditionalNode_EnemyTargetIsArmed.cs" />
-    <Compile Include="AI\AbilityDecision\AbilityDecisionConditionalNode_HasEnemyTarget.cs" />
-    <Compile Include="AI\AbilityDecision\AbilityDecisionConditionalNode_InCombat.cs" />
-    <Compile Include="AI\AbilityDecision\AbilityDecisionConditionalNode_UsingMeleeWeapon.cs" />
-    <Compile Include="AI\AbilityDecision\AbilityDecisionConditionalNode_UsingRangedWeapon.cs" />
-    <Compile Include="AI\AbilityDecision\AbilityDecisionNode.cs" />
-    <Compile Include="AI\AbilityDecision\AbilityDecisionNode_PickAbilityWithMatchingTags.cs" />
-    <Compile Include="AI\JobGiver_AIAbilityUser.cs" />
-    <Compile Include="AI\TagWeight.cs" />
-    <Compile Include="Defs\AbilityAIDef.cs" />
-    <Compile Include="Defs\AbilityUserAIProfileDef.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Utility\AbilityMaths.cs" />
-    <Compile Include="Utility\AbilityUtility.cs" />
-    <Compile Include="Workers\AbilityProfileWorker.cs" />
-    <Compile Include="Workers\AbilityWorker.cs" />
-    <Compile Include="Workers\AbilityWorker_AreaOfEffect.cs" />
-    <Compile Include="Workers\AbilityWorker_HealAlly.cs" />
+    <ProjectReference Include="..\JecsTools\JecsTools.csproj" />
+    <ProjectReference Include="..\CompAbilityUser\CompAbilityUser.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\JecsTools\JecsTools.csproj">
-      <Project>{106bf102-0379-41cf-9c5d-e21aac5f051b}</Project>
-      <Name>JecsTools</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\CompAbilityUser\CompAbilityUser.csproj">
-      <Project>{417b8649-7a66-4580-8c75-473e46da9c7a}</Project>
-      <Name>CompAbilityUser</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

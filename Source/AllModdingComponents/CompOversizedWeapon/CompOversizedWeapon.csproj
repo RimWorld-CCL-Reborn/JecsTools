@@ -1,17 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <!-- Following import also imports ..\Directory.Build.props, which contains common contents between all the csproj files -->
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- See also ..\Directory.Build.props, which contains common contents between all the csproj files -->
   <PropertyGroup>
-    <ProjectGuid>{08E20D0E-4493-4DFE-9212-DEC323F26E89}</ProjectGuid>
-    <RootNamespace>CompOversizedWeapon</RootNamespace>
     <AssemblyName>CompOversizedWeapon</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="CompOversizedWeapon.cs" />
-    <Compile Include="CompProperties_OversizedWeapon.cs" />
-    <Compile Include="HarmonyCompOversizedWeapon.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Remove="HarmonyCompOversizedWeaponOLD.cs" />
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <None Include="HarmonyCompOversizedWeaponOLD.cs" />
+  </ItemGroup>
 </Project>

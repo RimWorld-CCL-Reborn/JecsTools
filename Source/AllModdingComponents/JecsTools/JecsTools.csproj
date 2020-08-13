@@ -1,82 +1,31 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <!-- Following import also imports ..\Directory.Build.props, which contains common contents between all the csproj files -->
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- See also ..\Directory.Build.props, which contains common contents between all the csproj files -->
   <PropertyGroup>
-    <ProjectGuid>{106BF102-0379-41CF-9C5D-E21AAC5F051B}</ProjectGuid>
     <RootNamespace>JecsTools</RootNamespace>
     <AssemblyName>0JecsTools</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="ApparelExtension.cs" />
-    <Compile Include="Backstories\BackstoryDef.cs" />
-    <Compile Include="BuildingExtension.cs" />
-    <Compile Include="CaravanJobs\CaravanJob.cs" />
-    <Compile Include="CaravanJobs\CaravanJobDef.cs" />
-    <Compile Include="CaravanJobs\CaravanJobDriver.cs" />
-    <Compile Include="CaravanJobs\CaravanJobQueue.cs" />
-    <Compile Include="CaravanJobs\CaravanJobsUtility.cs" />
-    <Compile Include="CaravanJobs\CaravanToils_GoTo.cs" />
-    <Compile Include="CaravanJobs\CaravanToils_Effects.cs" />
-    <Compile Include="CaravanJobs\Caravan_JobTracker.cs" />
-    <Compile Include="CaravanJobs\CaravanToil.cs" />
-    <None Include="CaravanJobs\WorldEffecter.cs" />
-    <None Include="CaravanJobs\WorldMote.cs" />
-    <Compile Include="CaravanJobs\HarmonyCaravanJobs.cs" />
-    <Compile Include="CaravanJobs\StuffCategoryCountClass.cs" />
-    <Compile Include="CaravanJobs\StuffDefCount.cs" />
-    <Compile Include="CaravanJobs\WorldObjectBlueprint.cs" />
-    <None Include="CaravanJobs\WorldSubEffecter.cs" />
-    <None Include="CaravanJobs\WorldSubEffecter_ProgressBar.cs" />
-    <Compile Include="CaravanJobs\WorldObjectRecipeDef.cs" />
-    <Compile Include="CaravanJobs\WorldObject_ProgressBar.cs" />
-    <None Include="CaravanJobs\WorldProgressBarDrawer.cs" />
-    <Compile Include="FactionStuff\CompConsole.cs" />
-    <Compile Include="FactionStuff\CompProperties_Console.cs" />
-    <Compile Include="FactionStuff\FactionSettings.cs" />
-    <Compile Include="FactionStuff\JobDefMaker.cs" />
-    <Compile Include="FactionStuff\JobDriver_UseConsole.cs" />
-    <Compile Include="FactionStuff\JecsToolsFactionDialogMaker.cs" />
-    <Compile Include="HarmonyPatches_GUI.cs" />
-    <Compile Include="HediffExpandedDef.cs" />
-    <Compile Include="HediffGiver_StartWithHediff.cs" />
-    <Compile Include="HediffWithComps_Expanded.cs" />
-    <Compile Include="PatchOperationModLoaded.cs" />
-    <Compile Include="PlaceWorker_UnderCeiling.cs" />
-    <Compile Include="Projectile_Laser.cs" />
-    <Compile Include="DamageDefCleave.cs" />
-    <Compile Include="DamageWorker_Cleave.cs" />
-    <Compile Include="FirelessTrashUtility.cs" />
-    <Compile Include="GrappleUtility.cs" />
-    <Compile Include="HarmonyPatches.cs" />
-    <Compile Include="HediffCompDamageOverTime.cs" />
-    <Compile Include="HediffCompProperties_DamageOverTime.cs" />
-    <Compile Include="HediffCompProperties_DamageSoak.cs" />
-    <Compile Include="HediffCompProperties_ExtraMeleeDamages.cs" />
-    <Compile Include="HediffCompProperties_Knockback.cs" />
-    <Compile Include="HediffComp_DamageSoak.cs" />
-    <Compile Include="HediffComp_ExtraMeleeDamages.cs" />
-    <Compile Include="HediffComp_Knockback.cs" />
-    <Compile Include="Hediff_InjuryCustomLabel.cs" />
-    <Compile Include="PlaceWorker_OnTopOfWalls.cs" />
-    <Compile Include="ModCompatibilityUtility.cs" />
-    <Compile Include="TexButton.cs" />
-    <Compile Include="ThingDef_LaserProjectile.cs" />
-    <Compile Include="ProjectileExtension.cs" />
-    <Compile Include="_HumanlikeOrdersUtility.cs" />
-    <Compile Include="JobGiver_AIFirelessTrashColonyClose.cs" />
-    <Compile Include="JobGiver_AIFirelessTrashColonyDistant.cs" />
-    <Compile Include="PlaceWorker_Outline.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="CaravanJobs\CaravanJobGiver.cs" />
-    <Compile Include="CaravanJobs\QueuedCaravanJob.cs" />
-    <Compile Include="TransformedPart.cs" />
+    <Compile Remove="AbilityPowerManager.cs" />
+    <Compile Remove="CaravanJobs\WorldEffecter.cs" />
+    <Compile Remove="CaravanJobs\WorldMote.cs" />
+    <Compile Remove="CaravanJobs\WorldSubEffecter.cs" />
+    <Compile Remove="CaravanJobs\WorldSubEffecter_ProgressBar.cs" />
+    <Compile Remove="CaravanJobs\WorldProgressBarDrawer.cs" />
+    <Compile Remove="Projectile_AbilityAoE.cs" />
+    <Compile Remove="StuffCategoryCountClass.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CompAbilityUser\CompAbilityUser.csproj">
-      <Project>{417b8649-7a66-4580-8c75-473e46da9c7a}</Project>
-      <Name>CompAbilityUser</Name>
-    </ProjectReference>
+    <None Include="AbilityPowerManager.cs" />
+    <None Include="CaravanJobs\WorldEffecter.cs" />
+    <None Include="CaravanJobs\WorldMote.cs" />
+    <None Include="CaravanJobs\WorldSubEffecter.cs" />
+    <None Include="CaravanJobs\WorldSubEffecter_ProgressBar.cs" />
+    <None Include="CaravanJobs\WorldProgressBarDrawer.cs" />
+    <None Include="Projectile_AbilityAoE.cs" />
+    <None Include="StuffCategoryCountClass.cs" />
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <ProjectReference Include="..\CompAbilityUser\CompAbilityUser.csproj" />
+  </ItemGroup>
 </Project>

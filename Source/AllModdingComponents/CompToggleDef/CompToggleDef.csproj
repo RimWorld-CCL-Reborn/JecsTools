@@ -1,18 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <!-- Following import also imports ..\Directory.Build.props, which contains common contents between all the csproj files -->
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- See also ..\Directory.Build.props, which contains common contents between all the csproj files -->
   <PropertyGroup>
-    <ProjectGuid>{9BECA870-0C2F-4F40-BEA1-6E99D68F9EDF}</ProjectGuid>
-    <RootNamespace>CompToggleDef</RootNamespace>
     <AssemblyName>CompToggleDef</AssemblyName>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Include="CompProperties_ToggleDef.cs" />
-    <Compile Include="CompToggleDef.cs" />
-    <Compile Include="ITab_ToggleDef.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ToggleDefCardUtility.cs" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -1,18 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <!-- Following import also imports ..\Directory.Build.props, which contains common contents between all the csproj files -->
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- See also ..\Directory.Build.props, which contains common contents between all the csproj files -->
   <PropertyGroup>
-    <ProjectGuid>{05E24FAB-C6BF-43B5-BF69-B92AA38338CA}</ProjectGuid>
-    <RootNamespace>CompExtraSounds</RootNamespace>
     <AssemblyName>CompExtraSounds</AssemblyName>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Include="DefModExtension_ExtraSounds.cs" />
-    <Compile Include="CompExtraSounds.cs" />
-    <Compile Include="CompProperties_ExtraSounds.cs" />
-    <Compile Include="HarmonyCompExtraSounds.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

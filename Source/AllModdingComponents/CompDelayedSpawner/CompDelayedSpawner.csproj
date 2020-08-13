@@ -1,16 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <!-- Following import also imports ..\Directory.Build.props, which contains common contents between all the csproj files -->
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- See also ..\Directory.Build.props, which contains common contents between all the csproj files -->
   <PropertyGroup>
-    <ProjectGuid>{4074F652-2FDA-41D0-A631-F6C83A2351F1}</ProjectGuid>
-    <RootNamespace>CompDelayedSpawner</RootNamespace>
     <AssemblyName>CompDelayedSpawner</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="CompDelayedSpawner.cs" />
-    <Compile Include="CompProperties_DelayedSpawner.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Remove="AbilityPowerManager.cs" />
+    <Compile Remove="Projectile_AbilityAoE.cs" />
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <None Include="AbilityPowerManager.cs" />
+    <None Include="Projectile_AbilityAoE.cs" />
+  </ItemGroup>
 </Project>
