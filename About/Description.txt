@@ -30,14 +30,11 @@ CompSlotLoadable
 CompToggleDef (by Roxxploxx)
 - Allows for something to despawn, change its def, and respawn.
 
-CompVehicle (Experimental)
+CompVehicle (experimental for 1.0, removed for 1.1+)
  - Allows for a pawn to be treated as a vehicle that can be loaded with pilots, gunners, crew, and passengers.
 
 CompInstalledPart (WIP)
 - Allows installation and uninstallation of things onto other things. This is particularly useful for weapons on vehicles.
-
-JecsTools.PatchOperationModLoaded
-- Allows modders to use xpath code to check if a mod is loaded before patching code.
 
 Additions by ChJees
 Additions by roxxploxx
