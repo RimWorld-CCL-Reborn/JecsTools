@@ -2,25 +2,38 @@
 <!-- This file is automatically imported in MSBuild 15+ (Visual Studio 2017+) via the Microsoft.Common.props import, so put all the common contents between all the csproj files here -->
 <Project>
   <PropertyGroup>
+    <Configurations>RW1.1;RW1.2</Configurations>
+    <Configuration Condition=" '$(Configuration)' == '' ">RW1.2</Configuration>
     <TargetFramework>net472</TargetFramework>
     <NoStdLib>true</NoStdLib>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <Version>1.1.2.0</Version>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>..\..\..\Assemblies\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+  <PropertyGroup>
+    <!-- Always using "Release" build -->
     <DebugType>none</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\..\Assemblies\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
+  <Choose>
+    <When Condition=" '$(Configuration)' == 'RW1.1' ">
+      <PropertyGroup>
+        <OutputPath>..\..\..\1.1\Assemblies\</OutputPath>
+      </PropertyGroup>
+      <ItemGroup>
+        <PackageReference Include="Krafs.Rimworld.Ref" Version="1.1.*" />
+      </ItemGroup>
+    </When>
+    <When Condition=" '$(Configuration)' == 'RW1.2' ">
+      <PropertyGroup>
+        <OutputPath>..\..\..\1.2\Assemblies\</OutputPath>
+      </PropertyGroup>
+      <ItemGroup>
+        <PackageReference Include="Krafs.Rimworld.Ref" Version="1.2.*" />
+      </ItemGroup>
+    </When>
+  </Choose>
   <ItemGroup>
-    <PackageReference Include="Krafs.Rimworld.Ref" Version="1.2.*" />
     <PackageReference Include="Lib.Harmony" Version="2.0.2" ExcludeAssets="runtime" />
   </ItemGroup>
 </Project>
