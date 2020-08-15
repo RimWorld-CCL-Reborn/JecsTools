@@ -4,10 +4,4 @@
   <PropertyGroup>
     <AssemblyName>CompLumbering</AssemblyName>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Remove="HarmonyCompLumbering.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="HarmonyCompLumbering.cs" />
-  </ItemGroup>
 </Project>

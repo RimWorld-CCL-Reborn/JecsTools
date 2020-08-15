@@ -4,10 +4,4 @@
   <PropertyGroup>
     <AssemblyName>CompOversizedWeapon</AssemblyName>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Remove="HarmonyCompOversizedWeaponOLD.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="HarmonyCompOversizedWeaponOLD.cs" />
-  </ItemGroup>
 </Project>

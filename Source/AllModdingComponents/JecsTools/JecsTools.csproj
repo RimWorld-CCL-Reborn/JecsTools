@@ -6,26 +6,6 @@
     <AssemblyName>0JecsTools</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Remove="AbilityPowerManager.cs" />
-    <Compile Remove="CaravanJobs\WorldEffecter.cs" />
-    <Compile Remove="CaravanJobs\WorldMote.cs" />
-    <Compile Remove="CaravanJobs\WorldSubEffecter.cs" />
-    <Compile Remove="CaravanJobs\WorldSubEffecter_ProgressBar.cs" />
-    <Compile Remove="CaravanJobs\WorldProgressBarDrawer.cs" />
-    <Compile Remove="Projectile_AbilityAoE.cs" />
-    <Compile Remove="StuffCategoryCountClass.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="AbilityPowerManager.cs" />
-    <None Include="CaravanJobs\WorldEffecter.cs" />
-    <None Include="CaravanJobs\WorldMote.cs" />
-    <None Include="CaravanJobs\WorldSubEffecter.cs" />
-    <None Include="CaravanJobs\WorldSubEffecter_ProgressBar.cs" />
-    <None Include="CaravanJobs\WorldProgressBarDrawer.cs" />
-    <None Include="Projectile_AbilityAoE.cs" />
-    <None Include="StuffCategoryCountClass.cs" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\CompAbilityUser\CompAbilityUser.csproj" />
   </ItemGroup>
 </Project>

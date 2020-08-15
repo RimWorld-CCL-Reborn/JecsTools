@@ -4,10 +4,4 @@
   <PropertyGroup>
     <AssemblyName>CompBalloon</AssemblyName>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Remove="HarmonyCompBalloon.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="HarmonyCompBalloon.cs" />
-  </ItemGroup>
 </Project>

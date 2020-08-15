@@ -4,14 +4,4 @@
   <PropertyGroup>
     <AssemblyName>ThinkNodes</AssemblyName>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Remove="ThinkNode_ConditionalCombatCapable.cs" />
-    <Compile Remove="ThinkNode_ConditionalIsHuntingTarget.cs" />
-    <Compile Remove="ThinkNode_ConditionalShouldBeDestructive.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="ThinkNode_ConditionalCombatCapable.cs" />
-    <None Include="ThinkNode_ConditionalIsHuntingTarget.cs" />
-    <None Include="ThinkNode_ConditionalShouldBeDestructive.cs" />
-  </ItemGroup>
 </Project>

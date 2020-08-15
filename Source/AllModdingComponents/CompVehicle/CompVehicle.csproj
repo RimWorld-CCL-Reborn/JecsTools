@@ -4,16 +4,4 @@
   <PropertyGroup>
     <AssemblyName>CompVehicle</AssemblyName>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Remove="SitePartWorker_AbandonedVehicles.cs" />
-    <Compile Remove="SiteDefOfVehicle.cs" />
-    <Compile Remove="AbandonedVehicleContentsComp.cs" />
-    <Compile Remove="CVPathFinder.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="SitePartWorker_AbandonedVehicles.cs" />
-    <None Include="SiteDefOfVehicle.cs" />
-    <None Include="AbandonedVehicleContentsComp.cs" />
-    <None Include="CVPathFinder.cs" />
-  </ItemGroup>
 </Project>

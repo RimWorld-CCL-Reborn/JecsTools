@@ -4,12 +4,4 @@
   <PropertyGroup>
     <AssemblyName>CompDelayedSpawner</AssemblyName>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Remove="AbilityPowerManager.cs" />
-    <Compile Remove="Projectile_AbilityAoE.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="AbilityPowerManager.cs" />
-    <None Include="Projectile_AbilityAoE.cs" />
-  </ItemGroup>
 </Project>
