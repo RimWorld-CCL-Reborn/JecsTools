@@ -13,9 +13,5 @@
       <Link>ModFolder\%(RecursiveDir)%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\Source\**\Directory.Build.props">
-      <Link>ModFolder\Source\%(RecursiveDir)%(Filename)%(Extension)</Link>
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
 </Project>

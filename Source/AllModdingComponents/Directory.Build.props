@@ -6,6 +6,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">RW1.2</Configuration>
     <TargetFramework>net472</TargetFramework>
     <NoStdLib>true</NoStdLib>
+    <LangVersion>8.0</LangVersion>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <Version>1.1.2.1</Version>
   </PropertyGroup>

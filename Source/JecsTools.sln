@@ -3,47 +3,48 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30104.148
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompAbilityUser", "AllModdingComponents\CompAbilityUser\CompAbilityUser.csproj", "{417B8649-7A66-4580-8C75-473E46DA9C7A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CompAbilityUser", "AllModdingComponents\CompAbilityUser\CompAbilityUser.csproj", "{417B8649-7A66-4580-8C75-473E46DA9C7A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompActivatableEffect", "AllModdingComponents\CompActivatableEffect\CompActivatableEffect.csproj", "{EC1AEA45-45FE-4A6A-A835-81B289E03BC9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CompActivatableEffect", "AllModdingComponents\CompActivatableEffect\CompActivatableEffect.csproj", "{EC1AEA45-45FE-4A6A-A835-81B289E03BC9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompDeflector", "AllModdingComponents\CompDeflector\CompDeflector.csproj", "{4A2FA470-0CA5-442B-B04D-2C4A62859CA7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CompDeflector", "AllModdingComponents\CompDeflector\CompDeflector.csproj", "{4A2FA470-0CA5-442B-B04D-2C4A62859CA7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompExtraSounds", "AllModdingComponents\CompExtraSounds\CompExtraSounds.csproj", "{05E24FAB-C6BF-43B5-BF69-B92AA38338CA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CompExtraSounds", "AllModdingComponents\CompExtraSounds\CompExtraSounds.csproj", "{05E24FAB-C6BF-43B5-BF69-B92AA38338CA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompLumbering", "AllModdingComponents\CompLumbering\CompLumbering.csproj", "{CF56EA3A-AEC6-4817-BF46-A886FBEAA49B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CompLumbering", "AllModdingComponents\CompLumbering\CompLumbering.csproj", "{CF56EA3A-AEC6-4817-BF46-A886FBEAA49B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompOversizedWeapon", "AllModdingComponents\CompOversizedWeapon\CompOversizedWeapon.csproj", "{08E20D0E-4493-4DFE-9212-DEC323F26E89}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CompOversizedWeapon", "AllModdingComponents\CompOversizedWeapon\CompOversizedWeapon.csproj", "{08E20D0E-4493-4DFE-9212-DEC323F26E89}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompSlotLoadable", "AllModdingComponents\CompSlotLoadable\CompSlotLoadable.csproj", "{6EC26D07-B5A0-4075-8919-3B05AF74CE87}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CompSlotLoadable", "AllModdingComponents\CompSlotLoadable\CompSlotLoadable.csproj", "{6EC26D07-B5A0-4075-8919-3B05AF74CE87}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompVehicle", "AllModdingComponents\CompVehicle\CompVehicle.csproj", "{6E907669-2299-47E1-B144-8BC7488DF5C4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CompVehicle", "AllModdingComponents\CompVehicle\CompVehicle.csproj", "{6E907669-2299-47E1-B144-8BC7488DF5C4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompInstalledPart", "AllModdingComponents\CompInstalledPart\CompInstalledPart.csproj", "{6ADE9377-5108-4C79-A3E8-034A7EBCC37F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CompInstalledPart", "AllModdingComponents\CompInstalledPart\CompInstalledPart.csproj", "{6ADE9377-5108-4C79-A3E8-034A7EBCC37F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompToggleDef", "AllModdingComponents\CompToggleDef\CompToggleDef.csproj", "{9BECA870-0C2F-4F40-BEA1-6E99D68F9EDF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CompToggleDef", "AllModdingComponents\CompToggleDef\CompToggleDef.csproj", "{9BECA870-0C2F-4F40-BEA1-6E99D68F9EDF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JecsTools", "AllModdingComponents\JecsTools\JecsTools.csproj", "{106BF102-0379-41CF-9C5D-E21AAC5F051B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JecsTools", "AllModdingComponents\JecsTools\JecsTools.csproj", "{106BF102-0379-41CF-9C5D-E21AAC5F051B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompDelayedSpawner", "AllModdingComponents\CompDelayedSpawner\CompDelayedSpawner.csproj", "{4074F652-2FDA-41D0-A631-F6C83A2351F1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CompDelayedSpawner", "AllModdingComponents\CompDelayedSpawner\CompDelayedSpawner.csproj", "{4074F652-2FDA-41D0-A631-F6C83A2351F1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AbilityUserAI", "AllModdingComponents\AbilityUserAI\AbilityUserAI.csproj", "{4FC16277-5CB6-4A78-90FB-27F09888708A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AbilityUserAI", "AllModdingComponents\AbilityUserAI\AbilityUserAI.csproj", "{4FC16277-5CB6-4A78-90FB-27F09888708A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompOverlays", "AllModdingComponents\CompOverlays\CompOverlays.csproj", "{947FF025-5DE9-4475-8779-4E9B02D06FB7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CompOverlays", "AllModdingComponents\CompOverlays\CompOverlays.csproj", "{947FF025-5DE9-4475-8779-4E9B02D06FB7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompAnimated", "AllModdingComponents\CompAnimated\CompAnimated.csproj", "{29E2AEA4-3154-42DF-87CF-AEAFF042F2E0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CompAnimated", "AllModdingComponents\CompAnimated\CompAnimated.csproj", "{29E2AEA4-3154-42DF-87CF-AEAFF042F2E0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PawnShields", "AllModdingComponents\PawnShields\PawnShields.csproj", "{9A3BF1D4-6693-481F-BBF1-3D66AFD8BE6C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PawnShields", "AllModdingComponents\PawnShields\PawnShields.csproj", "{9A3BF1D4-6693-481F-BBF1-3D66AFD8BE6C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompBalloon", "AllModdingComponents\CompBalloon\CompBalloon.csproj", "{CE293DBE-D76A-4F24-A086-42051996698D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CompBalloon", "AllModdingComponents\CompBalloon\CompBalloon.csproj", "{CE293DBE-D76A-4F24-A086-42051996698D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThinkNodes", "AllModdingComponents\ThinkNodes\ThinkNodes.csproj", "{D7D21B4A-1DA7-41D8-B202-C58CA8FA62AA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThinkNodes", "AllModdingComponents\ThinkNodes\ThinkNodes.csproj", "{D7D21B4A-1DA7-41D8-B202-C58CA8FA62AA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DefModExtension_BigBox", "AllModdingComponents\CompBigBox\DefModExtension_BigBox.csproj", "{CB5B70DA-38FB-4C54-A816-7112CA045235}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DefModExtension_BigBox", "AllModdingComponents\CompBigBox\DefModExtension_BigBox.csproj", "{CB5B70DA-38FB-4C54-A816-7112CA045235}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{866CC95E-EC26-49B1-8E5C-2D312BE4BDC3}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		AllModdingComponents\Directory.Build.props = AllModdingComponents\Directory.Build.props
 	EndProjectSection
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "!Shared", "Shared\!Shared.shproj", "{C30579D1-0532-46B4-98CE-FA5CEFA87A43}"
