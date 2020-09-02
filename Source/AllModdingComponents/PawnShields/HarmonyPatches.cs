@@ -49,8 +49,7 @@ namespace PawnShields
 
         public static void Patch_PawnGenerator_GenerateGearFor(Pawn pawn, ref PawnGenerationRequest request)
         {
-            if (pawn != null)
-                PawnShieldGenerator.TryGenerateShieldFor(pawn, request);
+            PawnShieldGenerator.TryGenerateShieldFor(pawn, request);
         }
 
         public static IEnumerable<CodeInstruction> Transpiler_StatWorker_GetValueUnfinalized(IEnumerable<CodeInstruction> instructions,
@@ -165,7 +164,6 @@ namespace PawnShields
 
         private static readonly FieldInfo pawnEquipmentField = AccessTools.Field(typeof(Pawn), nameof(Pawn.equipment));
         private static readonly FieldInfo statWorkerStatField = AccessTools.Field(typeof(StatWorker), "stat");
-        private static readonly MethodInfo statOffsetFromGearMethod = AccessTools.Method(typeof(StatWorker), "StatOffsetFromGear");
         private static readonly Func<ThingDef, StatDef, bool> GearAffectsStats =
             (Func<ThingDef, StatDef, bool>)AccessTools.Method(typeof(StatWorker), "GearAffectsStat")
                 .CreateDelegate(typeof(Func<ThingDef, StatDef, bool>));
