@@ -178,7 +178,7 @@ namespace PawnShields
             {
                 Vector3 bodyVector = drawLoc;
 
-                CompShield shieldComp = shield.GetComp<CompShield>();
+                CompShield shieldComp = shield.GetCompShield();
                 bodyVector += shieldComp.ShieldProps.renderProperties.Rot4ToVector3(___pawn.Rotation);
 
                 shieldComp.RenderShield(bodyVector, ___pawn.Rotation, ___pawn, shield);
@@ -187,7 +187,7 @@ namespace PawnShields
 
         public static void Patch_Pawn_EquipmentTracker_MakeRoomFor(Pawn_EquipmentTracker __instance, Pawn ___pawn, ThingWithComps eq)
         {
-            CompShield shieldComp = eq.GetComp<CompShield>();
+            CompShield shieldComp = eq.GetCompShield();
             if (shieldComp != null)
             {
                 //Unequip any existing shield.
@@ -262,7 +262,7 @@ namespace PawnShields
             if (shield == null)
                 return true;
 
-            CompShield shieldComp = shield.GetComp<CompShield>();
+            CompShield shieldComp = shield.GetCompShield();
 
             SoundDef shieldSound = shieldComp.BlockSound ?? shieldComp.ShieldProps.defaultSound;
             bool discardShield = false;
