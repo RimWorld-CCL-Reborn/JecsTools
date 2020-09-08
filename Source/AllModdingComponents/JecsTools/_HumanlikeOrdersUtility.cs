@@ -185,6 +185,11 @@ namespace JecsTools
             switch (Condition)
             {
                 case _ConditionType.IsType:
+                    // TODO: Clean/simplify this up so that:
+                    // if Data is a Type, do Data.IsInstanceOfType(toCheck)
+                    // if Data is an exemplar instance of Type, do Data.GetType().IsInstanceOfType(toCheck)
+                    // Also the Psychology special case is obsolete since Psychology.PsychologyPawn has been removed along time ago:
+                    // https://github.com/rwpsychology/Psychology/commit/6ce6456469bc884b8acf498ec50c93c4843802ea
                     //////////////////////////
                     ///PSYCHOLOGY SPECIAL CASE
                     if (toCheck.GetType().ToString() == "Psychology.PsychologyPawn" && Data.ToString() == "Verse.Pawn")
@@ -200,12 +205,19 @@ namespace JecsTools
                         return true;
                     break;
                 case _ConditionType.ThingHasComp:
-                    var dataTypeStr = Data?.ToString();
-                    if (toCheck is ThingWithComps t && t.AllComps.Any(comp =>
-                            comp?.props?.compClass is Type compClass &&
-                            (compClass.ToString() == dataTypeStr ||
-                             compClass.BaseType?.ToString() == dataTypeStr)))
-                        return true;
+                    if (toCheck is ThingWithComps t)
+                    {
+                        var dataType = Data is string typeName ? GenTypes.GetTypeInAnyAssembly(typeName) : Data as Type;
+                        if (dataType != null)
+                        {
+                            var comps = t.AllComps;
+                            for (int i = 0, count = comps.Count; i < count; i++)
+                            {
+                                if (dataType.IsAssignableFrom(comps[i].GetType()))
+                                    return true;
+                            }
+                        }
+                    }
                     break;
             }
             return false;

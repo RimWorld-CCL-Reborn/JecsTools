@@ -7,16 +7,44 @@ namespace PawnShields
     /// </summary>
     public static class ShieldUtility
     {
+        // Avoiding ThingWithComps.GetComp<T> and implementing a specific non-generic version of it here.
+        // That method is slow because the `isinst` instruction with generic type arg operands is very slow,
+        // while `isinst` instruction against non-generic type operand like used below is fast (~6x as fast for me).
         public static CompShield GetCompShield(this ThingWithComps thing)
         {
-            // Avoiding ThingWithComps.GetComp<T> and implementing a specific non-generic version of it here.
-            // That method is slow because the `isinst` instruction with generic type arg operands is very slow,
-            // while `isinst` instruction against non-generic type operand like used below is fast (~6x as fast for me).
             var comps = thing.AllComps;
             for (int i = 0, count = comps.Count; i < count; i++)
             {
                 if (comps[i] is CompShield comp)
                     return comp;
+            }
+            return null;
+        }
+
+        // Slightly faster than `thing.GetCompShield() != null`
+        public static bool HasCompShield(this ThingWithComps thing)
+        {
+            var comps = thing.AllComps;
+            for (int i = 0, count = comps.Count; i < count; i++)
+            {
+                if (comps[i] is CompShield)
+                    return true;
+            }
+            return false;
+        }
+
+        // Avoiding Def.GetModExtension<T> and implementing a specific non-generic version of it here.
+        // That method is slow because the `isinst` instruction with generic type arg operands is very slow,
+        // while `isinst` instruction against non-generic type operand like used below is fast.
+        public static ShieldPawnGeneratorProperties GetShieldPawnGeneratorProperties(this Def def)
+        {
+            var modExtensions = def.modExtensions;
+            if (modExtensions == null)
+                return null;
+            for (int i = 0, count = modExtensions.Count; i < count; i++)
+            {
+                if (modExtensions[i] is ShieldPawnGeneratorProperties modExtension)
+                    return modExtension;
             }
             return null;
         }
@@ -45,7 +73,7 @@ namespace PawnShields
             for (int i = 0, count = allEquipment.Count; i < count; i++)
             {
                 var equipment = allEquipment[i];
-                if (equipment.GetCompShield() != null)
+                if (equipment.HasCompShield())
                     return equipment;
             }
             return null;

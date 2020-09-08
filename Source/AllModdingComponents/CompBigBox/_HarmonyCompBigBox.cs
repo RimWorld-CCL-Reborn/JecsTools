@@ -20,7 +20,7 @@ namespace DefModExtension_BigBox
 
         private static bool DrawSelectionBracketFor_PreFix(object obj)
         {
-            if (obj is ThingWithComps thing && thing.def?.GetModExtension<DefModExtension_BigBox>() is DefModExtension_BigBox bigBox)
+            if (obj is ThingWithComps thing && thing.def?.GetModExtensionBigBox() is DefModExtension_BigBox bigBox)
             {
                 var bracketLocs = Traverse.Create(typeof(SelectionDrawer)).Field("bracketLocs").GetValue<Vector3[]>();
                 var SelectionBracketMat = Traverse.Create(typeof(SelectionDrawer)).Field("SelectionBracketMat").GetValue<Material>();

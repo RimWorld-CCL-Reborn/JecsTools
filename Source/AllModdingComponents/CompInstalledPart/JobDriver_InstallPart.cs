@@ -22,7 +22,7 @@ namespace CompInstalledPart
 
         protected float workLeft;
 
-        protected CompInstalledPart InstallComp => PartToInstall.GetComp<CompInstalledPart>();
+        protected CompInstalledPart InstallComp => PartToInstall.GetCompInstalledPart();
 
         protected ThingWithComps PartToInstall => (ThingWithComps)job.targetA.Thing;
 

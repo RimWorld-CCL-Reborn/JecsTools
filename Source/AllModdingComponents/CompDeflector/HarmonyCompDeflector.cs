@@ -28,7 +28,7 @@ namespace CompDeflector
                     foreach (var thingWithComps in pawn_EquipmentTracker.AllEquipmentListForReading)
                         if (thingWithComps != null)
                         {
-                            var compDeflector = thingWithComps.GetComp<CompDeflector>();
+                            var compDeflector = thingWithComps.GetCompDeflector();
                             if (compDeflector != null)
                                 if (compDeflector.IsAnimatingNow)
                                 {
@@ -87,7 +87,7 @@ namespace CompDeflector
                     if (pawn_EquipmentTracker != null)
                         foreach (var thingWithComps in pawn_EquipmentTracker.AllEquipmentListForReading)
                         {
-                            var compDeflector = thingWithComps?.GetComp<CompDeflector>();
+                            var compDeflector = thingWithComps?.GetCompDeflector();
                             if (compDeflector == null) continue;
                             if (dinfo.Def == DamageDefOf.Bomb) continue;
                             if (dinfo.Def == DamageDefOf.Flame) continue;

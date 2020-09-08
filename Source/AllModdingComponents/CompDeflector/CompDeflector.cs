@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using HarmonyLib;
 using RimWorld;
 using UnityEngine;
@@ -8,6 +7,7 @@ using Verse.AI;
 
 namespace CompDeflector
 {
+
     public class CompDeflector : ThingComp
     {
         public enum AccuracyRoll
@@ -34,56 +34,46 @@ namespace CompDeflector
 
         public bool IsAnimatingNow => animationDeflectionTicks >= 0;
 
-        private bool initComps;
         private CompEquippable compEquippable;
         private ThingComp compActivatableEffect;
         private Func<bool> compActivatableEffectIsActive;
 
-        private void InitCompsAsNeeded()
-        {
-            if (!initComps)
-            {
-                if (parent == null) return;
-                compEquippable = parent.GetComp<CompEquippable>();
-                compActivatableEffect = parent.AllComps.FirstOrDefault(y => y.GetType().ToString().Contains("ActivatableEffect"));
-                if (compActivatableEffect != null)
-                {
-                    compActivatableEffectIsActive =
-                        (Func<bool>)AccessTools.Method(compActivatableEffect.GetType(), "IsActive").CreateDelegate(
-                            typeof(Func<bool>), compActivatableEffect);
-                }
-                initComps = true;
-            }
-        }
+        private static readonly Type compActivatableEffectType = GenTypes.GetTypeInAnyAssembly("CompActivatableEffect.CompActivatableEffect");
 
-        public CompEquippable GetEquippable
-        {
-            get
-            {
-                InitCompsAsNeeded();
-                return compEquippable;
-            }
-        }
+        public CompEquippable GetEquippable => compEquippable;
 
         public Pawn GetPawn => GetEquippable?.verbTracker.PrimaryVerb.CasterPawn;
 
-        public ThingComp GetActivatableEffect
-        {
-            get
-            {
-                InitCompsAsNeeded();
-                return compActivatableEffect;
-            }
-        }
+        public ThingComp GetActivatableEffect => compActivatableEffect;
 
         public bool HasCompActivatableEffect => GetActivatableEffect != null;
 
-        public bool CompActivatableEffectiveIsActive
+        public bool CompActivatableEffectiveIsActive => compActivatableEffectIsActive?.Invoke() ?? false;
+
+        // This is called during ThingWithComps.InitializeComps, after constructor is called and parent is set.
+        public override void Initialize(CompProperties props)
         {
-            get
+            base.Initialize(props);
+            // Avoiding ThingWithComps.GetComp<T> and implementing a specific non-generic version of it here.
+            // That method is slow because the `isinst` instruction with generic type arg operands is very slow,
+            // while `isinst` instruction against non-generic type operand like used below is fast.
+            // For the optional CompActivatableEffect, we have to use the slower IsAssignableFrom reflection check.
+            var comps = parent.AllComps;
+            for (int i = 0, count = comps.Count; i < count; i++)
             {
-                InitCompsAsNeeded();
-                return compActivatableEffectIsActive?.Invoke() ?? false;
+                var comp = comps[i];
+                if (comp is CompEquippable compEquippable)
+                    this.compEquippable = compEquippable;
+                else if (compActivatableEffectType != null)
+                {
+                    var compType = comp.GetType();
+                    if (compActivatableEffectType.IsAssignableFrom(compType))
+                    {
+                        compActivatableEffect = comp;
+                        compActivatableEffectIsActive =
+                            (Func<bool>)AccessTools.Method(compType, "IsActive").CreateDelegate(typeof(Func<bool>), comp);
+                    }
+                }
             }
         }
 

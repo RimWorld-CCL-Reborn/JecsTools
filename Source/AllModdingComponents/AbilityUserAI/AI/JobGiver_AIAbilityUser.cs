@@ -17,7 +17,7 @@ namespace AbilityUserAI
     {
         public override float GetPriority(Pawn pawn)
         {
-            var abilityUser = pawn.Abilities();
+            var abilityUser = pawn.GetCompAbilityUser();
 
             if (abilityUser == null)
                 return -100f;
@@ -108,8 +108,7 @@ namespace AbilityUserAI
                                 "lastNode.parent=" + lastNode?.parent?.GetType()?.Name);*/
 
                             //Get CompAbilityUser
-                            var thingComp = pawn.AllComps.First(comp => comp.GetType() == profile.compAbilityUserClass);
-                            var compAbilityUser = thingComp as CompAbilityUser;
+                            var compAbilityUser = pawn.GetExactCompAbilityUser(profile.compAbilityUserClass);
 
                             if (compAbilityUser != null)
                             {

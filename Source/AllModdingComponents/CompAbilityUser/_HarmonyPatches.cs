@@ -116,7 +116,7 @@ namespace AbilityUser
         {
             //Anyone special?
             if (__result.NullOrEmpty()) return;
-            var specialPawns = __result.FindAll(x => x.GetComp<CompAbilityUser>() is CompAbilityUser cu && cu.CombatPoints() > 0);
+            var specialPawns = __result.FindAll(x => x.GetCompAbilityUser() is CompAbilityUser cu && cu.CombatPoints() > 0);
             if (specialPawns.Count > 0)
             {
                 //Log.Message("Special Pawns Detected");
@@ -130,7 +130,7 @@ namespace AbilityUser
                 //Log.Message("------------------");
 
                 //Anyone average?
-                var averagePawns = __result.FindAll(x => x.GetComp<CompAbilityUser>() == null);
+                var averagePawns = __result.FindAll(x => x.GetCompAbilityUser() == null);
                 int avgPawns = averagePawns.Count;
                 var avgCombatPoints = new Dictionary<Pawn, float>();
                 averagePawns.ForEach(x =>
@@ -148,7 +148,7 @@ namespace AbilityUser
                 specialPawns.ForEach(x =>
                 {
                     var combatValue = x.kindDef.combatPower;
-                    foreach (var thingComp in x.GetComps<CompAbilityUser>())
+                    foreach (var thingComp in x.GetCompAbilityUsers())
                     {
                         //var compAbilityUser = (CompAbilityUser) thingComp;
                         var val = Traverse.Create(thingComp).Method("CombatPoints").GetValue<float>();
@@ -162,7 +162,7 @@ namespace AbilityUser
                 if (avgPawns == 0 && specialPawns.Count == 1 && specCombatPoints.Sum(x => x.Value) > 0)
                 {
                     //Log.Message("Special case called: Single character");
-                    specialPawns[0].GetComp<CompAbilityUser>().DisableAbilityUser();
+                    specialPawns[0].GetCompAbilityUser().DisableAbilityUser();
                     return;
                 }
 
@@ -237,12 +237,12 @@ namespace AbilityUser
                 //Log.Message("------------------");
                 __result.ForEach(x =>
                 {
-                    var combatValue = x.kindDef.combatPower + x.GetComp<CompAbilityUser>()?.CombatPoints() ?? 0f;
+                    var combatValue = x.kindDef.combatPower + x.GetCompAbilityUser()?.CombatPoints() ?? 0f;
                     //Log.Message(x.LabelShort + " : " + combatValue);
                 });
                 foreach (var x in removedCharacters)
                 {
-                    if (x.GetComp<CompAbilityUser>() is CompAbilityUser cu && cu.CombatPoints() > 0)
+                    if (x.GetCompAbilityUser() is CompAbilityUser cu && cu.CombatPoints() > 0)
                         cu.DisableAbilityUser();
                     else x.DestroyOrPassToWorld();
                 }
@@ -266,8 +266,8 @@ namespace AbilityUser
         public static void Notify_EquipmentAdded_PostFix(Pawn_EquipmentTracker __instance, ThingWithComps eq)
         {
             //Log.Message("Notify_EquipmentAdded_PostFix 1 : " + eq);
-            var compAbilityUsers = ((Pawn)__instance.ParentHolder).GetComps<CompAbilityUser>();
-            foreach (var cai in eq.GetComps<CompAbilityItem>())
+            var compAbilityUsers = ((Pawn)__instance.ParentHolder).GetCompAbilityUsers();
+            foreach (var cai in eq.GetCompAbilityItems())
             {
                 //Log.Message("  Found CompAbilityItem, for CompAbilityUser of " + cai.Props.AbilityUserClass);
                 foreach (var cau in compAbilityUsers)
@@ -286,8 +286,8 @@ namespace AbilityUser
         public static void Notify_EquipmentRemoved_PostFix(Pawn_EquipmentTracker __instance, ThingWithComps eq)
         {
             //Log.Message("Notify_EquipmentRemoved_PostFix : " + eq);
-            var compAbilityUsers = ((Pawn)__instance.ParentHolder).GetComps<CompAbilityUser>();
-            foreach (var cai in eq.GetComps<CompAbilityItem>())
+            var compAbilityUsers = ((Pawn)__instance.ParentHolder).GetCompAbilityUsers();
+            foreach (var cai in eq.GetCompAbilityItems())
             {
                 //Log.Message("  Found CompAbilityItem, for CompAbilityUser of " + cai.Props.AbilityUserClass);
                 foreach (var cau in compAbilityUsers)
@@ -305,8 +305,8 @@ namespace AbilityUser
         public static void Notify_ApparelAdded_PostFix(Pawn_ApparelTracker __instance, Apparel apparel)
         {
             //Log.Message("Notify_ApparelAdded_PostFix : " + apparel);
-            var compAbilityUsers = ((Pawn)__instance.ParentHolder).GetComps<CompAbilityUser>();
-            foreach (var cai in apparel.GetComps<CompAbilityItem>())
+            var compAbilityUsers = ((Pawn)__instance.ParentHolder).GetCompAbilityUsers();
+            foreach (var cai in apparel.GetCompAbilityItems())
             {
                 //Log.Message("  Found CompAbilityItem, for CompAbilityUser of " + cai.Props.AbilityUserClass);
                 foreach (var cau in compAbilityUsers)
@@ -325,8 +325,8 @@ namespace AbilityUser
         public static void Notify_ApparelRemoved_PostFix(Pawn_ApparelTracker __instance, Apparel apparel)
         {
             //Log.Message("Notify_ApparelRemoved_PostFix 1 : " + apparel);
-            var compAbilityUsers = ((Pawn)__instance.ParentHolder).GetComps<CompAbilityUser>();
-            foreach (var cai in apparel.GetComps<CompAbilityItem>())
+            var compAbilityUsers = ((Pawn)__instance.ParentHolder).GetCompAbilityUsers();
+            foreach (var cai in apparel.GetCompAbilityItems())
             {
                 //Log.Message("  Found CompAbilityItem, for CompAbilityUser of " + cai.Props.AbilityUserClass);
                 foreach (var cau in compAbilityUsers)

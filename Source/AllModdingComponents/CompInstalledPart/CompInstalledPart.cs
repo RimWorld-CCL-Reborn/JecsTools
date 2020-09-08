@@ -5,9 +5,31 @@ namespace CompInstalledPart
 {
     public class CompInstalledPart : ThingComp
     {
+        public CompProperties_InstalledPart Props => (CompProperties_InstalledPart)props;
+
         public bool uninstalled;
 
-        public CompProperties_InstalledPart Props => (CompProperties_InstalledPart)props;
+        private CompEquippable compEquippable;
+
+        public CompEquippable GetEquippable => compEquippable;
+
+        // This is called during ThingWithComps.InitializeComps, after constructor is called and parent is set.
+        public override void Initialize(CompProperties props)
+        {
+            base.Initialize(props);
+            // Avoiding ThingWithComps.GetComp<T> and implementing a specific non-generic version of it here.
+            // That method is slow because the `isinst` instruction with generic type arg operands is very slow,
+            // while `isinst` instruction against non-generic type operand like used below is fast.
+            var comps = parent.AllComps;
+            for (int i = 0, count = comps.Count; i < count; i++)
+            {
+                if (comps[i] is CompEquippable compEquippable)
+                {
+                    this.compEquippable = compEquippable;
+                    break;
+                }
+            }
+        }
 
         public void GiveInstallJob(Pawn actor, Thing target)
         {
@@ -58,7 +80,7 @@ namespace CompInstalledPart
                 //Add equipment
                 if (parent.def.IsWeapon)
                 {
-                    if (targetPawn.equipment.Primary?.GetComp<CompInstalledPart>() is CompInstalledPart otherPart)
+                    if (targetPawn.equipment.Primary?.GetCompInstalledPart() is CompInstalledPart otherPart)
                         otherPart.Notify_Uninstalled(installer, targetPawn);
                     parent.DeSpawn();
                     targetPawn.equipment.MakeRoomFor(parent);

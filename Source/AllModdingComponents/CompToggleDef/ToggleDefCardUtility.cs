@@ -45,8 +45,7 @@ namespace CompToggleDef
         {
             GUI.BeginGroup(rect);
 
-            var compToggleDef = selectedThing.GetComp<CompToggleDef>();
-
+            var compToggleDef = selectedThing.GetCompToggleDef();
             if (compToggleDef != null)
             {
                 var ts = Text.CalcSize(selectedThing.LabelCap).x;

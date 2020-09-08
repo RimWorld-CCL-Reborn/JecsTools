@@ -19,7 +19,7 @@ namespace JecsTools
             JecsToolsFactionDialogMaker.negotiator = negotiator;
             JecsToolsFactionDialogMaker.faction = faction;
             var text = (faction.leader != null) ? faction.leader.Name.ToStringFull : faction.Name;
-            var factionSettings = faction.def?.GetModExtension<FactionSettings>();
+            var factionSettings = faction.def?.GetFactionSettings();
             var greetingHostileKey = factionSettings?.greetingHostileKey ?? "FactionGreetingHostile";
             var greetingWaryKey = factionSettings?.greetingWaryKey ?? "FactionGreetingWary";
             var greetingWarmKey = factionSettings?.greetingWarmKey ?? "FactionGreetingWarm";
@@ -305,7 +305,7 @@ namespace JecsTools
 
         public static void PlaySoundFor(Faction faction)
         {
-            if (faction.def.GetModExtension<FactionSettings>() is FactionSettings fs)
+            if (faction.def.GetFactionSettings() is FactionSettings fs)
             {
                 fs.entrySoundDef?.PlayOneShotOnCamera();
             }

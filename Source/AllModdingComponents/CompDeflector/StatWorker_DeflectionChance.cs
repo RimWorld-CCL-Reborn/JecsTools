@@ -26,7 +26,7 @@ namespace CompDeflector
             {
                 foreach (var equipment in equipmentTracker.AllEquipmentListForReading)
                 {
-                    if (equipment?.GetComp<CompDeflector>() is CompDeflector compDeflector)
+                    if (equipment?.GetCompDeflector() is CompDeflector compDeflector)
                         return compDeflector;
                 }
             }

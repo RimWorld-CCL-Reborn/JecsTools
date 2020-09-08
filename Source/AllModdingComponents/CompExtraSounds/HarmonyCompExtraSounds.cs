@@ -27,7 +27,7 @@ namespace CompExtraSounds
                 var pawn_PawnKindDef = pawn.kindDef;
                 if (pawn_PawnKindDef != null)
                 {
-                    var extraSoundsExtension = pawn_PawnKindDef.GetModExtension<DefModExtension_ExtraSounds>();
+                    var extraSoundsExtension = pawn_PawnKindDef.GetModExtensionExtraSounds();
                     if (extraSoundsExtension != null)
                     {
                         if (extraSoundsExtension != null)
@@ -47,7 +47,7 @@ namespace CompExtraSounds
                     if (thingWithComps != null)
                     {
                         //Log.Message("3");
-                        var CompExtraSounds = thingWithComps.GetComp<CompExtraSounds>();
+                        var CompExtraSounds = thingWithComps.GetCompExtraSounds();
 
                         if (CompExtraSounds != null)
                             if (CompExtraSounds.Props.soundHitPawn != null)
@@ -72,7 +72,7 @@ namespace CompExtraSounds
                     if (thingWithComps != null)
                     {
                         //Log.Message("3");
-                        var CompExtraSounds = thingWithComps.GetComp<CompExtraSounds>();
+                        var CompExtraSounds = thingWithComps.GetCompExtraSounds();
                         if (CompExtraSounds != null)
                             if (CompExtraSounds.Props.soundMiss != null)
                                 __result = CompExtraSounds.Props.soundMiss;
@@ -96,7 +96,7 @@ namespace CompExtraSounds
                     if (thingWithComps != null)
                     {
                         //Log.Message("3");
-                        var CompExtraSounds = thingWithComps.GetComp<CompExtraSounds>();
+                        var CompExtraSounds = thingWithComps.GetCompExtraSounds();
                         if (CompExtraSounds != null)
                             if (CompExtraSounds.Props.soundHitBuilding != null)
                             {

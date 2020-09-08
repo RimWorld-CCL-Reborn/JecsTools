@@ -243,7 +243,7 @@ namespace JecsTools
             {
                 ((Action)(() =>
                 {
-                    var abilityUsers = pawn.GetComps<CompAbilityUser>();
+                    var abilityUsers = pawn.GetCompAbilityUsers();
                     foreach (var a in abilityUsers)
                         result += a.GrappleModifier;
                 })).Invoke();

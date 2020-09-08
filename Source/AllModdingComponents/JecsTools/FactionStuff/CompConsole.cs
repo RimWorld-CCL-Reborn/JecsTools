@@ -10,9 +10,29 @@ namespace JecsTools
     {
         public CompProperties_Console Props => this.props as CompProperties_Console;
 
+        private CompPowerTrader compPowerTrader;
+
         public bool CanUseCommsNow =>
             (!parent.Spawned || !parent.Map.gameConditionManager.ConditionIsActive(GameConditionDefOf.SolarFlare)) &&
-            (!Props.usesPower || (parent.GetComp<CompPowerTrader>()?.PowerOn ?? false));
+            (!Props.usesPower || (compPowerTrader?.PowerOn ?? false));
+
+        // This is called during ThingWithComps.InitializeComps, after constructor is called and parent is set.
+        public override void Initialize(CompProperties props)
+        {
+            base.Initialize(props);
+            // Avoiding ThingWithComps.GetComp<T> and implementing a specific non-generic version of it here.
+            // That method is slow because the `isinst` instruction with generic type arg operands is very slow,
+            // while `isinst` instruction against non-generic type operand like used below is fast.
+            var comps = parent.AllComps;
+            for (int i = 0, count = comps.Count; i < count; i++)
+            {
+                if (comps[i] is CompPowerTrader compPowerTrader)
+                {
+                    this.compPowerTrader = compPowerTrader;
+                    break;
+                }
+            }
+        }
 
         private void UseAct(Pawn myPawn, ICommunicable commTarget)
         {
@@ -37,7 +57,7 @@ namespace JecsTools
                 yield return new FloatMenuOption("CannotUseSolarFlare".Translate(), null);
                 yield break;
             }
-            if (Props.usesPower && (!parent.GetComp<CompPowerTrader>()?.PowerOn ?? false))
+            if (Props.usesPower && (!compPowerTrader?.PowerOn ?? false))
             {
                 yield return new FloatMenuOption("CannotUseNoPower".Translate(), null);
                 yield break;

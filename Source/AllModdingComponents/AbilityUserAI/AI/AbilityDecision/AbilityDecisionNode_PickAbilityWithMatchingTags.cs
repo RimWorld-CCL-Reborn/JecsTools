@@ -27,6 +27,7 @@ namespace AbilityUserAI
 
         public override AbilityAIDef TryPickAbility(Pawn caster)
         {
+            // TODO: Cache this
             //Get all eligible abilities.
             var abilities =
                 from validAbilityDef in
@@ -46,8 +47,7 @@ namespace AbilityUserAI
             if (abilities != null)
             {
                 //Filter out abilities we do not have.
-                var thingComp = caster.AllComps.First(comp => comp.GetType() == profileDef.compAbilityUserClass);
-                var compAbilityUser = thingComp as CompAbilityUser;
+                var compAbilityUser = caster.GetExactCompAbilityUser(profileDef.compAbilityUserClass);
 
                 var knownAbilities =
                     from abilityAIDef in abilities

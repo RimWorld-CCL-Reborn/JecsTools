@@ -18,14 +18,14 @@ namespace JecsTools
             this.FailOnDespawnedOrNull(TargetIndex.A);
             yield return Toils_Goto.GotoCell(TargetIndex.A, PathEndMode.InteractionCell).FailOn(delegate(Toil to)
             {
-                var building_CommsConsole = to.actor.jobs.curJob.GetTarget(TargetIndex.A).Thing.TryGetComp<CompConsole>();
+                var building_CommsConsole = to.actor.jobs.curJob.GetTarget(TargetIndex.A).Thing.TryGetCompConsole();
                 return !building_CommsConsole.CanUseCommsNow;
             });
             Toil openComms = new Toil();
             openComms.initAction = delegate
             {
                 Pawn actor = openComms.actor;
-                var building_CommsConsole = actor.jobs.curJob.GetTarget(TargetIndex.A).Thing.TryGetComp<CompConsole>();
+                var building_CommsConsole = actor.jobs.curJob.GetTarget(TargetIndex.A).Thing.TryGetCompConsole();
                 if (building_CommsConsole.CanUseCommsNow)
                 {
                     TryOpenComms(actor);

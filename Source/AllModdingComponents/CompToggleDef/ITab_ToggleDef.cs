@@ -15,7 +15,7 @@ namespace CompToggleDef
         {
             get
             {
-                var td = SelThing.TryGetComp<CompToggleDef>();
+                var td = SelThing.TryGetCompToggleDef();
                 if (td != null)
                 {
                     //Log.Message("ITab_isvisible");
@@ -28,7 +28,7 @@ namespace CompToggleDef
 
         protected override void FillTab()
         {
-            if (!(Find.Selector.SingleSelectedThing is ThingWithComps selected && selected.GetComp<CompToggleDef>() is CompToggleDef td))
+            if (!(Find.Selector.SingleSelectedThing is ThingWithComps selected && selected.GetCompToggleDef() is CompToggleDef td))
             {
                 Log.Warning("selected thing has no CompToggleDef for ITab_ToggleDef");
                 return;

@@ -52,7 +52,7 @@ namespace CompSlotLoadable
                         if (thingWithComps != null)
                         {
                             //Log.Message("3");
-                            var CompSlotLoadable = thingWithComps.GetComp<CompSlotLoadable>();
+                            var CompSlotLoadable = thingWithComps.GetCompSlotLoadable();
                             if (CompSlotLoadable != null)
                             {
                                 CompSlotLoadable.TryLoadSlot(itemToGather);

@@ -27,9 +27,10 @@ namespace AbilityUserAI
         /// </summary>
         /// <param name="pawn">Pawn to check.</param>
         /// <returns>Ability user if present. Null if none can be found.</returns>
+        [Obsolete("Use the GetCompAbilityUser extension method instead")]
         public static CompAbilityUser Abilities(this Pawn pawn)
         {
-            return pawn.GetComp<CompAbilityUser>();
+            return pawn.GetCompAbilityUser();
         }
 
         /// <summary>
@@ -49,14 +50,9 @@ namespace AbilityUserAI
         public static IEnumerable<AbilityUserAIProfileDef> EligibleAIProfiles(this Pawn pawn)
         {
             IEnumerable<AbilityUserAIProfileDef> result =
-                from matchingProfileDef in
-
-                    //Initial filtering.
-                    (from thingComp in pawn.AllComps
-                        from profileDef in Profiles()
-                        where thingComp.GetType() == profileDef.compAbilityUserClass
-                        select profileDef)
-
+                from matchingProfileDef in Profiles()
+                //Initial filtering.
+                where pawn.GetExactCompAbilityUser(matchingProfileDef.compAbilityUserClass) != null
                 //Finer filtering.
                 //where matchingProfileDef.matchingTraits.Count <= 0 || (matchingProfileDef.matchingTraits.Count > 0 && matchingProfileDef.matchingTraits.Any(traitDef => pawn.story.traits.HasTrait(traitDef)))
                 where matchingProfileDef.Worker.ValidProfileFor(matchingProfileDef, pawn)

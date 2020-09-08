@@ -58,12 +58,12 @@ namespace CompSlotLoadable
             var thingWithComps = __instance.equipment.Primary;
             if (thingWithComps != null)
             {
-                var compSlotLoadable = thingWithComps.GetComp<CompSlotLoadable>();
+                var compSlotLoadable = thingWithComps.GetCompSlotLoadable();
                 if (compSlotLoadable?.Slots != null)
                     foreach (var slot in compSlotLoadable.Slots)
                         if (!slot.IsEmpty())
                         {
-                            var slotBonus = slot.SlotOccupant.TryGetComp<CompSlottedBonus>();
+                            var slotBonus = slot.SlotOccupant.TryGetCompSlottedBonus();
                             if (slotBonus?.Props != null)
                             {
                                 var defensiveHealChance = slotBonus.Props.defensiveHealChance;
@@ -121,7 +121,7 @@ namespace CompSlotLoadable
 
         public static void DrawThingRow_PostFix(ref float y, float width, Thing thing)
         {
-            var compSlotLoadable = thing.TryGetComp<CompSlotLoadable>();
+            var compSlotLoadable = thing.TryGetCompSlotLoadable();
             if (compSlotLoadable?.Slots != null)
                 foreach (var slot in compSlotLoadable.Slots)
                     if (!slot.IsEmpty())
@@ -150,7 +150,7 @@ namespace CompSlotLoadable
         public static void DamageInfosToApply_PostFix(Verb_MeleeAttack __instance, ref IEnumerable<DamageInfo> __result,
             LocalTargetInfo target)
         {
-            var slots = __instance.EquipmentSource?.GetComp<CompSlotLoadable>()?.Slots;
+            var slots = __instance.EquipmentSource?.GetCompSlotLoadable()?.Slots;
             if (slots != null)
             {
                 List<DamageInfo> newList = null;
@@ -158,7 +158,7 @@ namespace CompSlotLoadable
                     !z.IsEmpty() && ((SlotLoadableDef)z.def).doesChangeStats);
                 foreach (var slot in statSlots)
                 {
-                    var slotBonus = slot.SlotOccupant.TryGetComp<CompSlottedBonus>();
+                    var slotBonus = slot.SlotOccupant.TryGetCompSlottedBonus();
                     if (slotBonus != null)
                     {
                         if (slotBonus.Props.damageDef != null)
@@ -256,7 +256,7 @@ namespace CompSlotLoadable
             {
                 if (__instance.Faction == Faction.OfPlayer)
                 {
-                    var compSlotLoadable = pawn_EquipmentTracker.Primary?.GetComp<CompSlotLoadable>();
+                    var compSlotLoadable = pawn_EquipmentTracker.Primary?.GetCompSlotLoadable();
                     if (compSlotLoadable != null)
                     {
                         var gizmos = GizmoGetter(compSlotLoadable);

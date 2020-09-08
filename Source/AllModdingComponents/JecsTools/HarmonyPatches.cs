@@ -114,8 +114,7 @@ namespace JecsTools
             try
             {
 
-                if (__instance.EquipmentCompSource?.PrimaryVerb?.verbProps?.defaultProjectile?
-                    .GetModExtension<ProjectileExtension>() is ProjectileExtension ext)
+                if (__instance.EquipmentCompSource?.PrimaryVerb?.verbProps?.defaultProjectile?.GetProjectileExtension() is ProjectileExtension ext)
                 {
                     if (ext.passesWalls)
                         __result = true;
@@ -133,7 +132,7 @@ namespace JecsTools
         //Ignores all structures as part of objects that disallow being fired through.
         public static void CanHit_PostFix(Projectile __instance, Thing thing, ref bool __result)
         {
-            if (!__result && __instance.def?.GetModExtension<ProjectileExtension>() is ProjectileExtension ext)
+            if (!__result && __instance.def?.GetProjectileExtension() is ProjectileExtension ext)
             {
                 //Mods will often have their own walls, so we cannot do a def check for
                 //ThingDefOf.Wall
@@ -183,8 +182,8 @@ namespace JecsTools
         {
             if (map == null || loc == null || !loc.IsValid)
             {
-                var buildingExtensionA = newEntDef?.GetModExtension<BuildingExtension>();
-                var buildingExtensionB = oldEntDef?.GetModExtension<BuildingExtension>();
+                var buildingExtensionA = newEntDef?.GetBuildingExtension();
+                var buildingExtensionB = oldEntDef?.GetBuildingExtension();
                 if (buildingExtensionB == null && buildingExtensionA == null)
                 {
                     //Log.Message("Both null");
@@ -260,7 +259,7 @@ namespace JecsTools
             var destroyables = new HashSet<Apparel>();
             foreach (var swap in swappables)
             {
-                if (swap.def?.GetModExtension<ApparelExtension>()?.swapCondition is SwapCondition sc &&
+                if (swap.def?.GetApparelExtension()?.swapCondition is SwapCondition sc &&
                     sc.swapWhenGender is Gender gen &&
                     gen != Gender.None && gen == pawn.gender)
                 {
@@ -291,7 +290,7 @@ namespace JecsTools
         public static void GeneratePawns(PawnGroupMakerParms parms, ref IEnumerable<Pawn> __result)
         {
             if (__result != null && __result.Any() &&
-                parms.faction.def.GetModExtension<FactionSettings>() is FactionSettings settings)
+                parms.faction.def.GetFactionSettings() is FactionSettings settings)
             {
                 settings.entrySoundDef?.PlayOneShotOnCamera();
             }
@@ -338,8 +337,8 @@ namespace JecsTools
                 var bHasExt = B.HasModExtension<ApparelExtension>();
                 if (aHasExt && bHasExt)
                 {
-                    var aExt = A.GetModExtension<ApparelExtension>();
-                    var bExt = B.GetModExtension<ApparelExtension>();
+                    var aExt = A.GetApparelExtension();
+                    var bExt = B.GetApparelExtension();
                     var check = new HashSet<string>();
                     if (aExt.coverage != null)
                         for (int i = 0; i < aExt.coverage.Count; i++)

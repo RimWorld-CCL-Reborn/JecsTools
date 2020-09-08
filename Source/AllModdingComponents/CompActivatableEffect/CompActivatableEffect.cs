@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using HarmonyLib;
 using RimWorld;
 using UnityEngine;
@@ -9,6 +8,7 @@ using Verse.Sound;
 
 namespace CompActivatableEffect
 {
+
     public class CompActivatableEffect : CompUseEffect
     {
         public enum State
@@ -17,73 +17,32 @@ namespace CompActivatableEffect
             Activated
         }
 
+        public CompProperties_ActivatableEffect Props => (CompProperties_ActivatableEffect)props;
+
         private State currentState = State.Deactivated;
 
         public bool IsInitialized;
 
         private Sustainer sustainer;
 
-        private bool initComps = false;
         private CompEquippable compEquippable;
         private Func<bool> compDeflectorIsAnimatingNow;
         private Func<int> compDeflectorAnimationDeflectionTicks;
+        private CompOversizedWeapon.CompOversizedWeapon compOversizedWeapon;
 
-        private void InitCompsAsNeeded()
-        {
-            if (!initComps)
-            {
-                if (parent == null) return;
-                compEquippable = parent.GetComp<CompEquippable>();
-                var deflector = parent.AllComps.FirstOrDefault(y =>
-                    y.GetType().ToString() == "CompDeflector.CompDeflector" ||
-                    y.GetType().BaseType.ToString() == "CompDeflector.CompDeflector");
-                if (deflector != null)
-                {
-                    compDeflectorIsAnimatingNow =
-                        (Func<bool>)AccessTools.PropertyGetter(deflector.GetType(), "IsAnimatingNow").CreateDelegate(
-                            typeof(Func<bool>), deflector);
-                    compDeflectorAnimationDeflectionTicks =
-                        (Func<int>)AccessTools.PropertyGetter(deflector.GetType(), "AnimationDeflectionTicks").CreateDelegate(
-                            typeof(Func<int>), deflector);
-                }
-                initComps = true;
-            }
-        }
+        private static readonly Type compDeflectorType = GenTypes.GetTypeInAnyAssembly("CompDeflector.CompDeflector");
 
-        public CompEquippable GetEquippable
-        {
-            get
-            {
-                InitCompsAsNeeded();
-                return compEquippable;
-            }
-        }
+        public CompEquippable GetEquippable => compEquippable;
+
+        public CompOversizedWeapon.CompOversizedWeapon GetOversizedWeapon => compOversizedWeapon;
 
         public Pawn GetPawn => GetEquippable.verbTracker.PrimaryVerb.CasterPawn;
 
         //public List<Verb> GetVerbs => GetEquippable.verbTracker.AllVerbs;
 
-        public bool CompDeflectorIsAnimatingNow
-        {
-            get
-            {
-                InitCompsAsNeeded();
-                if (compDeflectorIsAnimatingNow != null)
-                    return compDeflectorIsAnimatingNow();
-                return false;
-            }
-        }
+        public bool CompDeflectorIsAnimatingNow => compDeflectorIsAnimatingNow?.Invoke() ?? false;
 
-        public int CompDeflectorAnimationDeflectionTicks
-        {
-            get
-            {
-                InitCompsAsNeeded();
-                if (compDeflectorAnimationDeflectionTicks != null)
-                    return compDeflectorAnimationDeflectionTicks();
-                return 0;
-            }
-        }
+        public int CompDeflectorAnimationDeflectionTicks => compDeflectorAnimationDeflectionTicks?.Invoke() ?? 0;
 
         public bool GizmosOnEquip => Props.gizmosOnEquip;
         public State CurrentState => currentState;
@@ -172,6 +131,37 @@ namespace CompActivatableEffect
             return false;
         }
 
+        // This is called during ThingWithComps.InitializeComps, after constructor is called and parent is set.
+        public override void Initialize(CompProperties props)
+        {
+            base.Initialize(props);
+            // Avoiding ThingWithComps.GetComp<T> and implementing a specific non-generic version of it here.
+            // That method is slow because the `isinst` instruction with generic type arg operands is very slow,
+            // while `isinst` instruction against non-generic type operand like used below is fast.
+            // For the optional CompDeflector, we have to use the slower IsAssignableFrom reflection check.
+            var comps = parent.AllComps;
+            for (int i = 0, count = comps.Count; i < count; i++)
+            {
+                var comp = comps[i];
+                if (comp is CompEquippable compEquippable)
+                    this.compEquippable = compEquippable;
+                else if (compDeflectorType != null)
+                {
+                    var compType = comp.GetType();
+                    if (compDeflectorType.IsAssignableFrom(compType))
+                    {
+                        compDeflectorIsAnimatingNow =
+                            (Func<bool>)AccessTools.PropertyGetter(compType, "IsAnimatingNow").CreateDelegate(typeof(Func<bool>), comp);
+                        compDeflectorAnimationDeflectionTicks =
+                            (Func<int>)AccessTools.PropertyGetter(compType, "AnimationDeflectionTicks").CreateDelegate(typeof(Func<int>), comp);
+                    }
+                }
+                else if (comp is CompOversizedWeapon.CompOversizedWeapon compOversizedWeapon)
+                    this.compOversizedWeapon = compOversizedWeapon;
+            }
+        }
+
+        // This is called on the first tick - not rolled into above Initialize since it's still needed in case subclasses implement it.
         public virtual void Initialize()
         {
             IsInitialized = true;
@@ -261,8 +251,6 @@ namespace CompActivatableEffect
                 return resolvedTexture;
             }
         }
-
-        public CompProperties_ActivatableEffect Props => (CompProperties_ActivatableEffect)props;
 
         public virtual Graphic Graphic
         {

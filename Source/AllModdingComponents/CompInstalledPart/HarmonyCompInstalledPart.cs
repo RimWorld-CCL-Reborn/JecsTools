@@ -23,7 +23,7 @@ namespace CompInstalledPart
         public static bool DrawEquipmentAiming_PreFix(Pawn ___pawn, Thing eq, Vector3 drawLoc,
             float aimAngle)
         {
-            if (___pawn != null && eq.TryGetComp<CompInstalledPart>() is CompInstalledPart installedComp)
+            if (___pawn != null && eq.TryGetCompInstalledPart() is CompInstalledPart installedComp)
             {
                 var flip = false;
                 var num = aimAngle - 90f;
@@ -69,7 +69,7 @@ namespace CompInstalledPart
         public static bool TryDropEquipment_PreFix(ThingWithComps eq, out ThingWithComps resultingEq, ref bool __result)
         {
             resultingEq = null;
-            return __result = eq?.GetComp<CompInstalledPart>()?.uninstalled ?? true;
+            return __result = eq?.GetCompInstalledPart()?.uninstalled ?? true;
         }
 
         // RimWorld.Pawn_ApparelTracker
@@ -80,7 +80,7 @@ namespace CompInstalledPart
                 var pawn = itabPawnGearSelPawnForGearGetter(__instance);
                 if (pawn?.apparel?.WornApparel.Contains(apparel) ?? false)
                 {
-                    var installedPart = apparel.GetComp<CompInstalledPart>();
+                    var installedPart = apparel.GetCompInstalledPart();
                     if (installedPart != null)
                         if (!installedPart.uninstalled)
                             return false;

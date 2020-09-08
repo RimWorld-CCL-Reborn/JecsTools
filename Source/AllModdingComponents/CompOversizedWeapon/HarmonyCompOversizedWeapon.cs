@@ -24,7 +24,7 @@ namespace CompOversizedWeapon
         public static bool DrawEquipmentAimingPreFix(Pawn ___pawn, Thing eq, Vector3 drawLoc, float aimAngle)
         {
             if (___pawn == null) return true;
-            if (eq is ThingWithComps thingWithComps && thingWithComps.GetComp<CompOversizedWeapon>() is CompOversizedWeapon compOversizedWeapon)
+            if (eq.TryGetCompOversizedWeapon() is CompOversizedWeapon compOversizedWeapon)
             {
                 //If the deflector is animating now, deflector handles drawing (and already has the drawSize fix).
                 if (compOversizedWeapon.CompDeflectorIsAnimatingNow) return false;
@@ -161,7 +161,7 @@ namespace CompOversizedWeapon
             if (___graphicInt == null) return;
             if (__instance.ParentHolder is Pawn) return;
 
-            var compOversizedWeapon = __instance.TryGetComp<CompOversizedWeapon>();
+            var compOversizedWeapon = __instance.TryGetCompOversizedWeapon();
             if (compOversizedWeapon != null)
             {
                 //Following commented-out section is an unnecessary "optimization" that actually hurts performance due to the reflection involved.

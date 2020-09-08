@@ -21,14 +21,13 @@ namespace CompInstalledPart
                 delegate(Vector3 clickPos, Pawn pawn, Thing curThing)
                 {
                     var opts = new List<FloatMenuOption>();
-                    if (curThing is ThingWithComps groundThing &&
-                        groundThing.GetComp<CompInstalledPart>() is CompInstalledPart groundPart)
+                    if (curThing.TryGetCompInstalledPart() is CompInstalledPart groundPart)
                         if (pawn.equipment != null)
                         {
                             //Remove "Equip" option from right click.
-                            if (groundThing.GetComp<CompEquippable>() != null)
+                            if (groundPart.GetEquippable != null)
                             {
-                                var optToRemove = opts.FirstOrDefault(x => x.Label.Contains(groundThing.Label));
+                                var optToRemove = opts.FirstOrDefault(x => x.Label.Contains(curThing.Label));
                                 if (optToRemove != null) opts.Remove(optToRemove);
                             }
 
@@ -53,7 +52,7 @@ namespace CompInstalledPart
                                             }
                                         }, delegate(LocalTargetInfo target)
                                         {
-                                            groundThing.SetForbidden(false);
+                                            curThing.SetForbidden(false);
                                             groundPart.GiveInstallJob(pawn, target.Thing);
                                         }, null, null, null);
                                     }

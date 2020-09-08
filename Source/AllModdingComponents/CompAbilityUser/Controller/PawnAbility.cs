@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using RimWorld;
 using UnityEngine;
@@ -34,7 +33,7 @@ namespace AbilityUser
         public PawnAbility(AbilityData data)
         {
             pawn = data.Pawn;
-            abilityUser = data.Pawn.AllComps.FirstOrDefault(x => x.GetType() == data.AbilityClass) as CompAbilityUser;
+            abilityUser = pawn.GetExactCompAbilityUser(data.AbilityClass);
             //Log.Message("PawnAbility Created: " + this.Def.defName);
         }
 
@@ -51,7 +50,7 @@ namespace AbilityUser
             get
             {
                 if (abilityUser == null)
-                    abilityUser = pawn.GetComp<CompAbilityUser>();
+                    abilityUser = pawn.GetCompAbilityUser();
                 return abilityUser;
             }
         }

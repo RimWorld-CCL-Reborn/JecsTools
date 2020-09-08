@@ -86,6 +86,7 @@ namespace CompSlotLoadable
         //
         //Spawn variables
         public Thing owner;
+        private CompSlotLoadable parentComp;
 
         #endregion Variables
 
@@ -122,6 +123,16 @@ namespace CompSlotLoadable
 
         //Get methods
 
+        public CompSlotLoadable ParentComp
+        {
+            get
+            {
+                // XXX: Not sure of all the ways SlotLoadable is initialized (like whether client code does it itself),
+                // but they should all have parent CompSlotLoadable, which is lazily initialized here from owner.
+                parentComp ??= owner?.TryGetCompSlotLoadable();
+                return parentComp;
+            }
+        }
 
         public Thing SlotOccupant
         {
@@ -164,26 +175,7 @@ namespace CompSlotLoadable
             set => slot = value;
         }
 
-        public Pawn Holder
-        {
-            get
-            {
-                Pawn result = null;
-                if (owner != null)
-                {
-                    var eq = owner.TryGetComp<CompEquippable>();
-                    if (eq != null)
-                        if (eq.PrimaryVerb != null)
-                        {
-                            var pawn = eq.PrimaryVerb.CasterPawn;
-                            if (pawn != null)
-                                if (pawn.Spawned)
-                                    result = pawn;
-                        }
-                }
-                return result;
-            }
-        }
+        public Pawn Holder => ParentComp?.GetPawn is Pawn pawn && pawn.Spawned ? pawn : null;
 
         public Map ParentMap
         {

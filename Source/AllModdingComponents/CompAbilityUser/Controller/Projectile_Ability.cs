@@ -64,7 +64,7 @@ namespace AbilityUser
             if (hediff != null)
                 if (hediff.def != null)
                 {
-                    var compAbility = Caster.GetComp<CompAbilityUser>();
+                    var compAbility = Caster.GetCompAbilityUser();
                     if (compAbility != null)
                         if (compAbility.IgnoredHediffs() != null)
                             if (compAbility.IgnoredHediffs().Contains(hediff.def))

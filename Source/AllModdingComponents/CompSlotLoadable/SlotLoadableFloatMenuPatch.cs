@@ -28,7 +28,7 @@ namespace CompSlotLoadable
                 holders.ForEach(x => allThings.AddRange(x.GetDirectlyHeldThings().ToList()));
                 foreach (var item in allThings)
                 {
-                    var compSlotLoadable = item.TryGetComp<CompSlotLoadable>();
+                    var compSlotLoadable = item.TryGetCompSlotLoadable();
                     if (compSlotLoadable != null)
                     {
                         var c = clickPos.ToIntVec3();

@@ -30,7 +30,7 @@ namespace PawnShields
             workingShields.Clear();
 
             // Same conditions as weapon generation, except using PawnKindDef ShieldPawnGeneratorProperties.shieldTags instead of pawn.kindDef.weaponTags
-            var generatorProps = request.KindDef.GetModExtension<ShieldPawnGeneratorProperties>();
+            var generatorProps = request.KindDef.GetShieldPawnGeneratorProperties();
             if (generatorProps == null || generatorProps.shieldTags.NullOrEmpty())
                 return;
             if (!pawn.RaceProps.ToolUser ||
@@ -69,11 +69,28 @@ namespace PawnShields
                 PawnGenerator.PostProcessGeneratedGear(thingWithComps, pawn);
                 float biocodeWeaponChance = (request.BiocodeWeaponChance > 0f) ? request.BiocodeWeaponChance : pawn.kindDef.biocodeWeaponChance;
                 if (Rand.Value < biocodeWeaponChance)
-                    thingWithComps.TryGetComp<CompBiocodableWeapon>()?.CodeFor(pawn);
+                {
+                    BiocodeForPawn(pawn, thingWithComps);
+                }
                 pawn.equipment.AddEquipment(thingWithComps);
             }
 
             workingShields.Clear();
+        }
+
+        // Avoiding ThingWithComps.GetComp<T> and implementing a specific non-generic version of it here.
+        // That method is slow because the `isinst` instruction with generic type arg operands is very slow,
+        // while `isinst` instruction against non-generic type operand like used below is fast (~6x as fast for me).
+        private static void BiocodeForPawn(Pawn pawn, ThingWithComps thingWithComps)
+        {
+            var comps = thingWithComps.AllComps;
+            for (int i = 0, count = comps.Count; i < count; i++)
+            {
+                if (comps[i] is CompBiocodableWeapon compBiocodableWeapon)
+                {
+                    compBiocodableWeapon.CodeFor(pawn);
+                }
+            }
         }
 
         /// <summary>

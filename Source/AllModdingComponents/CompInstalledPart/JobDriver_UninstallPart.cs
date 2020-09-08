@@ -21,7 +21,7 @@ namespace CompInstalledPart
 
         protected float workLeft;
 
-        protected CompInstalledPart UninstallComp => PartToUninstall.GetComp<CompInstalledPart>();
+        protected CompInstalledPart UninstallComp => PartToUninstall.GetCompInstalledPart();
 
         protected ThingWithComps PartToUninstall => (ThingWithComps)job.targetA.Thing;
 

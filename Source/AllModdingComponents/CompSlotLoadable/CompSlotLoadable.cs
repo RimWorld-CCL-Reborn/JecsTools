@@ -9,6 +9,8 @@ namespace CompSlotLoadable
 {
     public class CompSlotLoadable : ThingComp
     {
+        public CompProperties_SlotLoadable Props => (CompProperties_SlotLoadable)props;
+
         private SlotLoadable colorChangingSlot;
         public bool GizmosOnEquip = true;
 
@@ -16,6 +18,7 @@ namespace CompSlotLoadable
 
         private bool isInitialized;
 
+        private CompEquippable compEquippable;
 
         private SlotLoadable secondColorChangingSlot;
 
@@ -67,13 +70,29 @@ namespace CompSlotLoadable
             }
         }
 
-        public CompEquippable GetEquippable => parent.GetComp<CompEquippable>();
+        public CompEquippable GetEquippable => compEquippable;
 
-        public Pawn GetPawn => GetEquippable.verbTracker.PrimaryVerb.CasterPawn;
+        public Pawn GetPawn => GetEquippable.PrimaryVerb.CasterPawn;
 
+        // This is called during ThingWithComps.InitializeComps, after constructor is called and parent is set.
+        public override void Initialize(CompProperties props)
+        {
+            base.Initialize(props);
+            // Avoiding ThingWithComps.GetComp<T> and implementing a specific non-generic version of it here.
+            // That method is slow because the `isinst` instruction with generic type arg operands is very slow,
+            // while `isinst` instruction against non-generic type operand like used below is fast.
+            var comps = parent.AllComps;
+            for (int i = 0, count = comps.Count; i < count; i++)
+            {
+                if (comps[i] is CompEquippable compEquippable)
+                {
+                    this.compEquippable = compEquippable;
+                    break;
+                }
+            }
+        }
 
-        public CompProperties_SlotLoadable Props => (CompProperties_SlotLoadable)props;
-
+        // This is called on the first tick - not rolled into above Initialize since it's still needed in case subclasses implement it.
         public void Initialize()
         {
             if (!isInitialized)
@@ -242,7 +261,7 @@ namespace CompSlotLoadable
                 }
                 if (((SlotLoadableDef)slot.def).doesChangeStats)
                 {
-                    var slotBonus = slot.SlotOccupant.TryGetComp<CompSlottedBonus>();
+                    var slotBonus = slot.SlotOccupant.TryGetCompSlottedBonus();
                     if (slotBonus?.Props != null)
                     {
                         if (!slotBonus.Props.statModifiers.NullOrEmpty())
