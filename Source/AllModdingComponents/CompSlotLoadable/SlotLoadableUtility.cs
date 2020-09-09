@@ -4,7 +4,6 @@ using Verse;
 
 namespace CompSlotLoadable
 {
-    [StaticConstructorOnStartup]
     public static class SlotLoadableUtility
     {
         // Avoiding ThingWithComps.GetComp<T> and implementing a specific non-generic version of it here.
@@ -45,10 +44,8 @@ namespace CompSlotLoadable
         // Grab slots of the thing if they exists. Returns null if none
         public static List<SlotLoadable> GetSlots(this Thing someThing)
         {
-            var compSlotLoadable = someThing.TryGetCompSlotLoadable();
-            if (compSlotLoadable?.Slots?.Count > 0) // note: null compared with any number => false
-                return compSlotLoadable.Slots;
-            return null;
+            var slots = someThing.TryGetCompSlotLoadable()?.Slots;
+            return !slots.NullOrEmpty() ? slots : null;
         }
 
         // Get the thing's modificaiton to stat from it's slots
@@ -60,10 +57,7 @@ namespace CompSlotLoadable
             if (slots != null)
                 foreach (var slot in slots)
                     if (!slot.IsEmpty())
-                    {
-                        var slottable = slot.SlotOccupant;
-                        retval += DetermineSlottableStatAugment(slottable, stat);
-                    }
+                        retval += DetermineSlottableStatAugment(slot.SlotOccupant, stat);
             return retval;
         }
 

@@ -32,35 +32,13 @@ namespace CompSlotLoadable
             slot = new ThingOwner<Thing>(this, false, LookMode.Deep);
         }
 
-        public Texture2D SlotIcon()
-        {
-            if (SlotOccupant != null)
-                if (SlotOccupant.def != null)
-                    return SlotOccupant.def.uiIcon;
-            return null;
-        }
+        public Texture2D SlotIcon() => SlotOccupant?.def?.uiIcon;
 
-        public Color SlotColor()
-        {
-            if (SlotOccupant != null)
-                if (SlotOccupant.def != null)
-                    return SlotOccupant.def.graphic.Color;
-            return Color.white;
-        }
+        public Color SlotColor() => SlotOccupant?.def?.graphic.Color ?? Color.white;
 
-        public bool IsEmpty()
-        {
-            if (SlotOccupant != null) return false;
-            return true;
-        }
+        public bool IsEmpty() => SlotOccupant == null;
 
-        public bool CanLoad(ThingDef defType)
-        {
-            if (slottableThingDefs != null)
-                if (slottableThingDefs.Contains(defType))
-                    return true;
-            return false;
-        }
+        public bool CanLoad(ThingDef defType) => slottableThingDefs?.Contains(defType) ?? false;
 
         public override void ExposeData()
         {
@@ -71,7 +49,7 @@ namespace CompSlotLoadable
             Scribe_Deep.Look(ref slot, "slot", this);
             Scribe_Collections.Look(ref slottableThingDefs, "slottableThingDefs", LookMode.Undefined);
             Scribe_References.Look(ref owner, "owner");
-            //Scribe_References.Look<Thing>(ref this.slotOccupant, "slotOccupant");
+            //Scribe_References.Look(ref this.slotOccupant, "slotOccupant");
         }
 
         #region Variables
@@ -92,30 +70,18 @@ namespace CompSlotLoadable
 
         #region IThingOwnerOwner
 
-        public Map GetMap()
-        {
-            return ParentMap;
-        }
+        public Map GetMap() => ParentMap;
 
-        public ThingOwner GetInnerContainer()
-        {
-            return slot;
-        }
+        public ThingOwner GetInnerContainer() => slot;
 
-        public IntVec3 GetPosition()
-        {
-            return ParentLoc;
-        }
+        public IntVec3 GetPosition() => ParentLoc;
 
         public void GetChildHolders(List<IThingHolder> outChildren)
         {
             ThingOwnerUtility.AppendThingHoldersFromThings(outChildren, GetDirectlyHeldThings());
         }
 
-        public ThingOwner GetDirectlyHeldThings()
-        {
-            return slot;
-        }
+        public ThingOwner GetDirectlyHeldThings() => slot;
 
         #endregion IThingOwnerOwner
 
@@ -123,16 +89,9 @@ namespace CompSlotLoadable
 
         //Get methods
 
-        public CompSlotLoadable ParentComp
-        {
-            get
-            {
-                // XXX: Not sure of all the ways SlotLoadable is initialized (like whether client code does it itself),
-                // but they should all have parent CompSlotLoadable, which is lazily initialized here from owner.
-                parentComp ??= owner?.TryGetCompSlotLoadable();
-                return parentComp;
-            }
-        }
+        // XXX: Not sure of all the ways SlotLoadable is initialized (like whether client code does it itself),
+        // but they should all have parent CompSlotLoadable, which is lazily initialized here from owner.
+        public CompSlotLoadable ParentComp => parentComp ??= owner?.TryGetCompSlotLoadable();
 
         public Thing SlotOccupant
         {
@@ -181,7 +140,6 @@ namespace CompSlotLoadable
         {
             get
             {
-                Map result = null;
                 //Does our parent have an equippable class?
                 //Use that to find a pawn location if it's equipped.
                 if (owner != null)
@@ -190,7 +148,7 @@ namespace CompSlotLoadable
                         return Holder.Map;
                     return owner.Map;
                 }
-                return result;
+                return null;
             }
         }
 
@@ -198,7 +156,6 @@ namespace CompSlotLoadable
         {
             get
             {
-                var result = IntVec3.Invalid;
                 //Does our parent have an equippable class?
                 //Use that to find a pawn location if it's equipped.
                 if (owner != null)
@@ -207,7 +164,7 @@ namespace CompSlotLoadable
                         return Holder.Position;
                     return owner.Position;
                 }
-                return result;
+                return IntVec3.Invalid;
             }
         }
 
@@ -236,10 +193,7 @@ namespace CompSlotLoadable
             }
             else
             {
-                Messages.Message(string.Format(StringOf.ExceptionSlotAlreadyFilled, new object[]
-                {
-                    owner.Label
-                }), MessageTypeDefOf.RejectInput);
+                Messages.Message(string.Format(StringOf.ExceptionSlotAlreadyFilled, owner.Label), MessageTypeDefOf.RejectInput);
             }
             return false;
         }

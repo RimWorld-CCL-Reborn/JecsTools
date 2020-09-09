@@ -148,11 +148,9 @@ namespace AbilityUser
                 specialPawns.ForEach(x =>
                 {
                     var combatValue = x.kindDef.combatPower;
-                    foreach (var thingComp in x.GetCompAbilityUsers())
+                    foreach (var compAbilityUser in x.GetCompAbilityUsers())
                     {
-                        //var compAbilityUser = (CompAbilityUser) thingComp;
-                        var val = Traverse.Create(thingComp).Method("CombatPoints").GetValue<float>();
-                        combatValue += val; //compAbilityUser.CombatPoints();
+                        combatValue += compAbilityUser.CombatPoints();
                     }
                     specCombatPoints.Add(x, combatValue);
                     //Log.Message(x.LabelShort + " : " + combatValue);
@@ -342,15 +340,13 @@ namespace AbilityUser
         }
 
         // RimWorld.Targeter
-        public static bool ConfirmStillValid(Targeter __instance)
+        public static bool ConfirmStillValid(Targeter __instance, Pawn ___caster)
         {
             if (__instance.targetingSource is Verb_UseAbility)
             {
-                var caster = Traverse.Create(__instance).Field("caster").GetValue<Pawn>();
-
-                if (caster != null && (caster.Map != Find.CurrentMap || caster.Destroyed ||
-                                       !Find.Selector.IsSelected(caster) ||
-                                       caster.Faction != Faction.OfPlayerSilentFail))
+                if (___caster != null && (___caster.Map != Find.CurrentMap || ___caster.Destroyed ||
+                                       !Find.Selector.IsSelected(___caster) ||
+                                       ___caster.Faction != Faction.OfPlayerSilentFail))
                     __instance.StopTargeting();
                 if (__instance.targetingSource != null)
                 {

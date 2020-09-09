@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using AbilityUser;
 using RimWorld;
@@ -162,13 +161,11 @@ namespace JecsTools
         /// <returns></returns>
         public static bool TryGetGrapplingPart(Pawn grappler, out BodyPartRecord bodyPartRec)
         {
-            BodyPartRecord result = null;
-            if (grappler.health.hediffSet.GetNotMissingParts().ToList().FindAll(x =>
-                        x.def.tags.Contains(BodyPartTagDefOf.ManipulationLimbSegment) ||
-                        x.def.tags.Contains(BodyPartTagDefOf.ManipulationLimbCore)) is
-                    List<BodyPartRecord> recs && recs.Count > 0)
-                result = recs.RandomElement();
-            bodyPartRec = result;
+            bodyPartRec = grappler.health.hediffSet.GetNotMissingParts()
+                .Where(x =>
+                    x.def.tags.Contains(BodyPartTagDefOf.ManipulationLimbSegment) ||
+                    x.def.tags.Contains(BodyPartTagDefOf.ManipulationLimbCore))
+                .RandomElementWithFallback();
             return bodyPartRec != null;
         }
 

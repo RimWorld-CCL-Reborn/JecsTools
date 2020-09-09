@@ -49,17 +49,14 @@ namespace JecsTools
             {
                 var curTile = Find.WorldGrid[__instance.Tile];
                 if (Find.World.GetComponent<CaravanJobGiver>().CurJob(__instance) != null)
-                    __result = __result.Concat(new[]
+                    __result = __result.Append(new Command_Action
                     {
-                        new Command_Action
+                        defaultLabel = "CommandCancelConstructionLabel".Translate(),
+                        defaultDesc = "CommandClearPrioritizedWorkDesc".Translate(),
+                        icon = TexCommand.ClearPrioritizedWork,
+                        action = delegate
                         {
-                            defaultLabel = "CommandCancelConstructionLabel".Translate(),
-                            defaultDesc = "CommandClearPrioritizedWorkDesc".Translate(),
-                            icon = TexCommand.ClearPrioritizedWork,
-                            action = delegate
-                            {
-                                Find.World.GetComponent<CaravanJobGiver>().Tracker(__instance).StopAll();
-                            }
+                            Find.World.GetComponent<CaravanJobGiver>().Tracker(__instance).StopAll();
                         }
                     });
             }

@@ -101,7 +101,7 @@ namespace JecsTools
         }
 
         [Conditional("DEBUGLOG")]
-        public static void DebugMessage(string s)
+        private static void DebugMessage(string s)
         {
             Log.Message(s);
         }
@@ -426,12 +426,12 @@ namespace JecsTools
             if (___pawn != null && !StopPreApplyDamageCheck)
             {
                 DebugMessage("c6c:: Pawn exists. StopPreApplyDamageCheck: False");
-                if (___pawn.health?.hediffSet?.hediffs?.Count > 0) // note: null compared with any number => false
+                var hediffs = ___pawn.health?.hediffSet?.hediffs;
+                if (!hediffs.NullOrEmpty())
                 {
                     DebugMessage("c6c:: Pawn has health.");
                     //A list will stack.
-                    var fortitudeHediffs =
-                        ___pawn.health.hediffSet.hediffs.FindAll(x => x.TryGetComp<HediffComp_DamageSoak>() != null);
+                    var fortitudeHediffs = hediffs.FindAll(x => x.TryGetComp<HediffComp_DamageSoak>() != null);
                     if (fortitudeHediffs.Count > 0)
                     {
                         DebugMessage("c6c:: Pawn has Damage Soak hediff.");

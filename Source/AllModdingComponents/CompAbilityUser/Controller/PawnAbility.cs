@@ -252,10 +252,7 @@ namespace AbilityUser
             }
             //else if (!Verb.CasterPawn.drafter.Drafted)
             //{
-            //    reason = "IsNotDrafted".Translate(new object[]
-            //    {
-            //        Verb.CasterPawn.Name.ToStringShort
-            //    });
+            //    reason = "IsNotDrafted".Translate(Verb.CasterPawn.Name.ToStringShort);
             //}
 
             return true;

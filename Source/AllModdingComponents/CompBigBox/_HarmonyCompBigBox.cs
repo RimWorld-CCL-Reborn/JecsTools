@@ -18,14 +18,11 @@ namespace DefModExtension_BigBox
                 new HarmonyMethod(type, nameof(DrawSelectionBracketFor_PreFix)), null);
         }
 
-        private static bool DrawSelectionBracketFor_PreFix(object obj)
+        private static bool DrawSelectionBracketFor_PreFix(object obj, Vector3[] ___bracketLocs, Material ___SelectionBracketMat,
+            Dictionary<object, float> ___selectTimes)
         {
             if (obj is ThingWithComps thing && thing.def?.GetModExtensionBigBox() is DefModExtension_BigBox bigBox)
             {
-                var bracketLocs = Traverse.Create(typeof(SelectionDrawer)).Field("bracketLocs").GetValue<Vector3[]>();
-                var SelectionBracketMat = Traverse.Create(typeof(SelectionDrawer)).Field("SelectionBracketMat").GetValue<Material>();
-                var selectTimes = Traverse.Create(typeof(SelectionDrawer)).Field("selectTimes").GetValue<Dictionary<object, float>>();
-
                 //Use public variables from DefModExtension_BigBox
                 Vector3 drawPos = thing.DrawPos;
                 Vector2 drawSize = new Vector2(1, 1);
@@ -58,12 +55,12 @@ namespace DefModExtension_BigBox
                     }
                 }
 
-                SelectionDrawerUtility.CalculateSelectionBracketPositionsWorld(bracketLocs, thing, drawPos, drawSize, selectTimes, Vector2.one);
+                SelectionDrawerUtility.CalculateSelectionBracketPositionsWorld(___bracketLocs, thing, drawPos, drawSize, ___selectTimes, Vector2.one);
                 int num = 0;
                 for (int i = 0; i < 4; i++)
                 {
                     Quaternion rotation = Quaternion.AngleAxis(num, Vector3.up);
-                    Graphics.DrawMesh(MeshPool.plane10, bracketLocs[i], rotation, SelectionBracketMat, 0);
+                    Graphics.DrawMesh(MeshPool.plane10, ___bracketLocs[i], rotation, ___SelectionBracketMat, 0);
                     num -= 90;
                 }
                 return false;

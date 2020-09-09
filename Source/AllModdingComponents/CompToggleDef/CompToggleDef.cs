@@ -16,18 +16,16 @@ namespace CompToggleDef
         public override void Initialize(CompProperties props)
         {
             base.Initialize(props);
-            string tdbase;
-            string tdkey;
 
             //Log.Message("CompToggleDef Initialize entered");
             if (toggleDefs == null)
-                if (parseToggleDef(out tdbase, out tdkey))
-                    fillToggleDefs(tdbase, tdkey);
+                if (ParseToggleDef(out var tdbase, out var tdkey))
+                    FillToggleDefs(tdbase, tdkey);
                 else
                     Log.Warning("Failed to create toggleDefs");
         }
 
-        public void fillToggleDefs(string tdbase, string tdkey)
+        public void FillToggleDefs(string tdbase, string tdkey)
         {
             // go through all and find the ones that match
             //Log.Message("CompToggleDef.fillToggleDefs" + tdbase +" " + tdkey);
@@ -44,7 +42,7 @@ namespace CompToggleDef
 
 
         // return true on success
-        public bool parseToggleDef(out string tdbase, out string tdkey)
+        public bool ParseToggleDef(out string tdbase, out string tdkey)
         {
             string[] thematch = null;
             var retval = false;

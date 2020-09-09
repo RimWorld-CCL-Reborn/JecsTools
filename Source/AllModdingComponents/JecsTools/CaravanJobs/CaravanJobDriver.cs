@@ -54,8 +54,7 @@ namespace JecsTools
                     return null;
                 if (curToilIndex >= toils.Count)
                 {
-                    Log.Error(string.Concat(caravan, " with job ", CurJob, " tried to get CurToil with curToilIndex=",
-                        curToilIndex, " but only has ", toils.Count, " toils."));
+                    Log.Error($"{caravan} with job {CurJob} tried to get CurToil with curToilIndex={curToilIndex} but only has {toils.Count} toils.");
                     return null;
                 }
                 return toils[curToilIndex];
@@ -179,9 +178,7 @@ namespace JecsTools
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(string.Concat("Pawn ", caravan,
-                        " threw exception while executing a global finish action (", i, "), jobDriver=", GetType(),
-                        ": ", ex));
+                    Log.Error($"Pawn {caravan} threw exception while executing a global finish action ({i}), jobDriver={GetType()}: {ex}");
                 }
             if (HaveCurToil)
                 CurToil.Cleanup();
@@ -206,7 +203,7 @@ namespace JecsTools
             catch (Exception ex)
             {
                 Find.World.GetComponent<CaravanJobGiver>().Tracker(caravan).StartErrorRecoverJob(
-                    string.Concat("Exception in SetupToils (pawn=", caravan, ", job=", CurJob, "): ", ex));
+                    $"Exception in SetupToils (pawn={caravan}, job={CurJob}): {ex}");
             }
         }
 
@@ -245,8 +242,7 @@ namespace JecsTools
                     }
                     else if (curToilCompleteMode == ToilCompleteMode.Instant && debugTicksSpentThisToil > 300)
                     {
-                        Log.Error(string.Concat(caravan, " had to be broken from frozen state. He was doing job ",
-                            CurJob, ", toilindex=", curToilIndex));
+                        Log.Error($"{caravan} had to be broken from frozen state. He was doing job {CurJob}, toilindex={curToilIndex}");
                         ReadyForNextToil();
                     }
                     else
@@ -272,8 +268,7 @@ namespace JecsTools
             catch (Exception ex)
             {
                 Find.World.GetComponent<CaravanJobGiver>().Tracker(caravan).StartErrorRecoverJob(
-                    string.Concat("Exception in Tick (pawn=", caravan, ", job=", CurJob, ", CurToil=", curToilIndex,
-                        "): ", ex));
+                    $"Exception in Tick (pawn={caravan}, job={CurJob}, CurToil={curToilIndex}): {ex}");
             }
         }
 
@@ -319,8 +314,7 @@ namespace JecsTools
                         catch (Exception ex)
                         {
                             Find.World.GetComponent<CaravanJobGiver>().Tracker(caravan)
-                                .StartErrorRecoverJob(string.Concat("JobDriver threw exception in initAction. Pawn=",
-                                    caravan, ", Job=", CurJob, ", Exception: ", ex));
+                                .StartErrorRecoverJob($"JobDriver threw exception in initAction. Pawn={caravan}, Job={CurJob}, Exception: {ex}");
                             return;
                         }
                     if (CurToilIndex == num && !ended && curToilCompleteMode == ToilCompleteMode.Instant)

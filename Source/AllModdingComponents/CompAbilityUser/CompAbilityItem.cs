@@ -34,8 +34,9 @@ namespace AbilityUser
 
         public override void PostDrawExtraSelectionOverlays()
         {
-            if (Overlay == null) Log.Message("NoOverlay");
-            if (Overlay != null)
+            if (Overlay == null)
+                Log.Message("NoOverlay");
+            else
             {
                 var drawPos = parent.DrawPos;
                 drawPos.y = Altitudes.AltitudeFor(AltitudeLayer.MoteOverhead);

@@ -7,8 +7,6 @@ using Verse;
 
 namespace JecsTools
 {
-
-
     //Pulled from erdelf's Alien Races 2.0
     //Original credit and work belong to erdelf (https://github.com/erdelf)
     //Link -> https://github.com/RimWorld-CCL-Reborn/AlienRaces/blob/94bf6b6d7a91e9587bdc40e8a231b18515cb6bb7/Source/AlienRace/AlienRace/BackstoryDef.cs
@@ -51,65 +49,107 @@ namespace JecsTools
             public float commonalityFemale = -1f;
         }
 
-        public bool CommonalityApproved(Gender g) => Rand.Range(min: 0, max: 100) < (g == Gender.Female ? this.femaleCommonality : this.maleCommonality);
+        public bool CommonalityApproved(Gender g) => Rand.Range(0, 100) < (g == Gender.Female ? this.femaleCommonality : this.maleCommonality);
 
-        public bool Approved(Pawn p) => this.CommonalityApproved(g: p.gender) &&
-            (this.bioAgeRange == default(IntRange) || (this.bioAgeRange.min < p.ageTracker.AgeBiologicalYears && p.ageTracker.AgeBiologicalYears < this.bioAgeRange.max)) &&
-            (this.chronoAgeRange == default(IntRange) || (this.chronoAgeRange.min < p.ageTracker.AgeChronologicalYears && p.ageTracker.AgeChronologicalYears < this.chronoAgeRange.max));
+        public bool Approved(Pawn p) =>
+            this.CommonalityApproved(p.gender) &&
+            RangeIncludes(this.bioAgeRange, p.ageTracker.AgeBiologicalYears) &&
+            RangeIncludes(this.chronoAgeRange, p.ageTracker.AgeChronologicalYears);
+
+        private static bool RangeIncludes(IntRange range, int val) => range == default || (val >= range.min && val <= range.max);
 
         public override void ResolveReferences()
         {
-
             base.ResolveReferences();
 
+            if (!this.addToDatabase || BackstoryDatabase.allBackstories.ContainsKey(this.defName) || this.title.NullOrEmpty() || this.spawnCategories.NullOrEmpty()) return;
 
-            if (!this.addToDatabase || BackstoryDatabase.allBackstories.ContainsKey(key: this.defName) || this.title.NullOrEmpty() || this.spawnCategories.NullOrEmpty()) return;
+            static List<TraitEntry> ForcedTraits(BackstoryDef bs)
+            {
+                if (bs.forcedTraits.NullOrEmpty())
+                    return null;
+                return bs.forcedTraits
+                    .Where(trait => Rand.Range(0, 100) < trait.chance)
+                    .Select(trait => new TraitEntry(TraitDef.Named(trait.defName), trait.degree))
+                    .ToList();
+            }
+            static List<TraitEntry> DisallowedTraits(BackstoryDef bs)
+            {
+                if (bs.disallowedTraits.NullOrEmpty())
+                    return null;
+                return bs.disallowedTraits
+                    .Where(trait => Rand.Range(0, 100) < trait.chance)
+                    .Select(trait => new TraitEntry(TraitDef.Named(trait.defName), trait.degree))
+                    .ToList();
+            }
+            static WorkTags WorkDisables(BackstoryDef bs)
+            {
+                var wt = WorkTags.None;
+                if (bs.workAllows.NullOrEmpty())
+                {
+                    if (bs.workDisables != null)
+                    {
+                        foreach (var tag in bs.workDisables)
+                            wt |= tag;
+                    }
+                }
+                else
+                {
+                    foreach (WorkTags tag in Enum.GetValues(typeof(WorkTags)))
+                    {
+                        if (!bs.workAllows.Contains(tag))
+                            wt |= tag;
+                    }
+                }
+                return wt;
+            }
+            static WorkTags RequiredWorkTags(BackstoryDef bs)
+            {
+                var wt = WorkTags.None;
+                foreach (var tag in bs.requiredWorkTags)
+                    wt |= tag;
+                return wt;
+            }
 
             this.backstory = new Backstory
             {
                 slot = this.slot,
                 shuffleable = this.shuffleable,
                 spawnCategories = this.spawnCategories,
-                forcedTraits = this.forcedTraits.NullOrEmpty() ? null : this.forcedTraits.Where(predicate: trait => Rand.Range(min: 0, max: 100) < trait.chance).ToList().ConvertAll(converter: trait => new TraitEntry(def: TraitDef.Named(defName: trait.defName), degree: trait.degree)),
-                disallowedTraits = this.disallowedTraits.NullOrEmpty() ? null : this.disallowedTraits.Where(predicate: trait => Rand.Range(min: 0, max: 100) < trait.chance).ToList().ConvertAll(converter: trait => new TraitEntry(def: TraitDef.Named(defName: trait.defName), degree: trait.degree)),
-                workDisables = this.workAllows.NullOrEmpty() ? this.workDisables.NullOrEmpty() ? WorkTags.None : ((Func<WorkTags>)delegate
-                {
-                    WorkTags wt = WorkTags.None;
-                    this.workDisables.ForEach(action: tag => wt |= tag);
-                    return wt;
-                })() : ((Func<WorkTags>)delegate
-                {
-                    WorkTags wt = WorkTags.None;
-                    Enum.GetValues(enumType: typeof(WorkTags)).Cast<WorkTags>().Where(predicate: tag => !this.workAllows.Contains(item: tag)).ToList().ForEach(action: tag => wt |= tag);
-                    return wt;
-                })(),
+                forcedTraits = ForcedTraits(this),
+                disallowedTraits = DisallowedTraits(this),
+                workDisables = WorkDisables(this),
                 identifier = this.defName,
-                requiredWorkTags = ((Func<WorkTags>)delegate
-                {
-                    WorkTags wt = WorkTags.None;
-                    this.requiredWorkTags.ForEach(action: tag => wt |= tag);
-                    return wt;
-                })()
+                requiredWorkTags = RequiredWorkTags(this),
             };
 
-            Traverse.Create(root: this.backstory).Field(name: "bodyTypeGlobalResolved").SetValue(value: this.bodyTypeGlobal);
-            Traverse.Create(root: this.backstory).Field(name: "bodyTypeFemaleResolved").SetValue(value: this.bodyTypeFemale);
-            Traverse.Create(root: this.backstory).Field(name: "bodyTypeMaleResolved").SetValue(value: this.bodyTypeMale);
-            Traverse.Create(root: this.backstory).Field(name: nameof(this.skillGains)).SetValue(value: this.skillGains.ToDictionary(keySelector: i => i.defName, elementSelector: i => i.amount));
+            bsBodyTypeGlobalResolved(this.backstory) = this.bodyTypeGlobal;
+            bsBodyTypeFemaleResolved(this.backstory) = this.bodyTypeFemale;
+            bsBodyTypeMaleResolved(this.backstory) = this.bodyTypeMale;
+            bsSkillGains(this.backstory) = this.skillGains.ToDictionary(i => i.defName, i => i.amount);
 
-            UpdateTranslateableFields(bs: this);
+            UpdateTranslateableFields(this);
 
             this.backstory.ResolveReferences();
             this.backstory.PostLoad();
 
             this.backstory.identifier = this.defName;
 
-            IEnumerable<string> errors;
-            if (!(errors = this.backstory.ConfigErrors(ignoreNoSpawnCategories: false)).Any())
-                BackstoryDatabase.AddBackstory(bs: this.backstory);
+            var errors = this.backstory.ConfigErrors(ignoreNoSpawnCategories: false);
+            if (!errors.Any())
+                BackstoryDatabase.AddBackstory(this.backstory);
             else
-                Log.Error(text: this.defName + " has errors:\n" + string.Join(separator: "\n", value: errors.ToArray()));
+                Log.Error(this.defName + " has errors:\n" + string.Join("\n", errors));
         }
+
+        private static readonly AccessTools.FieldRef<Backstory, BodyTypeDef> bsBodyTypeGlobalResolved =
+            AccessTools.FieldRefAccess<Backstory, BodyTypeDef>("bodyTypeGlobalResolved");
+        private static readonly AccessTools.FieldRef<Backstory, BodyTypeDef> bsBodyTypeFemaleResolved =
+            AccessTools.FieldRefAccess<Backstory, BodyTypeDef>("bodyTypeFemaleResolved");
+        private static readonly AccessTools.FieldRef<Backstory, BodyTypeDef> bsBodyTypeMaleResolved =
+            AccessTools.FieldRefAccess<Backstory, BodyTypeDef>("bodyTypeMaleResolved");
+        private static readonly AccessTools.FieldRef<Backstory, Dictionary<string, int>> bsSkillGains =
+            AccessTools.FieldRefAccess<Backstory, Dictionary<string, int>>("skillGains");
 
         internal static void UpdateTranslateableFields(BackstoryDef bs)
         {
@@ -120,8 +160,6 @@ namespace JecsTools
             bs.backstory.SetTitleShort(newTitleShort: bs.titleShort.NullOrEmpty() ? bs.backstory.title : bs.titleShort,
                 newTitleShortFemale: bs.titleShortFemale.NullOrEmpty() ? bs.backstory.titleFemale : bs.titleShortFemale);
         }
-
-
 
         public struct BackstoryDefSkillListItem
         {

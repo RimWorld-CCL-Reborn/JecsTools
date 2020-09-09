@@ -108,7 +108,7 @@ namespace JecsTools
         public override void ExposeData()
         {
             base.ExposeData();
-            Scribe_Values.Look<int>(ref tickCounter, "tickCounter", 0);
+            Scribe_Values.Look(ref tickCounter, "tickCounter", 0);
 
             if (Scribe.mode == LoadSaveMode.PostLoadInit)
             {

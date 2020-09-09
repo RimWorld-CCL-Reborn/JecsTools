@@ -54,33 +54,24 @@ namespace CompSlotLoadable
         /// </summary>
         public static void PostApplyDamage_PostFix(Pawn __instance)
         {
-            if (__instance.Dead || __instance.equipment == null) return;
-            var thingWithComps = __instance.equipment.Primary;
-            if (thingWithComps != null)
-            {
-                var compSlotLoadable = thingWithComps.GetCompSlotLoadable();
-                if (compSlotLoadable?.Slots != null)
-                    foreach (var slot in compSlotLoadable.Slots)
-                        if (!slot.IsEmpty())
+            if (__instance.Dead) return;
+            var slots = __instance.equipment?.Primary?.GetCompSlotLoadable()?.Slots;
+            if (slots != null)
+                foreach (var slot in slots)
+                {
+                    var defensiveHealChance = slot.SlotOccupant?.TryGetCompSlottedBonus()?.Props?.defensiveHealChance;
+                    if (defensiveHealChance != null)
+                    {
+                        var randValue = Rand.Value;
+                        //Log.Message("defensiveHealingCalled: randValue = " + randValue.ToString());
+                        if (randValue <= defensiveHealChance.chance)
                         {
-                            var slotBonus = slot.SlotOccupant.TryGetCompSlottedBonus();
-                            if (slotBonus?.Props != null)
-                            {
-                                var defensiveHealChance = slotBonus.Props.defensiveHealChance;
-                                if (defensiveHealChance != null)
-                                {
-                                    var randValue = Rand.Value;
-                                    //Log.Message("defensiveHealingCalled: randValue = " + randValue.ToString());
-                                    if (randValue <= defensiveHealChance.chance)
-                                    {
-                                        MoteMaker.ThrowText(__instance.DrawPos, __instance.Map,
-                                            "Heal Chance: Success", 6f);
-                                        ApplyHealing(__instance, defensiveHealChance.woundLimit);
-                                    }
-                                }
-                            }
+                            MoteMaker.ThrowText(__instance.DrawPos, __instance.Map,
+                                "Heal Chance: Success", 6f);
+                            ApplyHealing(__instance, defensiveHealChance.woundLimit);
                         }
-            }
+                    }
+                }
         }
 
         public static void ApplyHealing(Thing thing, int woundLimit = 0, Thing vampiricTarget = null)
@@ -121,9 +112,9 @@ namespace CompSlotLoadable
 
         public static void DrawThingRow_PostFix(ref float y, float width, Thing thing)
         {
-            var compSlotLoadable = thing.TryGetCompSlotLoadable();
-            if (compSlotLoadable?.Slots != null)
-                foreach (var slot in compSlotLoadable.Slots)
+            var slots = thing.TryGetCompSlotLoadable()?.Slots;
+            if (slots != null)
+                foreach (var slot in slots)
                     if (!slot.IsEmpty())
                     {
                         var rect = new Rect(0f, y, width, 28f);
@@ -158,7 +149,7 @@ namespace CompSlotLoadable
                     !z.IsEmpty() && ((SlotLoadableDef)z.def).doesChangeStats);
                 foreach (var slot in statSlots)
                 {
-                    var slotBonus = slot.SlotOccupant.TryGetCompSlottedBonus();
+                    var slotBonus = slot.SlotOccupant?.TryGetCompSlottedBonus();
                     if (slotBonus != null)
                     {
                         if (slotBonus.Props.damageDef != null)
@@ -251,18 +242,14 @@ namespace CompSlotLoadable
 
         public static void GetGizmos_PostFix(Pawn __instance, ref IEnumerable<Gizmo> __result)
         {
-            var pawn_EquipmentTracker = __instance.equipment;
-            if (pawn_EquipmentTracker != null)
+            if (__instance.Faction == Faction.OfPlayer)
             {
-                if (__instance.Faction == Faction.OfPlayer)
+                var compSlotLoadable = __instance.equipment?.Primary?.GetCompSlotLoadable();
+                if (compSlotLoadable != null)
                 {
-                    var compSlotLoadable = pawn_EquipmentTracker.Primary?.GetCompSlotLoadable();
-                    if (compSlotLoadable != null)
-                    {
-                        var gizmos = GizmoGetter(compSlotLoadable);
-                        if (gizmos.Any())
-                            __result = __result.Concat(gizmos);
-                    }
+                    var gizmos = GizmoGetter(compSlotLoadable);
+                    if (gizmos.Any())
+                        __result = __result.Concat(gizmos);
                 }
             }
         }

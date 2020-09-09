@@ -112,7 +112,6 @@ namespace JecsTools
                 select t).Sum((Thing t) => t.stackCount);
         }
 
-
         private static DiaOption PeaceTalksOption(Faction faction, Map map)
         {
             var def = IncidentDef.Named("QuestPeaceTalks");
@@ -143,7 +142,6 @@ namespace JecsTools
             };
             return diaOption2;
         }
-
 
         private static DiaOption OfferGiftOption(Map map)
         {
@@ -235,23 +233,23 @@ namespace JecsTools
             }
             var diaOption2 = new DiaOption(text);
             IEnumerable<IAttackTarget> targetsHostileToColony = map.attackTargetsCache.TargetsHostileToColony;
-            if (JecsToolsFactionDialogMaker.megaOne == null)
+            if (megaOne == null)
             {
-                JecsToolsFactionDialogMaker.megaOne = new Func<IAttackTarget, bool>(GenHostility.IsActiveThreatToPlayer);
+                megaOne = new Func<IAttackTarget, bool>(GenHostility.IsActiveThreatToPlayer);
             }
-            if (targetsHostileToColony.Any(JecsToolsFactionDialogMaker.megaOne))
+            if (targetsHostileToColony.Any(megaOne))
             {
                 if (!map.attackTargetsCache.TargetsHostileToColony.Any((IAttackTarget p) => ((Thing)p).Faction != null && ((Thing)p).Faction.HostileTo(faction)))
                 {
                     IEnumerable<IAttackTarget> targetsHostileToColony2 = map.attackTargetsCache.TargetsHostileToColony;
-                    if (JecsToolsFactionDialogMaker.megaTwo == null)
+                    if (megaTwo == null)
                     {
-                        JecsToolsFactionDialogMaker.megaTwo = new Func<IAttackTarget, bool>(GenHostility.IsActiveThreatToPlayer);
+                        megaTwo = new Func<IAttackTarget, bool>(GenHostility.IsActiveThreatToPlayer);
                     }
-                    IEnumerable<Faction> source = (from pa in targetsHostileToColony2.Where(JecsToolsFactionDialogMaker.megaTwo)
+                    IEnumerable<Faction> source = (from pa in targetsHostileToColony2.Where(megaTwo)
                         select ((Thing)pa).Faction into fa
                         where fa != null && !fa.HostileTo(faction)
-                        select fa).Distinct<Faction>();
+                        select fa).Distinct();
                     var key = "MilitaryAidConfirmMutualEnemy";
                     var diaNode = new DiaNode(key.Translate(faction.Name,
                         GenText.ToCommaList(from fa in source select fa.Name, true)));
@@ -350,11 +348,9 @@ namespace JecsTools
         [CompilerGenerated]
         private static Func<IAttackTarget, bool> megaTwo;
 
-
         private static bool TryStartPeaceTalks(Faction faction)
         {
-            int tile;
-            if (!JecsToolsFactionDialogMaker.TryFindTile(out tile))
+            if (!TryFindTile(out var tile))
             {
                 return false;
             }

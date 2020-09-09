@@ -287,10 +287,8 @@ namespace JecsTools
         public bool ConsumeResources(Caravan c, Dictionary<Thing, int> toBeConsumed)
         {
             if (toBeConsumed != null)
-                foreach (var pair in toBeConsumed)
+                foreach (var (t, count) in toBeConsumed)
                 {
-                    var t = pair.Key;
-                    var count = pair.Value;
                     var ownerOf = CaravanInventoryUtility.GetOwnerOf(c, t);
                     if (ownerOf == null)
                     {

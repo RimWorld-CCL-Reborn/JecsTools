@@ -12,10 +12,7 @@ namespace CompSlotLoadable
      */
     public class JobDriver_GatherSlotItem : JobDriver
     {
-        public override bool TryMakePreToilReservations(bool errorOnFailed)
-        {
-            return true;
-        }
+        public override bool TryMakePreToilReservations(bool errorOnFailed) => true;
 
         [DebuggerHidden]
         protected override IEnumerable<Toil> MakeNewToils()
@@ -41,30 +38,14 @@ namespace CompSlotLoadable
                         itemToGatherSplit = itemToGather;
 
                     //Find the compslotloadable
-                    var pawn_EquipmentTracker = pawn.equipment;
-                    if (pawn_EquipmentTracker != null)
+                    if (pawn.equipment.Primary is ThingWithComps primary && primary.GetCompSlotLoadable() is CompSlotLoadable compSlotLoadable)
                     {
-                        //Log.Message("2");
-                        var thingWithComps =
-                            pawn_EquipmentTracker
-                                .Primary; //(ThingWithComps)AccessTools.Field(typeof(Pawn_EquipmentTracker), "primaryInt").GetValue(pawn_EquipmentTracker);
-
-                        if (thingWithComps != null)
-                        {
-                            //Log.Message("3");
-                            var CompSlotLoadable = thingWithComps.GetCompSlotLoadable();
-                            if (CompSlotLoadable != null)
-                            {
-                                CompSlotLoadable.TryLoadSlot(itemToGather);
-                                if (thingWithComps.def.soundInteract != null)
-                                    thingWithComps.def.soundInteract.PlayOneShot(new TargetInfo(pawn.Position, pawn.Map,
-                                        false));
-                                //if (flag)
-                                //{
-                                //    thingWithComps.DeSpawn();
-                                //}
-                            }
-                        }
+                        compSlotLoadable.TryLoadSlot(itemToGather);
+                        if (primary.def.soundInteract != null)
+                            primary.def.soundInteract.PlayOneShot(new TargetInfo(pawn.Position, pawn.Map,
+                                false));
+                        //if (flag)
+                        //    thingWithComps.DeSpawn();
                     }
                 },
                 defaultCompleteMode = ToilCompleteMode.Instant

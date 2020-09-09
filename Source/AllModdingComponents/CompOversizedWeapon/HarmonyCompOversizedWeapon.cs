@@ -164,22 +164,13 @@ namespace CompOversizedWeapon
             var compOversizedWeapon = __instance.TryGetCompOversizedWeapon();
             if (compOversizedWeapon != null)
             {
-                //Following commented-out section is an unnecessary "optimization" that actually hurts performance due to the reflection involved.
-                //var activatableEffect =
-                //    thingWithComps.AllComps.FirstOrDefault(
-                //        y => y.GetType().ToString().Contains("ActivatableEffect"));
-                //if (activatableEffect != null)
-                //{
-                //    var getPawn = Traverse.Create(activatableEffect).Property("GetPawn").GetValue<Pawn>();
-                //    if (getPawn != null)
-                //        return;
-                //}
-                if (compOversizedWeapon.Props?.groundGraphic == null)
+                var groundGraphic = compOversizedWeapon.Props?.groundGraphic;
+                if (groundGraphic == null)
                 {
                     ___graphicInt.drawSize = __instance.def.graphicData.drawSize;
                     __result = ___graphicInt;
                 }
-                else // compOversizedWeapon.Props.groundGraphic != null
+                else // groundGraphic != null
                 {
                     if (compOversizedWeapon.IsEquipped)
                     {
@@ -188,10 +179,9 @@ namespace CompOversizedWeapon
                     }
                     else
                     {
-                        if (compOversizedWeapon.Props.groundGraphic.GraphicColoredFor(__instance) is Graphic
-                            newResult)
+                        if (groundGraphic.GraphicColoredFor(__instance) is Graphic newResult)
                         {
-                            newResult.drawSize = compOversizedWeapon.Props.groundGraphic.drawSize;
+                            newResult.drawSize = groundGraphic.drawSize;
                             __result = newResult;
                         }
                         else

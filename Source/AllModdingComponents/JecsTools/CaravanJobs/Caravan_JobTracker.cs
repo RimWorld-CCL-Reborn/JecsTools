@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿//#define DEBUGLOG
+
+using System.Collections.Generic;
+using System.Diagnostics;
 using RimWorld;
 using RimWorld.Planet;
 using Verse;
@@ -21,8 +24,6 @@ namespace JecsTools
         public CaravanJobDriver curDriver;
 
         public CaravanJob curJob;
-
-        public bool debugLog;
 
         public CaravanJobQueue jobQueue = new CaravanJobQueue();
 
@@ -79,8 +80,7 @@ namespace JecsTools
             if (curJob == null && //!this.caravan.Dead && this.caravan.mindState.Active &&
                 CanDoAnyJob())
             {
-                if (debugLog)
-                    DebugLogEvent("Starting job from Tick because curJob == null.");
+                DebugLogEvent("Starting job from Tick because curJob == null.");
                 TryFindAndStartJob();
             }
             FinalizeTick();
@@ -105,8 +105,7 @@ namespace JecsTools
                     var text = GenText.ToCommaList(jobsGivenRecentTicksTextual, true);
                     jobsGivenRecentTicks.Clear();
                     jobsGivenRecentTicksTextual.Clear();
-                    StartErrorRecoverJob(string.Concat(caravan, " started ", 10, " jobs in ", 10, " ticks. List: ",
-                        text));
+                    StartErrorRecoverJob($"{caravan} started {10} jobs in {10} ticks. List: {text}");
                 }
             }
         }
@@ -127,26 +126,21 @@ namespace JecsTools
                 var text = jobsGivenThisTickTextual;
                 jobsGivenThisTick = 0;
                 jobsGivenThisTickTextual = string.Empty;
-                StartErrorRecoverJob(string.Concat(caravan, " started 10 jobs in one tick. newJob=", newJob,
-                    " jobGiver=", jobGiver, " jobList=", text));
+                StartErrorRecoverJob($"{caravan} started 10 jobs in one tick. newJob={newJob} jobGiver={jobGiver} jobList={text}");
                 return;
             }
-            if (debugLog)
-                DebugLogEvent(string.Concat("StartJob [", newJob, "] lastJobEndCondition=", lastJobEndCondition,
-                    ", jobGiver=", jobGiver, ", cancelBusyStances=", cancelBusyStances));
+            DebugLogEvent($"StartJob [{newJob}] lastJobEndCondition={lastJobEndCondition}, jobGiver={jobGiver}, cancelBusyStances={cancelBusyStances}");
             if (curJob != null)
             {
                 if (lastJobEndCondition == JobCondition.None)
                 {
-                    Log.Warning(string.Concat(caravan, " starting job ", newJob, " while already having job ", curJob,
-                        " without a specific job end condition."));
+                    Log.Warning($"{caravan} starting job {newJob} while already having job {curJob} without a specific job end condition.");
                     lastJobEndCondition = JobCondition.InterruptForced;
                 }
                 if (resumeCurJobAfterwards && curJob.def.suspendable)
                 {
                     jobQueue.EnqueueFirst(curJob, null);
-                    if (debugLog)
-                        DebugLogEvent("   JobQueue EnqueueFirst curJob: " + curJob);
+                    DebugLogEvent("   JobQueue EnqueueFirst curJob: " + curJob);
                 }
                 CleanupCurrentJob(lastJobEndCondition, !resumeCurJobAfterwards, cancelBusyStances);
             }
@@ -170,10 +164,8 @@ namespace JecsTools
 
         public void EndCurrentJob(JobCondition condition, bool startNewJob = true)
         {
-            if (debugLog)
-                DebugLogEvent(string.Concat("EndCurrentJob ", curJob == null ? "null" : curJob.ToString(),
-                    " condition=", condition, " curToil=",
-                    curDriver == null ? "null_driver" : curDriver.CurToilIndex.ToString()));
+            DebugLogEvent($"EndCurrentJob {curJob?.ToString() ?? "null"} condition={condition} " +
+                $"curToil={curDriver?.CurToilIndex.ToString() ?? "null_driver"}");
             var job = curJob;
             CleanupCurrentJob(condition, true, true);
             if (startNewJob)
@@ -195,9 +187,7 @@ namespace JecsTools
         private void CleanupCurrentJob(JobCondition condition, bool releaseReservations,
             bool cancelBusyStancesSoft = true)
         {
-            if (debugLog)
-                DebugLogEvent(string.Concat("CleanupCurrentJob ", curJob == null ? "null" : curJob.def.ToString(),
-                    " condition ", condition));
+            DebugLogEvent($"CleanupCurrentJob {curJob?.def.ToString() ?? "null"} condition {condition}");
             if (curJob == null)
                 return;
             curDriver.ended = true;
@@ -221,10 +211,8 @@ namespace JecsTools
 
         public void CheckForJobOverride()
         {
-            if (debugLog)
-                DebugLogEvent("CheckForJobOverride");
-            //ThinkTreeDef thinkTree;
-            //ThinkResult thinkResult = this.DetermineNextJob(out thinkTree);
+            DebugLogEvent("CheckForJobOverride");
+            //ThinkResult thinkResult = this.DetermineNextJob(out var thinkTree);
             //if (this.ShouldStartJobFromThinkTree(thinkResult))
             //{
             //    this.CheckLeaveJoinableLordBecauseJobIssued(thinkResult);
@@ -249,18 +237,14 @@ namespace JecsTools
             //}
             if (curJob != null)
                 Log.Warning(caravan + " doing TryFindAndStartJob while still having job " + curJob);
-            if (debugLog)
-                DebugLogEvent("TryFindAndStartJob");
+            DebugLogEvent("TryFindAndStartJob");
             if (!CanDoAnyJob())
             {
-                if (debugLog)
-                    DebugLogEvent("   CanDoAnyJob is false. Clearing queue and returning");
-                if (jobQueue != null)
-                    jobQueue.Clear();
+                DebugLogEvent("   CanDoAnyJob is false. Clearing queue and returning");
+                jobQueue?.Clear();
                 return;
             }
-            //ThinkTreeDef thinkTreeDef;
-            //ThinkResult result = this.DetermineNextJob(out thinkTreeDef);
+            //ThinkResult result = this.DetermineNextJob(out var thinkTreeDef);
             //if (result.IsValid)
             //{
             //    this.CheckLeaveJoinableLordBecauseJobIssued(result);
@@ -286,14 +270,12 @@ namespace JecsTools
                 while (jobQueue.Count > 0 && !jobQueue.Peek().job.CanBeginNow(caravan))
                 {
                     var queuedJob = jobQueue.Dequeue();
-                    if (debugLog)
-                        DebugLogEvent("   Throwing away queued job that I cannot begin now: " + queuedJob.job);
+                    DebugLogEvent("   Throwing away queued job that I cannot begin now: " + queuedJob.job);
                 }
                 if (jobQueue.Count > 0)
                 {
                     var queuedJob2 = jobQueue.Dequeue();
-                    if (debugLog)
-                        DebugLogEvent("   Returning queued job: " + queuedJob2.job);
+                    DebugLogEvent("   Returning queued job: " + queuedJob2.job);
                     return queuedJob2.job;
                 }
             }
@@ -384,8 +366,7 @@ namespace JecsTools
 
         public bool TryTakeOrderedJob(CaravanJob job, JobTag tag = JobTag.Misc)
         {
-            if (debugLog)
-                DebugLogEvent("TakeOrderedJob " + job);
+            DebugLogEvent("TakeOrderedJob " + job);
             job.playerForced = true;
             if (curJob != null && curJob.JobIsSameAs(job))
                 return true;
@@ -395,8 +376,7 @@ namespace JecsTools
             //{
             //    //this.caravan.Map.CaravanDestinationManager.ReserveDestinationFor(this.caravan, job.targetA.Cell);
             //}
-            if (debugLog)
-                DebugLogEvent("    Queueing job");
+            DebugLogEvent("    Queueing job");
             jobQueue.Clear();
             jobQueue.EnqueueFirst(job, tag);
             if (IsCurrentJobPlayerInterruptible())
@@ -412,10 +392,10 @@ namespace JecsTools
             EndCurrentJob(JobCondition.InterruptForced, false);
         }
 
-        public void DebugLogEvent(string s)
+        [Conditional("DEBUGLOG")]
+        private void DebugLogEvent(string s)
         {
-            if (debugLog)
-                Log.Message(string.Concat(Find.TickManager.TicksGame, " ", caravan, ": ", s));
+            Log.Message($"{Find.TickManager.TicksGame} {caravan}: {s}");
         }
     }
 }

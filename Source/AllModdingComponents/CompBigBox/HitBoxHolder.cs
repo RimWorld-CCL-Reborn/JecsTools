@@ -25,14 +25,13 @@ namespace DefModExtension_BigBox
                     this.Destroy(0);
                     return;
                 }
-
             }
         }
 
         public override void ExposeData()
         {
             base.ExposeData();
-            Scribe_References.Look<Pawn>(ref this.master, "master", false);
+            Scribe_References.Look(ref this.master, "master", false);
         }
     }
 }
