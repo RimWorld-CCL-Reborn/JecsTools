@@ -37,5 +37,7 @@ namespace PawnShields
         /// Ranged shield block chance base from pawn.
         /// </summary>
         public static StatDef RangedShieldBlockChance;
+
+        static ShieldStatsDefOf() => DefOfHelper.EnsureInitializedInCtor(typeof(ShieldStatsDefOf));
     }
 }

@@ -11,6 +11,11 @@ using Verse.Sound;
 
 namespace JecsTools
 {
+    // TODO: This hasn't worked properly since RW B19.
+    // It's based off the B18 version of FactionDialogMaker, which has undergone significant changes since.
+    // For example, the QuestPeaceTalks IncidentDef no longer exists:
+    // It was renamed to Quest_PeaceTalks in RW B19, then replaced with an OpportunitySite_PeaceTalks QuestScriptDef in RW 1.1.
+    [Obsolete("Hasn't worked properly since RW B19")]
     public static class JecsToolsFactionDialogMaker
     {
         public static DiaNode FactionDialogFor(Pawn negotiator, Faction faction)
@@ -114,7 +119,7 @@ namespace JecsTools
 
         private static DiaOption PeaceTalksOption(Faction faction, Map map)
         {
-            var def = IncidentDef.Named("QuestPeaceTalks");
+            var def = IncidentDef.Named("QuestPeaceTalks"); // XXX: this doesn't exist anymore - see comment on class
             if (PeaceTalksExist(faction))
             {
                 var diaOption = new DiaOption(def.letterLabel);
@@ -294,7 +299,7 @@ namespace JecsTools
             {
                 target = map,
                 faction = faction,
-                points = (float)Rand.Range(150, 400)
+                points = Rand.Range(150, 400)
             };
             IncidentDefOf.RaidFriendly.Worker.TryExecute(incidentParms);
             HarmonyPatches.lastPhoneAideFaction = faction;
@@ -359,7 +364,7 @@ namespace JecsTools
             peaceTalks.SetFaction(faction);
             peaceTalks.GetComponent<TimeoutComp>().StartTimeout(900000);
             Find.WorldObjects.Add(peaceTalks);
-            var def = IncidentDef.Named("QuestPeaceTalks");
+            var def = IncidentDef.Named("QuestPeaceTalks"); // XXX: this doesn't exist anymore - see comment on class
             string text = string.Format(def.letterText.AdjustedFor(faction.leader), faction.def.leaderTitle, faction.Name, 15).CapitalizeFirst();
             Find.LetterStack.ReceiveLetter(def.letterLabel, text, def.letterDef, peaceTalks, null);
             return true;

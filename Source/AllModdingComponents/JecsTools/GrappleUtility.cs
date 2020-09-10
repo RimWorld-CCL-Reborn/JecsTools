@@ -293,9 +293,7 @@ namespace JecsTools
             try
             {
                 Find.BattleLog.Add(
-                    new BattleLogEntry_StateTransition(victim,
-                        RulePackDef.Named("JT_GrappleSuccess"), grappler, null, grapplingPart)
-                );
+                    new BattleLogEntry_StateTransition(victim, MiscDefOf.JT_GrappleSuccess, grappler, null, grapplingPart));
                 return true;
             }
             catch (Exception e)

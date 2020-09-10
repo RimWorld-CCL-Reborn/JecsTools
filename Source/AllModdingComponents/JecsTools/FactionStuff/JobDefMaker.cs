@@ -1,23 +1,26 @@
-﻿using System.Linq;
-using RimWorld;
+﻿using RimWorld;
 using Verse;
 
 namespace JecsTools
 {
     [StaticConstructorOnStartup]
-    static class JobDefMaker
+    internal static class JobDefMaker
     {
+        public static JobDef JecsTools_UseConsole;
+
         static JobDefMaker()
         {
-            if (DefDatabase<JobDef>.AllDefs.Any(x => x.defName == "JecsTools_UseConsole")) return;
-            var newDef = new JobDef
+            JecsTools_UseConsole = DefDatabase<JobDef>.GetNamedSilentFail("JecsTools_UseConsole");
+            if (JecsTools_UseConsole == null)
             {
-                defName = "JecsTools_UseConsole",
-                driverClass = typeof(JecsTools.JobDriver_UseConsole),
-                reportString = JobDefOf.UseCommsConsole.reportString
-            };
-            DefDatabase<JobDef>.Add(newDef);
+                JecsTools_UseConsole = new JobDef
+                {
+                    defName = "JecsTools_UseConsole",
+                    driverClass = typeof(JobDriver_UseConsole),
+                    reportString = JobDefOf.UseCommsConsole.reportString
+                };
+                DefDatabase<JobDef>.Add(JecsTools_UseConsole);
+            }
         }
-
     }
 }

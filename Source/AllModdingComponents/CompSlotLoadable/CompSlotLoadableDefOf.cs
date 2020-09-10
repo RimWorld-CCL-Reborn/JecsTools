@@ -7,5 +7,7 @@ namespace CompSlotLoadable
     public static class CompSlotLoadableDefOf
     {
         public static JobDef GatherSlotItem;
+
+        static CompSlotLoadableDefOf() => DefOfHelper.EnsureInitializedInCtor(typeof(CompSlotLoadableDefOf));
     }
 }

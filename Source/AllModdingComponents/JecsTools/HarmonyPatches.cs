@@ -737,11 +737,9 @@ namespace JecsTools
             {
                 if (target is Pawn p && p.Spawned && !p.Downed && !p.Dead && p.MapHeld != null)
                 {
-                    bool applyDamage;
-                    var loc = PushResult(Caster, target, distance, out applyDamage);
-                    //if (((Pawn)target).RaceProps.Humanlike) ((Pawn)target).needs.mood.thoughts.memories.TryGainMemory(ThoughtDef.Named("PJ_ThoughtPush"), null);
-                    var flyingObject = (FlyingObject)GenSpawn.Spawn(ThingDef.Named("JT_FlyingObject"), p.PositionHeld,
-                        p.MapHeld);
+                    var loc = PushResult(Caster, target, distance, out var applyDamage);
+                    //if (((Pawn)target).RaceProps.Humanlike) ((Pawn)target).needs.mood.thoughts.memories.TryGainMemory(MiscDefOf.PJ_ThoughtPush, null);
+                    var flyingObject = (FlyingObject)GenSpawn.Spawn(MiscDefOf.JT_FlyingObject, p.PositionHeld, p.MapHeld);
                     if (applyDamage && damageOnCollision)
                         flyingObject.Launch(Caster, new LocalTargetInfo(loc.ToIntVec3()), target,
                             new DamageInfo(DamageDefOf.Blunt, Rand.Range(8, 10)));

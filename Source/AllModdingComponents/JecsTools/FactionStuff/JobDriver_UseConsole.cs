@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
 using Verse;
@@ -6,6 +7,8 @@ using Verse.AI;
 
 namespace JecsTools
 {
+    // See comments on JecsToolsFactionDialogMaker.
+    [Obsolete("Hasn't worked properly since RW B19")]
     public class JobDriver_UseConsole : JobDriver
     {
         public override bool TryMakePreToilReservations(bool errorOnFailed)

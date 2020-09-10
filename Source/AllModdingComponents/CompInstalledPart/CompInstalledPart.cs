@@ -36,7 +36,7 @@ namespace CompInstalledPart
             if (actor?.Faction is Faction actorFac && target?.Faction is Faction targetFac)
                 if (actorFac == targetFac)
                 {
-                    var newJob = JobMaker.MakeJob(DefDatabase<JobDef>.GetNamed("CompInstalledPart_InstallPart"), parent, target,
+                    var newJob = JobMaker.MakeJob(CompInstalledPartDefOf.CompInstalledPart_InstallPart, parent, target,
                         target.Position);
                     newJob.count = 2;
                     actor.jobs?.TryTakeOrderedJob(newJob);
@@ -52,7 +52,7 @@ namespace CompInstalledPart
             if (actor?.Faction is Faction actorFac && target?.Faction is Faction targetFac)
                 if (actorFac == targetFac)
                 {
-                    var newJob = JobMaker.MakeJob(DefDatabase<JobDef>.GetNamed("CompInstalledPart_UninstallPart"), parent,
+                    var newJob = JobMaker.MakeJob(CompInstalledPartDefOf.CompInstalledPart_UninstallPart, parent,
                         target, target.Position);
                     newJob.count = 1;
                     actor.jobs?.TryTakeOrderedJob(newJob);

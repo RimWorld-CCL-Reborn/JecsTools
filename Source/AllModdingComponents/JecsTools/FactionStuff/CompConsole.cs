@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
 using Verse;
@@ -6,6 +7,8 @@ using Verse.AI;
 
 namespace JecsTools
 {
+    // See comments on JecsToolsFactionDialogMaker.
+    [Obsolete("Hasn't worked properly since RW B19")]
     public class CompConsole : ThingComp
     {
         public CompProperties_Console Props => this.props as CompProperties_Console;
@@ -36,7 +39,7 @@ namespace JecsTools
 
         private void UseAct(Pawn myPawn, ICommunicable commTarget)
         {
-            var job = JobMaker.MakeJob(DefDatabase<JobDef>.GetNamed("JecsTools_UseConsole"), this.parent);
+            var job = JobMaker.MakeJob(JobDefMaker.JecsTools_UseConsole, this.parent);
             job.commTarget = commTarget;
             myPawn.jobs.TryTakeOrderedJob(job);
             PlayerKnowledgeDatabase.KnowledgeDemonstrated(ConceptDefOf.OpeningComms, KnowledgeAmount.Total);
