@@ -88,7 +88,7 @@ namespace JecsTools
             Log.Message(s);
         }
 
-        //private static void CanTakeOrder_PostFix(Pawn pawn, ref bool __result)
+        //private static void CanTakeOrder_PostFix(Pawn pawn, bool __result)
         //{
         //    if (__result)
         //    {

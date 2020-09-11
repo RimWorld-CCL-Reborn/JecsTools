@@ -27,8 +27,7 @@ namespace JecsTools
         }
 
         // RimWorld.Planet.WorldSelector
-        public static void SelectableObjectsUnderMouse_InvisHandler(ref bool clickedDirectlyOnCaravan,
-            ref bool usedColonistBar, ref IEnumerable<WorldObject> __result)
+        public static void SelectableObjectsUnderMouse_InvisHandler(ref IEnumerable<WorldObject> __result)
         {
             var objects = new List<WorldObject>(__result);
             if (objects.Count > 0)

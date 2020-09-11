@@ -63,7 +63,8 @@ namespace JecsTools
                 prefix: new HarmonyMethod(type, nameof(Notify_MemberDied)));
 
             //Handles FactionSettings extension to allow for fun effects when factions arrive.
-            harmony.Patch(AccessTools.Method(typeof(PawnGroupMakerUtility), nameof(PawnGroupMakerUtility.GeneratePawns)),
+            harmony.Patch(AccessTools.Method(typeof(PawnGroupKindWorker), nameof(PawnGroupKindWorker.GeneratePawns),
+                    new[] { typeof(PawnGroupMakerParms), typeof(PawnGroupMaker), typeof(bool) }),
                 postfix: new HarmonyMethod(type, nameof(GeneratePawns)));
 
             //Handles cases where gendered apparel swaps out for individual genders.
@@ -272,14 +273,12 @@ namespace JecsTools
         public static Faction lastPhoneAideFaction = null;
         public static int lastPhoneAideTick = 0;
 
-        //public class PawnGroupMakerUtility
-        //{
-        public static void GeneratePawns(PawnGroupMakerParms parms, ref IEnumerable<Pawn> __result)
+        //PawnGroupKindWorker
+        public static void GeneratePawns(PawnGroupMakerParms parms, List<Pawn> __result)
         {
-            if (__result != null && __result.Any() &&
-                parms.faction.def.GetFactionSettings() is FactionSettings settings)
+            if (__result.Count > 0 && parms.faction.def.GetFactionSettings() is FactionSettings fs)
             {
-                settings.entrySoundDef?.PlayOneShotOnCamera();
+                fs.entrySoundDef?.PlayOneShotOnCamera();
             }
         }
 
@@ -365,7 +364,7 @@ namespace JecsTools
             }
         }
 
-        public static void Post_GeneratePawn(ref Pawn __result)
+        public static void Post_GeneratePawn(Pawn __result)
         {
             if (__result?.def?.race?.hediffGiverSets?.SelectMany(
                 x => x.hediffGivers.Where(y => y is HediffGiver_StartWithHediff)).FirstOrDefault() is
@@ -406,8 +405,7 @@ namespace JecsTools
             }
         }
 
-        public static bool PreApplyDamage_PrePatch(Pawn ___pawn, ref DamageInfo dinfo,
-            out bool absorbed)
+        public static bool PreApplyDamage_PrePatch(Pawn ___pawn, ref DamageInfo dinfo, out bool absorbed)
         {
             DebugMessage($"c6c:: === Enter Harmony Prefix --- PreApplyDamage_ApplyExtraDamages ===");
             if (___pawn != null && !StopPreApplyDamageCheck)
@@ -442,7 +440,7 @@ namespace JecsTools
                             DebugMessage("c6c:: Pawn has non-ranged weapon.");
                             try
                             {
-                                if (PreApplyDamage_ApplyExtraDamages(dinfo, out absorbed, instigator, ___pawn)) return false;
+                                if (PreApplyDamage_ApplyExtraDamages(ref dinfo, out absorbed, instigator, ___pawn)) return false;
                             }
                             catch (NullReferenceException e)
                             {
@@ -501,13 +499,12 @@ namespace JecsTools
                     {
                         if (knockerProps.stunChance > -1 && knockerProps.stunChance >= Rand.Value)
                             pawn.stances.stunner.StunFor(knockerProps.stunTicks, instigator);
-                        PushEffect(instigator, pawn, knockerProps.knockDistance.RandomInRange,
-                            true);
+                        PushEffect(instigator, pawn, knockerProps.knockDistance.RandomInRange, damageOnCollision: true);
                     }
                 }
         }
 
-        private static bool PreApplyDamage_ApplyExtraDamages(DamageInfo dinfo, out bool absorbed, Pawn instigator, Pawn pawn)
+        private static bool PreApplyDamage_ApplyExtraDamages(ref DamageInfo dinfo, out bool absorbed, Pawn instigator, Pawn pawn)
         {
             DebugMessage($"c6c:: --- Enter PreApplyDamage_ApplyExtraDamages ---");
             var extraDamagesHediff =
@@ -562,8 +559,7 @@ namespace JecsTools
         }
 
         private static bool PreApplyDamage_ApplyDamageSoakers(ref DamageInfo dinfo, out bool absorbed,
-            List<Hediff> fortitudeHediffs,
-            Pawn pawn)
+            List<Hediff> fortitudeHediffs, Pawn pawn)
         {
             DebugMessage($"c6c:: --- Enter PreApplyDamage_ApplyDamageSoakers ---");
             var soakedDamage = 0;
@@ -725,7 +721,7 @@ namespace JecsTools
                 if (target is Pawn p && p.Spawned && !p.Downed && !p.Dead && p.MapHeld != null)
                 {
                     var loc = PushResult(Caster, target, distance, out var applyDamage);
-                    //if (((Pawn)target).RaceProps.Humanlike) ((Pawn)target).needs.mood.thoughts.memories.TryGainMemory(MiscDefOf.PJ_ThoughtPush, null);
+                    //if (p.RaceProps.Humanlike) p.needs.mood.thoughts.memories.TryGainMemory(MiscDefOf.PJ_ThoughtPush, null);
                     var flyingObject = (FlyingObject)GenSpawn.Spawn(MiscDefOf.JT_FlyingObject, p.PositionHeld, p.MapHeld);
                     if (applyDamage && damageOnCollision)
                         flyingObject.Launch(Caster, new LocalTargetInfo(loc.ToIntVec3()), target,

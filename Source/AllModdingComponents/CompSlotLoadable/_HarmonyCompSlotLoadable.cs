@@ -196,7 +196,7 @@ namespace CompSlotLoadable
                                 newList = new List<DamageInfo>();
                             newList.Add(damageInfo);
 
-                            __result = newList.AsEnumerable();
+                            __result = newList;
                         }
                         var vampiricEffect = slotBonus.Props.vampiricHealChance;
                         if (vampiricEffect != null)

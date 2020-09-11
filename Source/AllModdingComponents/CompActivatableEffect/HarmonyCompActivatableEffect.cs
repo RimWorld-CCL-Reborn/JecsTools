@@ -31,20 +31,16 @@ namespace CompActivatableEffect
             harmony.Patch(AccessTools.Method(typeof(Pawn), nameof(Pawn.ExitMap)),
                 prefix: new HarmonyMethod(type, nameof(ExitMap_PreFix)));
 
-            harmony.Patch(AccessTools.Method(typeof(Pawn_EquipmentTracker), nameof(Pawn_EquipmentTracker.TryDropEquipment)),
-                prefix: new HarmonyMethod(type, nameof(TryDropEquipment_PreFix)));
-
-            // TODO: This patch is already applied above - remove this redundant patch.
-            harmony.Patch(AccessTools.PropertySetter(typeof(Pawn_DraftController), nameof(Pawn_DraftController.Drafted)),
-                postfix: new HarmonyMethod(type, nameof(set_DraftedPostFix)));
+            harmony.Patch(AccessTools.Method(typeof(Pawn_EquipmentTracker), nameof(Pawn_EquipmentTracker.Notify_EquipmentRemoved)),
+                postfix: new HarmonyMethod(type, nameof(Notify_EquipmentRemoved_PostFix)));
         }
 
         //=================================== COMPACTIVATABLE
 
         // Verse.Pawn_EquipmentTracker
-        public static void TryDropEquipment_PreFix(Pawn_EquipmentTracker __instance)
+        public static void Notify_EquipmentRemoved_PostFix(ThingWithComps eq)
         {
-            if (__instance.Primary?.GetCompActivatableEffect() is CompActivatableEffect compActivatableEffect &&
+            if (eq.GetCompActivatableEffect() is CompActivatableEffect compActivatableEffect &&
                 compActivatableEffect.CurrentState == CompActivatableEffect.State.Activated)
                 compActivatableEffect.TryDeactivate();
         }

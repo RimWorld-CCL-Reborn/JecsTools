@@ -105,10 +105,10 @@ namespace AbilityUser
         }
 
         // RimWorld.PawnGroupKindWorker_Normal
-        public static void GeneratePawns_PostFix(PawnGroupMakerParms parms, ref List<Pawn> __result)
+        public static void GeneratePawns_PostFix(PawnGroupMakerParms parms, List<Pawn> __result)
         {
             //Anyone special?
-            if (__result.NullOrEmpty()) return;
+            if (__result.Count == 0) return;
             var specialPawns = __result.FindAll(x => x.GetCompAbilityUser() is CompAbilityUser cu && cu.CombatPoints() > 0);
             if (specialPawns.Count > 0)
             {
@@ -257,18 +257,21 @@ namespace AbilityUser
         public static void Notify_EquipmentAdded_PostFix(Pawn_EquipmentTracker __instance, ThingWithComps eq)
         {
             //Log.Message("Notify_EquipmentAdded_PostFix 1 : " + eq);
-            var compAbilityUsers = ((Pawn)__instance.ParentHolder).GetCompAbilityUsers();
-            foreach (var cai in eq.GetCompAbilityItems())
+            var compAbilityUsers = __instance.pawn.GetCompAbilityUsers().ToArray();
+            if (compAbilityUsers.Length > 0)
             {
-                //Log.Message("  Found CompAbilityItem, for CompAbilityUser of " + cai.Props.AbilityUserClass);
-                foreach (var cau in compAbilityUsers)
+                foreach (var cai in eq.GetCompAbilityItems())
                 {
-                    //Log.Message("  Found CompAbilityUser, " + cau + " : " + cau.GetType() + ":" + cai.Props.AbilityUserClass);
-                    if (cau.GetType() == cai.Props.AbilityUserClass)
+                    //Log.Message("  Found CompAbilityItem, for CompAbilityUser of " + cai.Props.AbilityUserClass);
+                    foreach (var cau in compAbilityUsers)
                     {
-                        //Log.Message("  and they match types");
-                        cai.AbilityUserTarget = cau;
-                        foreach (var abdef in cai.Props.Abilities) cau.AddWeaponAbility(abdef);
+                        //Log.Message("  Found CompAbilityUser, " + cau + " : " + cau.GetType() + ":" + cai.Props.AbilityUserClass);
+                        if (cau.GetType() == cai.Props.AbilityUserClass)
+                        {
+                            //Log.Message("  and they match types");
+                            cai.AbilityUserTarget = cau;
+                            foreach (var abdef in cai.Props.Abilities) cau.AddWeaponAbility(abdef);
+                        }
                     }
                 }
             }
@@ -277,56 +280,67 @@ namespace AbilityUser
         public static void Notify_EquipmentRemoved_PostFix(Pawn_EquipmentTracker __instance, ThingWithComps eq)
         {
             //Log.Message("Notify_EquipmentRemoved_PostFix : " + eq);
-            var compAbilityUsers = ((Pawn)__instance.ParentHolder).GetCompAbilityUsers();
-            foreach (var cai in eq.GetCompAbilityItems())
+            var compAbilityUsers = __instance.pawn.GetCompAbilityUsers().ToArray();
+            if (compAbilityUsers.Length > 0)
             {
-                //Log.Message("  Found CompAbilityItem, for CompAbilityUser of " + cai.Props.AbilityUserClass);
-                foreach (var cau in compAbilityUsers)
+                foreach (var cai in eq.GetCompAbilityItems())
                 {
-                    //Log.Message("  Found CompAbilityUser, " + cau + " : " + cau.GetType() + ":" + cai.Props.AbilityUserClass);
-                    if (cau.GetType() == cai.Props.AbilityUserClass)
+                    //Log.Message("  Found CompAbilityItem, for CompAbilityUser of " + cai.Props.AbilityUserClass);
+                    foreach (var cau in compAbilityUsers)
                     {
-                        //Log.Message("  and they match types");
-                        foreach (var abdef in cai.Props.Abilities) cau.RemoveWeaponAbility(abdef);
+                        //Log.Message("  Found CompAbilityUser, " + cau + " : " + cau.GetType() + ":" + cai.Props.AbilityUserClass);
+                        if (cau.GetType() == cai.Props.AbilityUserClass)
+                        {
+                            //Log.Message("  and they match types");
+                            foreach (var abdef in cai.Props.Abilities) cau.RemoveWeaponAbility(abdef);
+                        }
                     }
                 }
             }
         }
 
+        // Compatibility note: as of 2020-09-11, A RimWorld of Magic directly calls this method.
         public static void Notify_ApparelAdded_PostFix(Pawn_ApparelTracker __instance, Apparel apparel)
         {
             //Log.Message("Notify_ApparelAdded_PostFix : " + apparel);
-            var compAbilityUsers = ((Pawn)__instance.ParentHolder).GetCompAbilityUsers();
-            foreach (var cai in apparel.GetCompAbilityItems())
+            var compAbilityUsers = __instance.pawn.GetCompAbilityUsers().ToArray();
+            if (compAbilityUsers.Length > 0)
             {
-                //Log.Message("  Found CompAbilityItem, for CompAbilityUser of " + cai.Props.AbilityUserClass);
-                foreach (var cau in compAbilityUsers)
+                foreach (var cai in apparel.GetCompAbilityItems())
                 {
-                    //Log.Message("  Found CompAbilityUser, " + cau + " : " + cau.GetType() + ":" + cai.Props.AbilityUserClass);
-                    if (cau.GetType() == cai.Props.AbilityUserClass)
+                    //Log.Message("  Found CompAbilityItem, for CompAbilityUser of " + cai.Props.AbilityUserClass);
+                    foreach (var cau in compAbilityUsers)
                     {
-                        //Log.Message("  and they match types");
-                        cai.AbilityUserTarget = cau;
-                        foreach (var abdef in cai.Props.Abilities) cau.AddApparelAbility(abdef);
+                        //Log.Message("  Found CompAbilityUser, " + cau + " : " + cau.GetType() + ":" + cai.Props.AbilityUserClass);
+                        if (cau.GetType() == cai.Props.AbilityUserClass)
+                        {
+                            //Log.Message("  and they match types");
+                            cai.AbilityUserTarget = cau;
+                            foreach (var abdef in cai.Props.Abilities) cau.AddApparelAbility(abdef);
+                        }
                     }
                 }
             }
         }
 
+        // Compatibility note: as of 2020-09-11, A RimWorld of Magic directly calls this method.
         public static void Notify_ApparelRemoved_PostFix(Pawn_ApparelTracker __instance, Apparel apparel)
         {
             //Log.Message("Notify_ApparelRemoved_PostFix 1 : " + apparel);
-            var compAbilityUsers = ((Pawn)__instance.ParentHolder).GetCompAbilityUsers();
-            foreach (var cai in apparel.GetCompAbilityItems())
+            var compAbilityUsers = __instance.pawn.GetCompAbilityUsers().ToArray();
+            if (compAbilityUsers.Length > 0)
             {
-                //Log.Message("  Found CompAbilityItem, for CompAbilityUser of " + cai.Props.AbilityUserClass);
-                foreach (var cau in compAbilityUsers)
+                foreach (var cai in apparel.GetCompAbilityItems())
                 {
-                    //Log.Message("  Found CompAbilityUser, " + cau + " : " + cau.GetType() + ":" + cai.Props.AbilityUserClass);
-                    if (cau.GetType() == cai.Props.AbilityUserClass)
+                    //Log.Message("  Found CompAbilityItem, for CompAbilityUser of " + cai.Props.AbilityUserClass);
+                    foreach (var cau in compAbilityUsers)
                     {
-                        //Log.Message("  and they match types");
-                        foreach (var abdef in cai.Props.Abilities) cau.RemoveApparelAbility(abdef);
+                        //Log.Message("  Found CompAbilityUser, " + cau + " : " + cau.GetType() + ":" + cai.Props.AbilityUserClass);
+                        if (cau.GetType() == cai.Props.AbilityUserClass)
+                        {
+                            //Log.Message("  and they match types");
+                            foreach (var abdef in cai.Props.Abilities) cau.RemoveApparelAbility(abdef);
+                        }
                     }
                 }
             }
