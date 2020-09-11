@@ -7,18 +7,16 @@ using Verse;
 
 namespace JecsTools
 {
+    // TODO: This doesn't seem to be used - remove?
     public static partial class HarmonyPatches
     {
-        public static void GUIPatches(Harmony harmony)
+        public static void GUIPatches()
         {
-            // Changed by Tad : New Harmony Instance creation required
-            var instance = new Harmony("jecstools.jecrell.main-gui");
-
-            //Allow fortitude to soak damage
+            var harmony = new Harmony("jecstools.jecrell.main-gui");
             var type = typeof(HarmonyPatches);
-            instance.Patch(AccessTools.Method(typeof(MoteMaker), "MakeMoodThoughtBubble"), null,
-                new HarmonyMethod(type, nameof(ToggleMoodThoughtBubble)),
-                null);
+
+            harmony.Patch(AccessTools.Method(typeof(MoteMaker), nameof(MoteMaker.MakeMoodThoughtBubble)),
+                postfix: new HarmonyMethod(type, nameof(ToggleMoodThoughtBubble)));
         }
 
         public static void ToggleMoodThoughtBubble(ref MoteBubble __result)

@@ -14,60 +14,53 @@ namespace AbilityUser
         public AbilityUserMod(ModContentPack content) : base(content)
         {
             var harmony = new Harmony("jecstools.jecrell.abilityuser");
-            harmony.Patch(AccessTools.Method(typeof(Targeter), nameof(Targeter.TargeterUpdate)), null,
-                new HarmonyMethod(typeof(AbilityUserMod), nameof(TargeterUpdate_PostFix)), null);
+            var type = typeof(AbilityUserMod);
+
+            harmony.Patch(AccessTools.Method(typeof(Targeter), nameof(Targeter.TargeterUpdate)),
+                postfix: new HarmonyMethod(type, nameof(TargeterUpdate_PostFix)));
             harmony.Patch(AccessTools.Method(typeof(Targeter), nameof(Targeter.ProcessInputEvents)),
-                new HarmonyMethod(typeof(AbilityUserMod), nameof(ProcessInputEvents_PreFix)), null);
+                prefix: new HarmonyMethod(type, nameof(ProcessInputEvents_PreFix)));
             harmony.Patch(AccessTools.Method(typeof(Targeter), "ConfirmStillValid"),
-                new HarmonyMethod(typeof(AbilityUserMod), nameof(ConfirmStillValid)), null);
+                prefix: new HarmonyMethod(type, nameof(ConfirmStillValid)));
 
             // Initializes the AbilityUsers on Pawns
-            harmony.Patch(AccessTools.Method(typeof(ThingWithComps), nameof(ThingWithComps.InitializeComps)), null,
-                new HarmonyMethod(typeof(AbilityUserMod), nameof(InitializeComps_PostFix)), null);
+            harmony.Patch(AccessTools.Method(typeof(ThingWithComps), nameof(ThingWithComps.InitializeComps)),
+                postfix: new HarmonyMethod(type, nameof(InitializeComps_PostFix)));
 
             // when the Pawn_EquipmentTracker is notified of a new item, see if that has CompAbilityItem.
-            harmony.Patch(
-                AccessTools.Method(typeof(Pawn_EquipmentTracker), nameof(Pawn_EquipmentTracker.Notify_EquipmentAdded)),
-                null,
-                new HarmonyMethod(typeof(AbilityUserMod), nameof(Notify_EquipmentAdded_PostFix)), null);
+            harmony.Patch(AccessTools.Method(typeof(Pawn_EquipmentTracker), nameof(Pawn_EquipmentTracker.Notify_EquipmentAdded)),
+                postfix: new HarmonyMethod(type, nameof(Notify_EquipmentAdded_PostFix)));
             // when the Pawn_EquipmentTracker is notified of one less item, see if that has CompAbilityItem.
-            harmony.Patch(
-                AccessTools.Method(typeof(Pawn_EquipmentTracker),
-                    nameof(Pawn_EquipmentTracker.Notify_EquipmentRemoved)), null,
-                new HarmonyMethod(typeof(AbilityUserMod), nameof(Notify_EquipmentRemoved_PostFix)), null);
+            harmony.Patch(AccessTools.Method(typeof(Pawn_EquipmentTracker), nameof(Pawn_EquipmentTracker.Notify_EquipmentRemoved)),
+                postfix: new HarmonyMethod(type, nameof(Notify_EquipmentRemoved_PostFix)));
 
             // when the Pawn_ApparelTracker is notified of a new item, see if that has CompAbilityItem.
-            harmony.Patch(
-                AccessTools.Method(typeof(Pawn_ApparelTracker), nameof(Pawn_ApparelTracker.Notify_ApparelAdded)), null,
-                new HarmonyMethod(typeof(AbilityUserMod), nameof(Notify_ApparelAdded_PostFix)), null);
+            harmony.Patch(AccessTools.Method(typeof(Pawn_ApparelTracker), nameof(Pawn_ApparelTracker.Notify_ApparelAdded)),
+                postfix: new HarmonyMethod(type, nameof(Notify_ApparelAdded_PostFix)));
             // when the Pawn_ApparelTracker is notified of one less item, see if that has CompAbilityItem.
-            harmony.Patch(
-                AccessTools.Method(typeof(Pawn_ApparelTracker), nameof(Pawn_ApparelTracker.Notify_ApparelRemoved)),
-                null,
-                new HarmonyMethod(typeof(AbilityUserMod), nameof(Notify_ApparelRemoved_PostFix)), null);
+            harmony.Patch(AccessTools.Method(typeof(Pawn_ApparelTracker), nameof(Pawn_ApparelTracker.Notify_ApparelRemoved)),
+                postfix: new HarmonyMethod(type, nameof(Notify_ApparelRemoved_PostFix)));
 
             harmony.Patch(AccessTools.Method(typeof(ShortHashGiver), "GiveShortHash"),
-                new HarmonyMethod(typeof(AbilityUserMod), nameof(GiveShortHash_PrePatch)), null);
+                prefix: new HarmonyMethod(type, nameof(GiveShortHash_PrePatch)));
 
             harmony.Patch(AccessTools.Method(typeof(PawnGroupKindWorker), nameof(PawnGroupKindWorker.GeneratePawns),
-                    new Type[] { typeof(PawnGroupMakerParms), typeof(PawnGroupMaker), typeof(bool) }), null,
-                new HarmonyMethod(typeof(AbilityUserMod), nameof(GeneratePawns_PostFix)));
+                    new[] { typeof(PawnGroupMakerParms), typeof(PawnGroupMaker), typeof(bool) }),
+                postfix: new HarmonyMethod(type, nameof(GeneratePawns_PostFix)));
 
             harmony.Patch(AccessTools.PropertyGetter(typeof(Verb), nameof(Verb.UIIcon)),
-                new HarmonyMethod(typeof(AbilityUserMod), nameof(get_UIIcon)), null);
+                prefix: new HarmonyMethod(type, nameof(get_UIIcon)));
 
             harmony.Patch(AccessTools.PropertyGetter(typeof(Verb_LaunchProjectile), nameof(Verb_LaunchProjectile.Projectile)),
-                new HarmonyMethod(typeof(AbilityUserMod), nameof(get_Projectile_Prefix)), null);
+                prefix: new HarmonyMethod(type, nameof(get_Projectile_Prefix)));
 
             harmony.Patch(AccessTools.PropertyGetter(typeof(Verb), nameof(Verb.DirectOwner)),
-                new HarmonyMethod(typeof(AbilityUserMod), nameof(get_DirectOwner_Prefix)), null);
+                prefix: new HarmonyMethod(type, nameof(get_DirectOwner_Prefix)));
 
-            harmony.Patch(
-                AccessTools.Method(typeof(Verb), nameof(Verb.TryStartCastOn), new Type[] { typeof(LocalTargetInfo), typeof(LocalTargetInfo), typeof(bool), typeof(bool) })
-                ,
-                new HarmonyMethod(typeof(AbilityUserMod), nameof(TryStartCastOn_Prefix), null));
+            harmony.Patch(AccessTools.Method(typeof(Verb), nameof(Verb.TryStartCastOn),
+                    new[] { typeof(LocalTargetInfo), typeof(LocalTargetInfo), typeof(bool), typeof(bool) }),
+                prefix: new HarmonyMethod(type, nameof(TryStartCastOn_Prefix)));
         }
-
 
         public static bool TryStartCastOn_Prefix(Verb __instance, LocalTargetInfo castTarg, LocalTargetInfo destTarg, bool surpriseAttack, bool canHitNonTargetPawns, ref bool __result)
         {

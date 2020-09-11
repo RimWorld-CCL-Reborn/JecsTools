@@ -74,10 +74,12 @@ namespace JecsTools
             }
 
             var harmony = new Harmony("jecstools.jecrell.humanlikeorders");
+            var type = typeof(_HumanlikeOrdersUtility);
+
             harmony.Patch(AccessTools.Method(typeof(FloatMenuMakerMap), "AddHumanlikeOrders"),
-                postfix: new HarmonyMethod(typeof(_HumanlikeOrdersUtility), nameof(AddHumanlikeOrders_PostFix)));
+                postfix: new HarmonyMethod(type, nameof(AddHumanlikeOrders_PostFix)));
             //harmony.Patch(AccessTools.Method(typeof(FloatMenuMakerMap), "CanTakeOrder"),
-            //    postfix: new HarmonyMethod(typeof(_HumanlikeOrdersUtility), nameof(CanTakeOrder_PostFix)));
+            //    postfix: new HarmonyMethod(type, nameof(CanTakeOrder_PostFix)));
         }
 
         [Conditional("DEBUGLOG")]

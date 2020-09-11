@@ -18,8 +18,8 @@ namespace CompSlotLoadable
         static HarmonyCompSlotLoadable()
         {
             var harmony = new Harmony("jecstools.jecrell.comps.slotloadable");
-
             var type = typeof(HarmonyCompSlotLoadable);
+
             harmony.Patch(AccessTools.Method(typeof(Pawn), nameof(Pawn.GetGizmos)),
                 postfix: new HarmonyMethod(type, nameof(GetGizmos_PostFix)));
             harmony.Patch(AccessTools.Method(typeof(StatExtension), nameof(StatExtension.GetStatValue), new[] { typeof(Thing), typeof(StatDef), typeof(bool) }),

@@ -10,17 +10,18 @@ namespace CompExtraSounds
         static HarmonyCompExtraSounds()
         {
             var harmony = new Harmony("jecstools.jecrell.comps.sounds");
+            var type = typeof(HarmonyCompExtraSounds);
 
-            harmony.Patch(AccessTools.Method(typeof(Verb_MeleeAttack), "SoundMiss"), null,
-                new HarmonyMethod(typeof(HarmonyCompExtraSounds), nameof(SoundMissPrefix)));
-            harmony.Patch(AccessTools.Method(typeof(Verb_MeleeAttack), "SoundHitPawn"), null,
-                new HarmonyMethod(typeof(HarmonyCompExtraSounds), nameof(SoundHitPawnPrefix)));
-            harmony.Patch(AccessTools.Method(typeof(Verb_MeleeAttack), "SoundHitBuilding"), null,
-                new HarmonyMethod(typeof(HarmonyCompExtraSounds), nameof(SoundHitBuildingPrefix)));
+            harmony.Patch(AccessTools.Method(typeof(Verb_MeleeAttack), "SoundMiss"),
+                postfix: new HarmonyMethod(type, nameof(SoundMissPostfix)));
+            harmony.Patch(AccessTools.Method(typeof(Verb_MeleeAttack), "SoundHitPawn"),
+                postfix: new HarmonyMethod(type, nameof(SoundHitPawnPostfix)));
+            harmony.Patch(AccessTools.Method(typeof(Verb_MeleeAttack), "SoundHitBuilding"),
+                postfix: new HarmonyMethod(type, nameof(SoundHitBuildingPostfix)));
         }
 
         //=================================== COMPEXTRASOUNDS
-        public static void SoundHitPawnPrefix(ref SoundDef __result, Verb_MeleeAttack __instance)
+        public static void SoundHitPawnPostfix(ref SoundDef __result, Verb_MeleeAttack __instance)
         {
             if (__instance.caster is Pawn pawn)
             {
@@ -32,7 +33,7 @@ namespace CompExtraSounds
             }
         }
 
-        public static void SoundMissPrefix(ref SoundDef __result, Verb_MeleeAttack __instance)
+        public static void SoundMissPostfix(ref SoundDef __result, Verb_MeleeAttack __instance)
         {
             if (__instance.caster is Pawn pawn)
             {
@@ -41,7 +42,7 @@ namespace CompExtraSounds
             }
         }
 
-        public static void SoundHitBuildingPrefix(ref SoundDef __result, Verb_MeleeAttack __instance)
+        public static void SoundHitBuildingPostfix(ref SoundDef __result, Verb_MeleeAttack __instance)
         {
             if (__instance.caster is Pawn pawn)
             {

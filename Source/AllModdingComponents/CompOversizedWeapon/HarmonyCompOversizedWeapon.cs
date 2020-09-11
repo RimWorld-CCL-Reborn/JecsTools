@@ -11,10 +11,12 @@ namespace CompOversizedWeapon
         static HarmonyCompOversizedWeapon()
         {
             var harmony = new Harmony("jecstools.jecrell.comps.oversized");
-            harmony.Patch(typeof(PawnRenderer).GetMethod("DrawEquipmentAiming"),
-                new HarmonyMethod(typeof(HarmonyCompOversizedWeapon).GetMethod(nameof(DrawEquipmentAimingPreFix))), null);
-            harmony.Patch(AccessTools.Method(typeof(Thing), "get_DefaultGraphic"), null,
-                new HarmonyMethod(typeof(HarmonyCompOversizedWeapon), nameof(get_DefaultGraphic_PostFix)));
+            var type = typeof(HarmonyCompOversizedWeapon);
+
+            harmony.Patch(AccessTools.Method(typeof(PawnRenderer), nameof(PawnRenderer.DrawEquipmentAiming)),
+                prefix: new HarmonyMethod(type, nameof(DrawEquipmentAimingPreFix)));
+            harmony.Patch(AccessTools.PropertyGetter(typeof(Thing), nameof(Thing.DefaultGraphic)),
+                postfix: new HarmonyMethod(type, nameof(get_DefaultGraphic_PostFix)));
         }
 
         /// <summary>

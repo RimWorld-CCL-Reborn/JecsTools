@@ -22,29 +22,30 @@ namespace PawnShields
         static HarmonyPatches()
         {
             var harmony = new Harmony("jecstools.chjees.shields");
+            var type = typeof(HarmonyPatches);
 
             harmony.Patch(AccessTools.Method(typeof(PawnGenerator), "GenerateGearFor"),
-                postfix: new HarmonyMethod(typeof(HarmonyPatches), nameof(Patch_PawnGenerator_GenerateGearFor)));
+                postfix: new HarmonyMethod(type, nameof(Patch_PawnGenerator_GenerateGearFor)));
 
             harmony.Patch(AccessTools.Method(typeof(PawnRenderer), nameof(PawnRenderer.RenderPawnAt),
-                new Type[] { typeof(Vector3), typeof(RotDrawMode), typeof(bool), typeof(bool) }),
-                postfix: new HarmonyMethod(typeof(HarmonyPatches), nameof(Patch_PawnRenderer_RenderPawnAt)));
+                    new[] { typeof(Vector3), typeof(RotDrawMode), typeof(bool), typeof(bool) }),
+                postfix: new HarmonyMethod(type, nameof(Patch_PawnRenderer_RenderPawnAt)));
 
             harmony.Patch(AccessTools.Method(typeof(Pawn), nameof(Pawn.DropAndForbidEverything)),
-                postfix: new HarmonyMethod(typeof(HarmonyPatches), nameof(Patch_Pawn_DropAndForbidEverything)));
+                postfix: new HarmonyMethod(type, nameof(Patch_Pawn_DropAndForbidEverything)));
 
             harmony.Patch(AccessTools.Method(typeof(Pawn_HealthTracker), nameof(Pawn_HealthTracker.CheckForStateChange)),
-                postfix: new HarmonyMethod(typeof(HarmonyPatches), nameof(Patch_Pawn_HealthTracker_CheckForStateChance)));
+                postfix: new HarmonyMethod(type, nameof(Patch_Pawn_HealthTracker_CheckForStateChance)));
             harmony.Patch(AccessTools.Method(typeof(Pawn_HealthTracker), nameof(Pawn_HealthTracker.PreApplyDamage)),
-                prefix: new HarmonyMethod(typeof(HarmonyPatches), nameof(Patch_Pawn_HealthTracker_PreApplyDamage)));
+                prefix: new HarmonyMethod(type, nameof(Patch_Pawn_HealthTracker_PreApplyDamage)));
 
             harmony.Patch(AccessTools.Method(typeof(Pawn_EquipmentTracker), nameof(Pawn_EquipmentTracker.MakeRoomFor)),
-                postfix: new HarmonyMethod(typeof(HarmonyPatches), nameof(Patch_Pawn_EquipmentTracker_MakeRoomFor)));
+                postfix: new HarmonyMethod(type, nameof(Patch_Pawn_EquipmentTracker_MakeRoomFor)));
 
             harmony.Patch(AccessTools.Method(typeof(StatWorker), nameof(StatWorker.GetValueUnfinalized)),
-                transpiler: new HarmonyMethod(typeof(HarmonyPatches), nameof(Transpiler_StatWorker_GetValueUnfinalized)));
+                transpiler: new HarmonyMethod(type, nameof(Transpiler_StatWorker_GetValueUnfinalized)));
             harmony.Patch(AccessTools.Method(typeof(StatWorker), nameof(StatWorker.GetExplanationUnfinalized)),
-                transpiler: new HarmonyMethod(typeof(HarmonyPatches), nameof(Transpiler_StatWorker_GetExplanationUnfinalized)));
+                transpiler: new HarmonyMethod(type, nameof(Transpiler_StatWorker_GetExplanationUnfinalized)));
         }
 
         public static void Patch_PawnGenerator_GenerateGearFor(Pawn pawn, ref PawnGenerationRequest request)

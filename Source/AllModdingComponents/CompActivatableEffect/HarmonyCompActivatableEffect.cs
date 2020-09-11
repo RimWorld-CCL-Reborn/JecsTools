@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using CompOversizedWeapon;
 using HarmonyLib;
 using RimWorld;
 using UnityEngine;
@@ -14,27 +13,30 @@ namespace CompActivatableEffect
         static HarmonyCompActivatableEffect()
         {
             var harmony = new Harmony("jecstools.jecrell.comps.activator");
+            var type = typeof(HarmonyCompActivatableEffect);
 
-            harmony.Patch(typeof(Pawn).GetMethod("GetGizmos"), null,
-                new HarmonyMethod(typeof(HarmonyCompActivatableEffect).GetMethod(nameof(GetGizmosPrefix))));
+            harmony.Patch(AccessTools.Method(typeof(Pawn), nameof(Pawn.GetGizmos)),
+                postfix: new HarmonyMethod(type, nameof(GetGizmosPostfix)));
 
-            harmony.Patch(typeof(PawnRenderer).GetMethod("DrawEquipmentAiming"), null,
-                new HarmonyMethod(typeof(HarmonyCompActivatableEffect), nameof(DrawEquipmentAimingPostFix)));
+            harmony.Patch(AccessTools.Method(typeof(PawnRenderer), nameof(PawnRenderer.DrawEquipmentAiming)),
+                postfix: new HarmonyMethod(type, nameof(DrawEquipmentAimingPostFix)));
 
-            harmony.Patch(AccessTools.Method(typeof(Verb), "TryStartCastOn", new[] { typeof(LocalTargetInfo), typeof(LocalTargetInfo), typeof(bool), typeof(bool) }),
-                new HarmonyMethod(typeof(HarmonyCompActivatableEffect), nameof(TryStartCastOnPrefix)), null);
+            harmony.Patch(AccessTools.Method(typeof(Verb), nameof(Verb.TryStartCastOn),
+                    new[] { typeof(LocalTargetInfo), typeof(LocalTargetInfo), typeof(bool), typeof(bool) }),
+                prefix: new HarmonyMethod(type, nameof(TryStartCastOnPrefix)));
 
-            harmony.Patch(typeof(Pawn_DraftController).GetMethod("set_Drafted"), null,
-                new HarmonyMethod(typeof(HarmonyCompActivatableEffect).GetMethod(nameof(set_DraftedPostFix))));
+            harmony.Patch(AccessTools.PropertySetter(typeof(Pawn_DraftController), nameof(Pawn_DraftController.Drafted)),
+                postfix: new HarmonyMethod(type, nameof(set_DraftedPostFix)));
 
-            harmony.Patch(typeof(Pawn).GetMethod("ExitMap"),
-                new HarmonyMethod(typeof(HarmonyCompActivatableEffect).GetMethod(nameof(ExitMap_PreFix))), null);
+            harmony.Patch(AccessTools.Method(typeof(Pawn), nameof(Pawn.ExitMap)),
+                prefix: new HarmonyMethod(type, nameof(ExitMap_PreFix)));
 
-            harmony.Patch(typeof(Pawn_EquipmentTracker).GetMethod("TryDropEquipment"),
-                new HarmonyMethod(typeof(HarmonyCompActivatableEffect).GetMethod(nameof(TryDropEquipment_PreFix))), null);
+            harmony.Patch(AccessTools.Method(typeof(Pawn_EquipmentTracker), nameof(Pawn_EquipmentTracker.TryDropEquipment)),
+                prefix: new HarmonyMethod(type, nameof(TryDropEquipment_PreFix)));
 
-            harmony.Patch(typeof(Pawn_DraftController).GetMethod("set_Drafted"), null,
-                new HarmonyMethod(typeof(HarmonyCompActivatableEffect).GetMethod(nameof(set_DraftedPostFix))));
+            // TODO: This patch is already applied above - remove this redundant patch.
+            harmony.Patch(AccessTools.PropertySetter(typeof(Pawn_DraftController), nameof(Pawn_DraftController.Drafted)),
+                postfix: new HarmonyMethod(type, nameof(set_DraftedPostFix)));
         }
 
         //=================================== COMPACTIVATABLE
@@ -175,7 +177,7 @@ namespace CompActivatableEffect
             }
         }
 
-        public static void GetGizmosPrefix(Pawn __instance, ref IEnumerable<Gizmo> __result)
+        public static void GetGizmosPostfix(Pawn __instance, ref IEnumerable<Gizmo> __result)
         {
             if (__instance.equipment?.Primary?.GetCompActivatableEffect() is CompActivatableEffect compActivatableEffect)
                 if (__instance.Faction == Faction.OfPlayer)

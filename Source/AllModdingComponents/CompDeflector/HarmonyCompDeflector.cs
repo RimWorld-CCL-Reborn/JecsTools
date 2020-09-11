@@ -12,10 +12,12 @@ namespace CompDeflector
         static HarmonyCompDeflector()
         {
             var harmony = new Harmony("jecstools.jecrell.comps.deflector");
+            var type = typeof(HarmonyCompDeflector);
+
             harmony.Patch(AccessTools.Method(typeof(Thing), nameof(Thing.TakeDamage)),
-                new HarmonyMethod(typeof(HarmonyCompDeflector), nameof(TakeDamage_PreFix)), null);
-            harmony.Patch(AccessTools.Method(typeof(PawnRenderer), nameof(PawnRenderer.DrawEquipmentAiming)), null,
-                new HarmonyMethod(typeof(HarmonyCompDeflector), nameof(DrawEquipmentAimingPostFix)), null);
+                prefix: new HarmonyMethod(type, nameof(TakeDamage_PreFix)));
+            harmony.Patch(AccessTools.Method(typeof(PawnRenderer), nameof(PawnRenderer.DrawEquipmentAiming)),
+                postfix: new HarmonyMethod(type, nameof(DrawEquipmentAimingPostFix)));
         }
 
         public static void DrawEquipmentAimingPostFix(Pawn ___pawn, Thing eq, Vector3 drawLoc,

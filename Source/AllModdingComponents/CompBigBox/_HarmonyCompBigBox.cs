@@ -12,10 +12,10 @@ namespace DefModExtension_BigBox
         static HarmonyDefModExtension_BigBox()
         {
             var harmony = new Harmony("jecstools.jecrell.defmodextensions.bigbox");
-
             var type = typeof(HarmonyDefModExtension_BigBox);
+
             harmony.Patch(AccessTools.Method(typeof(SelectionDrawer), "DrawSelectionBracketFor"),
-                new HarmonyMethod(type, nameof(DrawSelectionBracketFor_PreFix)), null);
+                prefix: new HarmonyMethod(type, nameof(DrawSelectionBracketFor_PreFix)));
         }
 
         private static bool DrawSelectionBracketFor_PreFix(object obj, Vector3[] ___bracketLocs, Material ___SelectionBracketMat,

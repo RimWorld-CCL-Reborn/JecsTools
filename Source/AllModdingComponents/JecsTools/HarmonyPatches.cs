@@ -27,77 +27,64 @@ namespace JecsTools
 
         static HarmonyPatches()
         {
-            // Changed by Tad : New Harmony Instance creation required
-            var instance = new Harmony("jecstools.jecrell.main");
-            //Allow fortitude to soak damage
+            var harmony = new Harmony("jecstools.jecrell.main");
             var type = typeof(HarmonyPatches);
 
             //Debug Line
             //------------
-            //instance.Patch(
-            //    AccessTools.Method(typeof(PawnGroupKindWorker_Normal),
-            //        nameof(PawnGroupKindWorker_Normal.MinPointsToGenerateAnything)),
-            //    new HarmonyMethod(type, nameof(MinPointsTest)), null);
+            //harmony.Patch(AccessTools.Method(typeof(PawnGroupKindWorker_Normal), nameof(PawnGroupKindWorker_Normal.MinPointsToGenerateAnything)),
+            //    prefix: new HarmonyMethod(type, nameof(MinPointsTest)));
             //------------
 
+            //Allow fortitude to soak damage
+
             //Adds HediffCompProperties_DamageSoak checks to damage
-            instance.Patch(AccessTools.Method(typeof(Pawn_HealthTracker), nameof(Pawn_HealthTracker.PreApplyDamage)),
-                new HarmonyMethod(type, nameof(PreApplyDamage_PrePatch)), null);
+            harmony.Patch(AccessTools.Method(typeof(Pawn_HealthTracker), nameof(Pawn_HealthTracker.PreApplyDamage)),
+                prefix: new HarmonyMethod(type, nameof(PreApplyDamage_PrePatch)));
 
             //Applies cached armor damage and absorption
-            instance.Patch(AccessTools.Method(typeof(ArmorUtility), "ApplyArmor"),
-                new HarmonyMethod(type, nameof(ApplyProperDamage)), null);
+            harmony.Patch(AccessTools.Method(typeof(ArmorUtility), "ApplyArmor"),
+                prefix: new HarmonyMethod(type, nameof(ApplyProperDamage)));
 
             //Applies damage soak motes
-            instance.Patch(AccessTools.Method(typeof(ArmorUtility), nameof(ArmorUtility.GetPostArmorDamage)), null,
-                new HarmonyMethod(type, nameof(Post_GetPostArmorDamage)));
+            harmony.Patch(AccessTools.Method(typeof(ArmorUtility), nameof(ArmorUtility.GetPostArmorDamage)),
+                postfix: new HarmonyMethod(type, nameof(Post_GetPostArmorDamage)));
 
             //Allows for adding additional HediffSets when characters spawn using the StartWithHediff class.
-            instance.Patch(
-                AccessTools.Method(typeof(PawnGenerator), "GeneratePawn", new[] { typeof(PawnGenerationRequest) }), null,
-                new HarmonyMethod(type, nameof(Post_GeneratePawn)));
+            harmony.Patch(AccessTools.Method(typeof(PawnGenerator), "GeneratePawn", new[] { typeof(PawnGenerationRequest) }),
+                postfix: new HarmonyMethod(type, nameof(Post_GeneratePawn)));
 
             //Checks apparel that uses the ApparelExtension
-            instance.Patch(AccessTools.Method(typeof(ApparelUtility), nameof(ApparelUtility.CanWearTogether)), null,
-                new HarmonyMethod(type, nameof(Post_CanWearTogether)));
+            harmony.Patch(AccessTools.Method(typeof(ApparelUtility), nameof(ApparelUtility.CanWearTogether)),
+                postfix: new HarmonyMethod(type, nameof(Post_CanWearTogether)));
 
             //Handles special cases of faction disturbances
-            instance.Patch(AccessTools.Method(typeof(Faction), nameof(Faction.Notify_MemberDied)),
-                new HarmonyMethod(type, nameof(Notify_MemberDied)), null);
+            harmony.Patch(AccessTools.Method(typeof(Faction), nameof(Faction.Notify_MemberDied)),
+                prefix: new HarmonyMethod(type, nameof(Notify_MemberDied)));
 
             //Handles FactionSettings extension to allow for fun effects when factions arrive.
-            instance.Patch(
-                AccessTools.Method(typeof(PawnGroupMakerUtility), nameof(PawnGroupMakerUtility.GeneratePawns)), null,
-                new HarmonyMethod(type, nameof(GeneratePawns)), null);
+            harmony.Patch(AccessTools.Method(typeof(PawnGroupMakerUtility), nameof(PawnGroupMakerUtility.GeneratePawns)),
+                postfix: new HarmonyMethod(type, nameof(GeneratePawns)));
 
             //Handles cases where gendered apparel swaps out for individual genders.
-            instance.Patch(
-                AccessTools.Method(typeof(PawnApparelGenerator),
-                    nameof(PawnApparelGenerator.GenerateStartingApparelFor)), null,
-                new HarmonyMethod(type, nameof(GenerateStartingApparelFor_PostFix)), null);
+            harmony.Patch(AccessTools.Method(typeof(PawnApparelGenerator), nameof(PawnApparelGenerator.GenerateStartingApparelFor)),
+                postfix: new HarmonyMethod(type, nameof(GenerateStartingApparelFor_PostFix)));
 
             //BuildingExtension prevents some things from wiping other things when spawned.
-            instance.Patch(
-                AccessTools.Method(typeof(GenSpawn),
-                    nameof(GenSpawn.SpawningWipes)), null,
-                new HarmonyMethod(type, nameof(SpawningWipes_PostFix)), null);
+            harmony.Patch(AccessTools.Method(typeof(GenSpawn), nameof(GenSpawn.SpawningWipes)),
+                postfix: new HarmonyMethod(type, nameof(SpawningWipes_PostFix)));
             //BuildingExtension is also checked here to make sure things do not block construction.
-            instance.Patch(
-                AccessTools.Method(typeof(GenConstruct),
-                    nameof(GenConstruct.BlocksConstruction)), null,
-                new HarmonyMethod(type, nameof(BlocksConstruction_PostFix)), null);
+            harmony.Patch(AccessTools.Method(typeof(GenConstruct), nameof(GenConstruct.BlocksConstruction)),
+                postfix: new HarmonyMethod(type, nameof(BlocksConstruction_PostFix)));
             //
-            instance.Patch(
-                AccessTools.Method(typeof(Projectile),
-                    "CanHit"), null,
-                new HarmonyMethod(type, nameof(CanHit_PostFix)), null);
-            instance.Patch(
-                AccessTools.Method(typeof(Verb),
-                    "CanHitCellFromCellIgnoringRange"),
-                new HarmonyMethod(type, nameof(CanHitCellFromCellIgnoringRange_Prefix)), null);
+            harmony.Patch(AccessTools.Method(typeof(Projectile), "CanHit"),
+                postfix: new HarmonyMethod(type, nameof(CanHit_PostFix)));
+            harmony.Patch(AccessTools.Method(typeof(Verb), "CanHitCellFromCellIgnoringRange"),
+                prefix: new HarmonyMethod(type, nameof(CanHitCellFromCellIgnoringRange_Prefix)));
 
             //optionally use "CutoutComplex" shader for apparel that wants it
-            //instance.Patch(AccessTools.Method(typeof(ApparelGraphicRecordGetter), nameof(ApparelGraphicRecordGetter.TryGetGraphicApparel)), null, null, new HarmonyMethod(type, nameof(CutOutComplexApparel_Transpiler)));
+            //harmony.Patch(AccessTools.Method(typeof(ApparelGraphicRecordGetter), nameof(ApparelGraphicRecordGetter.TryGetGraphicApparel)),
+            //    transpiler: new HarmonyMethod(type, nameof(CutOutComplexApparel_Transpiler)));
         }
 
         [Conditional("DEBUGLOG")]

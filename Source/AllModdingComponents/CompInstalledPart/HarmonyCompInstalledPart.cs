@@ -12,12 +12,14 @@ namespace CompInstalledPart
         static HarmonyCompInstalledPart()
         {
             var harmony = new Harmony("jecstools.jecrell.comps.installedpart");
+            var type = typeof(HarmonyCompInstalledPart);
+
             harmony.Patch(AccessTools.Method(typeof(ITab_Pawn_Gear), "InterfaceDrop"),
-                new HarmonyMethod(typeof(HarmonyCompInstalledPart).GetMethod(nameof(InterfaceDrop_PreFix))), null);
-            harmony.Patch(AccessTools.Method(typeof(Pawn_EquipmentTracker), "TryDropEquipment"),
-                new HarmonyMethod(typeof(HarmonyCompInstalledPart), nameof(TryDropEquipment_PreFix)), null);
-            harmony.Patch(typeof(PawnRenderer).GetMethod("DrawEquipmentAiming"),
-                new HarmonyMethod(typeof(HarmonyCompInstalledPart).GetMethod(nameof(DrawEquipmentAiming_PreFix))), null);
+                prefix: new HarmonyMethod(type, nameof(InterfaceDrop_PreFix)));
+            harmony.Patch(AccessTools.Method(typeof(Pawn_EquipmentTracker), nameof(Pawn_EquipmentTracker.TryDropEquipment)),
+                prefix: new HarmonyMethod(type, nameof(TryDropEquipment_PreFix)));
+            harmony.Patch(AccessTools.Method(typeof(PawnRenderer), nameof(PawnRenderer.DrawEquipmentAiming)),
+                prefix: new HarmonyMethod(type, nameof(DrawEquipmentAiming_PreFix)));
         }
 
         public static bool DrawEquipmentAiming_PreFix(Pawn ___pawn, Thing eq, Vector3 drawLoc,

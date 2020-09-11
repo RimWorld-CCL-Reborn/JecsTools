@@ -13,18 +13,17 @@ namespace JecsTools
         static HarmonyCaravanPatches()
         {
             var harmony = new Harmony("jecstools.jecrell.caravanjobs");
+            var type = typeof(HarmonyCaravanPatches);
 
-            harmony.Patch(AccessTools.Method(typeof(Caravan), "GetInspectString"), null,
-                new HarmonyMethod(typeof(HarmonyCaravanPatches), nameof(GetInspectString_Jobs)), null);
-            harmony.Patch(AccessTools.Method(typeof(WorldSelector), "AutoOrderToTileNow"), null,
-                new HarmonyMethod(typeof(HarmonyCaravanPatches), nameof(AutoOrderToTileNow_Jobs)), null);
-            harmony.Patch(AccessTools.Method(typeof(Caravan), "GetGizmos"), null,
-                new HarmonyMethod(typeof(HarmonyCaravanPatches), nameof(GetGizmos_Jobs)), null);
-            harmony.Patch(
-                AccessTools.Method(typeof(WorldSelector), "SelectableObjectsUnderMouse",
+            harmony.Patch(AccessTools.Method(typeof(Caravan), "GetInspectString"),
+                postfix: new HarmonyMethod(type, nameof(GetInspectString_Jobs)));
+            harmony.Patch(AccessTools.Method(typeof(WorldSelector), "AutoOrderToTileNow"),
+                postfix: new HarmonyMethod(type, nameof(AutoOrderToTileNow_Jobs)));
+            harmony.Patch(AccessTools.Method(typeof(Caravan), "GetGizmos"),
+                postfix: new HarmonyMethod(type, nameof(GetGizmos_Jobs)));
+            harmony.Patch(AccessTools.Method(typeof(WorldSelector), "SelectableObjectsUnderMouse",
                     new[] { typeof(bool).MakeByRefType(), typeof(bool).MakeByRefType() }),
-                null, new HarmonyMethod(typeof(HarmonyCaravanPatches),
-                    nameof(SelectableObjectsUnderMouse_InvisHandler)), null);
+                postfix: new HarmonyMethod(type, nameof(SelectableObjectsUnderMouse_InvisHandler)));
         }
 
         // RimWorld.Planet.WorldSelector
