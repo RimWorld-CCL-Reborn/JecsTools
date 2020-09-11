@@ -38,7 +38,7 @@ namespace AbilityUserAI
         ///     giant anyway.)
         /// </summary>
         /// <param name="def">Def to set.</param>
-        public void Resolve(AbilityUserAIProfileDef def)
+        public virtual void Resolve(AbilityUserAIProfileDef def)
         {
             profileDef = def;
 
@@ -97,6 +97,11 @@ namespace AbilityUserAI
                 }
 
             return null;
+        }
+
+        public override string ToString()
+        {
+            return base.ToString() + "(" + profileDef + ")";
         }
     }
 }

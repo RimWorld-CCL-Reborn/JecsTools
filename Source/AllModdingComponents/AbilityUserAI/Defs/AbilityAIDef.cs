@@ -137,5 +137,10 @@ namespace AbilityUserAI
             //Valid ability to use.
             return true;
         }
+
+        public override string ToString()
+        {
+            return base.ToString() + $" (ability={ability})";
+        }
     }
 }

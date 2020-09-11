@@ -231,7 +231,7 @@ namespace AbilityUser
                 }
 
                 temporaryDestination = exactTestedPosition;
-                if (hitThing != null) Log.Message("Hit thig = " + hitThing.ToString());
+                //if (hitThing != null) Log.Message("Hit thing = " + hitThing.ToString());
             }
         }
 
