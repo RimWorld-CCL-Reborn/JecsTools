@@ -71,13 +71,12 @@ namespace JecsTools
             harmony.Patch(AccessTools.Method(typeof(PawnApparelGenerator), nameof(PawnApparelGenerator.GenerateStartingApparelFor)),
                 postfix: new HarmonyMethod(type, nameof(GenerateStartingApparelFor_PostFix)));
 
-            //BuildingExtension prevents some things from wiping other things when spawned.
+            //BuildingExtension prevents some things from wiping other things when spawned/constructing/blueprinted.
             harmony.Patch(AccessTools.Method(typeof(GenSpawn), nameof(GenSpawn.SpawningWipes)),
                 postfix: new HarmonyMethod(type, nameof(SpawningWipes_PostFix)));
-            //BuildingExtension is also checked here to make sure things do not block construction.
-            harmony.Patch(AccessTools.Method(typeof(GenConstruct), nameof(GenConstruct.BlocksConstruction)),
-                postfix: new HarmonyMethod(type, nameof(BlocksConstruction_PostFix)));
-            //
+            harmony.Patch(AccessTools.Method(typeof(GenConstruct), nameof(GenConstruct.CanPlaceBlueprintOver)),
+                postfix: new HarmonyMethod(type, nameof(CanPlaceBlueprintOver_PostFix)));
+
             harmony.Patch(AccessTools.Method(typeof(Projectile), "CanHit"),
                 postfix: new HarmonyMethod(type, nameof(CanHit_PostFix)));
             harmony.Patch(AccessTools.Method(typeof(Verb), "CanHitCellFromCellIgnoringRange"),
@@ -138,92 +137,69 @@ namespace JecsTools
             }
         }
 
-        public static void BlocksConstruction_PostFix(Thing constructible, Thing t, ref bool __result)
-        {
-            ThingDef thingDef = constructible.def;
-            ThingDef thingDef2 = t.def;
-            if (thingDef == null || thingDef2 == null)
-                return;
-            if (thingDef.HasModExtension<BuildingExtension>() || thingDef2.HasModExtension<BuildingExtension>())
-            {
-                BuildableDef buildableDef = GenConstruct.BuiltDefOf(thingDef);
-                BuildableDef buildableDef2 = GenConstruct.BuiltDefOf(thingDef2);
-                __result = ShouldWipe(buildableDef, buildableDef2, t.PositionHeld, t.MapHeld);
-            }
-        }
-
         public static void SpawningWipes_PostFix(BuildableDef newEntDef, BuildableDef oldEntDef, ref bool __result)
         {
-            ThingDef thingDef = newEntDef as ThingDef;
-            ThingDef thingDef2 = oldEntDef as ThingDef;
-            if (thingDef == null || thingDef2 == null)
-                return;
-            if (thingDef.HasModExtension<BuildingExtension>() || thingDef2.HasModExtension<BuildingExtension>())
+            // If SpawningWipes is already returning true, don't need to do anything.
+            if (__result == false && newEntDef is ThingDef newDef && oldEntDef is ThingDef oldDef)
             {
-                BuildableDef buildableDef = GenConstruct.BuiltDefOf(thingDef);
-                BuildableDef buildableDef2 = GenConstruct.BuiltDefOf(thingDef2);
-                __result = ShouldWipe(buildableDef, buildableDef2, IntVec3.Invalid, null);
+                if (HasSharedWipeCategory(newDef, oldDef))
+                    __result = true;
             }
         }
 
-        private static bool ShouldWipe(BuildableDef newEntDef, BuildableDef oldEntDef, IntVec3 loc, Map map)
+        public static void CanPlaceBlueprintOver_PostFix(BuildableDef newDef, ThingDef oldDef, ref bool __result)
         {
-            if (map == null || loc == null || !loc.IsValid)
+            // If CanPlaceBlueprintOver is already returning false, don't need to do anything.
+            if (__result == true && newDef is ThingDef thingDef)
             {
-                var buildingExtensionA = newEntDef?.GetBuildingExtension();
-                var buildingExtensionB = oldEntDef?.GetBuildingExtension();
-                if (buildingExtensionB == null && buildingExtensionA == null)
+                if (HasSharedWipeCategory(thingDef, oldDef))
+                    __result = false;
+            }
+        }
+
+        private static bool HasSharedWipeCategory(ThingDef newDef, ThingDef oldDef)
+        {
+            static HashSet<string> GetWipeCategories(ThingDef thingDef)
+            {
+                var buildingExtension = GenConstruct.BuiltDefOf(thingDef)?.GetBuildingExtension();
+                if (buildingExtension == null)
+                    return null;
+                var wipeCategorySet = buildingExtension.WipeCategories;
+                return wipeCategorySet == null || wipeCategorySet.Count == 0 ? null : wipeCategorySet;
+            }
+
+            var wipeCategoriesA = GetWipeCategories(newDef);
+            DebugMessage($"{newDef} wipeCategoriesA: {wipeCategoriesA.ToStringSafeEnumerable()}");
+            var wipeCategoriesB = GetWipeCategories(oldDef);
+            DebugMessage($"{oldDef} wipeCategoriesB: {wipeCategoriesB.ToStringSafeEnumerable()}");
+            if (wipeCategoriesB == null && wipeCategoriesA == null)
+            {
+                DebugMessage("both wipeCategories null => false");
+                return false;
+            }
+            else if (wipeCategoriesA != null && wipeCategoriesB == null)
+            {
+                DebugMessage("wipeCategoriesB null => false");
+                return false;
+            }
+            else if (wipeCategoriesB != null && wipeCategoriesA == null)
+            {
+                DebugMessage("wipeCategoriesA null => false");
+                return false;
+            }
+            else
+            {
+                foreach (var strB in wipeCategoriesB)
                 {
-                    //Log.Message("Both null");
-                    return true;
-                }
-
-                //Log.Message("A: " + newEntDef.label);
-                //Log.Message("B: " + oldEntDef.label);
-                if (buildingExtensionA != null && buildingExtensionB == null &&
-                    buildingExtensionA.wipeCategories?.Count > 0)
-                {
-                    //Log.Message("B null");
-
-                    return false;
-                }
-
-                if (buildingExtensionB != null && buildingExtensionA == null &&
-                    buildingExtensionB.wipeCategories?.Count > 0)
-                {
-                    //Log.Message("A null");
-
-                    return false;
-                }
-
-                if (buildingExtensionA != null && buildingExtensionB != null &&
-                    buildingExtensionA.wipeCategories?.Count > 0 &&
-                    buildingExtensionB.wipeCategories?.Count > 0)
-                {
-                    var hashes = new HashSet<string>();
-                    foreach (var str in buildingExtensionA.wipeCategories)
-                        hashes.Add(str);
-                    foreach (var strB in buildingExtensionB.wipeCategories)
+                    if (wipeCategoriesA.Contains(strB))
                     {
-                        if (!hashes.Contains(strB)) continue;
-                        //Log.Message("ShouldWipe");
+                        DebugMessage($"found shared wipeCategories ({strB}) => true");
                         return true;
                     }
                 }
-
-                return true;
+                DebugMessage("no shared wipeCategories => false");
+                return false;
             }
-
-            var locThings = loc.GetThingList(map);
-            for (var index = 0; index < locThings.Count; index++)
-            {
-                var thing = locThings[index];
-                if (thing.def is ThingDef thingDef &&
-                    ShouldWipe(newEntDef, GenConstruct.BuiltDefOf(thingDef), IntVec3.Invalid, null))
-                    return true;
-            }
-
-            return true;
         }
 
         //public static void MinPointsTest(PawnGroupMaker groupMaker)
@@ -242,31 +218,34 @@ namespace JecsTools
         //PawnApparelGenerator
         public static void GenerateStartingApparelFor_PostFix(Pawn pawn)
         {
-            var swappables = pawn?.apparel?.WornApparel?.FindAll(x => x.def.HasModExtension<ApparelExtension>());
-            if (swappables.NullOrEmpty()) return;
-            var destroyables = new HashSet<Apparel>();
-            foreach (var swap in swappables)
+            var allWornApparel = pawn.apparel?.WornApparel;
+            if (allWornApparel.NullOrEmpty()) return;
+            List<(Apparel, Apparel)> swapEntries = null;
+            foreach (var wornApparel in allWornApparel)
             {
-                if (swap.def?.GetApparelExtension()?.swapCondition is SwapCondition sc &&
+                if (wornApparel.def?.GetApparelExtension()?.swapCondition is SwapCondition sc &&
                     sc.swapWhenGender is Gender gen &&
                     gen != Gender.None && gen == pawn.gender)
                 {
-                    Apparel apparel = (Apparel)ThingMaker.MakeThing(sc.swapTo, swap.Stuff);
-                    PawnGenerator.PostProcessGeneratedGear(apparel, pawn);
-                    if (ApparelUtility.HasPartsToWear(pawn, apparel.def))
-                    {
-                        pawn.apparel.Wear(apparel, false);
-                    }
-
-                    destroyables.Add(swap);
+                    Apparel swapApparel = (Apparel)ThingMaker.MakeThing(sc.swapTo, wornApparel.Stuff);
+                    // Avoid modifying WornApparel during its enumeration by doing the swaps afterwards.
+                    swapEntries ??= new List<(Apparel worn, Apparel swap)>();
+                    swapEntries.Add((wornApparel, swapApparel));
                 }
             }
-
-            while (destroyables.Count > 0)
+            if (swapEntries != null)
             {
-                var first = destroyables.First();
-                first.Destroy();
-                destroyables.Remove(first);
+                foreach (var (wornApparel, swapApparel) in swapEntries)
+                {
+                    PawnGenerator.PostProcessGeneratedGear(swapApparel, pawn);
+                    if (ApparelUtility.HasPartsToWear(pawn, swapApparel.def))
+                    {
+                        pawn.apparel.Wear(swapApparel, false);
+                        //DebugMessage($"apparel generation for {pawn}: swapped from {wornApparel} to {swapApparel}");
+                    }
+                    wornApparel.Destroy();
+                    //DebugMessage($"apparel generation for {pawn}: destroyed old {wornApparel}");
+                }
             }
         }
 
@@ -318,42 +297,27 @@ namespace JecsTools
         {
             try
             {
-                if (A == null || B == null || body == null || __result == true) return;
-                var aHasExt = A.HasModExtension<ApparelExtension>();
-                var bHasExt = B.HasModExtension<ApparelExtension>();
-                if (aHasExt && bHasExt)
+                static HashSet<string> GetCoverage(ThingDef thingDef)
                 {
-                    var aExt = A.GetApparelExtension();
-                    var bExt = B.GetApparelExtension();
-                    var check = new HashSet<string>();
-                    if (aExt.coverage != null)
-                        for (int i = 0; i < aExt.coverage.Count; i++)
-                        {
-                            var coverageItem = aExt.coverage[i].ToLowerInvariant();
-                            if (!check.Contains(coverageItem))
-                                check.Add(coverageItem);
-                            else
-                            {
-                                Log.Warning("JecsTools :: ApparelExtension :: Warning:: " + A.label +
-                                            " has multiple of the same tags.");
-                                return;
-                            }
-                        }
-
-                    if (bExt.coverage != null)
-                        for (int j = 0; j < bExt.coverage.Count; j++)
-                        {
-                            var coverageItem = bExt.coverage[j].ToLowerInvariant();
-                            if (!check.Contains(coverageItem))
-                                check.Add(coverageItem);
-                            else
-                            {
-                                __result = false;
-                                break;
-                            }
-                        }
+                    var coverage = thingDef.GetApparelExtension()?.Coverage;
+                    return coverage == null || coverage.Count == 0 ? null : coverage;
                 }
-                else if ((aHasExt && !bHasExt) || (!aHasExt && bHasExt))
+
+                if (A == null || B == null || body == null || __result == true) return;
+                var coverageA = GetCoverage(A);
+                var coverageB = GetCoverage(B);
+                if (coverageA != null && coverageB != null)
+                {
+                    foreach (var coverageItem in coverageB)
+                    {
+                        if (coverageA.Contains(coverageItem))
+                        {
+                            __result = false;
+                            break;
+                        }
+                    }
+                }
+                else if ((coverageA != null && coverageB == null) || (coverageA == null && coverageB != null))
                 {
                     __result = true;
                 }
@@ -396,8 +360,8 @@ namespace JecsTools
             {
                 float damageDiff = Mathf.Clamp(damAmount - tempDamageAmount.Value, 0, damAmount);
 
-                //Log.Message("Apply amount original: " + damAmount);
-                //Log.Message("Apply amount modified: " + tempDamageAmount.Value);
+                DebugMessage("Apply amount original: " + damAmount);
+                DebugMessage("Apply amount modified: " + tempDamageAmount);
                 damAmount = GenMath.RoundRandom(tempDamageAmount.Value);
                 tempDamageAmount = null;
                 if (damageDiff > 0)
