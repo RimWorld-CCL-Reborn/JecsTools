@@ -32,5 +32,19 @@ namespace CompSlotLoadable
         {
             compClass = typeof(CompSlottedBonus);
         }
+
+        public override IEnumerable<string> ConfigErrors(ThingDef parentDef)
+        {
+            foreach (var error in base.ConfigErrors(parentDef))
+                yield return error;
+            if (statModifiers != null)
+            {
+                for (var i = 0; i < statModifiers.Count; i++)
+                {
+                    if (statModifiers[i]?.stat == null)
+                        yield return $"statModifiers[i] is null or has null stat";
+                }
+            }
+        }
     }
 }

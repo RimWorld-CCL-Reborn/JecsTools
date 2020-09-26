@@ -53,7 +53,6 @@ namespace CompSlotLoadable
         {
             var retval = 0.0f;
             var slots = slottedThing.GetSlots();
-
             if (slots != null)
                 foreach (var slot in slots)
                     if (!slot.IsEmpty())
@@ -65,8 +64,8 @@ namespace CompSlotLoadable
         {
             var retval = 0.0f;
             var slotBonus = slottable.TryGetCompSlottedBonus();
-            if (slotBonus?.Props?.statModifiers != null)
-                foreach (var thisStat in slotBonus.Props.statModifiers)
+            if (slotBonus?.Props?.statModifiers is List<StatModifier> statModifiers)
+                foreach (var thisStat in statModifiers)
                     //Log.Message("Check for modding "+stat+"  against "+thisStat.stat);
                     if (thisStat.stat == stat)
                     {

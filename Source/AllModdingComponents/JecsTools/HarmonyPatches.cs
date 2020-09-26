@@ -1,6 +1,5 @@
 ﻿//#define DEBUGLOG
 
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -98,18 +97,11 @@ namespace JecsTools
         //Allows a bullet to pass through walls when fired.
         public static bool CanHitCellFromCellIgnoringRange_Prefix(Verb __instance, ref bool __result)
         {
-            try
+            if (__instance.EquipmentCompSource?.PrimaryVerb?.verbProps?.defaultProjectile?.GetProjectileExtension() is ProjectileExtension ext)
             {
-
-                if (__instance.EquipmentCompSource?.PrimaryVerb?.verbProps?.defaultProjectile?.GetProjectileExtension() is ProjectileExtension ext)
-                {
-                    if (ext.passesWalls)
-                        __result = true;
-                    return false;
-                }
-            }
-            catch
-            {
+                if (ext.passesWalls)
+                    __result = true;
+                return false;
             }
             return true;
         }
@@ -295,36 +287,29 @@ namespace JecsTools
         /// </summary>
         public static void Post_CanWearTogether(ThingDef A, ThingDef B, BodyDef body, ref bool __result)
         {
-            try
+            static HashSet<string> GetCoverage(ThingDef thingDef)
             {
-                static HashSet<string> GetCoverage(ThingDef thingDef)
-                {
-                    var coverage = thingDef.GetApparelExtension()?.Coverage;
-                    return coverage == null || coverage.Count == 0 ? null : coverage;
-                }
+                var coverage = thingDef.GetApparelExtension()?.Coverage;
+                return coverage == null || coverage.Count == 0 ? null : coverage;
+            }
 
-                if (A == null || B == null || body == null || __result == true) return;
-                var coverageA = GetCoverage(A);
-                var coverageB = GetCoverage(B);
-                if (coverageA != null && coverageB != null)
+            if (A == null || B == null || body == null || __result == true) return;
+            var coverageA = GetCoverage(A);
+            var coverageB = GetCoverage(B);
+            if (coverageA != null && coverageB != null)
+            {
+                foreach (var coverageItem in coverageB)
                 {
-                    foreach (var coverageItem in coverageB)
+                    if (coverageA.Contains(coverageItem))
                     {
-                        if (coverageA.Contains(coverageItem))
-                        {
-                            __result = false;
-                            break;
-                        }
+                        __result = false;
+                        break;
                     }
                 }
-                else if ((coverageA != null && coverageB == null) || (coverageA == null && coverageB != null))
-                {
-                    __result = true;
-                }
             }
-            catch (Exception e)
+            else if ((coverageA != null && coverageB == null) || (coverageA == null && coverageB != null))
             {
-                Log.Message(e.ToString());
+                __result = true;
             }
         }
 
@@ -384,17 +369,10 @@ namespace JecsTools
                     if (fortitudeHediffs.Count > 0)
                     {
                         DebugMessage("c6c:: Pawn has Damage Soak hediff.");
-                        try
+                        if (PreApplyDamage_ApplyDamageSoakers(ref dinfo, out absorbed, fortitudeHediffs, ___pawn))
                         {
-                            if (PreApplyDamage_ApplyDamageSoakers(ref dinfo, out absorbed, fortitudeHediffs, ___pawn))
-                            {
-                                DebugMessage($"c6c:: === Exit Harmony Prefix --- PreApplyDamage_ApplyExtraDamages ===");
-                                return false;
-                            }
-                        }
-                        catch (NullReferenceException e)
-                        {
-                            DebugMessage($"c6c:: Soak failure:: {e.Message}");
+                            DebugMessage($"c6c:: === Exit Harmony Prefix --- PreApplyDamage_ApplyExtraDamages ===");
+                            return false;
                         }
                     }
 
@@ -402,23 +380,8 @@ namespace JecsTools
                         if (dinfo.Instigator is Pawn instigator)
                         {
                             DebugMessage("c6c:: Pawn has non-ranged weapon.");
-                            try
-                            {
-                                if (PreApplyDamage_ApplyExtraDamages(ref dinfo, out absorbed, instigator, ___pawn)) return false;
-                            }
-                            catch (NullReferenceException e)
-                            {
-                                DebugMessage($"c6c:: Extra damages failure:: {e.Message}");
-                            }
-
-                            try
-                            {
-                                PreApplyDamage_ApplyKnockback(instigator, ___pawn);
-                            }
-                            catch (NullReferenceException e)
-                            {
-                                DebugMessage($"c6c:: Apply knockback failure:: {e.Message}");
-                            }
+                            if (PreApplyDamage_ApplyExtraDamages(ref dinfo, out absorbed, instigator, ___pawn)) return false;
+                            PreApplyDamage_ApplyKnockback(instigator, ___pawn);
                         }
                 }
             }
@@ -432,7 +395,7 @@ namespace JecsTools
         private static void PreApplyDamage_ApplyKnockback(Pawn instigator, Pawn pawn)
         {
             var knockerProps =
-                instigator?.health?.hediffSet?.hediffs?.Select(y => y.TryGetComp<HediffComp_Knockback>()).FirstOrDefault(
+                instigator.health.hediffSet.hediffs.Select(y => y.TryGetComp<HediffComp_Knockback>()).FirstOrDefault(
                     knockbackHediff => knockbackHediff != null)?.Props;
             if (knockerProps != null)
                 if (knockerProps.knockbackChance >= Rand.Value)
@@ -483,7 +446,7 @@ namespace JecsTools
                 StopPreApplyDamageCheck = true;
                 foreach (var dmg in extraDamages)
                 {
-                    DebugMessage($"c6c:: Extra Damage: {dmg.def.defName}");
+                    DebugMessage($"c6c:: Extra Damage: {dmg.def}");
                     if (pawn == null || !pawn.Spawned || pawn.Dead)
                     {
                         DebugMessage($"c6c:: Pawn is null, unspawned, or dead. Aborting.");
@@ -493,22 +456,15 @@ namespace JecsTools
                     }
 
                     //BattleLogEntry_MeleeCombat battleLogEntry_MeleeCombat = new BattleLogEntry_MeleeCombat(dinfo.Def.combatLogRules, true,
-                    //    instigator, pawn, ImplementOwnerTypeDefOf.Bodypart, (dinfo.Weapon != null) ? dinfo.Weapon.label : dinfo.Def.label );
+                    //    instigator, pawn, ImplementOwnerTypeDefOf.Bodypart, (dinfo.Weapon != null) ? dinfo.Weapon.label : dinfo.Def.label);
                     //DebugMessage($"c6c:: MeleeCombat Log generated.");
                     //DamageWorker.DamageResult damageResult = new DamageWorker.DamageResult();
                     //DebugMessage($"c6c:: MeleeCombat Damage Result generated.");
                     //damageResult = pawn.TakeDamage(new DamageInfo(dmg.def, dmg.amount, dmg.armorPenetration, -1, instigator));
                     pawn.TakeDamage(new DamageInfo(dmg.def, dmg.amount, dmg.armorPenetration, -1, instigator));
-                    DebugMessage($"c6c:: MeleeCombat TakeDamage set to -- Def:{dmg.def.defName} Amt:{dmg.amount} ArmorPen:{dmg.armorPenetration}.");
-                    //try
-                    //{
-                    //    damageResult.AssociateWithLog(battleLogEntry_MeleeCombat);
-                    //    DebugMessage($"c6c:: MeleeCombat Damage associated with log.");
-                    //}
-                    //catch (Exception e)
-                    //{
-                    //    DebugMessage($"c6c:: Failed to associate log: {e.Message}");
-                    //}
+                    DebugMessage($"c6c:: MeleeCombat TakeDamage set to -- Def:{dmg.def} Amt:{dmg.amount} ArmorPen:{dmg.armorPenetration}.");
+                    //damageResult.AssociateWithLog(battleLogEntry_MeleeCombat);
+                    //DebugMessage($"c6c:: MeleeCombat Damage associated with log.");
                     //battleLogEntry_MeleeCombat.def = LogEntryDefOf.MeleeAttack;
                     //DebugMessage($"c6c:: MeleeCombat Log def set as MeleeAttack.");
                     //Find.BattleLog.Add(battleLogEntry_MeleeCombat);
@@ -580,9 +536,9 @@ namespace JecsTools
                     {
                         DamageInfo info = dinfo;
 
-                        DebugMessage($"c6c:: Hediff Damage: {info.Def.defName}");
+                        DebugMessage($"c6c:: Hediff Damage: {info.Def}");
                         if (soakSettings.damageType != null)
-                            DebugMessage($"c6c:: Soak Type: {soakSettings.damageType.defName}");
+                            DebugMessage($"c6c:: Soak Type: {soakSettings.damageType}");
                         else
                             DebugMessage($"c6c:: Soak Type: All");
 
@@ -600,7 +556,7 @@ namespace JecsTools
                             DebugMessage($"c6c:: Damage Soak Exlusions: ");
                             foreach (var exclusion in soakSettings.damageTypesToExclude)
                             {
-                                DebugMessage($"c6c::    {exclusion.defName}");
+                                DebugMessage($"c6c::    {exclusion}");
                                 if (exclusion == info.Def)
                                 {
                                     DebugMessage($"c6c:: Exclusion match. Damage soak aborted.");

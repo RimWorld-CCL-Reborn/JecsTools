@@ -18,6 +18,10 @@ namespace JecsTools
             None
         }
 
+        public interface IGrappleModifier
+        {
+            float Resolve(Pawn pawn);
+        }
 
         public static bool TryGrapple(this Pawn grappler, Pawn victim, int grapplerBonusMod = 0, int victimBonusMod = 0)
         {
@@ -228,6 +232,39 @@ namespace JecsTools
             return pawn.def?.tools?.Max(x => x.power) ?? 0;
         }
 
+        private class CompAbilityUserGrappleModifier : IGrappleModifier
+        {
+            // This checks that the CompAbilityUser type is available - if this fails, this GrappleModifier won't be used.
+            static CompAbilityUserGrappleModifier() => typeof(CompAbilityUser).ToString();
+
+            public float Resolve(Pawn pawn)
+            {
+                var result = 0f;
+                var abilityUsers = pawn.GetCompAbilityUsers();
+                foreach (var a in abilityUsers)
+                    result += a.GrappleModifier;
+                return result;
+            }
+        }
+
+        private static readonly IGrappleModifier[] additionalModifiers = GenTypes.AllTypes
+            .Select(type =>
+            {
+                if (type.IsAbstract || !typeof(IGrappleModifier).IsAssignableFrom(type))
+                    return null;
+                try
+                {
+                    return (IGrappleModifier)Activator.CreateInstance(type);
+                }
+                catch
+                {
+                    Log.Message($"{typeof(GrappleUtility).FullName}: couldn't load or create instance of {type} - skipping");
+                    return null;
+                }
+            })
+            .Where(x => x != null)
+            .ToArray();
+
         /// <summary>
         ///     Checks humanoid characters for ability user components and their modifiers.
         /// </summary>
@@ -236,19 +273,8 @@ namespace JecsTools
         public static float ResolveAdditionalModifiers(Pawn pawn)
         {
             var result = 0f;
-            try
-            {
-                ((Action)(() =>
-                {
-                    var abilityUsers = pawn.GetCompAbilityUsers();
-                    foreach (var a in abilityUsers)
-                        result += a.GrappleModifier;
-                })).Invoke();
-            }
-            catch (TypeLoadException)
-            {
-            }
-
+            for (var i = 0; i < additionalModifiers.Length; i++)
+                result += additionalModifiers[i].Resolve(pawn);
             return result;
         }
 
@@ -290,17 +316,9 @@ namespace JecsTools
         /// <returns></returns>
         public static bool TryMakeBattleLog(Pawn victim, Pawn grappler, BodyPartRecord grapplingPart)
         {
-            try
-            {
-                Find.BattleLog.Add(
-                    new BattleLogEntry_StateTransition(victim, MiscDefOf.JT_GrappleSuccess, grappler, null, grapplingPart));
-                return true;
-            }
-            catch (Exception e)
-            {
-                Log.Warning("TruMakeBattleLog Failed Due To :: " + e);
-            }
-            return false;
+            Find.BattleLog.Add(
+                new BattleLogEntry_StateTransition(victim, MiscDefOf.JT_GrappleSuccess, grappler, null, grapplingPart));
+            return true;
         }
     }
 }

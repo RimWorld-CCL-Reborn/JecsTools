@@ -155,6 +155,7 @@ namespace CompDeflector
 
         public void ReflectionSkillGain(SkillRecord skill)
         {
+            // TODO: GetPawn should be passed in, though doing so would break binary compatibility
             GetPawn.skills?.Learn(Props.reflectSkill, Props.reflectSkillLearnRate, false);
         }
 
@@ -268,7 +269,7 @@ namespace CompDeflector
                 switch (lastAccuracyRoll)
                 {
                     case AccuracyRoll.CriticalSuccess:
-                        if (GetPawn is Pawn pawn)
+                        if (GetPawn is Pawn pawn) // TODO: GetPawn should be passed in, though doing so would break binary compatibility
                             MoteMaker.ThrowText(pawn.DrawPos, pawn.Map,
                                 "SWSaber_TextMote_CriticalSuccess".Translate(), 6f);
                         newVerbProps.accuracyLong = 999.0f;
@@ -318,7 +319,7 @@ namespace CompDeflector
             if (newVerb != null)
             {
                 deflectVerb = (Verb_Deflected)Activator.CreateInstance(typeof(Verb_Deflected));
-                deflectVerb.caster = GetPawn;
+                deflectVerb.caster = GetPawn; // TODO: GetPawn should be passed in, though doing so would break binary compatibility
 
                 //Initialize VerbProperties
                 var newVerbProps = new VerbProperties
@@ -354,17 +355,10 @@ namespace CompDeflector
         public virtual Pawn ResolveDeflectionTarget(Pawn defaultTarget = null)
         {
             if (lastAccuracyRoll != AccuracyRoll.CritialFailure) return defaultTarget;
-            var thisPawn = GetPawn;
-            if (thisPawn == null || thisPawn.Dead) return defaultTarget;
-
-            bool Validator(Thing t)
-            {
-                return t is Pawn pawn3 && pawn3 != thisPawn;
-            }
-
+            var thisPawn = GetPawn; // TODO: GetPawn should be passed in, though doing so would break binary compatibility
             var closestPawn = (Pawn)GenClosest.ClosestThingReachable(thisPawn.Position, thisPawn.Map,
                 ThingRequest.ForGroup(ThingRequestGroup.Pawn), PathEndMode.InteractionCell,
-                TraverseParms.For(thisPawn, Danger.Deadly, TraverseMode.ByPawn, false), 9999f, Validator, null,
+                TraverseParms.For(thisPawn, Danger.Deadly, TraverseMode.ByPawn, false), 9999f, t => t is Pawn && t != thisPawn, null,
                 0, -1, false, RegionType.Set_Passable, false);
             if (closestPawn == null) return defaultTarget;
             return closestPawn == defaultTarget ? thisPawn : closestPawn;
@@ -374,8 +368,7 @@ namespace CompDeflector
         {
             shouldContinue = true;
             if (lastAccuracyRoll != AccuracyRoll.CritialFailure) return;
-            var thisPawn = GetPawn;
-            if (thisPawn == null || thisPawn.Dead) return;
+            var thisPawn = GetPawn; // TODO: GetPawn should be passed in, though doing so would break binary compatibility
             //If the target isn't the old target, then get out of this
             if (newTarget != dinfo.Instigator as Pawn)
                 return;
@@ -385,32 +378,26 @@ namespace CompDeflector
 
         public virtual void GiveDeflectJob(DamageInfo dinfo)
         {
-            try
-            {
-                if (!(dinfo.Instigator is Pawn pawn)) return;
-                var job = JobMaker.MakeJob(CompDeflectorDefOf.CastDeflectVerb);
-                job.playerForced = true;
-                job.locomotionUrgency = LocomotionUrgency.Sprint;
-                var compEquipVerb = pawn.equipment?.PrimaryEq?.PrimaryVerb;
-                if (compEquipVerb == null) return;
-                var thisPawn = GetPawn;
-                var verbToUse = (Verb_Deflected)CopyAndReturnNewVerb(compEquipVerb);
-                verbToUse = (Verb_Deflected)ReflectionHandler(deflectVerb);
-                verbToUse.lastShotReflected = lastShotReflected;
-                verbToUse.verbTracker = thisPawn.VerbTracker;
-                pawn = ResolveDeflectionTarget(pawn);
-                CriticalFailureHandler(dinfo, pawn, out var shouldContinue);
-                if (!shouldContinue) return;
-                job.targetA = pawn;
-                job.verbToUse = verbToUse;
-                job.killIncappedTarget = pawn.Downed;
-                thisPawn.jobs.TryTakeOrderedJob(job);
-            }
-            catch (NullReferenceException e) // TODO: Is this still needed?
-            {
-                Log.Message(e.ToString());
-            }
-            ////Log.Message("TryToTakeOrderedJob Called");
+            if (!(dinfo.Instigator is Pawn pawn)) return;
+            var job = JobMaker.MakeJob(CompDeflectorDefOf.CastDeflectVerb);
+            job.playerForced = true;
+            job.locomotionUrgency = LocomotionUrgency.Sprint;
+            var compEquipVerb = pawn.equipment?.PrimaryEq?.PrimaryVerb;
+            if (compEquipVerb == null) return;
+            var thisPawn = GetPawn;
+            if (thisPawn == null || thisPawn.Dead) return;
+            var verbToUse = (Verb_Deflected)CopyAndReturnNewVerb(compEquipVerb);
+            verbToUse = (Verb_Deflected)ReflectionHandler(deflectVerb);
+            verbToUse.lastShotReflected = lastShotReflected;
+            verbToUse.verbTracker = thisPawn.VerbTracker;
+            pawn = ResolveDeflectionTarget(pawn);
+            CriticalFailureHandler(dinfo, pawn, out var shouldContinue);
+            if (!shouldContinue) return;
+            job.targetA = pawn;
+            job.verbToUse = verbToUse;
+            job.killIncappedTarget = pawn.Downed;
+            thisPawn.jobs.TryTakeOrderedJob(job);
+            //Log.Message("TryToTakeOrderedJob Called");
         }
 
         /// <summary>

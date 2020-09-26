@@ -37,16 +37,7 @@ namespace CompSlotLoadable
         //try to extend this
         public static void StatOffsetFromGear_PostFix(ref float __result, Thing gear, StatDef stat)
         {
-            var retValue = 0.0f;
-            try
-            {
-                retValue = SlotLoadableUtility.CheckThingSlotsForStatAugment(gear, stat);
-            }
-            catch (Exception e)
-            {
-                Log.Warning("Failed to add stats for " + gear.Label + "\n" + e.ToString());
-            }
-            __result += retValue;
+            __result += SlotLoadableUtility.CheckThingSlotsForStatAugment(gear, stat);
         }
 
         /// <summary>
@@ -219,16 +210,7 @@ namespace CompSlotLoadable
 
         public static void GetStatValue_PostFix(ref float __result, Thing thing, StatDef stat)
         {
-            var retValue = 0.0f;
-            try
-            {
-                retValue = SlotLoadableUtility.CheckThingSlotsForStatAugment(thing, stat);
-            }
-            catch (Exception e)
-            {
-                Log.Warning("Failed to add stats for " + thing.Label + "\n" + e.ToString());
-            }
-            __result += retValue;
+            __result += SlotLoadableUtility.CheckThingSlotsForStatAugment(thing, stat);
         }
 
         public static IEnumerable<Gizmo> GizmoGetter(CompSlotLoadable CompSlotLoadable)
