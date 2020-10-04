@@ -1,4 +1,6 @@
-﻿using System;
+﻿//#define COMBAT_POINTS_TEST // for testing the GeneratePawns patch that rebalance based off CompAbilityUser.CombatPoints
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
@@ -174,17 +176,32 @@ namespace AbilityUser
             return false;
         }
 
+#if COMBAT_POINTS_TEST
+        private float? cachedCombatPoints;
+#endif
+
         // Allows inherited classes to determine "true" combat points for characters that spawn with these components
         public virtual float CombatPoints()
         {
+#if COMBAT_POINTS_TEST
+            if (cachedCombatPoints == null)
+            {
+                PostInitialize();
+                cachedCombatPoints = (Pawn.trader != null ? 100 : 0) + AbilityData.AllPowers.Count * 25;
+            }
+            return cachedCombatPoints.Value;
+#else
             return 0;
+#endif
         }
 
         //In some cases, a special ability user might spawn as a single character raid and cause havoc.
         //To avoid this, a special check occurs to disable the ability user, should this situation occur.
         public virtual void DisableAbilityUser()
         {
-
+#if COMBAT_POINTS_TEST
+            cachedCombatPoints = 0;
+#endif
         }
 
         #region virtual
@@ -195,7 +212,7 @@ namespace AbilityUser
 
         public virtual void Initialize()
         {
-            //            Log.Warning(" CompAbilityUser.Initialize ");
+            //Log.Message("CompAbilityUser.Initialize");
             IsInitialized = true;
             //this.abilityPowerManager = new AbilityPowerManager(this);
             PostInitialize();

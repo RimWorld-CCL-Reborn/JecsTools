@@ -83,7 +83,7 @@ namespace AbilityUser
         {
             get => TicksUntilCasting;
             set => TicksUntilCasting = value;
-        } //Log.Message(value.ToString()); } }
+        }
 
         public virtual void Notify_AbilityFailed(bool refund)
         {
