@@ -56,11 +56,11 @@ namespace JecsTools
                     foreach (var (condition, func) in floatMenus)
                     {
                         DebugMessage("FMOL :: Enter Float Menu Check Loop");
-                        if (floatMenuOptionList.ContainsKey(condition))
+                        if (floatMenuOptionList.TryGetValue(condition, out var funcs))
                         {
                             DebugMessage("FMOL :: Existing condition found for " + condition +
                                          " adding actions to dictionary.");
-                            floatMenuOptionList[condition].Add(func);
+                            funcs.Add(func);
                         }
                         else
                         {

@@ -18,16 +18,7 @@ namespace AbilityUser
         public Vector3 targetVec;
         public Pawn Caster => launcher as Pawn;
 
-        public ProjectileDef_Ability Mpdef
-        {
-            get
-            {
-                ProjectileDef_Ability mpdef = null;
-                if (def is ProjectileDef_Ability)
-                    mpdef = def as ProjectileDef_Ability;
-                return mpdef;
-            }
-        }
+        public ProjectileDef_Ability Mpdef => def as ProjectileDef_Ability;
 
         public override void ExposeData()
         {

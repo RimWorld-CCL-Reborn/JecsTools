@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using JecsTools;
 using RimWorld;
 using UnityEngine;
@@ -25,8 +24,8 @@ namespace CompInstalledPart
                         //Remove "Equip" option from right click.
                         if (groundPart.GetEquippable != null)
                         {
-                            var optToRemove = opts.FirstOrDefault(x => x.Label.Contains(curThing.Label));
-                            if (optToRemove != null) opts.Remove(optToRemove);
+                            var optToRemoveIndex = opts.FindIndex(x => x.Label.Contains(curThing.Label));
+                            if (optToRemoveIndex >= 0) opts.RemoveAt(optToRemoveIndex);
                         }
 
                         var text = "CompInstalledPart_Install".Translate();

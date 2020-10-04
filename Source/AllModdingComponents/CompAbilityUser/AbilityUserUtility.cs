@@ -17,6 +17,7 @@ namespace AbilityUser
         public static bool TransformPawn(Pawn p)
         {
             var retval = false;
+            var comps = compsField(p);
             foreach (var t in abilityUserChildren)
             {
                 var st = true;
@@ -29,7 +30,7 @@ namespace AbilityUser
                     retval = true;
                     var thingComp = (ThingComp)Activator.CreateInstance(t);
                     thingComp.parent = p;
-                    compsField(p)?.Add(thingComp);
+                    comps?.Add(thingComp);
                     thingComp.Initialize(null);
                 }
             }

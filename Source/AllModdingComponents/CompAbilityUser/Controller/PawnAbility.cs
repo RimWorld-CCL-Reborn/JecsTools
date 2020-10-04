@@ -45,15 +45,7 @@ namespace AbilityUser
             //Log.Message("PawnAbility Created: " + this.Def.defName);
         }
 
-        public virtual CompAbilityUser AbilityUser
-        {
-            get
-            {
-                if (abilityUser == null)
-                    abilityUser = pawn.GetCompAbilityUser();
-                return abilityUser;
-            }
-        }
+        public virtual CompAbilityUser AbilityUser => abilityUser ??= pawn.GetCompAbilityUser();
 
         public Pawn Pawn
         {
@@ -69,15 +61,7 @@ namespace AbilityUser
 
         public List<ThingComp> Comps { get; } = new List<ThingComp>();
 
-        public Texture2D PowerButton
-        {
-            get
-            {
-                if (powerButton == null)
-                    powerButton = powerdef.uiIcon;
-                return powerButton;
-            }
-        }
+        public Texture2D PowerButton => powerButton ??= powerdef.uiIcon;
 
         public int CooldownTicksLeft
         {

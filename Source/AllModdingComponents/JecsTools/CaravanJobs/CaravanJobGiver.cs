@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using RimWorld.Planet;
 using Verse;
 
@@ -14,33 +13,31 @@ namespace JecsTools
         {
         }
 
-        public void NullHandler(Caravan caravan)
-        {
-            if (jobTrackers.FirstOrDefault(x => x.Caravan == caravan) == null)
-                jobTrackers.Add(new Caravan_JobTracker(caravan));
-        }
-
         public Caravan_JobTracker Tracker(Caravan caravan)
         {
-            NullHandler(caravan);
             //Log.Message("JecsTools :: CaravanJobGiver :: Tracker Called");
-            return jobTrackers.FirstOrDefault(x => x.Caravan == caravan);
+            foreach (var t in jobTrackers)
+            {
+                if (t.Caravan == caravan)
+                    return t;
+            }
+            var newTracker = new Caravan_JobTracker(caravan);
+            jobTrackers.Add(newTracker);
+            return newTracker;
         }
 
         public CaravanJob CurJob(Caravan caravan)
         {
-            NullHandler(caravan);
             //Log.Message("JecsTools :: CaravanJobGiver :: CurJob Called");
-            return jobTrackers.FirstOrDefault(x => x.Caravan == caravan).curJob;
+            return Tracker(caravan).curJob;
         }
 
         public override void WorldComponentTick()
         {
             base.WorldComponentTick();
-            if (jobTrackers != null)
-                foreach (var t in jobTrackers.ToList()) // note: enumerate over copy while removing from original list
-                    if (t.Caravan == null || !t.Caravan.Spawned) jobTrackers.Remove(t);
-                    else t.JobTrackerTick();
+            jobTrackers.RemoveAll(t => t.Caravan == null || !t.Caravan.Spawned);
+            foreach (var t in jobTrackers)
+                t.JobTrackerTick();
         }
 
         //private List<Caravan> jobTrackersKeysWorkingList;

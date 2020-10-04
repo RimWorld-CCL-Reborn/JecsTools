@@ -34,24 +34,30 @@ namespace JecsTools
         public virtual void Finish()
         {
             if (!ConsumedResources.NullOrEmpty())
+                DestroyConsumedResources();
+        }
+
+        private void DestroyConsumedResources()
+        {
+            // XXX: Not sure if Destroy on each consumed resource can end up modifying ConsumedResources itself,
+            // so to be safe, enumerating over a copy of the list.
+            // Also not sure if any code relies on the "remove t from ConsumedResources, then Destroy t" behavior,
+            // so keeping that behavior as well.
+            foreach (var t in ConsumedResources.ToArray())
             {
-                var iterable = new HashSet<Thing>(ConsumedResources);
-                foreach (var t in iterable)
-                {
-                    ConsumedResources.Remove(t);
-                    t.Destroy(DestroyMode.Vanish);
-                }
+                ConsumedResources.Remove(t);
+                t.Destroy(DestroyMode.Vanish);
             }
         }
 
         public virtual bool Cancel()
         {
-            var c = Find.WorldObjects.PlayerControlledCaravanAt(Tile);
             if (!ConsumedResources.NullOrEmpty())
+            {
+                var c = Find.WorldObjects.PlayerControlledCaravanAt(Tile);
                 if (c != null)
                 {
-                    var temp = new HashSet<Thing>(ConsumedResources);
-                    foreach (var t in temp)
+                    foreach (var t in ConsumedResources.ToArray()) // using copy for enumeration - see DestroyConsumedResources comments
                     {
                         var pawn2 = CaravanInventoryUtility.FindPawnToMoveInventoryTo(t, c.PawnsListForReading, null,
                             null);
@@ -86,17 +92,13 @@ namespace JecsTools
                             //    return;
                             //}
                             //ownerOf.inventory.innerContainer.Remove(t);
-                            var temp = new HashSet<Thing>(ConsumedResources);
-                            foreach (var t in temp)
-                            {
-                                t.Destroy(DestroyMode.Vanish);
-                                ConsumedResources.Remove(t);
-                            }
+                            DestroyConsumedResources();
                             didCancel = true;
                         }, true, null);
                     Find.WindowStack.Add(window2);
                     return didCancel;
                 }
+            }
             return true;
         }
 
@@ -286,28 +288,27 @@ namespace JecsTools
 
         public bool ConsumeResources(Caravan c, Dictionary<Thing, int> toBeConsumed)
         {
-            if (toBeConsumed != null)
-                foreach (var (t, count) in toBeConsumed)
+            foreach (var (t, count) in toBeConsumed)
+            {
+                var ownerOf = CaravanInventoryUtility.GetOwnerOf(c, t);
+                if (ownerOf == null)
                 {
-                    var ownerOf = CaravanInventoryUtility.GetOwnerOf(c, t);
-                    if (ownerOf == null)
-                    {
-                        Log.Error("Could not find owner of " + t);
-                        return false;
-                    }
-                    if (count == t.stackCount)
-                    {
-                        ownerOf.inventory.innerContainer.Remove(t);
-                        ConsumedResources.Add(t);
-                        //t.Destroy(DestroyMode.Vanish);
-                    }
-                    else
-                    {
-                        ConsumedResources.Add(t.SplitOff(count)); //Destroy(DestroyMode.Vanish);
-                    }
-                    c.RecacheImmobilizedNow();
-                    c.RecacheDaysWorthOfFood();
+                    Log.Error("Could not find owner of " + t);
+                    return false;
                 }
+                if (count == t.stackCount)
+                {
+                    ownerOf.inventory.innerContainer.Remove(t);
+                    ConsumedResources.Add(t);
+                    //t.Destroy(DestroyMode.Vanish);
+                }
+                else
+                {
+                    ConsumedResources.Add(t.SplitOff(count)); //Destroy(DestroyMode.Vanish);
+                }
+                c.RecacheImmobilizedNow();
+                c.RecacheDaysWorthOfFood();
+            }
             resourcesSupplied = true;
             return true;
         }

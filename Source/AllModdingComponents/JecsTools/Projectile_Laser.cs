@@ -201,15 +201,14 @@ namespace JecsTools
                 }
                 else
                 {
-                    var curIndex = 0;
-                    if (HarmonyPatches.AlternatingFireTracker.ContainsKey(this.launcher))
+                    if (HarmonyPatches.AlternatingFireTracker.TryGetValue(this.launcher, out var curIndex))
                     {
-                        curIndex = (HarmonyPatches.AlternatingFireTracker[this.launcher] + 1) %
-                                   this.Def.graphicSettings.Count;
+                        curIndex = (curIndex + 1) % this.Def.graphicSettings.Count;
                         HarmonyPatches.AlternatingFireTracker[this.launcher] = curIndex;
                     }
                     else
                     {
+                        curIndex = 0; // technically unnecessary but good to be explicit
                         HarmonyPatches.AlternatingFireTracker.Add(this.launcher, curIndex);
                     }
                     AddLaserGraphicUsing(this.Def.graphicSettings[curIndex]);

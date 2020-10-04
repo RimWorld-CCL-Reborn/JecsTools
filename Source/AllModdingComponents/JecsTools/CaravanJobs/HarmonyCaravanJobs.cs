@@ -29,15 +29,11 @@ namespace JecsTools
         // RimWorld.Planet.WorldSelector
         public static void SelectableObjectsUnderMouse_InvisHandler(ref IEnumerable<WorldObject> __result)
         {
-            var objects = new List<WorldObject>(__result);
-            if (objects.Count > 0)
-            {
-                var temp = new HashSet<WorldObject>(objects);
-                foreach (var o in temp)
-                    if (!o.SelectableNow)
-                        objects.Remove(o);
-            }
-            __result = objects;
+            static bool NotSelectableNow(WorldObject o) => !o.SelectableNow;
+            if (__result is List<WorldObject> list)
+                list.RemoveAll(NotSelectableNow);
+            else
+                __result = __result.Where(NotSelectableNow);
         }
 
         // RimWorld.Planet.Caravan

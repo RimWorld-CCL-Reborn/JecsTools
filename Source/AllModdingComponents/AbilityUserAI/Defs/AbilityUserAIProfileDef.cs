@@ -54,17 +54,7 @@ namespace AbilityUserAI
         ///     Worker object for this Profile. If workerClass is not specified it will use the default implementation which only
         ///     checks for Traits.
         /// </summary>
-        public AbilityProfileWorker Worker
-        {
-            get
-            {
-                //Instantiate if null.
-                if (intWorkerClass == null)
-                    intWorkerClass = (AbilityProfileWorker)Activator.CreateInstance(workerClass);
-
-                return intWorkerClass;
-            }
-        }
+        public AbilityProfileWorker Worker => intWorkerClass ??= (AbilityProfileWorker)Activator.CreateInstance(workerClass);
 
         /// <summary>
         ///     All tag weights. The higher weight the better score.

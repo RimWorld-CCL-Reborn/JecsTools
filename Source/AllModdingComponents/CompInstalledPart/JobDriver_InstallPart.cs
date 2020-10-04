@@ -30,14 +30,7 @@ namespace CompInstalledPart
 
         protected int WorkDone => TotalNeededWork - (int)workLeft;
 
-        protected int TotalNeededWork
-        {
-            get
-            {
-                var value = InstallComp.Props.workToInstall;
-                return Mathf.Clamp(value, 20, 3000);
-            }
-        }
+        protected int TotalNeededWork => Mathf.Clamp(InstallComp.Props.workToInstall, 20, 3000);
 
         public override bool TryMakePreToilReservations(bool errorOnFailed)
         {

@@ -10,15 +10,8 @@ namespace JecsTools
     {
         private readonly List<Hediff_MissingPart> temporarilyRemovedParts = new List<Hediff_MissingPart>();
 
-        public override bool ShouldRemove
-        {
-            get
-            {
-                if (this.TryGetComp<HediffComp_Disappears>() is HediffComp_Disappears hdc_Disappears)
-                    return hdc_Disappears.CompShouldRemove;
-                return false;
-            }
-        }
+        public override bool ShouldRemove =>
+            this.TryGetComp<HediffComp_Disappears>() is HediffComp_Disappears hdc_Disappears ? hdc_Disappears.CompShouldRemove : false;
 
         public override string TipStringExtra
         {

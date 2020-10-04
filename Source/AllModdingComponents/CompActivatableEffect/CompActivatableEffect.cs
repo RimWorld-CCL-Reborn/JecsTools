@@ -234,10 +234,9 @@ namespace CompActivatableEffect
         {
             get
             {
-                var resolvedTexture = TexCommand.GatherSpotActive;
                 if (!Props.uiIconPathActivate.NullOrEmpty())
-                    resolvedTexture = ContentFinder<Texture2D>.Get(Props.uiIconPathActivate, true);
-                return resolvedTexture;
+                    return ContentFinder<Texture2D>.Get(Props.uiIconPathActivate, true);
+                return TexCommand.GatherSpotActive;
             }
         }
 
@@ -245,10 +244,9 @@ namespace CompActivatableEffect
         {
             get
             {
-                var resolvedTexture = TexCommand.ClearPrioritizedWork;
                 if (!Props.uiIconPathDeactivate.NullOrEmpty())
-                    resolvedTexture = ContentFinder<Texture2D>.Get(Props.uiIconPathDeactivate, true);
-                return resolvedTexture;
+                    return ContentFinder<Texture2D>.Get(Props.uiIconPathDeactivate, true);
+                return TexCommand.ClearPrioritizedWork;
             }
         }
 

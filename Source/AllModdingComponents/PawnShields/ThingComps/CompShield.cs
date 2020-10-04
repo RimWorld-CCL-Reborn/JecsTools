@@ -13,13 +13,7 @@ namespace PawnShields
         /// <summary>
         /// Shield properties.
         /// </summary>
-        public CompProperties_Shield ShieldProps
-        {
-            get
-            {
-                return props as CompProperties_Shield;
-            }
-        }
+        public CompProperties_Shield ShieldProps => props as CompProperties_Shield;
 
         /// <summary>
         /// Determines whether the shield is broken or not.
@@ -30,7 +24,6 @@ namespace PawnShields
             {
                 if (!ShieldProps.canBeAutoDiscarded)
                     return false;
-
                 return ((float)parent.HitPoints / (float)parent.MaxHitPoints) <= ShieldProps.healthAutoDiscardThreshold;
             }
         }

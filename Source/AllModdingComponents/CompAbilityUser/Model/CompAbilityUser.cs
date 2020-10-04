@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using RimWorld;
 using Verse;
 
@@ -30,27 +29,11 @@ namespace AbilityUser
 
         public bool IsInitialized;
 
-        public virtual AbilityData AbilityData
-        {
-            get
-            {
-                if (abilityData == null)
-                    abilityData = new AbilityData(this);
-                return abilityData;
-            }
-        }
+        public virtual AbilityData AbilityData => abilityData ??= new AbilityData(this);
 
         public Pawn Pawn => AbilityUser;
 
-        public Pawn AbilityUser
-        {
-            get
-            {
-                if (abilityUserSave == null)
-                    abilityUserSave = parent as Pawn;
-                return abilityUserSave;
-            }
-        }
+        public Pawn AbilityUser => abilityUserSave ??= parent as Pawn;
 
         public CompProperties_AbilityUser Props => (CompProperties_AbilityUser)props;
 
@@ -98,12 +81,12 @@ namespace AbilityUser
 
         private void RemoveAbilityInternal(AbilityDef abilityDef, List<PawnAbility> thelist)
         {
-            var abilityToRemove = thelist.FirstOrDefault(x => x.Def == abilityDef);
-            if (abilityToRemove != null)
-                thelist.Remove(abilityToRemove);
-            abilityToRemove = AbilityData.Powers.FirstOrDefault(x => x.Def == abilityDef);
-            if (abilityToRemove != null)
-                AbilityData.Powers.Remove(abilityToRemove);
+            var abilityToRemoveIndex = thelist.FindIndex(x => x.Def == abilityDef);
+            if (abilityToRemoveIndex >= 0)
+                thelist.RemoveAt(abilityToRemoveIndex);
+            abilityToRemoveIndex = AbilityData.Powers.FindIndex(x => x.Def == abilityDef);
+            if (abilityToRemoveIndex >= 0)
+                AbilityData.Powers.RemoveAt(abilityToRemoveIndex);
             UpdateAbilities();
         }
 
@@ -118,16 +101,19 @@ namespace AbilityUser
             if (!IsInitialized && TryTransformPawn())
                 Initialize();
             if (IsInitialized)
-                if (AbilityData.AllPowers != null)
-                    foreach (var power in AbilityData.AllPowers)
-                        power.Tick();
+            {
+                var allPowers = AbilityData.AllPowers;
+                foreach (var power in allPowers)
+                    power.Tick();
+            }
         }
 
         public override IEnumerable<Gizmo> CompGetGizmosExtra()
         {
-            for (var i = 0; i < AbilityData.AllPowers.Count; i++)
+            var allPowers = AbilityData.AllPowers;
+            for (var i = 0; i < allPowers.Count; i++)
             {
-                var ability = AbilityData.AllPowers[i];
+                var ability = allPowers[i];
                 if (ability.ShouldShowGizmo())
                     yield return ability.GetGizmo();
             }
@@ -140,8 +126,7 @@ namespace AbilityUser
 
             if (Scribe.mode == LoadSaveMode.PostLoadInit)
             {
-                var tempAbilities = new List<PawnAbility>(AbilityData.Powers);
-                foreach (var pa in tempAbilities)
+                foreach (var pa in AbilityData.Powers.ToArray()) // using copy for enumeration due to potential mutation
                     if (pa.Def.abilityClass != pa.GetType())
                     {
                         RemovePawnAbility(pa.Def);
@@ -156,14 +141,15 @@ namespace AbilityUser
             {
                 //this.AbilityVerbs.Clear();
                 var abList = new List<PawnAbility>();
-                if (AbilityData.Powers != null)
-                    abList.AddRange(AbilityData.Powers);
-                if (AbilityData.TemporaryWeaponPowers != null)
-                    abList.AddRange(AbilityData.TemporaryWeaponPowers);
-                if (AbilityData.TemporaryApparelPowers != null)
-                    abList.AddRange(AbilityData.TemporaryApparelPowers);
+                var abilityData = AbilityData;
+                if (abilityData.Powers != null)
+                    abList.AddRange(abilityData.Powers);
+                if (abilityData.TemporaryWeaponPowers != null)
+                    abList.AddRange(abilityData.TemporaryWeaponPowers);
+                if (abilityData.TemporaryApparelPowers != null)
+                    abList.AddRange(abilityData.TemporaryApparelPowers);
 
-                AbilityData.AllPowers = abList;
+                abilityData.AllPowers = abList;
             }
         }
 

@@ -35,7 +35,6 @@ namespace AbilityUser
             }
         }
 
-
         protected IntVec3 DestinationCell => new IntVec3(destination);
 
         public virtual Vector3 ExactPosition
@@ -97,15 +96,15 @@ namespace AbilityUser
             base.Tick();
             var exactPosition = ExactPosition;
             ticksToImpact--;
-            if (!ExactPosition.InBounds(Map))
+            if (!exactPosition.InBounds(Map))
             {
                 ticksToImpact++;
-                Position = ExactPosition.ToIntVec3();
+                Position = exactPosition.ToIntVec3();
                 Destroy(DestroyMode.Vanish);
                 return;
             }
 
-            Position = ExactPosition.ToIntVec3();
+            Position = exactPosition.ToIntVec3();
             if (ticksToImpact <= 0)
             {
                 if (DestinationCell.InBounds(Map))
@@ -118,13 +117,12 @@ namespace AbilityUser
         {
             if (flyingThing != null)
             {
-                if (flyingThing is Pawn)
+                if (flyingThing is Pawn pawn)
                 {
-                    if (DrawPos == null) return;
-                    if (!DrawPos.ToIntVec3().IsValid) return;
-                    var pawn = flyingThing as Pawn;
-                    pawn.Drawer.DrawAt(DrawPos);
-                    //Graphics.DrawMesh(MeshPool.plane10, this.DrawPos, this.ExactRotation, this.flyingThing.def.graphic.MatFront, 0);
+                    var drawPos = DrawPos;
+                    if (!drawPos.ToIntVec3().IsValid) return;
+                    pawn.Drawer.DrawAt(drawPos);
+                    //Graphics.DrawMesh(MeshPool.plane10, drawPos, ExactRotation, flyingThing.def.graphic.MatFront, 0);
                 }
                 else
                 {
@@ -138,8 +136,7 @@ namespace AbilityUser
         {
             if (usedTarget != null)
             {
-                var pawn = usedTarget as Pawn;
-                if (pawn != null && pawn.GetPosture() != PawnPosture.Standing &&
+                if (usedTarget is Pawn pawn && pawn.GetPosture() != PawnPosture.Standing &&
                     (origin - destination).MagnitudeHorizontalSquared() >= 20.25f && Rand.Value > 0.2f)
                 {
                     Impact(null);
@@ -155,10 +152,9 @@ namespace AbilityUser
 
         protected virtual void Impact(Thing hitThing)
         {
+            // TODO: Should this hitThing fallback really required to be a Pawn?
             if (hitThing == null)
-                if (Position.GetThingList(Map).FirstOrDefault(x => x == usedTarget) is Pawn p)
-                    hitThing = p;
-
+                hitThing = Position.GetThingList(Map).FirstOrDefault(x => x == usedTarget) as Pawn;
 
             if (impactDamage != null)
             {
