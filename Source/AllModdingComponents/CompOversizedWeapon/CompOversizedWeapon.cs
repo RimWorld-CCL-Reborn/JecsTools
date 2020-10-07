@@ -18,10 +18,24 @@ namespace CompOversizedWeapon
 
         public bool IsOnGround => ParentHolder is Map;
 
-        // This is called during ThingWithComps.InitializeComps, after constructor is called and parent is set.
-        public override void Initialize(CompProperties props)
+        // Caching comps needs to happen after all comps are created. Ideally, this would be done right after
+        // ThingWithComps.InitializeComps(). This requires overriding two hooks: PostPostMake and PostExposeData.
+
+        public override void PostPostMake()
         {
-            base.Initialize(props);
+            base.PostPostMake();
+            CacheComps();
+        }
+
+        public override void PostExposeData()
+        {
+            base.PostExposeData();
+            if (Scribe.mode == LoadSaveMode.LoadingVars)
+                CacheComps();
+        }
+
+        private void CacheComps()
+        {
             if (compDeflectorType != null)
             {
                 // Avoiding ThingWithComps.GetComp<T> and implementing a specific non-generic version of it here.

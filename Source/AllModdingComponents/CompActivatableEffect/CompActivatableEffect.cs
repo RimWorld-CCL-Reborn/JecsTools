@@ -131,10 +131,26 @@ namespace CompActivatableEffect
             return false;
         }
 
-        // This is called during ThingWithComps.InitializeComps, after constructor is called and parent is set.
-        public override void Initialize(CompProperties props)
+        // Caching comps needs to happen after all comps are created. Ideally, this would be done right after
+        // ThingWithComps.InitializeComps(). This requires overriding two hooks: PostPostMake and PostExposeData.
+
+        public override void PostPostMake()
         {
-            base.Initialize(props);
+            base.PostPostMake();
+            CacheComps();
+        }
+
+        public override void PostExposeData()
+        {
+            base.PostExposeData();
+            Scribe_Values.Look(ref showNow, "showNow", false);
+            Scribe_Values.Look(ref currentState, "currentState", State.Deactivated);
+            if (Scribe.mode == LoadSaveMode.LoadingVars)
+                CacheComps();
+        }
+
+        private void CacheComps()
+        {
             // Avoiding ThingWithComps.GetComp<T> and implementing a specific non-generic version of it here.
             // That method is slow because the `isinst` instruction with generic type arg operands is very slow,
             // while `isinst` instruction against non-generic type operand like used below is fast.
@@ -145,6 +161,8 @@ namespace CompActivatableEffect
                 var comp = comps[i];
                 if (comp is CompEquippable compEquippable)
                     this.compEquippable = compEquippable;
+                else if (comp is CompOversizedWeapon.CompOversizedWeapon compOversizedWeapon)
+                    this.compOversizedWeapon = compOversizedWeapon;
                 else if (compDeflectorType != null)
                 {
                     var compType = comp.GetType();
@@ -156,8 +174,6 @@ namespace CompActivatableEffect
                             (Func<int>)AccessTools.PropertyGetter(compType, "AnimationDeflectionTicks").CreateDelegate(typeof(Func<int>), comp);
                     }
                 }
-                else if (comp is CompOversizedWeapon.CompOversizedWeapon compOversizedWeapon)
-                    this.compOversizedWeapon = compOversizedWeapon;
             }
         }
 
@@ -209,13 +225,6 @@ namespace CompActivatableEffect
                 foreach (var current in EquippedGizmos())
                     yield return current;
             }
-        }
-
-        public override void PostExposeData()
-        {
-            base.PostExposeData();
-            Scribe_Values.Look(ref showNow, "showNow", false);
-            Scribe_Values.Look(ref currentState, "currentState", State.Deactivated);
         }
 
         #region Graphics

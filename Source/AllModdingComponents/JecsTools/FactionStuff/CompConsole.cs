@@ -19,10 +19,24 @@ namespace JecsTools
             (!parent.Spawned || !parent.Map.gameConditionManager.ConditionIsActive(GameConditionDefOf.SolarFlare)) &&
             (!Props.usesPower || (compPowerTrader?.PowerOn ?? false));
 
-        // This is called during ThingWithComps.InitializeComps, after constructor is called and parent is set.
-        public override void Initialize(CompProperties props)
+        // Caching comps needs to happen after all comps are created. Ideally, this would be done right after
+        // ThingWithComps.InitializeComps(). This requires overriding two hooks: PostPostMake and PostExposeData.
+
+        public override void PostPostMake()
         {
-            base.Initialize(props);
+            base.PostPostMake();
+            CacheComps();
+        }
+
+        public override void PostExposeData()
+        {
+            base.PostExposeData();
+            if (Scribe.mode == LoadSaveMode.LoadingVars)
+                CacheComps();
+        }
+
+        private void CacheComps()
+        {
             // Avoiding ThingWithComps.GetComp<T> and implementing a specific non-generic version of it here.
             // That method is slow because the `isinst` instruction with generic type arg operands is very slow,
             // while `isinst` instruction against non-generic type operand like used below is fast.
