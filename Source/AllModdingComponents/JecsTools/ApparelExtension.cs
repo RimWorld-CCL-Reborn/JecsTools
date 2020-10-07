@@ -15,22 +15,33 @@ namespace JecsTools
     public class ApparelExtension : DefModExtension
     {
         [Obsolete("Use vanilla apparel.layers field and custom ApparelLayerDef in RimWorld b19+")]
-        public List<string> coverage;
+        private List<string> coverage;
 
-        public HashSet<string> Coverage { get; private set; }
+        [Unsaved]
+        private HashSet<string> coverageSet;
+
+        public HashSet<string> Coverage
+        {
+            get
+            {
+                // DefModExtension lacks a ResolveReferences hook, so must use lazy initialization in property instead.
+                if (coverageSet == null && coverage != null)
+                {
+                    coverageSet = new HashSet<string>(coverage.Count);
+                    foreach (var item in coverage)
+                        coverageSet.Add(item.ToLowerInvariant());
+                }
+                return coverageSet;
+            }
+        }
 
         [Obsolete("Use vanilla apparel.gender field in RimWorld 1.1+")]
         public SwapCondition swapCondition = new SwapCondition();
 
         public override IEnumerable<string> ConfigErrors()
         {
-            if (coverage != null)
-            {
-                coverage = coverage.ConvertAll(item => item.ToLowerInvariant());
-                Coverage = new HashSet<string>(coverage);
-                if (Coverage.Count != coverage.Count)
-                    yield return nameof(coverage) + " has duplicate items: " + coverage.ToStringSafeEnumerable();
-            }
+            if (coverage != null && Coverage.Count != coverage.Count)
+                yield return nameof(coverage) + " has duplicate items: " + coverage.ToStringSafeEnumerable();
         }
     }
 }

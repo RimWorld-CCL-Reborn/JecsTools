@@ -42,7 +42,7 @@ namespace CompSlotLoadable
                 for (var i = 0; i < statModifiers.Count; i++)
                 {
                     if (statModifiers[i]?.stat == null)
-                        yield return $"statModifiers[i] is null or has null stat";
+                        yield return $"{nameof(statModifiers)}[{i}] is null or has null stat";
                 }
             }
         }

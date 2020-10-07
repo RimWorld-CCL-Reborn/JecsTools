@@ -34,8 +34,8 @@ namespace CompDeflector
         {
             foreach (var error in base.ConfigErrors(parentDef))
                 yield return error;
-            if (useSkillInCalc && deflectRatePerSkillPoint == 0)
-                yield return "deflectRatePerSkillPoint is set to 0, but useSkillInCalc is set to true";
+            if (useSkillInCalc && deflectRatePerSkillPoint == 0f)
+                yield return $"{nameof(deflectRatePerSkillPoint)} is set to zero, but {nameof(useSkillInCalc)} is set to true";
         }
 
         public virtual IEnumerable<StatDrawEntry> PostSpecialDisplayStats()

@@ -19,7 +19,7 @@ namespace JecsTools
             for (var i = 0; i < ExtraDamages.Count; i++)
             {
                 if (ExtraDamages[i]?.def == null)
-                    yield return $"ExtraDamages[{i}] is null or has null def";
+                    yield return $"{nameof(ExtraDamages)}[{i}] is null or has null def";
             }
         }
     }

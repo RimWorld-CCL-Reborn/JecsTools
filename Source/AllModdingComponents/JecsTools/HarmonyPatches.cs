@@ -233,10 +233,10 @@ namespace JecsTools
                     if (ApparelUtility.HasPartsToWear(pawn, swapApparel.def))
                     {
                         pawn.apparel.Wear(swapApparel, false);
-                        //DebugMessage($"apparel generation for {pawn}: swapped from {wornApparel} to {swapApparel}");
+                        DebugMessage($"apparel generation for {pawn}: swapped from {wornApparel} to {swapApparel}");
                     }
                     wornApparel.Destroy();
-                    //DebugMessage($"apparel generation for {pawn}: destroyed old {wornApparel}");
+                    DebugMessage($"apparel generation for {pawn}: destroyed old {wornApparel}");
                 }
             }
         }
@@ -418,8 +418,8 @@ namespace JecsTools
                         explosion.postExplosionSpawnThingCount = 1;
                         explosion.applyDamageToExplosionCellsNeighbors = false;
                         explosion.chanceToStartFire = 0f;
-                        explosion.damageFalloff = false; // dealMoreDamageAtCenter = false;
-                        explosion.StartExplosion(null, null);
+                        explosion.damageFalloff = false;
+                        explosion.StartExplosion(knockerProps.knockbackSound, null);
                     }
 
                     if (pawn != instigator && !pawn.Dead && !pawn.Downed && pawn.Spawned)

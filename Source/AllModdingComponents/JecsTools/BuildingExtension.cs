@@ -5,19 +5,30 @@ namespace JecsTools
 {
     public class BuildingExtension : DefModExtension
     {
-        public List<string> wipeCategories;
+        private List<string> wipeCategories;
 
-        public HashSet<string> WipeCategories { get; private set; }
+        [Unsaved]
+        private HashSet<string> wipeCategorySet;
+
+        public HashSet<string> WipeCategories
+        {
+            get
+            {
+                // DefModExtension lacks a ResolveReferences hook, so must use lazy initialization in property instead.
+                if (wipeCategorySet == null && wipeCategories != null)
+                {
+                    wipeCategorySet = new HashSet<string>(wipeCategories.Count);
+                    foreach (var category in wipeCategories)
+                        wipeCategorySet.Add(category.ToLowerInvariant());
+                }
+                return wipeCategorySet;
+            }
+        }
 
         public override IEnumerable<string> ConfigErrors()
         {
-            if (wipeCategories != null)
-            {
-                wipeCategories = wipeCategories.ConvertAll(category => category.ToLowerInvariant());
-                WipeCategories = new HashSet<string>(wipeCategories);
-                if (WipeCategories.Count != wipeCategories.Count)
-                    yield return nameof(wipeCategories) + " has duplicate categories: " + wipeCategories.ToStringSafeEnumerable();
-            }
+            if (wipeCategories != null && WipeCategories.Count != wipeCategories.Count)
+                yield return nameof(wipeCategories) + " has duplicate categories: " + wipeCategories.ToStringSafeEnumerable();
         }
     }
 }
