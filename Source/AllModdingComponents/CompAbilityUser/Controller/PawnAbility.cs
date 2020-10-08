@@ -167,11 +167,8 @@ namespace AbilityUser
             if (context == AbilityContext.Player)
             {
                 var targeter = Find.Targeter;
-                if (verb.CasterIsPawn && targeter.targetingSource != null)
-                    // Tad : Commented out for now.
-                    // && targeter.targetingSource.targetParams.verbProps == verb.verbProps)
+                if (verb.Caster is Pawn casterPawn && targeter.targetingSource?.GetVerb?.verbProps == verb.verbProps)
                 {
-                    var casterPawn = verb.CasterPawn;
                     if (!targeter.IsPawnTargeting(casterPawn))
                         targeter.targetingSourceAdditionalPawns.Add(casterPawn);
                 }

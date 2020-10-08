@@ -92,20 +92,20 @@ namespace CompDeflector
                         if (dinfo.Def == DamageDefOf.Bomb) continue;
                         if (dinfo.Def == DamageDefOf.Flame) continue;
                         if (dinfo.Def.isExplosive) continue;
-                        if (!dinfo.Weapon.IsMeleeWeapon)
+                        if (dinfo.Weapon?.IsMeleeWeapon ?? false)
                         {
-                            compDeflector.PostPreApplyDamage(dinfo, out var newAbsorbed);
-                            if (newAbsorbed)
+                            if (compDeflector.TrySpecialMeleeBlock())
                             {
-                                compDeflector.AnimationDeflectionTicks = 1200;
                                 dinfo.SetAmount(0);
                                 return true;
                             }
                         }
                         else
                         {
-                            if (compDeflector.TrySpecialMeleeBlock())
+                            compDeflector.PostPreApplyDamage(dinfo, out var absorbed);
+                            if (absorbed)
                             {
+                                compDeflector.AnimationDeflectionTicks = 1200;
                                 dinfo.SetAmount(0);
                                 return true;
                             }

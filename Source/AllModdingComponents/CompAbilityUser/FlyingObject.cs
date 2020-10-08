@@ -94,22 +94,27 @@ namespace AbilityUser
         public override void Tick()
         {
             base.Tick();
-            var exactPosition = ExactPosition;
             ticksToImpact--;
+            var exactPosition = ExactPosition;
             if (!exactPosition.InBounds(Map))
             {
                 ticksToImpact++;
+                exactPosition = ExactPosition;
                 Position = exactPosition.ToIntVec3();
                 Destroy(DestroyMode.Vanish);
-                return;
             }
-
-            Position = exactPosition.ToIntVec3();
-            if (ticksToImpact <= 0)
+            else
             {
-                if (DestinationCell.InBounds(Map))
-                    Position = DestinationCell;
-                ImpactSomething();
+                if (ticksToImpact <= 0)
+                {
+                    var destinationCell = DestinationCell;
+                    Position = destinationCell.InBounds(Map) ? destinationCell : exactPosition.ToIntVec3();
+                    ImpactSomething();
+                }
+                else
+                {
+                    Position = exactPosition.ToIntVec3();
+                }
             }
         }
 

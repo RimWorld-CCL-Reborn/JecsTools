@@ -13,7 +13,7 @@ namespace AbilityUser
             {
                 if (selectedTarget != null)
                     return selectedTarget.DrawPos;
-                if (targetVec != null)
+                if (targetVec != default)
                     return targetVec;
                 return ExactPosition;
             }
@@ -21,7 +21,7 @@ namespace AbilityUser
 
         public override void Draw()
         {
-            if (selectedTarget != null || targetVec != null)
+            if (selectedTarget != null || targetVec != default)
             {
                 var vector = ProjectileDrawPos;
                 var distance = destination - origin;
