@@ -25,26 +25,19 @@ namespace CompSlotLoadable
         private List<SlotLoadable> slots = new List<SlotLoadable>();
         public List<SlotLoadable> Slots => slots;
 
-        public SlotLoadable ColorChangingSlot => colorChangingSlot ??= slots.FirstOrDefault(x => ((SlotLoadableDef)x.def).doesChangeColor);
+        public SlotLoadable ColorChangingSlot =>
+            colorChangingSlot ??= slots.FirstOrDefault(slot => slot.Def?.doesChangeColor ?? false);
 
-        public SlotLoadable SecondColorChangingSlot => secondColorChangingSlot ??= slots.FirstOrDefault(x => ((SlotLoadableDef)x.def).doesChangeSecondColor);
+        public SlotLoadable SecondColorChangingSlot =>
+            secondColorChangingSlot ??= slots.FirstOrDefault(slot => slot.Def?.doesChangeSecondColor ?? false);
 
-        public List<SlotLoadableDef> SlotDefs
-        {
-            get
-            {
-                var result = new List<SlotLoadableDef>(slots.Count);
-                foreach (var slot in slots)
-                    result.Add(slot.def as SlotLoadableDef);
-                return result;
-            }
-        }
+        public List<SlotLoadableDef> SlotDefs => slots.ConvertAll(slot => slot.Def);
 
         public Map GetMap => parent.Map ?? GetPawn?.Map;
 
         public CompEquippable GetEquippable => compEquippable;
 
-        public Pawn GetPawn => GetEquippable.PrimaryVerb.CasterPawn;
+        public Pawn GetPawn => compEquippable.PrimaryVerb.CasterPawn;
 
         // Caching comps needs to happen after all comps are created. Ideally, this would be done right after
         // ThingWithComps.InitializeComps(). This requires overriding two hooks: PostPostMake and PostExposeData.
@@ -112,7 +105,7 @@ namespace CompSlotLoadable
             if (!isInitialized) Initialize();
         }
 
-        private void TryCancel(string reason = "")
+        private void TryCancel()
         {
             var pawn = GetPawn;
             if (pawn != null)
@@ -120,7 +113,6 @@ namespace CompSlotLoadable
                 if (pawn.CurJob.def == CompSlotLoadableDefOf.GatherSlotItem)
                     pawn.jobs.StopAll();
                 isGathering = false;
-                //Messages.Message("Cancelling sacrifice. " + reason, MessageSound.Negative);
             }
         }
 
@@ -148,19 +140,21 @@ namespace CompSlotLoadable
         {
             //Log.Message("TryLoadSlot Called");
             isGathering = false;
-            var loadSlot = slots.FirstOrDefault(x => x.IsEmpty() && x.CanLoad(thing.def)) ??
-                slots.FirstOrDefault(y => y.CanLoad(thing.def));
+            var loadSlot = slots.FirstOrDefault(slot => slot.IsEmpty() && slot.CanLoad(thing.def)) ??
+                slots.FirstOrDefault(slot => slot.CanLoad(thing.def));
             return loadSlot?.TryLoadSlot(thing, true) ?? false;
         }
 
         public void ProcessInput(SlotLoadable slot)
         {
             var floatList = new List<FloatMenuOption>();
+            var slotOccupant = slot.SlotOccupant;
             if (!isGathering)
             {
                 var map = GetMap;
-                if (slot.SlotOccupant == null && slot.SlottableTypes is List<ThingDef> loadTypes)
+                if (slotOccupant == null)
                 {
+                    var loadTypes = slot.SlottableTypes;
                     if (loadTypes.Count > 0)
                     {
                         var pawn = GetPawn;
@@ -176,22 +170,23 @@ namespace CompSlotLoadable
                                     delegate { TryGiveLoadSlotJob(thingToLoad); },
                                     MenuOptionPriority.Default, null, null, 29f, null, null));
                             }
-                            else
-                            {
-                                floatList.Add(new FloatMenuOption(
-                                    string.Format(StringOf.Unavailable, current.label),
-                                    delegate { }, MenuOptionPriority.Default));
-                            }
+                            // Commenting following out since all the unavailable options can clutter the menu.
+                            //else
+                            //{
+                            //    floatList.Add(new FloatMenuOption(
+                            //        string.Format(StringOf.Unavailable, current.label),
+                            //        delegate { }, MenuOptionPriority.Default));
+                            //}
                         }
                     }
-                    else
+                    if (floatList.Count == 0)
                         floatList.Add(new FloatMenuOption(StringOf.NoLoadOptions, delegate { },
                             MenuOptionPriority.Default));
                 }
             }
-            if (!slot.IsEmpty())
+            if (slotOccupant != null)
             {
-                var text = string.Format(StringOf.Unload, slot.SlotOccupant.Label);
+                var text = string.Format(StringOf.Unload, slotOccupant.Label);
                 //Func<Rect, bool> extraPartOnGUI = (Rect rect) => Widgets.InfoCardButton(rect.x + 5f, rect.y + (rect.height - 24f) / 2f, current);
                 floatList.Add(new FloatMenuOption(text, delegate { TryEmptySlot(slot); }, MenuOptionPriority.Default,
                     null, null, 29f, null, null));
@@ -214,7 +209,7 @@ namespace CompSlotLoadable
                         defaultLabel = "Designator_Cancel".Translate(),
                         defaultDesc = "Designator_CancelDesc".Translate(),
                         icon = ContentFinder<Texture2D>.Get("UI/Designators/Cancel", true),
-                        action = delegate { TryCancel(); }
+                        action = TryCancel,
                     };
                 foreach (var slot in slots)
                     if (slot.IsEmpty())
@@ -241,19 +236,20 @@ namespace CompSlotLoadable
         {
             var s = new StringBuilder();
             s.AppendLine(slot.def.description); //TODO
-            if (!slot.IsEmpty())
+            var slotOccupant = slot.SlotOccupant;
+            if (slotOccupant != null)
             {
                 s.AppendLine();
-                s.AppendLine(string.Format(StringOf.CurrentlyLoaded, slot.SlotOccupant.LabelCap));
-                if (((SlotLoadableDef)slot.def).doesChangeColor)
+                s.AppendLine(string.Format(StringOf.CurrentlyLoaded, slotOccupant.LabelCap));
+                if (slot.Def?.doesChangeColor ?? false)
                 {
                     s.AppendLine();
                     s.AppendLine(StringOf.Effects);
                     s.AppendLine("  " + StringOf.ChangesPrimaryColor);
                 }
-                if (((SlotLoadableDef)slot.def).doesChangeStats)
+                if (slot.Def?.doesChangeStats ?? false)
                 {
-                    var slotBonusProps = slot.SlotOccupant.TryGetCompSlottedBonus()?.Props;
+                    var slotBonusProps = slotOccupant.TryGetCompSlottedBonus()?.Props;
                     if (slotBonusProps != null)
                     {
                         if (!slotBonusProps.statModifiers.NullOrEmpty())
@@ -263,7 +259,7 @@ namespace CompSlotLoadable
 
                             foreach (var mod in slotBonusProps.statModifiers)
                             {
-                                var v = SlotLoadableUtility.DetermineSlottableStatAugment(slot.SlotOccupant, mod.stat);
+                                var v = SlotLoadableUtility.DetermineSlottableStatAugment(slotOccupant, mod.stat);
                                 var modstring = mod.stat.ValueToString(v, ToStringNumberSense.Offset);
                                 //Log.Message("Determined slot stat augment "+v+" and made string "+modstring);
                                 s.AppendLine("  " + mod.stat.LabelCap + " " + modstring);
@@ -271,7 +267,7 @@ namespace CompSlotLoadable
                             }
                             /*
                             //Log.Message("fix this to display statModifiers");
-                            List<StatModifier> statMods = slot.SlotOccupant.def.statBases.FindAll(
+                            List<StatModifier> statMods = slotOccupant.def.statBases.FindAll(
                                 (StatModifier z) => z.stat.category == StatCategoryDefOf.Weapon ||
                                                     z.stat.category == StatCategoryDefOf.EquippedStatOffsets);
                             if (statMods.Count > 0)

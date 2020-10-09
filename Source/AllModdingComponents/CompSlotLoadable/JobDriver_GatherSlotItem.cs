@@ -41,9 +41,7 @@ namespace CompSlotLoadable
                     if (pawn.equipment.Primary is ThingWithComps primary && primary.GetCompSlotLoadable() is CompSlotLoadable compSlotLoadable)
                     {
                         compSlotLoadable.TryLoadSlot(itemToGather);
-                        if (primary.def.soundInteract != null)
-                            primary.def.soundInteract.PlayOneShot(new TargetInfo(pawn.Position, pawn.Map,
-                                false));
+                        primary.def.soundInteract?.PlayOneShot(new TargetInfo(pawn.Position, pawn.Map));
                         //if (flag)
                         //    thingWithComps.DeSpawn();
                     }

@@ -25,13 +25,10 @@ namespace CompSlotLoadable
                 {
                     foreach (var item in holder.GetDirectlyHeldThings())
                     {
-                        var compSlotLoadable = item.TryGetCompSlotLoadable();
-                        if (compSlotLoadable != null)
+                        var slots = item.GetSlots();
+                        if (slots != null)
                         {
-                            var c = clickPos.ToIntVec3();
-                            //var thingList = c.GetThingList(pawn.Map);
-
-                            foreach (var slot in compSlotLoadable.Slots)
+                            foreach (var slot in slots)
                             {
                                 var loadableThing = slot.CanLoad(curThing.def) ? curThing : null;
                                 if (loadableThing != null)

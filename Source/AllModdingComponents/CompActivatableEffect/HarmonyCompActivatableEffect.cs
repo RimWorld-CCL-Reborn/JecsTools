@@ -164,21 +164,13 @@ namespace CompActivatableEffect
             else Graphics.DrawMesh(MeshPool.plane10Flip, matrix, matSingle, 0);
         }
 
-        public static IEnumerable<Gizmo> GizmoGetter(CompActivatableEffect compActivatableEffect)
-        {
-            if (compActivatableEffect.GizmosOnEquip)
-            {
-                foreach (var current in compActivatableEffect.EquippedGizmos())
-                    yield return current;
-            }
-        }
-
         public static void GetGizmosPostfix(Pawn __instance, ref IEnumerable<Gizmo> __result)
         {
             if (__instance.equipment?.Primary?.GetCompActivatableEffect() is CompActivatableEffect compActivatableEffect)
                 if (__instance.Faction == Faction.OfPlayer)
                 {
-                    __result = __result.Concat(GizmoGetter(compActivatableEffect));
+                    if (compActivatableEffect.GizmosOnEquip)
+                        __result = __result.Concat(compActivatableEffect.EquippedGizmos());
                 }
                 else
                 {

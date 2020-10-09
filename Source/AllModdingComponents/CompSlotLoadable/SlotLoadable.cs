@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -15,8 +16,6 @@ namespace CompSlotLoadable
         public SlotLoadable(Thing newOwner)
         {
             //Log.Message("Slot started");
-            var def = this.def as SlotLoadableDef;
-            slottableThingDefs = def.slottableThingDefs;
             owner = newOwner;
             ThingIDMaker.GiveIDTo(this);
             slot = new ThingOwner<Thing>(this, false, LookMode.Deep);
@@ -32,13 +31,15 @@ namespace CompSlotLoadable
             slot = new ThingOwner<Thing>(this, false, LookMode.Deep);
         }
 
+        public SlotLoadableDef Def => def as SlotLoadableDef;
+
         public Texture2D SlotIcon() => SlotOccupant?.def?.uiIcon;
 
         public Color SlotColor() => SlotOccupant?.def?.graphic.Color ?? Color.white;
 
         public bool IsEmpty() => SlotOccupant == null;
 
-        public bool CanLoad(ThingDef defType) => slottableThingDefs?.Contains(defType) ?? false;
+        public bool CanLoad(ThingDef defType) => SlottableTypes.Contains(defType);
 
         public override void ExposeData()
         {
@@ -47,21 +48,25 @@ namespace CompSlotLoadable
                 if (thingIDNumber == -1)
                     ThingIDMaker.GiveIDTo(this);
             Scribe_Deep.Look(ref slot, "slot", this);
-            Scribe_Collections.Look(ref slottableThingDefs, "slottableThingDefs", LookMode.Undefined);
             Scribe_References.Look(ref owner, "owner");
-            //Scribe_References.Look(ref this.slotOccupant, "slotOccupant");
+
+            // Only save slottableThingDefs if it isn't Def.slottableThingDefs (otherwise, save null) to save space.
+            var defSlottableThingDefs = Def?.slottableThingDefs;
+            List<ThingDef> savedSlottableThingDefs = slottableThingDefs;
+            if (defSlottableThingDefs != null && slottableThingDefs != null &&
+                defSlottableThingDefs.SequenceEqual(slottableThingDefs))
+                savedSlottableThingDefs = null;
+            Scribe_Collections.Look(ref savedSlottableThingDefs, "slottableThingDefs", LookMode.Undefined);
+            if (slottableThingDefs != null)
+                slottableThingDefs = savedSlottableThingDefs;
         }
 
         #region Variables
 
         //Exposable Variables
-        //private Thing slotOccupant;
         private ThingOwner slot;
+        private List<ThingDef> slottableThingDefs;
 
-        //Settable variables
-        public List<ThingDef> slottableThingDefs;
-
-        //
         //Spawn variables
         public Thing owner;
         private CompSlotLoadable parentComp;
@@ -117,15 +122,6 @@ namespace CompSlotLoadable
                     slot.TryAdd(value, true);
                 }
             }
-
-            //get
-            //{
-            //    return slotOccupant;
-            //}
-            //set
-            //{
-            //    slotOccupant = value;
-            //}
         }
 
         public ThingOwner Slot
@@ -144,8 +140,8 @@ namespace CompSlotLoadable
                 //Use that to find a pawn location if it's equipped.
                 if (owner != null)
                 {
-                    if (Holder != null)
-                        return Holder.Map;
+                    if (Holder is Pawn holder)
+                        return holder.Map;
                     return owner.Map;
                 }
                 return null;
@@ -160,15 +156,20 @@ namespace CompSlotLoadable
                 //Use that to find a pawn location if it's equipped.
                 if (owner != null)
                 {
-                    if (Holder != null)
-                        return Holder.Position;
+                    if (Holder is Pawn holder)
+                        return holder.Position;
                     return owner.Position;
                 }
                 return IntVec3.Invalid;
             }
         }
 
-        public List<ThingDef> SlottableTypes => slottableThingDefs;
+        public List<ThingDef> SlottableTypes
+        {
+            // def isn't available during constructor, so slottableThingDefs is lazily initialized here.
+            get => slottableThingDefs ??= Def?.slottableThingDefs ?? new List<ThingDef>();
+            set => slottableThingDefs = value;
+        }
 
         #endregion Properties
 
@@ -177,19 +178,17 @@ namespace CompSlotLoadable
         public virtual bool TryLoadSlot(Thing thingToLoad, bool emptyIfFilled = false)
         {
             //Log.Message("TryLoadSlot Called");
-            if (SlotOccupant != null && emptyIfFilled || SlotOccupant == null)
+            if (SlotOccupant == null || emptyIfFilled)
             {
                 TryEmptySlot();
-                if (thingToLoad != null)
-                    if (slottableThingDefs != null)
-                        if (slottableThingDefs.Contains(thingToLoad.def))
-                        {
-                            SlotOccupant = thingToLoad;
-                            //slot.TryAdd(thingToLoad, false);
-                            if (((SlotLoadableDef)def).doesChangeColor)
-                                owner.Notify_ColorChanged();
-                            return true;
-                        }
+                if (thingToLoad != null && CanLoad(thingToLoad.def))
+                {
+                    SlotOccupant = thingToLoad;
+                    //slot.TryAdd(thingToLoad, false);
+                    if (Def?.doesChangeColor ?? false)
+                        owner.Notify_ColorChanged();
+                    return true;
+                }
             }
             else
             {

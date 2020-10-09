@@ -41,22 +41,31 @@ namespace CompSlotLoadable
             return thing is ThingWithComps thingWithComps ? thingWithComps.GetCompSlottedBonus() : null;
         }
 
-        // Grab slots of the thing if they exists. Returns null if none
-        public static List<SlotLoadable> GetSlots(this Thing someThing)
+        // Grab slots of the thing if they exists. Returns null if none.
+        public static List<SlotLoadable> GetSlots(this Thing thing)
         {
-            var slots = someThing.TryGetCompSlotLoadable()?.Slots;
+            var slots = thing.TryGetCompSlotLoadable()?.Slots;
             return !slots.NullOrEmpty() ? slots : null;
         }
 
-        // Get the thing's modificaiton to stat from it's slots
+        public static List<SlotLoadable> GetSlots(this ThingWithComps thing)
+        {
+            var slots = thing.GetCompSlotLoadable()?.Slots;
+            return !slots.NullOrEmpty() ? slots : null;
+        }
+
+        // Get the thing's modification to stat from its slots.
         public static float CheckThingSlotsForStatAugment(Thing slottedThing, StatDef stat)
         {
             var retval = 0.0f;
             var slots = slottedThing.GetSlots();
             if (slots != null)
                 foreach (var slot in slots)
-                    if (!slot.IsEmpty())
-                        retval += DetermineSlottableStatAugment(slot.SlotOccupant, stat);
+                {
+                    var slotOccupant = slot.SlotOccupant;
+                    if (slotOccupant != null)
+                        retval += DetermineSlottableStatAugment(slotOccupant, stat);
+                }
             return retval;
         }
 
