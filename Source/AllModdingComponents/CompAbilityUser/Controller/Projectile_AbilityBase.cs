@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using Verse;
 using Verse.Sound;
@@ -119,16 +118,9 @@ namespace AbilityUser
 
         public void ApplyHediffsAndMentalStates(Pawn victim, Pawn caster, List<ApplyMentalStates> localApplyMentalStates, AbilityDef localAbilityDef)
         {
-            try
-            {
-                //Log.Message("ApplyHediffsAndMentalStates");
-                AbilityEffectUtility.ApplyMentalStates(victim, caster, localApplyMentalStates, localAbilityDef, this);
-                AbilityEffectUtility.ApplyHediffs(victim, caster, localApplyHediffs, null);
-            }
-            catch (NullReferenceException e)
-            {
-                Log.Message(e.ToString());
-            }
+            //Log.Message("Projectile_AbilityBase.ApplyHediffsAndMentalStates");
+            AbilityEffectUtility.ApplyMentalStates(victim, caster, localApplyMentalStates, localAbilityDef, this);
+            AbilityEffectUtility.ApplyHediffs(victim, caster, localApplyHediffs, null);
         }
 
         public virtual void Impact_Override(Thing hitThing)

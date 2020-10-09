@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
 using RimWorld;
@@ -74,15 +75,18 @@ namespace CompActivatableEffect
             if (__instance.caster is Pawn pawn && pawn.equipment?.Primary is ThingWithComps thingWithComps &&
                 thingWithComps.GetCompActivatableEffect() is CompActivatableEffect compActivatableEffect)
             {
-                //Equipment source throws errors when checked while casting abilities with a weapon equipped.
+                // EquipmentSource throws errors when checked while casting abilities with a weapon equipped.
                 // to avoid this error preventing our code from executing, we do a try/catch.
+                // TODO: Is this still the case?
                 try
                 {
                     if (__instance.EquipmentSource != thingWithComps)
                         return true;
                 }
-                catch
+                catch (Exception ex)
                 {
+                    Log.ErrorOnce("Verb.TryStartCastOn EquipmentSource threw exception: " + ex,
+                        __instance.GetUniqueLoadID().GetHashCode());
                 }
 
                 if (compActivatableEffect.CurrentState == CompActivatableEffect.State.Activated)
