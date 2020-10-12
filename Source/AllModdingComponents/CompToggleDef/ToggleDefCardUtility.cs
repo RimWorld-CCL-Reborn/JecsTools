@@ -18,14 +18,19 @@ namespace CompToggleDef
         private const float DefIconSize = RowHeight - DefIconMargin * 2;
         private const float DefLabelOffsetX = 6f;
 
-        public static bool CanShowCard(CompToggleDef compToggleDef)
+        public static CompToggleDef GetCompToggleDef(Thing thing)
         {
+            // TODO: Support all the equipment/apparel/carried things on a Pawn somehow?
+            // Would require showing multiple CompToggleDefs and some way to switch between them in the GUI.
+            if (thing is Pawn pawn && pawn.IsColonistPlayerControlled)
+                thing = pawn.equipment?.Primary;
+            var compToggleDef = thing.TryGetCompToggleDef();
             if (compToggleDef == null)
-                return false;
+                return null;
             var toggleDefs = compToggleDef.Props.toggleDefs;
-            if (toggleDefs == null)
-                return false;
-            return toggleDefs.Count > 1;
+            if (toggleDefs == null || toggleDefs.Count <= 1)
+                return null;
+            return compToggleDef;
         }
 
         public static Vector2 CardSize(CompToggleDef compToggleDef)
@@ -105,13 +110,13 @@ namespace CompToggleDef
             var loc = thing.Position;
             var rot = thing.Rotation;
 
-            thing.DeSpawn();
+            var eqTracker = thing.ParentHolder as Pawn_EquipmentTracker;
+            if (eqTracker != null)
+                eqTracker.Remove(thing);
+            else
+                thing.DeSpawn();
 
             thing.def = newDef;
-
-            // Necessary to give it a new id.
-            thing.thingIDNumber = -1;
-            ThingIDMaker.GiveIDTo(thing);
 
             // Refresh verbs.
             foreach (var comp in thing.AllComps)
@@ -124,10 +129,11 @@ namespace CompToggleDef
             }
 
             // Refresh graphics.
-            // Note: The graphics' rotation will change since it's based off thingIDNumber (see Graphic_RandomRotated).
             thing.Notify_ColorChanged();
 
-            if (GenSpawn.Spawn(thing, loc, map, rot) != null)
+            if (eqTracker != null)
+                eqTracker.AddEquipment(thing);
+            else if (GenSpawn.Spawn(thing, loc, map, rot) != null)
                 Find.Selector.Select(thing, playSound: false);
         }
 
