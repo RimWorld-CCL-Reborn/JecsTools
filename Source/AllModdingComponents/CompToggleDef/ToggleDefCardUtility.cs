@@ -1,88 +1,149 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Collections.Generic;
+using HarmonyLib;
+using RimWorld;
+using UnityEngine;
 using Verse;
 
 namespace CompToggleDef
 {
-    public class ToggleDefCardUtility
+    public static class ToggleDefCardUtility
     {
-        // RimWorld.CharacterCardUtility
-        public static Vector2 CardSize = new Vector2(395f, 536f);
+        private const int MaxRows = 10;
+        private const float CardPadding = GenUI.GapSmall;
+        private const float ExtraTopPadding = 20f;
+        private const float RowHeight = Widgets.RadioButtonSize;
+        private const float RowGap = GenUI.GapSmall;
+        private const float DefIconMargin = 2f;
+        private const float DefIconSize = RowHeight - DefIconMargin * 2;
+        private const float DefLabelOffsetX = 6f;
 
-        public static float ButtonSize = 40f;
-
-        public static float ForceButtonSize = 46f;
-
-        public static float ForceButtonPointSize = 24f;
-
-        public static float HeaderSize = 32f;
-
-        public static float TextSize = 22f;
-
-        public static float Padding = 3f;
-
-        public static float SpacingOffset = 15f;
-
-        public static float SectionOffset = 8f;
-
-        public static float ColumnSize = 245f;
-
-        public static float SkillsColumnHeight = 113f;
-
-        public static float SkillsColumnDivider = 114f;
-
-        public static float SkillsTextWidth = 138f;
-
-        public static float SkillsBoxSize = 18f;
-
-        public static float PowersColumnHeight = 195f;
-
-        public static float PowersColumnWidth = 123f;
-
-        public static bool isfirst = true;
-
-        // RimWorld.CharacterCardUtility
-        public static void DrawCard(Rect rect, ThingWithComps selectedThing)
+        public static bool CanShowCard(CompToggleDef compToggleDef)
         {
-            GUI.BeginGroup(rect);
+            if (compToggleDef == null)
+                return false;
+            var toggleDefs = compToggleDef.Props.toggleDefs;
+            if (toggleDefs == null)
+                return false;
+            return toggleDefs.Count > 1;
+        }
 
-            var compToggleDef = selectedThing.GetCompToggleDef();
-            if (compToggleDef != null)
+        public static Vector2 CardSize(CompToggleDef compToggleDef)
+        {
+            var width = InspectPaneUtility.PaneWidthFor((MainTabWindow_Inspect)MainButtonDefOf.Inspect.TabWindow);
+            var rowCount = Math.Min(compToggleDef.Props.toggleDefs.Count, MaxRows);
+            return new Vector2(width, TotalRowHeight(rowCount) + CardPadding * 2 + ExtraTopPadding);
+        }
+
+        private static float TotalRowHeight(int rowCount) => rowCount * (RowHeight + RowGap) - RowGap;
+
+        private static ThingWithComps lastSelectedThing;
+        private static Vector2 scrollPosition = Vector2.zero;
+
+        public static void DrawCard(Vector2 size, CompToggleDef compToggleDef)
+        {
+            var selectedThing = compToggleDef.parent;
+            var toggleDefs = compToggleDef.Props.toggleDefs;
+
+            var rect = new Rect(0f, ExtraTopPadding, size.x, size.y - ExtraTopPadding).ContractedBy(CardPadding);
+
+            var rowCount = toggleDefs.Count;
+            var yMin = -RowHeight;
+            var yMax = rect.height;
+            if (rowCount > MaxRows)
             {
-                var ts = Text.CalcSize(selectedThing.LabelCap).x;
-                var y = rect.y;
-                var rect2 = new Rect(rect.width / 2 - ts + SpacingOffset, y, rect.width, HeaderSize);
-                y += rect2.height;
-                Text.Font = GameFont.Medium;
-                Widgets.Label(rect2, selectedThing.LabelCap);
-                Text.Font = GameFont.Small;
-                Widgets.ListSeparator(ref y, rect2.width, "Select one of the following:");
-
-                // add all the buttons for the toggle defs
-                foreach (var td in compToggleDef.toggleDefs)
+                if (lastSelectedThing != selectedThing)
                 {
-                    var rect3 = new Rect(0f, y, rect.width, 20f);
-                    var isactive = false;
-                    if (selectedThing.def == td) isactive = true;
-                    if (Widgets.RadioButtonLabeled(rect3, td.LabelCap, isactive))
-                    {
-                        //Log.Message(".. change location to "+td.LabelCap);
+                    lastSelectedThing = selectedThing;
+                    scrollPosition.y = toggleDefs.IndexOf(selectedThing.def) * (RowHeight + RowGap);
+                }
+                var viewRect = new Rect(0f, 0f, rect.width - GenUI.ScrollBarWidth - CardPadding, TotalRowHeight(rowCount));
+                Widgets.BeginScrollView(rect, ref scrollPosition, viewRect);
+                rect.width = viewRect.width;
+                yMin += scrollPosition.y;
+                yMax += scrollPosition.y;
+            }
+            else
+            {
+                GUI.BeginGroup(rect);
+            }
 
-                        // CHange def then give it a new id. Hopefully nothing index on the id
-                        var map = selectedThing.Map;
-                        var loc = selectedThing.Position;
-                        var rot = selectedThing.Rotation;
-                        selectedThing.DeSpawn();
-                        selectedThing.def = td;
-                        selectedThing.thingIDNumber = -1;
-                        ThingIDMaker.GiveIDTo(selectedThing); // necessary
-                        GenSpawn.Spawn(selectedThing, loc, map, rot);
+            // Add the rows for each toggle def.
+            var y = 0f;
+            foreach (var toggleDef in toggleDefs)
+            {
+                if (y > yMax)
+                    break;
+                if (y >= yMin)
+                {
+                    var rowRect = new Rect(0f, y, rect.width, RowHeight);
+                    var iconAndLabelRect = rowRect.LeftPartPixels(rowRect.width - (Widgets.RadioButtonSize + DefLabelOffsetX));
+                    Widgets.DefLabelWithIcon(iconAndLabelRect, toggleDef, DefIconMargin, DefLabelOffsetX);
+                    var iconRect = new Rect(DefIconMargin, y + DefIconMargin, DefIconSize, DefIconSize);
+                    if (Widgets.ButtonInvisible(iconRect))
+                        Find.WindowStack.Add(new Dialog_InfoCard(toggleDef));
+                    bool isSelected = selectedThing.def == toggleDef;
+                    RadioButtonDraw(rowRect.width - Widgets.RadioButtonSize, y, isSelected);
+                    if (!isSelected && Widgets.ButtonInvisible(rowRect.RightPartPixels(rowRect.width - iconRect.xMax - DefLabelOffsetX)))
+                    {
+                        SwapThing(selectedThing, toggleDef);
                         break;
                     }
-                    y += 25f;
+                }
+                y += RowHeight + RowGap;
+            }
+
+            if (rowCount > MaxRows)
+                Widgets.EndScrollView();
+            else
+                GUI.EndGroup();
+        }
+
+        private static void SwapThing(ThingWithComps thing, ThingDef newDef)
+        {
+            var map = thing.Map;
+            var loc = thing.Position;
+            var rot = thing.Rotation;
+
+            thing.DeSpawn();
+
+            thing.def = newDef;
+
+            // Necessary to give it a new id.
+            thing.thingIDNumber = -1;
+            ThingIDMaker.GiveIDTo(thing);
+
+            // Refresh verbs.
+            foreach (var comp in thing.AllComps)
+            {
+                if (comp is IVerbOwner verbOwner && verbOwner.VerbTracker is VerbTracker verbTracker)
+                {
+                    VerbsNeedReinitOnLoad(verbTracker);
+                    _ = verbTracker.AllVerbs;
                 }
             }
 
-            GUI.EndGroup();
+            // Refresh graphics.
+            // Note: The graphics' rotation will change since it's based off thingIDNumber (see Graphic_RandomRotated).
+            thing.Notify_ColorChanged();
+
+            if (GenSpawn.Spawn(thing, loc, map, rot) != null)
+                Find.Selector.Select(thing, playSound: false);
+        }
+
+        private static readonly Action<float, float, bool> RadioButtonDraw =
+            (Action<float, float, bool>)AccessTools.Method(typeof(Widgets), "RadioButtonDraw")
+                .CreateDelegate(typeof(Action<float, float, bool>));
+        private static readonly Action<VerbTracker> VerbsNeedReinitOnLoad = InitVerbsNeedReinitOnLoad();
+
+        private static Action<VerbTracker> InitVerbsNeedReinitOnLoad()
+        {
+            // VerbTracker.VerbsNeedReinitOnLoad is only available in RW 1.2+
+            var method = AccessTools.Method(typeof(VerbTracker), "VerbsNeedReinitOnLoad");
+            if (method != null)
+                return (Action<VerbTracker>)method.CreateDelegate(typeof(Action<VerbTracker>));
+            var verbsRef = AccessTools.FieldRefAccess<VerbTracker, List<Verb>>("verbs");
+            return verbTracker => verbsRef(verbTracker) = null;
         }
     }
 }

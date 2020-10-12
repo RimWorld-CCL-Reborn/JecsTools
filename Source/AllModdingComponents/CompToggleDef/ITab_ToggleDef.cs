@@ -1,41 +1,46 @@
 ﻿using RimWorld;
-using UnityEngine;
 using Verse;
 
 namespace CompToggleDef
 {
     public class ITab_ToggleDef : ITab
     {
-        public ITab_ToggleDef()
-        {
-            size = ToggleDefCardUtility.CardSize + new Vector2(17f, 17f) * 2f;
-        }
-
         public override bool IsVisible
         {
             get
             {
-                var td = SelThing.TryGetCompToggleDef();
-                if (td != null)
-                {
-                    //Log.Message("ITab_isvisible");
-                    labelKey = td.LabelKey; // defined by the Comp
-                    return true;
-                }
-                return false;
+                var compToggleDef = SelThing.TryGetCompToggleDef();
+                if (!ToggleDefCardUtility.CanShowCard(compToggleDef))
+                    return false;
+                // InspectPaneUtility calls IsVisible before drawing the tab text (labelKey.Translate()),
+                // so this is a convenient hook to set labelKey.
+                labelKey = compToggleDef.Props.labelKey;
+                return true;
             }
         }
 
-        protected override void FillTab()
+        protected override void UpdateSize()
         {
-            if (!(Find.Selector.SingleSelectedThing is ThingWithComps selected && selected.GetCompToggleDef() is CompToggleDef td))
+            base.UpdateSize();
+            var compToggleDef = SelThing.TryGetCompToggleDef();
+            if (!ToggleDefCardUtility.CanShowCard(compToggleDef))
             {
                 Log.Warning("selected thing has no CompToggleDef for ITab_ToggleDef");
                 return;
             }
-            labelKey = td.LabelKey ?? "TOGGLEDEF";
-            var rect = new Rect(17f, 17f, ToggleDefCardUtility.CardSize.x, ToggleDefCardUtility.CardSize.y);
-            ToggleDefCardUtility.DrawCard(rect, selected);
+            size = ToggleDefCardUtility.CardSize(compToggleDef);
+        }
+
+        protected override void FillTab()
+        {
+            var compToggleDef = SelThing.TryGetCompToggleDef();
+            if (!ToggleDefCardUtility.CanShowCard(compToggleDef))
+            {
+                Log.Warning("selected thing has no CompToggleDef for ITab_ToggleDef");
+                return;
+            }
+            labelKey = compToggleDef.Props.labelKey;
+            ToggleDefCardUtility.DrawCard(size, compToggleDef);
         }
     }
 }
