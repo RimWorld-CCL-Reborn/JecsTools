@@ -25,18 +25,24 @@ namespace AbilityUserAI
         /// </summary>
         public List<string> tags = new List<string>();
 
+        [Unsaved]
+        private HashSet<string> blacklistedTagSet;
+        private HashSet<string> tagSet;
+
         private AbilityAIDef[] eligibleAbilities;
 
         public override void Resolve(AbilityUserAIProfileDef def)
         {
             //Cache all eligible abilities for given def.
+            blacklistedTagSet ??= new HashSet<string>(blacklistedTags);
+            tagSet ??= new HashSet<string>(tags);
             eligibleAbilities =
             (
                 from validAbilityDef in def.abilities
                 //Initial filtering.
-                where tags.Count(validAbilityDef.tags.Contains) == tags.Count
+                where tagSet.IsSubsetOf(validAbilityDef.tags)
                 //Blacklist filtering.
-                where !validAbilityDef.tags.Any(blacklistedTags.Contains)
+                where !blacklistedTagSet.Overlaps(validAbilityDef.tags)
                 select validAbilityDef
             ).ToArray();
             //Log.Message(this + " eligibleAbilities: " + eligibleAbilities.ToStringSafeEnumerable());
@@ -80,8 +86,8 @@ namespace AbilityUserAI
                             else if (ability.needEnemyTarget)
                             {
                                 //Enemy target specific.
-                                if (caster.mindState.enemyTarget != null &&
-                                    ability.CanPawnUseThisAbility(caster, caster.mindState.enemyTarget))
+                                var enemyTarget = caster.mindState.enemyTarget;
+                                if (enemyTarget != null && ability.CanPawnUseThisAbility(caster, enemyTarget))
                                     return ability;
                             }
                             else

@@ -49,7 +49,7 @@ namespace AbilityUserAI
         /// <returns>Matching profiles.</returns>
         public static IEnumerable<AbilityUserAIProfileDef> EligibleAIProfiles(this Pawn pawn)
         {
-            IEnumerable<AbilityUserAIProfileDef> result =
+            return
                 from matchingProfileDef in Profiles()
                 //Initial filtering.
                 where pawn.GetExactCompAbilityUser(matchingProfileDef.compAbilityUserClass) != null
@@ -58,8 +58,6 @@ namespace AbilityUserAI
                 where matchingProfileDef.Worker.ValidProfileFor(matchingProfileDef, pawn)
                 orderby matchingProfileDef.priority descending
                 select matchingProfileDef;
-
-            return result;
         }
 
         /// <summary>
@@ -77,10 +75,16 @@ namespace AbilityUserAI
             if (targetPredicate == null)
                 targetPredicate = thing => true;
 
+            var centerCell = center.Cell;
             foreach (Pawn pawn in map.listerThings.ThingsInGroup(ThingRequestGroup.Pawn))
-                if (AbilityMaths.CircleIntersectionTest(pawn.Position.x, pawn.Position.y, 1f, center.Cell.x,
-                        center.Cell.y, radius) && targetPredicate(pawn))
+            {
+                var pawnPos = pawn.Position;
+                if (AbilityMaths.CircleIntersectionTest(pawnPos.x, pawnPos.y, 1f, centerCell.x, centerCell.y, radius) &&
+                    targetPredicate(pawn))
+                {
                     yield return pawn;
+                }
+            }
         }
 
         /// <summary>

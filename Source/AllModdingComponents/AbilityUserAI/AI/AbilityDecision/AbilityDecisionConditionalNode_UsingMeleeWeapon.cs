@@ -16,16 +16,7 @@ namespace AbilityUserAI
 
         public override bool CanContinueTraversing(Pawn caster)
         {
-            bool result;
-            if (countUnarmed)
-                result = caster?.equipment.Primary == null || !caster.equipment.Primary.def.IsRangedWeapon;
-            else
-                result = caster?.equipment.Primary != null && !caster.equipment.Primary.def.IsRangedWeapon;
-
-            if (invert)
-                return !result;
-
-            return result;
+            return (!caster?.equipment.Primary?.def.IsRangedWeapon ?? countUnarmed) ^ invert;
         }
     }
 }
