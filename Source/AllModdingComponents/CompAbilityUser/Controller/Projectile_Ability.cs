@@ -50,6 +50,7 @@ namespace AbilityUser
                 var equipmentDef = this.equipmentDef;
                 var dinfo = new DamageInfo(def.projectile.damageDef, damageAmountBase, this.def.projectile.GetArmorPenetration(1f), ExactRotation.eulerAngles.y,
                     launcher, null, equipmentDef);
+                //Log.Message($"Projectile_Ability.Impact_Override({this}, {hitThing}) dinfo={dinfo}");
                 hitThing.TakeDamage(dinfo);
                 PostImpactEffects(hitThing);
             }
@@ -64,13 +65,13 @@ namespace AbilityUser
             if (hediff != null)
                 if (hediff.def != null)
                 {
-                    var compAbility = Caster.GetCompAbilityUser();
-                    if (compAbility != null)
-                        if (compAbility.IgnoredHediffs() != null)
-                            if (compAbility.IgnoredHediffs().Contains(hediff.def))
+                    foreach (var abilityUser in Caster.GetCompAbilityUsers())
+                    {
+                        if (abilityUser.IgnoredHediffs() != null)
+                            if (abilityUser.IgnoredHediffs().Contains(hediff.def))
                                 return true;
+                    }
                 }
-
             return false;
         }
     }

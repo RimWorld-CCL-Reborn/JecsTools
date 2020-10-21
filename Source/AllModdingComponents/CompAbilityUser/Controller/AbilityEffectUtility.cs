@@ -49,7 +49,7 @@ static internal class AbilityEffectUtility
 
     public static void SingleSpawnLoop(SpawnThings spawnables, IntVec3 positionHeld, Map mapHeld, Pawn caster)
     {
-        //Log.Message("SingleSpawnLoops");
+        //Log.Message($"AbilityEffectUtility.SingleSpawnLoop({spawnables}, ...)");
         if (spawnables.def != null)
         {
             var factionToAssign = ResolveFaction(spawnables, caster);
@@ -78,15 +78,13 @@ static internal class AbilityEffectUtility
 
     public static void SpawnSpawnables(List<SpawnThings> localSpawnThings, Pawn caster, Map mapHeld, IntVec3 positionHeld)
     {
-        //Log.Message("SpawnSpawnables");
+        //Log.Message($"AbilityEffectUtility.SpawnSpawnables(..., caster={caster}, mapHeld={mapHeld}, positionHeld={positionHeld})");
         if (localSpawnThings != null)
             foreach (var spawnables in localSpawnThings)
-                //Log.Message("2S");
                 if (spawnables.spawnCount == 1)
                     SingleSpawnLoop(spawnables, positionHeld, mapHeld, caster);
                 else
                     for (var i = 0; i < spawnables.spawnCount; i++)
-                        //Log.Message("3S");
                         SingleSpawnLoop(spawnables, positionHeld, mapHeld, caster);
     }
 

@@ -27,7 +27,7 @@ namespace AbilityUserAI
         /// </summary>
         /// <param name="pawn">Pawn to check.</param>
         /// <returns>Ability user if present. Null if none can be found.</returns>
-        [Obsolete("Use the GetCompAbilityUser extension method instead")]
+        [Obsolete("Use the GetCompAbilityUsers extension method instead")]
         public static CompAbilityUser Abilities(this Pawn pawn)
         {
             return pawn.GetCompAbilityUser();

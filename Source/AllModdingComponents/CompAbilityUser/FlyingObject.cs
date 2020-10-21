@@ -89,10 +89,12 @@ namespace AbilityUser
             destination = targ.Cell.ToVector3Shifted() +
                           new Vector3(Rand.Range(-0.3f, 0.3f), 0f, Rand.Range(-0.3f, 0.3f));
             ticksToImpact = StartingTicksToImpact;
+            //Log.Message($"FlyingObject.Launch({this})");
         }
 
         public override void Tick()
         {
+            //if (ticksToImpact % 10 == 0) Log.Message($"FlyingObject.Tick({this})");
             base.Tick();
             ticksToImpact--;
             var exactPosition = ExactPosition;
@@ -124,10 +126,8 @@ namespace AbilityUser
             {
                 if (flyingThing is Pawn pawn)
                 {
-                    var drawPos = DrawPos;
-                    if (!drawPos.ToIntVec3().IsValid) return;
-                    pawn.Drawer.DrawAt(drawPos);
-                    //Graphics.DrawMesh(MeshPool.plane10, drawPos, ExactRotation, flyingThing.def.graphic.MatFront, 0);
+                    // Temp note: DrawPos can't be null and ToIntVec3().IsValid is always true. TODO: remove this comment
+                    pawn.Drawer.DrawAt(DrawPos);
                 }
                 else
                 {
@@ -139,6 +139,7 @@ namespace AbilityUser
 
         private void ImpactSomething()
         {
+            //Log.Message($"FlyingObject.ImpactSomething({this})");
             if (usedTarget != null)
             {
                 if (usedTarget is Pawn pawn && pawn.GetPosture() != PawnPosture.Standing &&
@@ -173,6 +174,13 @@ namespace AbilityUser
             }
             GenSpawn.Spawn(flyingThing, Position, Map);
             Destroy(DestroyMode.Vanish);
+        }
+
+        public override string ToString()
+        {
+            return $"{base.ToString()}(launcher={launcher}, flyingThing={flyingThing}, usedTarget={usedTarget}, " +
+                $"origin={origin}, destination={destination}, pos={ExactPosition}, speed={speed}, ticksToImpact={ticksToImpact}, " +
+                $"impactDamage={impactDamage}, damageLaunched={damageLaunched}, timesToDamage={timesToDamage}, explosion={explosion})";
         }
     }
 }

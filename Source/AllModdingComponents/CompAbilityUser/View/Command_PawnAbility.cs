@@ -65,7 +65,7 @@ namespace AbilityUser
                 action.Invoke(info.Thing);
                 if (CurActivateSound != null)
                     CurActivateSound.PlayOneShotOnCamera();
-            }, compAbilityUser.AbilityUser, null, null);
+            }, compAbilityUser.Pawn, null, null);
             //(info.Thing ?? null);
         }
 

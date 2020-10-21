@@ -19,5 +19,10 @@ namespace AbilityUser
             Scribe_Values.Look(ref spawnCount, "spawnCount", 1);
             Scribe_Values.Look(ref temporary, "temporary", false);
         }
+
+        public override string ToString()
+        {
+            return $"(def={def}, factionDef={factionDef}, kindDef={kindDef}, spawnCount={spawnCount}, temporary={temporary})";
+        }
     }
 }

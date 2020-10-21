@@ -12,7 +12,7 @@ namespace AbilityUser
         {
             if (Props?.hediffs is List<HediffDef> hList)
                 foreach (var h in hList)
-                    HealthUtility.AdjustSeverity(abilityUser.AbilityUser, h, 1f);
+                    HealthUtility.AdjustSeverity(abilityUser.Pawn, h, 1f);
         }
 
         public virtual bool TryDoEffect(CompAbilityUser abilityUser)
@@ -25,7 +25,7 @@ namespace AbilityUser
         {
             if (abilityUser == null)
                 return false;
-            var pawn = abilityUser.AbilityUser;
+            var pawn = abilityUser.Pawn;
             if (pawn == null)
                 return false;
             if (pawn.jobs == null)

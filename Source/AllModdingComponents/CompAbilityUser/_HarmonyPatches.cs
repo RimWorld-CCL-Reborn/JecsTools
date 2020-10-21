@@ -437,7 +437,7 @@ namespace AbilityUser
             }
         }
 
-        // Compatibility note: as of 2020-09-11, A RimWorld of Magic directly calls this method.
+        // Compatibility note: as of 2020-10-20, a mod (A RimWorld of Magic) directly calls this method.
         public static void Notify_ApparelAdded_PostFix(Pawn_ApparelTracker __instance, Apparel apparel)
         {
             DebugMessage("Notify_ApparelAdded_PostFix : " + apparel);
@@ -461,7 +461,7 @@ namespace AbilityUser
             }
         }
 
-        // Compatibility note: as of 2020-09-11, A RimWorld of Magic directly calls this method.
+        // Compatibility note: as of 2020-10-20, a mod (A RimWorld of Magic) directly calls this method.
         public static void Notify_ApparelRemoved_PostFix(Pawn_ApparelTracker __instance, Apparel apparel)
         {
             DebugMessage("Notify_ApparelRemoved_PostFix : " + apparel);
@@ -576,7 +576,6 @@ namespace AbilityUser
         // Add in any AbilityUser Components, if the Pawn is accepting
         public static void InternalAddInAbilityUsers(Pawn pawn)
         {
-            DebugMessage("Trying to add AbilityUsers to Pawn " + pawn);
             if (pawn != null && pawn.RaceProps != null && pawn.RaceProps.Humanlike)
                 AbilityUserUtility.TransformPawn(pawn);
         }

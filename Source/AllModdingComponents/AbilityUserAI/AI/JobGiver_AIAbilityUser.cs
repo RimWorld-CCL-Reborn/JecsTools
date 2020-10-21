@@ -15,14 +15,19 @@ namespace AbilityUserAI
     /// </summary>
     public class JobGiver_AIAbilityUser : ThinkNode_JobGiver
     {
+        // Note: For vanilla RW (and this framework), this method is only called from TryIssueJobPackage of
+        // ThinkNode_PrioritySorter and ThinkNode_FilterPriority for subnodes that are JobGiver_AIAbilityUser.
+        // The InsertHookTest ThinkNodeDef that this framework defines in InsertHook_AbilityUserAI.xml doesn't
+        // use either of them, so this only matters if another mod has a JobGiver_AIAbilityUser as a subnode of
+        // ThinkNode_PrioritySorter/ThinkNode_FilterPriority (or custom ThinkNode that calls subnode.GetPriority).
         public override float GetPriority(Pawn pawn)
         {
-            var abilityUser = pawn.GetCompAbilityUser();
-
-            if (abilityUser == null)
-                return -100f;
-
-            return 100;
+            foreach (var abilityUser in pawn.GetCompAbilityUsers())
+            {
+                if (abilityUser.Initialized && abilityUser.AbilityData.Count > 0)
+                    return 100f;
+            }
+            return 0f;
         }
 
         protected override Job TryGiveJob(Pawn pawn)
@@ -30,14 +35,12 @@ namespace AbilityUserAI
             //Do we have at least one elegible profile?
             var profiles = pawn.EligibleAIProfiles();
 
-            /*StringBuilder builder = new StringBuilder("profiles = ");
-
-            foreach(AbilityUserAIProfileDef profile in profiles)
-            {
-                builder.Append(profile.defName + ", ");
-            }
-
-            Log.Message(builder.ToString());*/
+            //var builder = new System.Text.StringBuilder("profiles = ");
+            //foreach(AbilityUserAIProfileDef profile in profiles)
+            //{
+            //    builder.Append(profile.defName + ", ");
+            //}
+            //Log.Message(builder.ToString());
 
             foreach (var profile in profiles)
             {

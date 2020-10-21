@@ -1,5 +1,8 @@
-﻿using System;
+﻿//#define DEBUGLOG
+
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using RimWorld;
 using Verse;
@@ -15,9 +18,27 @@ namespace AbilityUser
 
         public VerbProperties_Ability UseAbilityProps => (VerbProperties_Ability)verbProps;
         public ProjectileDef_Ability AbilityProjectileDef => UseAbilityProps.defaultProjectile as ProjectileDef_Ability;
-        public CompAbilityUser AbilityUserComp => CasterPawn.GetCompAbilityUser();
+        public CompAbilityUser AbilityUserComp
+        {
+            get
+            {
+                var abilityUser = Ability?.AbilityUser;
+                if (abilityUser == null)
+                {
+                    Log.ErrorOnce("Verb_UseAbility.Ability?.AbilityUser is unexpectedly null - " +
+                        "defaulting Verb_UseAbility.AbilityUserComp to CasterPawn's first CompAbilityUser", 21938760);
+#pragma warning disable CS0618 // Type or member is obsolete
+                    abilityUser = CasterPawn.GetCompAbilityUser();
+#pragma warning restore CS0618 // Type or member is obsolete
+                }
+                return abilityUser;
+            }
+        }
 
         protected override int ShotsPerBurst => verbProps.burstShotCount;
+
+        [Conditional("DEBUGLOG")]
+        private static void DebugMessage(string s) => Log.Message(s);
 
         public override float HighlightFieldRadiusAroundTarget(out bool needLOSToCenter)
         {
@@ -168,8 +189,12 @@ namespace AbilityUser
         {
             if (PreCastShotCheck(castTarg, destTarg, surpriseAttack, canHitNonTargetPawns))
             {
+                DebugMessage($"Verb_UseAbility.PreCastShotCheck({this}, castTarg={castTarg}, destTarg={destTarg}, " +
+                    $"surpriseAttack={surpriseAttack}, canHitNonTargetPawns={canHitNonTargetPawns}) => true");
                 return true;
             }
+            DebugMessage($"Verb_UseAbility.PreCastShotCheck({this}, castTarg={castTarg}, destTarg={destTarg}, " +
+                $"surpriseAttack={surpriseAttack}, canHitNonTargetPawns={canHitNonTargetPawns}) => false");
             Ability.Notify_AbilityFailed(true);
             return false;
         }
@@ -183,7 +208,7 @@ namespace AbilityUser
 
         protected override bool TryCastShot()
         {
-            //Log.Message("Cast");
+            DebugMessage($"TryCastShot({this})");
             var result = false;
             TargetsAoE.Clear();
             UpdateTargets();
@@ -200,11 +225,11 @@ namespace AbilityUser
             {
                 //for (int j = 0; j < burstshots; j++)
                 //{
+                var target = TargetsAoE[i];
+                DebugMessage($"TryCastShot({this}) target={target} ({target.Thing}), defaultProjectile={verbProps.defaultProjectile}");
                 if (verbProps.defaultProjectile != null) //ranged attacks WILL have projectiles
                 {
-                    //Log.Message("Yes Projectile");
-                    var attempt = TryLaunchProjectile(verbProps.defaultProjectile, TargetsAoE[i]);
-                    ////Log.Message(TargetsAoE[i].ToString());
+                    var attempt = TryLaunchProjectile(verbProps.defaultProjectile, target);
                     if (attempt != null)
                     {
                         if (attempt == true) result = true;
@@ -213,14 +238,11 @@ namespace AbilityUser
                 }
                 else //melee attacks WON'T have projectiles
                 {
-                    //Log.Message("No Projectile");
-                    var victim = TargetsAoE[i].Thing;
+                    var victim = target.Thing;
                     if (victim != null)
                     {
-                        //Log.Message("Yes victim");
                         if (victim is Pawn pawnVictim)
                         {
-                            //Log.Message("Yes victim is pawn");
                             AbilityEffectUtility.ApplyMentalStates(pawnVictim, CasterPawn, props.mentalStatesToApply, props.abilityDef, null);
                             AbilityEffectUtility.ApplyHediffs(pawnVictim, CasterPawn, props.hediffsToApply, null);
                             AbilityEffectUtility.SpawnSpawnables(props.thingsToSpawn, pawnVictim, victim.MapHeld, victim.PositionHeld);
@@ -228,7 +250,6 @@ namespace AbilityUser
                     }
                     else
                     {
-                        //Log.Message("Victim is null");
                         AbilityEffectUtility.SpawnSpawnables(props.thingsToSpawn, CasterPawn, CasterPawn.MapHeld, CasterPawn.PositionHeld);
                     }
                 }
@@ -243,17 +264,8 @@ namespace AbilityUser
             return result;
         }
 
-        private readonly bool debugMode = false;
-
-        private void DebugMessage(string s)
-        {
-            if (debugMode) Log.Message(s);
-        }
-
-
         public bool TryLaunchProjectileCheck(ThingDef projectileDef, LocalTargetInfo launchTarget)
         {
-            DebugMessage(launchTarget.ToString());
             var flag = TryFindShootLineFromTo(caster.Position, launchTarget, out var shootLine);
             if (verbProps.requireLineOfSight && verbProps.stopBurstWithoutLos && !flag)
             {
@@ -278,7 +290,6 @@ namespace AbilityUser
             {
                 projectileHitFlags4 |= ProjectileHitFlags.NonTargetWorld;
             }
-            DebugMessage(launchTarget.ToString());
             projectile.Launch(caster, Ability.Def, drawPos, launchTarget, projectileHitFlags4, null,
                 props.hediffsToApply,
                 props.mentalStatesToApply, props.thingsToSpawn);
@@ -289,8 +300,10 @@ namespace AbilityUser
         {
             if (TryLaunchProjectileCheck(projectileDef, launchTarget))
             {
+                DebugMessage($"Verb_UseAbility.TryLaunchProjectileCheck({this}, projectileDef={projectileDef}, launchTarget={launchTarget}) => true");
                 return true;
             }
+            DebugMessage($"Verb_UseAbility.TryLaunchProjectileCheck({this}, projectileDef={projectileDef}, launchTarget={launchTarget}) => false");
             Ability.Notify_AbilityFailed(true);
             return false;
         }

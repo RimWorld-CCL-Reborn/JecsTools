@@ -16,11 +16,6 @@ namespace AbilityUser
 
         public string uiIconPath;
 
-        public override int GetHashCode()
-        {
-            return Gen.HashCombineInt(defName.GetHashCode(), "AbilityDef".GetHashCode());
-        }
-
         public override void PostLoad()
         {
             base.PostLoad();

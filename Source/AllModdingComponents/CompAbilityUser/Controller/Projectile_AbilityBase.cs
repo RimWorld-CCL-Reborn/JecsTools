@@ -31,7 +31,7 @@ namespace AbilityUser
         // Verse.Projectile
         public override void Tick()
         {
-            //Log.Message("Tick");
+            //Log.Message($"Projectile_AbilityBase.Tick({this})");
             if (landed)
                 return;
             ticksToImpact--;
@@ -52,7 +52,7 @@ namespace AbilityUser
         /// </summary>
         protected void ApplyDamage(Thing hitThing)
         {
-            //Log.Message("ApplyDamage");
+            //Log.Message($"Projectile_AbilityBase.ApplyDamage({this}, {hitThing})");
             if (hitThing != null)
                 Impact(hitThing);
             else
@@ -118,14 +118,14 @@ namespace AbilityUser
 
         public void ApplyHediffsAndMentalStates(Pawn victim, Pawn caster, List<ApplyMentalStates> localApplyMentalStates, AbilityDef localAbilityDef)
         {
-            //Log.Message("Projectile_AbilityBase.ApplyHediffsAndMentalStates");
+            //Log.Message($"Projectile_AbilityBase.ApplyHediffsAndMentalStates({this}, ...)");
             AbilityEffectUtility.ApplyMentalStates(victim, caster, localApplyMentalStates, localAbilityDef, this);
             AbilityEffectUtility.ApplyHediffs(victim, caster, localApplyHediffs, null);
         }
 
         public virtual void Impact_Override(Thing hitThing)
         {
-            //Log.Message("ImpactOverride");
+            //Log.Message($"Projectile_AbilityBase.Impact_Override({this}, {hitThing})");
             if (hitThing != null)
                 if (hitThing is Pawn victim)
                     if (Mpdef != null)
@@ -143,7 +143,7 @@ namespace AbilityUser
             ProjectileHitFlags hitFlags, Thing equipment = null, List<ApplyHediffs> applyHediffs = null,
             List<ApplyMentalStates> applyMentalStates = null, List<SpawnThings> spawnThings = null)
         {
-            //Log.Message("Projectile_AbilityBase");
+            //Log.Message($"Projectile_AbilityBase.Launch({this}, ...)");
             localApplyHediffs = applyHediffs;
             localApplyMentalStates = applyMentalStates;
             localSpawnThings = spawnThings;
@@ -153,7 +153,7 @@ namespace AbilityUser
 
         protected override void Impact(Thing hitThing)
         {
-            //Log.Message("Impact");
+            //Log.Message($"Projectile_AbilityBase.Impact({this}, {hitThing})");
             Impact_Override(hitThing);
             if (hitThing != null)
                 if (extraDamages != null)
@@ -161,6 +161,7 @@ namespace AbilityUser
                     {
                         var extraDinfo = new DamageInfo(damage.damageDef, damage.damage, this.def.projectile.GetArmorPenetration(1f), ExactRotation.eulerAngles.y,
                             launcher, null, equipmentDef);
+                        //Log.Message($"Projectile_AbilityBase.Impact({this}, {hitThing}) extraDinfo={extraDinfo}");
                         hitThing.TakeDamage(extraDinfo);
                     }
             base.Impact(hitThing);
