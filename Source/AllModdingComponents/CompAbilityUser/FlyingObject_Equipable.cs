@@ -16,7 +16,7 @@ namespace AbilityUser
                             if (flyingThing is ThingWithComps flyingThingWithComps)
                                 Equip(equipper, flyingThingWithComps);
             }
-            Destroy(DestroyMode.Vanish);
+            Destroy();
         }
 
         public void Equip(Pawn equipper, ThingWithComps thingWithComps)
@@ -34,8 +34,7 @@ namespace AbilityUser
             }
             equipper.equipment.MakeRoomFor(thingWithComps2);
             equipper.equipment.AddEquipment(thingWithComps2);
-            if (thingWithComps.def.soundInteract != null)
-                thingWithComps.def.soundInteract.PlayOneShot(new TargetInfo(equipper.Position, equipper.Map, false));
+            thingWithComps.def.soundInteract?.PlayOneShot(new TargetInfo(equipper.Position, equipper.Map));
             if (flag)
                 thingWithComps.DeSpawn();
         }

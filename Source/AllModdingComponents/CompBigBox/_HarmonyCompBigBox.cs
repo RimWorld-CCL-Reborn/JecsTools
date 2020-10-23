@@ -24,42 +24,42 @@ namespace DefModExtension_BigBox
             if (obj is ThingWithComps thing && thing.def?.GetModExtensionBigBox() is DefModExtension_BigBox bigBox)
             {
                 //Use public variables from DefModExtension_BigBox
-                Vector3 drawPos = thing.DrawPos;
-                Vector2 drawSize = new Vector2(1, 1);
+                var drawPos = thing.DrawPos;
+                Vector2 drawSize;
                 if (!bigBox.directionBased)
                 {
-                    drawPos = drawPos + bigBox.offset;
+                    drawPos += bigBox.offset;
                     drawSize = bigBox.size;
                 }
                 else
                 {
                     if (thing.Rotation == Rot4.East)
                     {
-                        drawPos = drawPos + bigBox.eastOffset;
+                        drawPos += bigBox.eastOffset;
                         drawSize = bigBox.eastSize;
                     }
                     else if (thing.Rotation == Rot4.North)
                     {
-                        drawPos = drawPos + bigBox.northOffset;
+                        drawPos += bigBox.northOffset;
                         drawSize = bigBox.northSize;
                     }
                     else if (thing.Rotation == Rot4.West)
                     {
-                        drawPos = drawPos + bigBox.westOffset;
+                        drawPos += bigBox.westOffset;
                         drawSize = bigBox.westSize;
                     }
                     else
                     {
-                        drawPos = drawPos + bigBox.southOffset;
+                        drawPos += bigBox.southOffset;
                         drawSize = bigBox.southSize;
                     }
                 }
 
                 SelectionDrawerUtility.CalculateSelectionBracketPositionsWorld(___bracketLocs, thing, drawPos, drawSize, ___selectTimes, Vector2.one);
-                int num = 0;
-                for (int i = 0; i < 4; i++)
+                var num = 0;
+                for (var i = 0; i < 4; i++)
                 {
-                    Quaternion rotation = Quaternion.AngleAxis(num, Vector3.up);
+                    var rotation = Quaternion.AngleAxis(num, Vector3.up);
                     Graphics.DrawMesh(MeshPool.plane10, ___bracketLocs[i], rotation, ___SelectionBracketMat, 0);
                     num -= 90;
                 }

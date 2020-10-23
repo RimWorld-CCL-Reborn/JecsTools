@@ -12,11 +12,9 @@ namespace JecsTools
             get
             {
                 var s = new StringBuilder();
-
                 var b = base.CompTipStringExtra;
-                if (b != "")
+                if (!b.NullOrEmpty())
                     s.Append(b);
-
                 if (Props.settings.NullOrEmpty())
                 {
                     s.AppendLine("JT_HI_DamageSoaked".Translate((Props.damageType != null) ? Props.damageToSoak.ToString() + " (" + Props.damageType.LabelCap + ") " : Props.damageToSoak.ToString() + " (" + "AllDays".Translate() + ")"));

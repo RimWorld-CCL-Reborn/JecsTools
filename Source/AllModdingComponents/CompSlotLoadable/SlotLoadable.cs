@@ -47,16 +47,16 @@ namespace CompSlotLoadable
             if (Scribe.mode == LoadSaveMode.Saving)
                 if (thingIDNumber == -1)
                     ThingIDMaker.GiveIDTo(this);
-            Scribe_Deep.Look(ref slot, "slot", this);
-            Scribe_References.Look(ref owner, "owner");
+            Scribe_Deep.Look(ref slot, nameof(slot), this);
+            Scribe_References.Look(ref owner, nameof(owner));
 
             // Only save slottableThingDefs if it isn't Def.slottableThingDefs (otherwise, save null) to save space.
             var defSlottableThingDefs = Def?.slottableThingDefs;
-            List<ThingDef> savedSlottableThingDefs = slottableThingDefs;
+            var savedSlottableThingDefs = slottableThingDefs;
             if (defSlottableThingDefs != null && slottableThingDefs != null &&
                 defSlottableThingDefs.SequenceEqual(slottableThingDefs))
                 savedSlottableThingDefs = null;
-            Scribe_Collections.Look(ref savedSlottableThingDefs, "slottableThingDefs", LookMode.Undefined);
+            Scribe_Collections.Look(ref savedSlottableThingDefs, nameof(slottableThingDefs));
             if (slottableThingDefs != null)
                 slottableThingDefs = savedSlottableThingDefs;
         }
@@ -115,11 +115,11 @@ namespace CompSlotLoadable
                 {
                     var takenThing = value.holdingOwner.Take(value, 1);
                     value.DeSpawn();
-                    slot.TryAdd(takenThing, true);
+                    slot.TryAdd(takenThing);
                 }
                 else
                 {
-                    slot.TryAdd(value, true);
+                    slot.TryAdd(value);
                 }
             }
         }
@@ -199,8 +199,7 @@ namespace CompSlotLoadable
 
         public virtual bool TryEmptySlot()
         {
-            if (!CanEmptySlot()) return false;
-            return slot.TryDropAll(ParentLoc, ParentMap, ThingPlaceMode.Near);
+            return CanEmptySlot() && slot.TryDropAll(ParentLoc, ParentMap, ThingPlaceMode.Near);
         }
 
         public virtual bool CanEmptySlot()

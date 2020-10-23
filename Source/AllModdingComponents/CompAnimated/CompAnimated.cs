@@ -15,12 +15,11 @@ namespace CompAnimated
         public int MaxFrameIndexMoving => Props.movingFrames.Count;
         public int MaxFrameIndexStill => Props.stillFrames.Count;
 
-        /**
-        * render over thing when not a pawn; rather than use as base layer like the PawnGraphicSet does for the pawns graphics managment
-        */
+        // render over thing when not a pawn; rather than use as base layer like the PawnGraphicSet does for the pawns graphics managment
         public override void PostDraw()
         {
-            if (parent is Pawn) return;
+            if (parent is Pawn)
+                return;
             base.PostDraw();
             if (curGraphic != null)
                 Render();
@@ -28,8 +27,8 @@ namespace CompAnimated
 
         public virtual void Render()
         {
-            Vector3 drawPos = this.parent.DrawPos;
-            curGraphic.Draw(drawPos, Rot4.North, this.parent, 0f);
+            var drawPos = parent.DrawPos;
+            curGraphic.Draw(drawPos, Rot4.North, parent, 0f);
         }
 
         public CompProperties_Animated Props => (CompProperties_Animated)props;
@@ -79,10 +78,8 @@ namespace CompAnimated
                         //Log.Message("ticked still");
                         pCurIndex = (pCurIndex + 1) % pProps.stillFrames.Count;
                         result = ResolveCycledGraphic(pThingWithComps, pProps, pCurIndex);
-                        pDirty = false;
-                        return result;
                     }
-                    if (pAnimatee != null && useBaseGraphic)
+                    else if (pAnimatee != null && useBaseGraphic)
                         result = ResolveBaseGraphic(pAnimatee);
                     else
                         result = ResolveCycledGraphic(pThingWithComps, pProps, pCurIndex);
@@ -92,7 +89,7 @@ namespace CompAnimated
             return result;
         }
 
-        /** Primary call to above */
+        // Primary call to above
         private Graphic DefaultGraphic()
         {
             Graphic proxyGraphic = null;
@@ -115,12 +112,12 @@ namespace CompAnimated
         public static Graphic ResolveCycledGraphic(ThingWithComps pAnimatee, CompProperties_Animated pProps, int pCurIndex)
         {
             Graphic result = null;
-            bool haveMovingFrames = !pProps.movingFrames.NullOrEmpty();
+            var haveMovingFrames = !pProps.movingFrames.NullOrEmpty();
             if (haveMovingFrames &&
                 pAnimatee is Pawn pPawn &&
                 pPawn.Drawer?.renderer?.graphics is PawnGraphicSet pawnGraphicSet)
             {
-                /*Start Pawn*/
+                // Start Pawn
                 pawnGraphicSet.ClearCache();
 
                 if (pPawn.pather?.MovingNow ?? false)
@@ -137,7 +134,8 @@ namespace CompAnimated
                 {
                     result = pProps.movingFrames[pCurIndex].Graphic;
                 }
-            } /*Start Non Pawn*/
+            }
+            // Start Non Pawn
             else if (!pProps.stillFrames.NullOrEmpty())
             {
                 result = pProps.stillFrames[pCurIndex].Graphic;
@@ -190,8 +188,8 @@ namespace CompAnimated
         public override void PostExposeData()
         {
             base.PostExposeData();
-            Scribe_Values.Look(ref curIndex, "curIndex", 0);
-            Scribe_Values.Look(ref ticksToCycle, "ticksToCycle", -1);
+            Scribe_Values.Look(ref curIndex, nameof(curIndex));
+            Scribe_Values.Look(ref ticksToCycle, nameof(ticksToCycle), -1);
         }
 
         public virtual void NotifyGraphicsChange()

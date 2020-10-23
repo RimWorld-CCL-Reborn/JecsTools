@@ -14,7 +14,7 @@ namespace JecsTools
                 return;
             }
             foreach (var p in c.PawnsListForReading)
-                if (p.skills != null) p.skills.Learn(sd, rate);
+                p.skills?.Learn(sd, rate);
         }
 
         public static float GetStatValueTotal(Caravan c, StatDef s)

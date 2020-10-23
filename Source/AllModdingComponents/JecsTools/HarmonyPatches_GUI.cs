@@ -21,13 +21,14 @@ namespace JecsTools
 
         public static void ToggleMoodThoughtBubble(ref MoteBubble __result)
         {
-            if (!bubblesEnabled) __result = null;
+            if (!bubblesEnabled)
+                __result = null;
         }
 
         private static int TryGetLocalIndexOfConstructedObject(IEnumerable<CodeInstruction> instructions, Type constructedType, Type[] constructorParams = null)
         {
             var constructor = AccessTools.Constructor(constructedType, constructorParams);
-            int localIndex = -1;
+            var localIndex = -1;
             if (constructor == null)
             {
                 Log.Message($"Could not reflect constructor for type {constructedType}: {Environment.StackTrace}");
@@ -58,7 +59,8 @@ namespace JecsTools
                     {
                         localIndex = (int)inst.operand;
                     }
-                    if (localIndex >= 0) break;
+                    if (localIndex >= 0)
+                        break;
                 }
                 prevInstruction = inst;
             }

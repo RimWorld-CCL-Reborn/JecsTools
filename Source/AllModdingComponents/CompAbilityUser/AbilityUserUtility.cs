@@ -17,7 +17,7 @@ namespace AbilityUser
         {
             static bool ContainsType(List<ThingComp> comps, int compCount, Type compClass)
             {
-                for (int i = 0; i < compCount; i++)
+                for (var i = 0; i < compCount; i++)
                 {
                     if (comps[i].GetType() == compClass)
                         return true;

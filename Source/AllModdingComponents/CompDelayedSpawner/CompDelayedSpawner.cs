@@ -68,8 +68,8 @@ namespace CompDelayedSpawner
         {
             var spawnPosition = Position;
             if ((from cell in GenAdj.CellsAdjacent8Way(new TargetInfo(Position, Map))
-                where Position.Walkable(Map)
-                select cell).TryRandomElement(out spawnPosition))
+                 where Position.Walkable(Map)
+                 select cell).TryRandomElement(out spawnPosition))
             {
                 var pawn = PawnGenerator.GeneratePawn(info.pawnKind,
                     Find.FactionManager.FirstFactionOfDef(info.faction) ?? null);
@@ -82,13 +82,13 @@ namespace CompDelayedSpawner
             }
         }
 
-        private void GiveMentalState(SpawnInfo info, Pawn pawn)
+        private static void GiveMentalState(SpawnInfo info, Pawn pawn)
         {
             if (info.withMentalState != null)
                 pawn.mindState.mentalStateHandler.TryStartMentalState(info.withMentalState);
         }
 
-        private void GiveHediffs(SpawnInfo info, Pawn pawn)
+        private static void GiveHediffs(SpawnInfo info, Pawn pawn)
         {
             if (info.withHediffs != null)
                 foreach (var hediff in info.withHediffs)
@@ -108,7 +108,7 @@ namespace CompDelayedSpawner
         {
             if (Props.destroyAfterSpawn)
             {
-                parent.Destroy(DestroyMode.Vanish);
+                parent.Destroy();
                 return;
             }
 
@@ -122,8 +122,8 @@ namespace CompDelayedSpawner
         public override void PostExposeData()
         {
             base.PostExposeData();
-            Scribe_Values.Look(ref isSpawning, "isSpawning", false);
-            Scribe_Values.Look(ref ticksLeft, "ticksLeft", -999);
+            Scribe_Values.Look(ref isSpawning, nameof(isSpawning));
+            Scribe_Values.Look(ref ticksLeft, nameof(ticksLeft), -999);
         }
     }
 }

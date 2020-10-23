@@ -267,11 +267,8 @@ namespace AbilityUser
                 defaultDesc = powerDef.GetDescription() + "\n" + PostAbilityVerbCompDesc(verbProps) + "\n",
                 targetingParams = powerDef.MainVerb.targetParams,
                 icon = powerDef.uiIcon,
-                action = delegate (Thing target)
-                {
-                    var tInfo = GenUI.TargetsAt_NewTemp(UI.MouseMapPosition(), verbProps.targetParams).FirstOrFallback(target);
-                    TryCastAbility(AbilityContext.Player, tInfo);
-                },
+                action = target => TryCastAbility(AbilityContext.Player,
+                    GenUI.TargetsAt_NewTemp(UI.MouseMapPosition(), verbProps.targetParams).FirstOrFallback(target)),
             };
 
             if (!CanCastPowerCheck(AbilityContext.Player, out var reason))

@@ -1,5 +1,4 @@
-﻿using System;
-using HarmonyLib;
+﻿using HarmonyLib;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -59,19 +58,13 @@ namespace CompDeflector
                                     num += (compDeflector.AnimationDeflectionTicks + 1) / 2;
                             }
                             num %= 360f;
-                            var graphic_StackCount = eq.Graphic as Graphic_StackCount;
-                            Material matSingle;
-                            if (graphic_StackCount != null)
-                                matSingle = graphic_StackCount.SubGraphicForStackCount(1, eq.def).MatSingle;
-                            else
-                                matSingle = eq.Graphic.MatSingle;
-
+                            var matSingle = eq.Graphic is Graphic_StackCount graphic_StackCount
+                                ? graphic_StackCount.SubGraphicForStackCount(1, eq.def).MatSingle
+                                : eq.Graphic.MatSingle;
                             var s = new Vector3(eq.def.graphicData.drawSize.x, 1f,
                                 eq.def.graphicData.drawSize.y);
-                            var matrix = default(Matrix4x4);
-                            matrix.SetTRS(drawLoc, Quaternion.AngleAxis(num, Vector3.up), s);
-                            if (!flip) Graphics.DrawMesh(MeshPool.plane10, matrix, matSingle, 0);
-                            else Graphics.DrawMesh(MeshPool.plane10Flip, matrix, matSingle, 0);
+                            var matrix = Matrix4x4.TRS(drawLoc, Quaternion.AngleAxis(num, Vector3.up), s);
+                            Graphics.DrawMesh(flip ? MeshPool.plane10Flip : MeshPool.plane10, matrix, matSingle, 0);
                         }
                     }
                 }
@@ -87,11 +80,11 @@ namespace CompDeflector
                 if (pawn_EquipmentTracker != null)
                     foreach (var thingWithComps in pawn_EquipmentTracker.AllEquipmentListForReading)
                     {
+                        if (dinfo.Def == DamageDefOf.Bomb || dinfo.Def == DamageDefOf.Flame || dinfo.Def.isExplosive)
+                            continue;
                         var compDeflector = thingWithComps?.GetCompDeflector();
-                        if (compDeflector == null) continue;
-                        if (dinfo.Def == DamageDefOf.Bomb) continue;
-                        if (dinfo.Def == DamageDefOf.Flame) continue;
-                        if (dinfo.Def.isExplosive) continue;
+                        if (compDeflector == null)
+                            continue;
                         if (dinfo.Weapon?.IsMeleeWeapon ?? false)
                         {
                             if (compDeflector.TrySpecialMeleeBlock())

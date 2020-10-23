@@ -47,20 +47,14 @@ namespace CompInstalledPart
                 var installedWeaponGraphic = installedComp.Props?.installedWeaponGraphic;
                 var graphic_StackCount = installedWeaponGraphic?.Graphic as Graphic_StackCount ??
                                          eq.Graphic as Graphic_StackCount;
-                Material matSingle;
-                if (graphic_StackCount != null)
-                    matSingle = graphic_StackCount.SubGraphicForStackCount(1, eq.def).MatSingle;
-                else
-                    matSingle = installedWeaponGraphic?.Graphic?.MatSingle ??
-                                eq.Graphic.MatSingle;
-
+                var matSingle = graphic_StackCount != null
+                    ? graphic_StackCount.SubGraphicForStackCount(1, eq.def).MatSingle
+                    : installedWeaponGraphic?.Graphic?.MatSingle ?? eq.Graphic.MatSingle;
                 var s = new Vector3(
                     installedWeaponGraphic?.drawSize.x ?? eq.def.graphicData.drawSize.x, 1f,
                     installedWeaponGraphic?.drawSize.y ?? eq.def.graphicData.drawSize.y);
-                var matrix = default(Matrix4x4);
-                matrix.SetTRS(drawLoc, Quaternion.AngleAxis(num, Vector3.up), s);
-                if (!flip) Graphics.DrawMesh(MeshPool.plane10, matrix, matSingle, 0);
-                else Graphics.DrawMesh(MeshPool.plane10Flip, matrix, matSingle, 0);
+                var matrix = Matrix4x4.TRS(drawLoc, Quaternion.AngleAxis(num, Vector3.up), s);
+                Graphics.DrawMesh(flip ? MeshPool.plane10Flip : MeshPool.plane10, matrix, matSingle, 0);
                 return false;
             }
             return true;

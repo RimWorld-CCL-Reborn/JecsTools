@@ -45,7 +45,7 @@ namespace JecsTools
         public override void ExposeData()
         {
             base.ExposeData();
-            Scribe_Collections.Look(ref jobTrackers, "jobTrackers", LookMode.Deep);
+            Scribe_Collections.Look(ref jobTrackers, nameof(jobTrackers), LookMode.Deep);
             //if (Scribe.mode == LoadSaveMode.Saving)
             //{
             //    jobTrackerSave.Clear();
@@ -58,8 +58,8 @@ namespace JecsTools
             //        }
             //    }
             //}
-            //Scribe_Collections.Look(ref this.jobTrackerSave, "jobTrackerSave", LookMode.Reference, LookMode.Deep,
-            //    ref this.jobTrackersKeysWorkingList, ref this.jobTrackersValuesWorkingList);
+            //Scribe_Collections.Look(ref jobTrackerSave, nameof(jobTrackerSave), LookMode.Reference, LookMode.Deep,
+            //    ref jobTrackersKeysWorkingList, ref jobTrackersValuesWorkingList);
             //if (Scribe.mode == LoadSaveMode.PostLoadInit)
             //{
             //    if (jobTrackerSave != null && jobTrackerSave.Count > 0)

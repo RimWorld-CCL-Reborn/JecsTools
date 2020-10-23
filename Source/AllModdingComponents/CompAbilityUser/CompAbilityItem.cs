@@ -48,8 +48,7 @@ namespace AbilityUser
                 var drawPos = parent.DrawPos;
                 drawPos.y = Altitudes.AltitudeFor(AltitudeLayer.MoteOverhead);
                 var s = new Vector3(2.0f, 2.0f, 2.0f);
-                var matrix = default(Matrix4x4);
-                matrix.SetTRS(drawPos, Quaternion.AngleAxis(0, Vector3.up), s);
+                var matrix = Matrix4x4.TRS(drawPos, Quaternion.AngleAxis(0, Vector3.up), s);
                 Graphics.DrawMesh(MeshPool.plane10, matrix, Overlay.MatSingle, 0);
             }
         }

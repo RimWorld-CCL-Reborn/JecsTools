@@ -5,6 +5,7 @@ using Verse.AI;
 
 namespace AbilityUser
 {
+    // Based off JobDriver_Wait.
     public class JobDriver_CastAbilityVerb : JobDriver
     {
         public AbilityContext Context => job.count == 1 ? AbilityContext.Player : AbilityContext.AI;
@@ -40,52 +41,47 @@ namespace AbilityUser
             yield return Toils_Combat.CastVerb(TargetIndex.A, false);
             yield return new Toil
             {
-                initAction = delegate
+                initAction = () =>
                 {
                     if (Verb.UseAbilityProps.isViolent)
                     {
-                        CheckForAutoAttack(this.pawn);
+                        CheckForAutoAttack(pawn);
                     }
                 },
-                defaultCompleteMode = ToilCompleteMode.Instant
+                defaultCompleteMode = ToilCompleteMode.Instant,
             };
 
             yield return new Toil
             {
-                initAction = delegate { Verb.Ability.PostAbilityAttempt(); },
-                defaultCompleteMode = ToilCompleteMode.Instant
+                initAction = Verb.Ability.PostAbilityAttempt,
+                defaultCompleteMode = ToilCompleteMode.Instant,
             };
         }
 
         //from the JobDriver_Wait in Vanilla RimWorld
         public static void CheckForAutoAttack(Pawn searcher)
         {
-            if (searcher.Downed)
+            if (searcher.Downed || searcher.stances.FullBodyBusy)
             {
                 return;
             }
-            if (searcher.stances.FullBodyBusy)
-            {
-                return;
-            }
-            bool flag = searcher.story == null || !searcher.WorkTagIsDisabled(WorkTags.Violent);
-            bool flag2 = searcher.RaceProps.ToolUser && searcher.Faction == Faction.OfPlayer &&
-                         !searcher.WorkTagIsDisabled(WorkTags.Firefighting);
+            var flag = searcher.story == null || !searcher.WorkTagIsDisabled(WorkTags.Violent);
+            var flag2 = searcher.RaceProps.ToolUser && searcher.Faction == Faction.OfPlayer &&
+                !searcher.WorkTagIsDisabled(WorkTags.Firefighting);
             if (flag || flag2)
             {
                 Fire fire = null;
-                for (int i = 0; i < 9; i++)
+                for (var i = 0; i < 9; i++)
                 {
-                    IntVec3 c = searcher.Position + GenAdj.AdjacentCellsAndInside[i];
+                    var c = searcher.Position + GenAdj.AdjacentCellsAndInside[i];
                     if (c.InBounds(searcher.Map))
                     {
-                        List<Thing> thingList = c.GetThingList(searcher.MapHeld);
-                        for (int j = 0; j < thingList.Count; j++)
+                        var thingList = c.GetThingList(searcher.MapHeld);
+                        for (var j = 0; j < thingList.Count; j++)
                         {
                             if (flag)
                             {
-                                Pawn pawn = thingList[j] as Pawn;
-                                if (pawn != null && !pawn.Downed && searcher.HostileTo(pawn))
+                                if (thingList[j] is Pawn pawn && !pawn.Downed && searcher.HostileTo(pawn))
                                 {
                                     searcher.meleeVerbs.TryMeleeAttack(pawn, null, false);
                                     return;
@@ -93,8 +89,7 @@ namespace AbilityUser
                             }
                             if (flag2)
                             {
-                                Fire fire2 = thingList[j] as Fire;
-                                if (fire2 != null && (fire == null || fire2.fireSize < fire.fireSize || i == 8) &&
+                                if (thingList[j] is Fire fire2 && (fire == null || fire2.fireSize < fire.fireSize || i == 8) &&
                                     (fire2.parent == null || fire2.parent != searcher))
                                 {
                                     fire = fire2;
@@ -111,22 +106,21 @@ namespace AbilityUser
                 if (flag && searcher.Faction != null &&
                     (searcher.drafter == null || searcher.drafter.FireAtWill))
                 {
-                    bool allowManualCastWeapons = !searcher.IsColonist;
-                    Verb verb = searcher.TryGetAttackVerb(null, allowManualCastWeapons);
+                    var allowManualCastWeapons = !searcher.IsColonist;
+                    var verb = searcher.TryGetAttackVerb(null, allowManualCastWeapons);
                     if (verb != null && !verb.verbProps.IsMeleeAttack)
                     {
-                        TargetScanFlags targetScanFlags = TargetScanFlags.NeedLOSToPawns | TargetScanFlags.NeedLOSToNonPawns |
-                                                          TargetScanFlags.NeedThreat;
+                        var targetScanFlags = TargetScanFlags.NeedLOSToPawns | TargetScanFlags.NeedLOSToNonPawns |
+                                              TargetScanFlags.NeedThreat;
                         if (verb.IsIncendiary())
                         {
                             targetScanFlags |= TargetScanFlags.NeedNonBurning;
                         }
-                        Thing thing = (Thing)AttackTargetFinder.BestShootTargetFromCurrentPosition(searcher, targetScanFlags, null,
+                        var thing = (Thing)AttackTargetFinder.BestShootTargetFromCurrentPosition(searcher, targetScanFlags, null,
                             verb.verbProps.minRange, verb.verbProps.range);
                         if (thing != null)
                         {
                             searcher.TryStartAttack(thing);
-                            return;
                         }
                     }
                 }

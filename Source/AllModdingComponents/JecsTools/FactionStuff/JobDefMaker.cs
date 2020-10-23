@@ -17,7 +17,7 @@ namespace JecsTools
                 {
                     defName = "JecsTools_UseConsole",
                     driverClass = typeof(JobDriver_UseConsole),
-                    reportString = JobDefOf.UseCommsConsole.reportString
+                    reportString = JobDefOf.UseCommsConsole.reportString,
                 };
                 DefDatabase<JobDef>.Add(JecsTools_UseConsole);
             }

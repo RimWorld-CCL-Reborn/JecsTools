@@ -5,7 +5,7 @@ namespace JecsTools
 {
     public class BuildingExtension : DefModExtension
     {
-        private List<string> wipeCategories;
+        private List<string> wipeCategories; // set via reflection
 
         [Unsaved]
         private HashSet<string> wipeCategorySet;

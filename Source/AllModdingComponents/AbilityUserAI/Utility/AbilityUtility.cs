@@ -54,7 +54,9 @@ namespace AbilityUserAI
                 //Initial filtering.
                 where pawn.GetExactCompAbilityUser(matchingProfileDef.compAbilityUserClass) != null
                 //Finer filtering.
-                //where matchingProfileDef.matchingTraits.Count <= 0 || (matchingProfileDef.matchingTraits.Count > 0 && matchingProfileDef.matchingTraits.Any(traitDef => pawn.story.traits.HasTrait(traitDef)))
+                //where matchingProfileDef.matchingTraits.Count <= 0 ||
+                //    (matchingProfileDef.matchingTraits.Count > 0 &&
+                //        matchingProfileDef.matchingTraits.Any(traitDef => pawn.story.traits.HasTrait(traitDef)))
                 where matchingProfileDef.Worker.ValidProfileFor(matchingProfileDef, pawn)
                 orderby matchingProfileDef.priority descending
                 select matchingProfileDef;
@@ -72,8 +74,7 @@ namespace AbilityUserAI
             Predicate<Pawn> targetPredicate)
         {
             //With no predicate, just grab everything.
-            if (targetPredicate == null)
-                targetPredicate = thing => true;
+            targetPredicate ??= thing => true;
 
             var centerCell = center.Cell;
             foreach (Pawn pawn in map.listerThings.ThingsInGroup(ThingRequestGroup.Pawn))

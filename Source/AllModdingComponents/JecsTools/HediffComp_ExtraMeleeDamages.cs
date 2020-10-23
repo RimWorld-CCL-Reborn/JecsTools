@@ -13,7 +13,7 @@ namespace JecsTools
             {
                 var s = new StringBuilder();
                 var b = base.CompTipStringExtra;
-                if (b != "")
+                if (!b.NullOrEmpty())
                     s.Append(b);
                 var extraDamages = Props?.ExtraDamages;
                 if (!extraDamages.NullOrEmpty())

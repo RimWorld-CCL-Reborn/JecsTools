@@ -9,8 +9,8 @@ namespace AbilityUser
 
         public void ExposeData()
         {
-            Scribe_Defs.Look(ref mentalStateDef, "mentalStateDef");
-            Scribe_Values.Look(ref applyChance, "applyChance", 1.0f);
+            Scribe_Defs.Look(ref mentalStateDef, nameof(mentalStateDef));
+            Scribe_Values.Look(ref applyChance, nameof(applyChance), 1.0f);
         }
     }
 }

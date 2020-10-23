@@ -10,7 +10,8 @@ namespace CompVehicle
         {
             if (pawn?.GetComp<CompVehicle>() is CompVehicle compVehicle &&
                 ((compVehicle?.AllOccupants?.Count ?? 0) > 0 ||
-                 compVehicle.manipulationStatus == ManipulationState.able)) return true;
+                 compVehicle.manipulationStatus == ManipulationState.able))
+                return true;
             return false;
         }
     }

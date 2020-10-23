@@ -62,7 +62,7 @@ namespace CompDeflector
         public override void PostExposeData()
         {
             base.PostExposeData();
-            Scribe_Values.Look(ref animationDeflectionTicks, "animationDeflectionTicks", 0);
+            Scribe_Values.Look(ref animationDeflectionTicks, nameof(animationDeflectionTicks));
             if (Scribe.mode == LoadSaveMode.LoadingVars)
                 CacheComps();
         }
@@ -240,11 +240,12 @@ namespace CompDeflector
             var subtotal = d100 + modifier;
             if (subtotal >= 90)
                 return AccuracyRoll.CriticalSuccess;
-            if (subtotal > difficulty)
+            else if (subtotal > difficulty)
                 return AccuracyRoll.Success;
-            if (subtotal <= 30)
+            else if (subtotal <= 30)
                 return AccuracyRoll.CritialFailure;
-            return AccuracyRoll.Failure;
+            else
+                return AccuracyRoll.Failure;
         }
 
         public virtual void ReflectionAccuracy_InFix(ref int modifier, ref int difficulty)
@@ -279,7 +280,7 @@ namespace CompDeflector
                     muzzleFlashScale = newVerb.verbProps.muzzleFlashScale,
                     warmupTime = 0,
                     defaultCooldownTime = 0,
-                    soundCast = Props.deflectSound
+                    soundCast = Props.deflectSound,
                 };
                 switch (lastAccuracyRoll)
                 {
@@ -346,7 +347,7 @@ namespace CompDeflector
                     muzzleFlashScale = newVerb.verbProps.muzzleFlashScale,
                     warmupTime = 0,
                     defaultCooldownTime = 0,
-                    soundCast = Props.deflectSound
+                    soundCast = Props.deflectSound,
                 };
 
                 //Apply values
@@ -354,7 +355,8 @@ namespace CompDeflector
             }
             else
             {
-                if (deflectVerb != null) return deflectVerb;
+                if (deflectVerb != null)
+                    return deflectVerb;
                 deflectVerb = (Verb_Deflected)Activator.CreateInstance(typeof(Verb_Deflected));
                 deflectVerb.caster = GetPawn;
                 deflectVerb.verbProps = Props.DeflectVerb;
@@ -369,20 +371,26 @@ namespace CompDeflector
 
         public virtual Pawn ResolveDeflectionTarget(Pawn defaultTarget = null)
         {
-            if (lastAccuracyRoll != AccuracyRoll.CritialFailure) return defaultTarget;
+            if (lastAccuracyRoll != AccuracyRoll.CritialFailure)
+                return defaultTarget;
             var thisPawn = GetPawn; // TODO: GetPawn should be passed in, though doing so would break binary compatibility
             var closestPawn = (Pawn)GenClosest.ClosestThingReachable(thisPawn.Position, thisPawn.Map,
                 ThingRequest.ForGroup(ThingRequestGroup.Pawn), PathEndMode.InteractionCell,
                 TraverseParms.For(thisPawn, Danger.Deadly, TraverseMode.ByPawn, false), 9999f, t => t is Pawn && t != thisPawn, null,
                 0, -1, false, RegionType.Set_Passable, false);
-            if (closestPawn == null) return defaultTarget;
-            return closestPawn == defaultTarget ? thisPawn : closestPawn;
+            if (closestPawn == null)
+                return defaultTarget;
+            else if (closestPawn == defaultTarget)
+                return thisPawn;
+            else
+                return closestPawn;
         }
 
         public virtual void CriticalFailureHandler(DamageInfo dinfo, Pawn newTarget, out bool shouldContinue)
         {
             shouldContinue = true;
-            if (lastAccuracyRoll != AccuracyRoll.CritialFailure) return;
+            if (lastAccuracyRoll != AccuracyRoll.CritialFailure)
+                return;
             var thisPawn = GetPawn; // TODO: GetPawn should be passed in, though doing so would break binary compatibility
             //If the target isn't the old target, then get out of this
             if (newTarget != dinfo.Instigator as Pawn)
@@ -393,21 +401,25 @@ namespace CompDeflector
 
         public virtual void GiveDeflectJob(DamageInfo dinfo)
         {
-            if (!(dinfo.Instigator is Pawn pawn)) return;
+            if (!(dinfo.Instigator is Pawn pawn))
+                return;
             var job = JobMaker.MakeJob(CompDeflectorDefOf.CastDeflectVerb);
             job.playerForced = true;
             job.locomotionUrgency = LocomotionUrgency.Sprint;
             var compEquipVerb = pawn.equipment?.PrimaryEq?.PrimaryVerb;
-            if (compEquipVerb == null) return;
+            if (compEquipVerb == null)
+                return;
             var thisPawn = GetPawn;
-            if (thisPawn == null || thisPawn.Dead) return;
-            var verbToUse = (Verb_Deflected)CopyAndReturnNewVerb(compEquipVerb);
-            verbToUse = (Verb_Deflected)ReflectionHandler(deflectVerb);
+            if (thisPawn == null || thisPawn.Dead)
+                return;
+            var deflectVerb = (Verb_Deflected)CopyAndReturnNewVerb(compEquipVerb);
+            var verbToUse = (Verb_Deflected)ReflectionHandler(deflectVerb);
             verbToUse.lastShotReflected = lastShotReflected;
             verbToUse.verbTracker = thisPawn.VerbTracker;
             pawn = ResolveDeflectionTarget(pawn);
             CriticalFailureHandler(dinfo, pawn, out var shouldContinue);
-            if (!shouldContinue) return;
+            if (!shouldContinue)
+                return;
             job.targetA = pawn;
             job.verbToUse = verbToUse;
             job.killIncappedTarget = pawn.Downed;

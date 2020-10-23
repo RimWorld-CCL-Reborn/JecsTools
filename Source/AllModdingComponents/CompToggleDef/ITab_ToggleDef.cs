@@ -8,7 +8,7 @@ namespace CompToggleDef
     {
         // Seperate class since ITab_ToggleDef is loaded (and thus static constructor runs) too early.
         [StaticConstructorOnStartup]
-        static class AddITabOnStartup
+        private static class AddITabOnStartup
         {
             static AddITabOnStartup()
             {

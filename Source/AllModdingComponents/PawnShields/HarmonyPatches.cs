@@ -85,7 +85,8 @@ namespace PawnShields
                 instruction => instruction.labels.Contains(targetLabel));
 
             var labelsToTransfer = instructionList.GetRange(pawnEquipmentIndex + 3, insertionIndex - (pawnEquipmentIndex + 3))
-                .Where(instruction => instruction.operand is Label).Select(instruction => (Label)instruction.operand);
+                .Where(instruction => instruction.operand is Label)
+                .Select(instruction => (Label)instruction.operand);
             instructionList.SafeInsertRange(insertionIndex, new[]
             {
                 locals.FromStloc(instructionList[resultStoreIndex]).ToLdloca(), // &result
@@ -101,7 +102,7 @@ namespace PawnShields
 
         private static void StatWorkerInjection_AddShieldValue(ref float result, Pawn_EquipmentTracker equipment, StatDef stat)
         {
-            ThingWithComps shield = equipment.GetShield();
+            var shield = equipment.GetShield();
             if (shield != null)
             {
                 result += shield.def.equippedStatOffsets.GetStatOffsetFromList(stat);
@@ -140,7 +141,8 @@ namespace PawnShields
                 instruction => instruction.labels.Contains(targetLabel));
 
             var labelsToTransfer = instructionList.GetRange(pawnEquipmentIndex + 3, insertionIndex - (pawnEquipmentIndex + 3))
-                .Where(instruction => instruction.operand is Label).Select(instruction => (Label)instruction.operand);
+                .Where(instruction => instruction.operand is Label)
+                .Select(instruction => (Label)instruction.operand);
             instructionList.SafeInsertRange(insertionIndex, new[]
             {
                 instructionList[stringBuilderIndex].Clone(), // stringBuilder
@@ -156,7 +158,7 @@ namespace PawnShields
 
         private static void StatWorkerInjection_BuildShieldString(StringBuilder stringBuilder, Pawn_EquipmentTracker equipment, StatDef stat)
         {
-            ThingWithComps shield = equipment.GetShield();
+            var shield = equipment.GetShield();
             if (shield != null && GearAffectsStats(shield.def, stat))
             {
                 stringBuilder.AppendLine(InfoTextLineFromGear(shield, stat));
@@ -177,9 +179,9 @@ namespace PawnShields
             //Render shield.
             if (___pawn?.GetShield() is ThingWithComps shield)
             {
-                Vector3 bodyVector = drawLoc;
+                var bodyVector = drawLoc;
 
-                CompShield shieldComp = shield.GetCompShield();
+                var shieldComp = shield.GetCompShield();
                 bodyVector += shieldComp.ShieldProps.renderProperties.Rot4ToVector3(___pawn.Rotation);
 
                 shieldComp.RenderShield(bodyVector, ___pawn.Rotation, ___pawn, shield);
@@ -188,11 +190,11 @@ namespace PawnShields
 
         public static void Patch_Pawn_EquipmentTracker_MakeRoomFor(Pawn_EquipmentTracker __instance, Pawn ___pawn, ThingWithComps eq)
         {
-            CompShield shieldComp = eq.GetCompShield();
+            var shieldComp = eq.GetCompShield();
             if (shieldComp != null)
             {
                 //Unequip any existing shield.
-                ThingWithComps shield = __instance.GetShield();
+                var shield = __instance.GetShield();
                 if (shield != null)
                 {
                     if (__instance.TryDropEquipment(shield, out var thingWithComps, ___pawn.Position, true))
@@ -254,19 +256,19 @@ namespace PawnShields
                 return true;
 
             //Notify of agressor
-            DamageInfo violence = new DamageInfo(dinfo);
+            var violence = new DamageInfo(dinfo);
             violence.SetAmount(0);
             ___pawn.mindState.Notify_DamageTaken(violence);
 
             //Try getting equipped shield.
-            ThingWithComps shield = ___pawn.GetShield();
+            var shield = ___pawn.GetShield();
             if (shield == null)
                 return true;
 
-            CompShield shieldComp = shield.GetCompShield();
+            var shieldComp = shield.GetCompShield();
 
-            SoundDef shieldSound = shieldComp.BlockSound ?? shieldComp.ShieldProps.defaultSound;
-            bool discardShield = false;
+            var shieldSound = shieldComp.BlockSound ?? shieldComp.ShieldProps.defaultSound;
+            var discardShield = false;
 
             //Determine if it is a melee or ranged attack.
             if (shieldComp.ShieldProps.canBlockRanged &&

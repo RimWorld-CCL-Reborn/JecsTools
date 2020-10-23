@@ -10,7 +10,8 @@ namespace ThinkNodes
 
         protected override bool Satisfied(Pawn pawn)
         {
-            if (pawn.Drafted) return false;
+            if (pawn.Drafted)
+                return false;
             foreach (var unused in pawn.health.hediffSet.hediffs.Where(x => x.def.defName.EqualsIgnoreCase(hediffDef)))
             {
                 return true;

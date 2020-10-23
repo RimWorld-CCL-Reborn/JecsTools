@@ -50,21 +50,20 @@ namespace AbilityUser
 
         public void AddPawnAbility(AbilityDef abilityDef, bool activenow = true, float savedTicks = -1)
         {
-            AddAbilityInternal(abilityDef, AbilityData.Powers, activenow, savedTicks);
+            AddAbilityInternal(abilityDef, AbilityData.Powers, savedTicks);
         }
 
         public void AddWeaponAbility(AbilityDef abilityDef, bool activenow = true, float savedTicks = -1)
         {
-            AddAbilityInternal(abilityDef, AbilityData.TemporaryWeaponPowers, activenow, savedTicks);
+            AddAbilityInternal(abilityDef, AbilityData.TemporaryWeaponPowers, savedTicks);
         }
 
         public void AddApparelAbility(AbilityDef abilityDef, bool activenow = true, float savedTicks = -1)
         {
-            AddAbilityInternal(abilityDef, AbilityData.TemporaryApparelPowers, activenow, savedTicks);
+            AddAbilityInternal(abilityDef, AbilityData.TemporaryApparelPowers, savedTicks);
         }
 
-        private void AddAbilityInternal(AbilityDef abilityDef, List<PawnAbility> abilities, bool activenow,
-            float savedTicks)
+        private void AddAbilityInternal(AbilityDef abilityDef, List<PawnAbility> abilities, float savedTicks)
         {
             abilities.Add(CreateAbility(abilityDef, savedTicks));
             UpdateAbilities();
@@ -142,9 +141,9 @@ namespace AbilityUser
         {
             var typeString = GetType().ToString();
 #pragma warning disable CS0618 // Type or member is obsolete
-            Scribe_Values.Look(ref IsInitialized, "abilityUserIsInitialized" + typeString, false);
+            Scribe_Values.Look(ref IsInitialized, "abilityUserIsInitialized" + typeString);
 #pragma warning restore CS0618 // Type or member is obsolete
-            Scribe_Deep.Look(ref abilityData, "abilityData" + typeString, this);
+            Scribe_Deep.Look(ref abilityData, nameof(abilityData) + typeString, this);
 
             if (Scribe.mode == LoadSaveMode.PostLoadInit)
             {

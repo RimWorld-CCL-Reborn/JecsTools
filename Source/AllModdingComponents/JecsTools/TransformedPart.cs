@@ -11,14 +11,15 @@ namespace JecsTools
         private readonly List<Hediff_MissingPart> temporarilyRemovedParts = new List<Hediff_MissingPart>();
 
         public override bool ShouldRemove =>
-            this.TryGetComp<HediffComp_Disappears>() is HediffComp_Disappears hdc_Disappears ? hdc_Disappears.CompShouldRemove : false;
+            this.TryGetComp<HediffComp_Disappears>() is HediffComp_Disappears hdc_Disappears && hdc_Disappears.CompShouldRemove;
 
         public override string TipStringExtra
         {
             get
             {
                 var stringBuilder = new StringBuilder();
-                if (base.TipStringExtra is string baseString && baseString != "")
+                var baseString = base.TipStringExtra;
+                if (!baseString.NullOrEmpty())
                     stringBuilder.Append(baseString);
                 if (def.comps.OfType<HediffCompProperties_VerbGiver>().FirstOrDefault()?.tools is List<Tool> tools)
                     for (var i = 0; i < tools.Count; i++)
@@ -53,9 +54,8 @@ namespace JecsTools
         {
             base.PostRemoved();
             pawn.health.RestorePart(Part, this, false);
-            //for (int i = 0; i < base.Part.parts.Count; i++)
+            //for (var i = 0; i < Part.parts.Count; i++)
             //{
-
             //}
         }
     }

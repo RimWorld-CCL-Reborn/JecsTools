@@ -11,15 +11,18 @@ namespace JecsTools
         {
             get
             {
-                if (Def == null) return base.TipStringExtra;
-                StringBuilder s = new StringBuilder();
+                if (Def == null)
+                    return base.TipStringExtra;
+                var s = new StringBuilder();
                 if (Def.showDescription)
                 {
                     s.AppendLine(def.description);
                 }
-                if (!string.IsNullOrEmpty(Def.preListText)) s.AppendLine(Def.preListText.Translate());
+                if (!string.IsNullOrEmpty(Def.preListText))
+                    s.AppendLine(Def.preListText.Translate());
                 s.AppendLine(base.TipStringExtra);
-                if (!string.IsNullOrEmpty(Def.postListText)) s.AppendLine(Def.postListText.Translate());
+                if (!string.IsNullOrEmpty(Def.postListText))
+                    s.AppendLine(Def.postListText.Translate());
                 return s.ToString();
             }
         }

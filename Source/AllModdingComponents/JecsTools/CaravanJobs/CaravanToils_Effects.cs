@@ -14,7 +14,7 @@ namespace JecsTools
             Func<float> progressGetter, bool interpolateBetweenActorAndTarget = false, float offsetZ = -0.5f)
         {
             WorldObject_ProgressBar progressBar = null;
-            CaravanToil.AddPreTickAction(delegate
+            CaravanToil.AddPreTickAction(() =>
             {
                 if (CaravanToil.actor.Faction != Faction.OfPlayer)
                     return;
@@ -40,7 +40,7 @@ namespace JecsTools
                             Find.WorldObjects.Remove(progressBar);
                 }
             });
-            CaravanToil.AddFinishAction(delegate
+            CaravanToil.AddFinishAction(() =>
             {
                 if (progressBar != null && progressBar.Spawned)
                 {

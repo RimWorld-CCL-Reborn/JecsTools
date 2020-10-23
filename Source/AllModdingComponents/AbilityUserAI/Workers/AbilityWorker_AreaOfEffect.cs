@@ -112,15 +112,13 @@ namespace AbilityUserAI
             if (customPredicate != null)
                 pawnPredicate = customPredicate;
             else if (abilityDef.canTargetAlly)
-                pawnPredicate = delegate(Thing thing)
+                pawnPredicate = thing =>
                 {
                     //Count own faction and faction whose goodwill they got above 50% as allies.
-                    if (AbilityUtility.AreAllies(pawn, thing))
-                        return true;
-                    return false;
+                    return AbilityUtility.AreAllies(pawn, thing);
                 };
             else
-                pawnPredicate = delegate(Thing thing)
+                pawnPredicate = thing =>
                 {
                     //Count anything hostile as a target.
                     if (thing is Pawn thingPawn)
@@ -128,7 +126,6 @@ namespace AbilityUserAI
                             return true;
                         else if (thing.HostileTo(pawn))
                             return true;
-
                     return false;
                 };
 

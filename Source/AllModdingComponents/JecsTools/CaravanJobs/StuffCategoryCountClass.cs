@@ -25,12 +25,12 @@ namespace JecsTools
             this.count = count;
         }
 
-        public string Summary => $"{this.count}x {this.stuffCatDef?.label ?? "null"}";
+        public string Summary => $"{count}x {stuffCatDef?.label ?? "null"}";
 
         public void ExposeData()
         {
-            Scribe_Defs.Look(ref this.stuffCatDef, "stuffCatDef");
-            Scribe_Values.Look(ref this.count, "count", 1, false);
+            Scribe_Defs.Look(ref stuffCatDef, nameof(stuffCatDef));
+            Scribe_Values.Look(ref count, nameof(count), 1);
         }
 
         public void LoadDataFromXmlCustom(XmlNode xmlRoot)
@@ -42,13 +42,13 @@ namespace JecsTools
             else
             {
                 DirectXmlCrossRefLoader.RegisterObjectWantsCrossRef(this, "stuffCatDef", xmlRoot.Name);
-                this.count = (int)ParseHelper.FromString(xmlRoot.FirstChild.Value, typeof(int));
+                count = (int)ParseHelper.FromString(xmlRoot.FirstChild.Value, typeof(int));
             }
         }
 
-        public override string ToString() => $"{this.count}x {this.stuffCatDef?.defName ?? "null"}";
+        public override string ToString() => $"{count}x {stuffCatDef?.defName ?? "null"}";
 
-        public override int GetHashCode() => this.stuffCatDef.shortHash + this.count << 16;
+        public override int GetHashCode() => stuffCatDef.shortHash + count << 16;
 
         public static implicit operator StuffCategoryCountClass(StuffDefCount t)
         {

@@ -74,7 +74,7 @@ namespace AbilityUser
         {
             var typeString = GetType().ToString();
             Scribe_References.Look(ref pawn, "abilityDataPawn" + typeString);
-            Scribe_Values.Look(ref abilityClass, "abilityDataClass" + typeString, null);
+            Scribe_Values.Look(ref abilityClass, "abilityDataClass" + typeString);
             Scribe_Collections.Look(ref powers, "abilityDataPowers" + typeString, LookMode.Deep, this);
         }
 

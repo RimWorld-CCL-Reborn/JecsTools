@@ -58,9 +58,7 @@ namespace JecsTools
                             }
                         }
                 }
-            DamageResult result;
-            result = base.Apply(dinfo, victim);
-            return result;
+            return base.Apply(dinfo, victim);
         }
     }
 }

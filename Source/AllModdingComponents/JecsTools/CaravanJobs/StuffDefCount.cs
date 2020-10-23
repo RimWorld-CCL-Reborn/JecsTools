@@ -21,19 +21,19 @@ namespace JecsTools
             this.count = count;
         }
 
-        public StuffCategoryDef StuffDef => this.stuffDef;
+        public StuffCategoryDef StuffDef => stuffDef;
 
-        public int Count => this.count;
+        public int Count => count;
 
         public void ExposeData()
         {
-            Scribe_Defs.Look(ref this.stuffDef, "stuffDef");
-            Scribe_Values.Look(ref this.count, "count", 1, false);
+            Scribe_Defs.Look(ref stuffDef, nameof(stuffDef));
+            Scribe_Values.Look(ref count, nameof(count), 1);
         }
 
-        public StuffDefCount WithCount(int newCount) => new StuffDefCount(this.stuffDef, newCount);
+        public StuffDefCount WithCount(int newCount) => new StuffDefCount(stuffDef, newCount);
 
-        public override bool Equals(object obj) => obj is StuffDefCount && this.Equals((StuffDefCount)obj);
+        public override bool Equals(object obj) => obj is StuffDefCount other && Equals(other);
 
         public bool Equals(StuffDefCount other) => this == other;
 
@@ -41,9 +41,9 @@ namespace JecsTools
 
         public static bool operator !=(StuffDefCount a, StuffDefCount b) => !(a == b);
 
-        public override int GetHashCode() => Gen.HashCombine(this.count, this.stuffDef);
+        public override int GetHashCode() => Gen.HashCombine(count, stuffDef);
 
-        public override string ToString() => $"({this.count}x {this.stuffDef?.defName ?? "null"}";
+        public override string ToString() => $"({count}x {stuffDef?.defName ?? "null"}";
 
         public static implicit operator StuffDefCount(StuffCategoryCountClass t) => new StuffDefCount(t.stuffCatDef, t.count);
     }

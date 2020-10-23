@@ -6,10 +6,7 @@ using Verse.Sound;
 
 namespace CompSlotLoadable
 {
-    /**
-     * Modified JobDriver_Equip
-     * Repurposed for loading a slot item.
-     */
+    // Based off JobDriver_Equip.
     public class JobDriver_GatherSlotItem : JobDriver
     {
         public override bool TryMakePreToilReservations(bool errorOnFailed) => true;
@@ -20,22 +17,20 @@ namespace CompSlotLoadable
             yield return Toils_Reserve.Reserve(TargetIndex.A, 1);
             var toil = new Toil
             {
-                initAction = delegate { pawn.pather.StartPath(TargetThingA, PathEndMode.ClosestTouch); },
-                defaultCompleteMode = ToilCompleteMode.PatherArrival
+                initAction = () => pawn.pather.StartPath(TargetThingA, PathEndMode.ClosestTouch),
+                defaultCompleteMode = ToilCompleteMode.PatherArrival,
             };
             toil.FailOnDespawnedNullOrForbidden(TargetIndex.A);
             yield return toil;
             yield return new Toil
             {
-                initAction = delegate
+                initAction = () =>
                 {
                     var itemToGather = job.targetA.Thing;
                     //bool flag = false;
-                    Thing itemToGatherSplit;
-                    if (itemToGather.def.stackLimit > 1 && itemToGather.stackCount > 1)
-                        itemToGatherSplit = itemToGather.SplitOff(1);
-                    else
-                        itemToGatherSplit = itemToGather;
+                    var itemToGatherSplit = itemToGather.def.stackLimit > 1 && itemToGather.stackCount > 1
+                        ? itemToGather.SplitOff(1)
+                        : itemToGather;
 
                     //Find the compslotloadable
                     if (pawn.equipment.Primary is ThingWithComps primary && primary.GetCompSlotLoadable() is CompSlotLoadable compSlotLoadable)
@@ -46,7 +41,7 @@ namespace CompSlotLoadable
                         //    thingWithComps.DeSpawn();
                     }
                 },
-                defaultCompleteMode = ToilCompleteMode.Instant
+                defaultCompleteMode = ToilCompleteMode.Instant,
             };
         }
     }

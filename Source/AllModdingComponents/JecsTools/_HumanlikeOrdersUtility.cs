@@ -158,6 +158,14 @@ namespace JecsTools
 
         public bool Equals(_Condition other) => Condition == other.Condition && Equals(Data, other.Data);
 
+        public override bool Equals(object obj) => obj is _Condition other && Equals(other);
+
+        public override int GetHashCode() => Gen.HashCombineInt(Condition.GetHashCode(), Data?.GetHashCode() ?? 0);
+
+        public static bool operator ==(_Condition left, _Condition right) => left.Equals(right);
+
+        public static bool operator !=(_Condition left, _Condition right) => !left.Equals(right);
+
         public bool Passes(object toCheck)
         {
             //Log.Message(toCheck.GetType().ToString());

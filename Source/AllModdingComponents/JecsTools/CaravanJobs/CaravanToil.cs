@@ -68,32 +68,24 @@ namespace JecsTools
 
         public void AddFailCondition(Func<bool> newFailCondition)
         {
-            endConditions.Add(delegate
-            {
-                if (newFailCondition())
-                    return JobCondition.Incompletable;
-                return JobCondition.Ongoing;
-            });
+            endConditions.Add(() => newFailCondition() ? JobCondition.Incompletable : JobCondition.Ongoing);
         }
 
         public void AddPreInitAction(Action newAct)
         {
-            if (preInitActions == null)
-                preInitActions = new List<Action>();
+            preInitActions ??= new List<Action>();
             preInitActions.Add(newAct);
         }
 
         public void AddPreTickAction(Action newAct)
         {
-            if (preTickActions == null)
-                preTickActions = new List<Action>();
+            preTickActions ??= new List<Action>();
             preTickActions.Add(newAct);
         }
 
         public void AddFinishAction(Action newAct)
         {
-            if (finishActions == null)
-                finishActions = new List<Action>();
+            finishActions ??= new List<Action>();
             finishActions.Add(newAct);
         }
     }

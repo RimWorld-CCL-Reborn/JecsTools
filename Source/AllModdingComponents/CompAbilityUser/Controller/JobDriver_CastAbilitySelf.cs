@@ -23,19 +23,19 @@ namespace AbilityUser
             yield return Toils_Combat.CastVerb(TargetIndex.A, false);
             yield return new Toil
             {
-                initAction = delegate { verb.Ability.PostAbilityAttempt(); },
-                defaultCompleteMode = ToilCompleteMode.Instant
+                initAction = verb.Ability.PostAbilityAttempt,
+                defaultCompleteMode = ToilCompleteMode.Instant,
             };
             yield return new Toil
             {
-                initAction = delegate
+                initAction = () =>
                 {
                     if (verb.UseAbilityProps.isViolent)
                     {
-                        JobDriver_CastAbilityVerb.CheckForAutoAttack(this.pawn);
+                        JobDriver_CastAbilityVerb.CheckForAutoAttack(pawn);
                     }
                 },
-                defaultCompleteMode = ToilCompleteMode.Instant
+                defaultCompleteMode = ToilCompleteMode.Instant,
             };
         }
     }

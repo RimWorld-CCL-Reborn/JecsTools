@@ -53,15 +53,15 @@ namespace AbilityUser
         public override void ExposeData()
         {
             base.ExposeData();
-            Scribe_Values.Look(ref origin, "origin", default(Vector3), false);
-            Scribe_Values.Look(ref destination, "destination", default(Vector3), false);
-            Scribe_Values.Look(ref ticksToImpact, "ticksToImpact", 0, false);
-            Scribe_Values.Look(ref timesToDamage, "timesToDamage", 0, false);
-            Scribe_Values.Look(ref damageLaunched, "damageLaunched", true);
-            Scribe_Values.Look(ref explosion, "explosion", false);
-            Scribe_References.Look(ref usedTarget, "usedTarget", false);
-            Scribe_References.Look(ref launcher, "launcher", false);
-            Scribe_References.Look(ref flyingThing, "flyingThing");
+            Scribe_Values.Look(ref origin, nameof(origin));
+            Scribe_Values.Look(ref destination, nameof(destination));
+            Scribe_Values.Look(ref ticksToImpact, nameof(ticksToImpact));
+            Scribe_Values.Look(ref timesToDamage, nameof(timesToDamage));
+            Scribe_Values.Look(ref damageLaunched, nameof(damageLaunched), true);
+            Scribe_Values.Look(ref explosion, nameof(explosion));
+            Scribe_References.Look(ref usedTarget, nameof(usedTarget));
+            Scribe_References.Look(ref launcher, nameof(launcher));
+            Scribe_References.Look(ref flyingThing, nameof(flyingThing));
         }
 
         public void Launch(Thing launcher, LocalTargetInfo targ, Thing flyingThing, DamageInfo? impactDamage)
@@ -78,7 +78,8 @@ namespace AbilityUser
             DamageInfo? newDamageInfo = null)
         {
             //Despawn the object to fly
-            if (flyingThing.Spawned) flyingThing.DeSpawn();
+            if (flyingThing.Spawned)
+                flyingThing.DeSpawn();
 
             this.launcher = launcher;
             this.origin = origin;
@@ -103,7 +104,7 @@ namespace AbilityUser
                 ticksToImpact++;
                 exactPosition = ExactPosition;
                 Position = exactPosition.ToIntVec3();
-                Destroy(DestroyMode.Vanish);
+                Destroy();
             }
             else
             {
@@ -144,11 +145,9 @@ namespace AbilityUser
             {
                 if (usedTarget is Pawn pawn && pawn.GetPosture() != PawnPosture.Standing &&
                     (origin - destination).MagnitudeHorizontalSquared() >= 20.25f && Rand.Value > 0.2f)
-                {
                     Impact(null);
-                    return;
-                }
-                Impact(usedTarget);
+                else
+                    Impact(usedTarget);
             }
             else
             {
@@ -159,8 +158,7 @@ namespace AbilityUser
         protected virtual void Impact(Thing hitThing)
         {
             // TODO: Should this hitThing fallback really required to be a Pawn?
-            if (hitThing == null)
-                hitThing = Position.GetThingList(Map).FirstOrDefault(x => x == usedTarget) as Pawn;
+            hitThing ??= Position.GetThingList(Map).FirstOrDefault(x => x == usedTarget) as Pawn;
 
             if (impactDamage != null)
             {
@@ -173,7 +171,7 @@ namespace AbilityUser
                     GenExplosion.DoExplosion(Position, Map, 0.9f, DamageDefOf.Stun, this);
             }
             GenSpawn.Spawn(flyingThing, Position, Map);
-            Destroy(DestroyMode.Vanish);
+            Destroy();
         }
 
         public override string ToString()

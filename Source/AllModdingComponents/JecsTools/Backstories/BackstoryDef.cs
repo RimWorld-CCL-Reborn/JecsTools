@@ -49,12 +49,12 @@ namespace JecsTools
             public float commonalityFemale = -1f;
         }
 
-        public bool CommonalityApproved(Gender g) => Rand.Range(0, 100) < (g == Gender.Female ? this.femaleCommonality : this.maleCommonality);
+        public bool CommonalityApproved(Gender g) => Rand.Range(0, 100) < (g == Gender.Female ? femaleCommonality : maleCommonality);
 
         public bool Approved(Pawn p) =>
-            this.CommonalityApproved(p.gender) &&
-            RangeIncludes(this.bioAgeRange, p.ageTracker.AgeBiologicalYears) &&
-            RangeIncludes(this.chronoAgeRange, p.ageTracker.AgeChronologicalYears);
+            CommonalityApproved(p.gender) &&
+            RangeIncludes(bioAgeRange, p.ageTracker.AgeBiologicalYears) &&
+            RangeIncludes(chronoAgeRange, p.ageTracker.AgeChronologicalYears);
 
         private static bool RangeIncludes(IntRange range, int val) => range == default || (val >= range.min && val <= range.max);
 
@@ -62,7 +62,8 @@ namespace JecsTools
         {
             base.ResolveReferences();
 
-            if (!this.addToDatabase || BackstoryDatabase.allBackstories.ContainsKey(this.defName) || this.title.NullOrEmpty() || this.spawnCategories.NullOrEmpty()) return;
+            if (!addToDatabase || BackstoryDatabase.allBackstories.ContainsKey(defName) || title.NullOrEmpty() || spawnCategories.NullOrEmpty())
+                return;
 
             static List<TraitEntry> ForcedTraits(BackstoryDef bs)
             {
@@ -111,35 +112,35 @@ namespace JecsTools
                 return wt;
             }
 
-            this.backstory = new Backstory
+            backstory = new Backstory
             {
-                slot = this.slot,
-                shuffleable = this.shuffleable,
-                spawnCategories = this.spawnCategories,
+                slot = slot,
+                shuffleable = shuffleable,
+                spawnCategories = spawnCategories,
                 forcedTraits = ForcedTraits(this),
                 disallowedTraits = DisallowedTraits(this),
                 workDisables = WorkDisables(this),
-                identifier = this.defName,
+                identifier = defName,
                 requiredWorkTags = RequiredWorkTags(this),
             };
 
-            bsBodyTypeGlobalResolved(this.backstory) = this.bodyTypeGlobal;
-            bsBodyTypeFemaleResolved(this.backstory) = this.bodyTypeFemale;
-            bsBodyTypeMaleResolved(this.backstory) = this.bodyTypeMale;
-            bsSkillGains(this.backstory) = this.skillGains.ToDictionary(i => i.defName, i => i.amount);
+            bsBodyTypeGlobalResolved(backstory) = bodyTypeGlobal;
+            bsBodyTypeFemaleResolved(backstory) = bodyTypeFemale;
+            bsBodyTypeMaleResolved(backstory) = bodyTypeMale;
+            bsSkillGains(backstory) = skillGains.ToDictionary(i => i.defName, i => i.amount);
 
             UpdateTranslateableFields(this);
 
-            this.backstory.ResolveReferences();
-            this.backstory.PostLoad();
+            backstory.ResolveReferences();
+            backstory.PostLoad();
 
-            this.backstory.identifier = this.defName;
+            backstory.identifier = defName;
 
-            var errors = this.backstory.ConfigErrors(ignoreNoSpawnCategories: false);
+            var errors = backstory.ConfigErrors(ignoreNoSpawnCategories: false);
             if (!errors.Any())
-                BackstoryDatabase.AddBackstory(this.backstory);
+                BackstoryDatabase.AddBackstory(backstory);
             else
-                Log.Error(this.defName + " has errors:\n" + string.Join("\n", errors));
+                Log.Error(defName + " has errors:\n" + string.Join("\n", errors));
         }
 
         private static readonly AccessTools.FieldRef<Backstory, BodyTypeDef> bsBodyTypeGlobalResolved =
@@ -153,7 +154,8 @@ namespace JecsTools
 
         internal static void UpdateTranslateableFields(BackstoryDef bs)
         {
-            if (bs.backstory == null) return;
+            if (bs.backstory == null)
+                return;
 
             bs.backstory.baseDesc = bs.baseDescription.NullOrEmpty() ? "Empty." : bs.baseDescription;
             bs.backstory.SetTitle(newTitle: bs.title, newTitleFemale: bs.titleFemale);

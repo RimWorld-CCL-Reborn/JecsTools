@@ -11,7 +11,7 @@ namespace JecsTools
     [Obsolete("Hasn't worked properly since RW B19")]
     public class CompConsole : ThingComp
     {
-        public CompProperties_Console Props => this.props as CompProperties_Console;
+        public CompProperties_Console Props => props as CompProperties_Console;
 
         private CompPowerTrader compPowerTrader;
 
@@ -53,7 +53,7 @@ namespace JecsTools
 
         private void UseAct(Pawn myPawn, ICommunicable commTarget)
         {
-            var job = JobMaker.MakeJob(JobDefMaker.JecsTools_UseConsole, this.parent);
+            var job = JobMaker.MakeJob(JobDefMaker.JecsTools_UseConsole, parent);
             job.commTarget = commTarget;
             myPawn.jobs.TryTakeOrderedJob(job);
             PlayerKnowledgeDatabase.KnowledgeDemonstrated(ConceptDefOf.OpeningComms, KnowledgeAmount.Total);
@@ -89,7 +89,7 @@ namespace JecsTools
                 yield return new FloatMenuOption("CannotPrioritizeWorkTypeDisabled".Translate(SkillDefOf.Social.LabelCap), null);
                 yield break;
             }
-            if (!this.CanUseCommsNow)
+            if (!CanUseCommsNow)
             {
                 Log.Error(myPawn + " could not use " + parent.Label + " for unknown reason.");
                 yield return new FloatMenuOption("Cannot use now", null);
@@ -99,7 +99,8 @@ namespace JecsTools
             foreach (var localCommTarget in myPawn.Map.passingShipManager.passingShips.Cast<ICommunicable>().Concat(
                 Find.FactionManager.AllFactionsInViewOrder.Cast<ICommunicable>()))
             {
-                if (localCommTarget == null) continue;
+                if (localCommTarget == null)
+                    continue;
                 var text = "CallOnRadio".Translate(localCommTarget.GetCallLabel());
                 if (localCommTarget is Faction faction)
                 {
@@ -107,11 +108,9 @@ namespace JecsTools
                         continue;
                     if (!LeaderIsAvailableToTalk(faction))
                     {
-                        string str;
-                        if (faction.leader != null)
-                            str = "LeaderUnavailable".Translate(faction.leader.LabelShort);
-                        else
-                            str = "LeaderUnavailableNoLeader".Translate();
+                        var str = faction.leader != null
+                            ? "LeaderUnavailable".Translate(faction.leader.LabelShort)
+                            : "LeaderUnavailableNoLeader".Translate();
                         yield return new FloatMenuOption(text + " (" + str + ")", null);
                         continue;
                     }
@@ -127,7 +126,8 @@ namespace JecsTools
                     UseAct(myPawn, localCommTarget);
                 }
 
-                yield return FloatMenuUtility.DecoratePrioritizedTask(new FloatMenuOption(text, Action, MenuOptionPriority.InitiateSocial), myPawn, parent, "ReservedBy");
+                yield return FloatMenuUtility.DecoratePrioritizedTask(
+                    new FloatMenuOption(text, Action, MenuOptionPriority.InitiateSocial), myPawn, parent, "ReservedBy");
             }
         }
 

@@ -114,12 +114,11 @@ namespace AbilityUserAI
                     if (compAbilityUser != null)
                     {
                         //Get Ability from Pawn.
-                        var useAbility = compAbilityUser.AbilityData.AllPowers.First(ability =>
-                            ability.Def == useThisAbility.ability);
+                        var useAbility = compAbilityUser.AbilityData.AllPowers
+                            .First(ability => ability.Def == useThisAbility.ability);
 
-                        var reason = "";
                         //Give job.
-                        if (useAbility.CanCastPowerCheck(AbilityContext.AI, out reason))
+                        if (useAbility.CanCastPowerCheck(AbilityContext.AI, out var reason))
                         {
                             var target = useThisAbility.Worker.TargetAbilityFor(useThisAbility, pawn);
                             if (target.IsValid)

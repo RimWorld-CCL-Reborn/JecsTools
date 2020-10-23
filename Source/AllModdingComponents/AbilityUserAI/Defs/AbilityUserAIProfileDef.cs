@@ -63,10 +63,7 @@ namespace AbilityUserAI
         public override void ResolveReferences()
         {
             base.ResolveReferences();
-
-            //Resolve the decision tree.
-            if (decisionTree != null)
-                decisionTree.Resolve(this);
+            decisionTree?.Resolve(this);
         }
     }
 }

@@ -68,27 +68,22 @@ namespace AbilityUser
             if (def.projectile.flyOverhead)
             {
                 var roofDef = Map.roofGrid.RoofAt(DestinationCell);
-                if (roofDef != null && roofDef.isThickRoof)
-                    if (def.projectile != null)
-                        if (def.projectile.soundHitThickRoof != null)
-                        {
-                            var info = SoundInfo.InMap(new TargetInfo(DestinationCell, Map, false),
-                                MaintenanceType.None);
-                            def.projectile.soundHitThickRoof.PlayOneShot(info);
-                            return;
-                        }
+                if (roofDef != null && roofDef.isThickRoof &&
+                    // TODO: Are these null checks necessary? Projectile.ImpactSomething doesn't have it.
+                    def.projectile != null && def.projectile.soundHitThickRoof != null)
+                {
+                    def.projectile.soundHitThickRoof.PlayOneShot(SoundInfo.InMap(new TargetInfo(DestinationCell, Map)));
+                    return;
+                }
             }
 
             // Impact the initial targeted pawn.
             if (intendedTarget != null)
             {
-                if (intendedTarget.Thing is Pawn pawn && pawn.Downed && (origin - destination).magnitude > 5f &&
-                    Rand.Value < 0.2f)
-                {
+                if (intendedTarget.Thing is Pawn pawn && pawn.Downed && (origin - destination).magnitude > 5f && Rand.Value < 0.2f)
                     Impact(null);
-                    return;
-                }
-                Impact(intendedTarget.Thing);
+                else
+                    Impact(intendedTarget.Thing);
             }
             else
             {
@@ -97,16 +92,20 @@ namespace AbilityUser
                 if (thing != null)
                 {
                     Impact(thing);
-                    return;
                 }
-                // Impact any cover object.
-                foreach (var current in Map.thingGrid.ThingsAt(DestinationCell))
-                    if (current.def.fillPercent > 0f || current.def.passability != Traversability.Standable)
+                else
+                {
+                    // Impact any cover object.
+                    foreach (var current in Map.thingGrid.ThingsAt(DestinationCell))
                     {
-                        Impact(current);
-                        return;
+                        if (current.def.fillPercent > 0f || current.def.passability != Traversability.Standable)
+                        {
+                            Impact(current);
+                            return;
+                        }
                     }
-                Impact(null);
+                    Impact(null);
+                }
             }
         }
 
@@ -148,7 +147,7 @@ namespace AbilityUser
             localApplyMentalStates = applyMentalStates;
             localSpawnThings = spawnThings;
             localAbilityDef = abilityDef;
-            base.Launch(launcher, targ, targ, hitFlags, equipment); //TODO
+            Launch(launcher, targ, targ, hitFlags, equipment); //TODO
         }
 
         protected override void Impact(Thing hitThing)
@@ -159,8 +158,9 @@ namespace AbilityUser
                 if (extraDamages != null)
                     foreach (var damage in extraDamages)
                     {
-                        var extraDinfo = new DamageInfo(damage.damageDef, damage.damage, this.def.projectile.GetArmorPenetration(1f), ExactRotation.eulerAngles.y,
-                            launcher, null, equipmentDef);
+                        var extraDinfo = new DamageInfo(damage.damageDef, damage.damage,
+                            def.projectile.GetArmorPenetration(1f), ExactRotation.eulerAngles.y,
+                            launcher, weapon: equipmentDef);
                         //Log.Message($"Projectile_AbilityBase.Impact({this}, {hitThing}) extraDinfo={extraDinfo}");
                         hitThing.TakeDamage(extraDinfo);
                     }

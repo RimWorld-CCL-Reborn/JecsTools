@@ -15,7 +15,7 @@ namespace JecsTools
     public class ApparelExtension : DefModExtension
     {
         [Obsolete("Use vanilla apparel.layers field and custom ApparelLayerDef in RimWorld b19+")]
-        private List<string> coverage;
+        private List<string> coverage; // set via reflection
 
         [Unsaved]
         private HashSet<string> coverageSet;

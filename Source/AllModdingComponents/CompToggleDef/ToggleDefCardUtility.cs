@@ -87,7 +87,7 @@ namespace CompToggleDef
                     var iconRect = new Rect(DefIconMargin, y + DefIconMargin, DefIconSize, DefIconSize);
                     if (Widgets.ButtonInvisible(iconRect))
                         Find.WindowStack.Add(new Dialog_InfoCard(toggleDef));
-                    bool isSelected = selectedThing.def == toggleDef;
+                    var isSelected = selectedThing.def == toggleDef;
                     RadioButtonDraw(rowRect.width - Widgets.RadioButtonSize, y, isSelected);
                     if (!isSelected && Widgets.ButtonInvisible(rowRect.RightPartPixels(rowRect.width - iconRect.xMax - DefLabelOffsetX)))
                     {

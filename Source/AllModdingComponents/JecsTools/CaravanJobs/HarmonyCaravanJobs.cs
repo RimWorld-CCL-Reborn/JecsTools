@@ -48,10 +48,7 @@ namespace JecsTools
                         defaultLabel = "CommandCancelConstructionLabel".Translate(),
                         defaultDesc = "CommandClearPrioritizedWorkDesc".Translate(),
                         icon = TexCommand.ClearPrioritizedWork,
-                        action = delegate
-                        {
-                            Find.World.GetComponent<CaravanJobGiver>().Tracker(__instance).StopAll();
-                        }
+                        action = () => Find.World.GetComponent<CaravanJobGiver>().Tracker(__instance).StopAll(),
                     });
             }
         }

@@ -36,8 +36,6 @@ namespace CompActivatableEffect
                 postfix: new HarmonyMethod(type, nameof(Notify_EquipmentRemoved_PostFix)));
         }
 
-        //=================================== COMPACTIVATABLE
-
         // Verse.Pawn_EquipmentTracker
         public static void Notify_EquipmentRemoved_PostFix(ThingWithComps eq)
         {
@@ -53,9 +51,7 @@ namespace CompActivatableEffect
                 compActivatableEffect.TryDeactivate();
         }
 
-#pragma warning disable IDE1006 // Naming Styles
         public static void set_DraftedPostFix(Pawn_DraftController __instance, bool value)
-#pragma warning restore IDE1006 // Naming Styles
         {
             if (__instance.pawn?.equipment?.Primary?.GetCompActivatableEffect() is CompActivatableEffect compActivatableEffect)
                 if (value == false)
@@ -93,7 +89,7 @@ namespace CompActivatableEffect
                     return true;
                 else if (compActivatableEffect.TryActivate())
                     return true;
-                if (Find.TickManager.TicksGame % 250 == 0)
+                if (Find.TickManager.TicksGame % GenTicks.TickRareInterval == 0)
                     Messages.Message("DeactivatedWarning".Translate(pawn.Label),
                         MessageTypeDefOf.RejectInput);
                 __result = false;
@@ -110,8 +106,9 @@ namespace CompActivatableEffect
             float aimAngle)
         {
             var compActivatableEffect = ___pawn.equipment?.Primary?.GetCompActivatableEffect();
-            if (compActivatableEffect?.Graphic == null) return;
-            if (compActivatableEffect.CurrentState != CompActivatableEffect.State.Activated) return;
+            if (compActivatableEffect?.Graphic == null ||
+                compActivatableEffect.CurrentState != CompActivatableEffect.State.Activated)
+                return;
 
             var num = aimAngle - 90f;
             var flip = false;
@@ -131,7 +128,7 @@ namespace CompActivatableEffect
                 num += eq.def.equippedAngleOffset;
             }
 
-            Vector3 offset = Vector3.zero;
+            var offset = Vector3.zero;
 
             var weaponComp = compActivatableEffect.GetOversizedWeapon;
             if (weaponComp != null)
@@ -152,8 +149,10 @@ namespace CompActivatableEffect
                 float numMod = compActivatableEffect.CompDeflectorAnimationDeflectionTicks;
                 if (numMod > 0)
                 {
-                    if (!flip) num += (numMod + 1) / 2;
-                    else num -= (numMod + 1) / 2;
+                    if (flip)
+                        num -= (numMod + 1) / 2;
+                    else
+                        num += (numMod + 1) / 2;
                 }
             }
 
@@ -162,10 +161,8 @@ namespace CompActivatableEffect
             var matSingle = compActivatableEffect.Graphic.MatSingle;
 
             var s = new Vector3(eq.def.graphicData.drawSize.x, 1f, eq.def.graphicData.drawSize.y);
-            var matrix = default(Matrix4x4);
-            matrix.SetTRS(drawLoc + offset, Quaternion.AngleAxis(num, Vector3.up), s);
-            if (!flip) Graphics.DrawMesh(MeshPool.plane10, matrix, matSingle, 0);
-            else Graphics.DrawMesh(MeshPool.plane10Flip, matrix, matSingle, 0);
+            var matrix = Matrix4x4.TRS(drawLoc + offset, Quaternion.AngleAxis(num, Vector3.up), s);
+            Graphics.DrawMesh(flip ? MeshPool.plane10Flip : MeshPool.plane10, matrix, matSingle, 0);
         }
 
         public static void GetGizmosPostfix(Pawn __instance, ref IEnumerable<Gizmo> __result)

@@ -27,8 +27,8 @@ namespace JecsTools
         public override void ExposeData()
         {
             base.ExposeData();
-            Scribe_Values.Look(ref resourcesSupplied, "resourcesSupplied", false);
-            Scribe_Collections.Look(ref consumedResources, "consumedResources", LookMode.Reference);
+            Scribe_Values.Look(ref resourcesSupplied, nameof(resourcesSupplied));
+            Scribe_Collections.Look(ref consumedResources, nameof(consumedResources), LookMode.Reference);
         }
 
         public virtual void Finish()
@@ -46,7 +46,7 @@ namespace JecsTools
             foreach (var t in ConsumedResources.ToArray())
             {
                 ConsumedResources.Remove(t);
-                t.Destroy(DestroyMode.Vanish);
+                t.Destroy();
             }
         }
 
@@ -59,17 +59,16 @@ namespace JecsTools
                 {
                     foreach (var t in ConsumedResources.ToArray()) // using copy for enumeration - see DestroyConsumedResources comments
                     {
-                        var pawn2 = CaravanInventoryUtility.FindPawnToMoveInventoryTo(t, c.PawnsListForReading, null,
-                            null);
-                        if (pawn2 == null)
+                        var pawn = CaravanInventoryUtility.FindPawnToMoveInventoryTo(t, c.PawnsListForReading, null);
+                        if (pawn == null)
                         {
                             Log.Error("Could not find pawn to move bought thing to (bought by player). thing=" + t);
-                            t.Destroy(DestroyMode.Vanish);
+                            t.Destroy();
                         }
-                        else if (!pawn2.inventory.innerContainer.TryAdd(t, true))
+                        else if (!pawn.inventory.innerContainer.TryAdd(t))
                         {
                             Log.Error("Could not add item to inventory.");
-                            t.Destroy(DestroyMode.Vanish);
+                            t.Destroy();
                         }
                     }
                     return true;
@@ -80,12 +79,12 @@ namespace JecsTools
                     var labels = new string[ConsumedResources.Count];
                     for (var i = 0; i < ConsumedResources.Count; i++)
                         labels[i] = ConsumedResources[i].Label;
-                    var window2 = Dialog_MessageBox.CreateConfirmation(
+                    var window = Dialog_MessageBox.CreateConfirmation(
                         "ConfirmAbandonItemDialog".Translate(string.Join(", ", labels) + " " +
-                                                             "JecsTools_WorldObjectConst_AbandonReason".Translate()),
-                        delegate
+                        "JecsTools_WorldObjectConst_AbandonReason".Translate()),
+                        () =>
                         {
-                            //Pawn ownerOf = CaravanInventoryUtility.GetOwnerOf(caravan, t);
+                            //var ownerOf = CaravanInventoryUtility.GetOwnerOf(caravan, t);
                             //if (ownerOf == null)
                             //{
                             //    Log.Error("Could not find owner of " + t);
@@ -95,13 +94,14 @@ namespace JecsTools
                             DestroyConsumedResources();
                             didCancel = true;
                         }, true, null);
-                    Find.WindowStack.Add(window2);
+                    Find.WindowStack.Add(window);
                     return didCancel;
                 }
             }
             return true;
         }
 
+        // Based off Settlement/CaravanArrivalAction_VisitSettlement/CaravanArrivalActionUtility.
         public override IEnumerable<FloatMenuOption> GetFloatMenuOptions(Caravan caravan)
         {
             foreach (var f in base.GetFloatMenuOptions(caravan))
@@ -109,42 +109,40 @@ namespace JecsTools
             if (ConstructJobDef != null)
             {
                 if (CheckAndConsumeResources(caravan, Recipe, false))
-                    yield return new FloatMenuOption("CreateNewZone".Translate(Recipe.FinishedThing.label), () =>
-                    {
-                        var t = Find.World.GetComponent<CaravanJobGiver>().Tracker(caravan);
-                        var curBlueprint = this;
-                        while (curBlueprint != null)
+                    yield return new FloatMenuOption(
+                        "CreateNewZone".Translate(Recipe.FinishedThing.label), () =>
                         {
-                            t.jobQueue.EnqueueLast(new CaravanJob(ConstructJobDef, curBlueprint));
-                            curBlueprint = curBlueprint.NextBlueprint;
-                        }
-                    }, MenuOptionPriority.Default);
+                            var t = Find.World.GetComponent<CaravanJobGiver>().Tracker(caravan);
+                            var curBlueprint = this;
+                            while (curBlueprint != null)
+                            {
+                                t.jobQueue.EnqueueLast(new CaravanJob(ConstructJobDef, curBlueprint));
+                                curBlueprint = curBlueprint.NextBlueprint;
+                            }
+                        });
                 else
                     yield return new FloatMenuOption(
-                        "CreateNewZone".Translate(Recipe.FinishedThing.label) + " (" + "MissingMaterials".Translate() +
-                        ")",
-                        null, MenuOptionPriority.Default, null, null, 0f, null, null);
+                        "CreateNewZone".Translate(Recipe.FinishedThing.label) + " (" + "MissingMaterials".Translate() + ")",
+                        null);
                 yield return new FloatMenuOption("VisitSite".Translate(Label),
-                    delegate { caravan.pather.StartPath(Tile, null, true); }, MenuOptionPriority.Default, null, null,
-                    0f, null, this);
+                    () => caravan.pather.StartPath(Tile, null, true), revalidateWorldClickTarget: this);
                 if (Prefs.DevMode)
                 {
                     yield return new FloatMenuOption(
-                        "CreateNewZone".Translate(Recipe.FinishedThing.label) + " (Dev: instantly)", delegate
-                        {
-                            //this.caravan.Tile = this.<> f__this.Tile;
-                            //this.caravan.pather.StopDead();
-                            //new CaravanArrivalAction_VisitSettlement(this.<> f__this).Arrived(this.caravan);
-                            Finish();
-                        }, MenuOptionPriority.Default, null, null, 0f, null, this);
+                        "CreateNewZone".Translate(Recipe.FinishedThing.label) + " (Dev: instantly)", Finish);
+                    //{
+                    //    caravan.Tile = Tile;
+                    //    caravan.pather.StopDead();
+                    //    new CaravanArrivalAction_VisitSettlement(this).Arrived(caravan);
+                    //});
                     yield return new FloatMenuOption(
-                        "VisitSite".Translate(Recipe.FinishedThing.label) + " (Dev: instantly)", delegate
+                        "VisitSite".Translate(Recipe.FinishedThing.label) + " (Dev: instantly)", () =>
                         {
                             caravan.Tile = Tile;
                             caravan.pather.StopDead();
-                            //new CaravanArrivalAction_VisitSettlement(this.<> f__this).Arrived(this.caravan);
-                            //this.FinishConstruction();
-                        }, MenuOptionPriority.Default, null, null, 0f, null, this);
+                            //new CaravanArrivalAction_VisitSettlement(this).Arrived(caravan);
+                            //FinishConstruction();
+                        });
                 }
             }
         }
@@ -158,28 +156,28 @@ namespace JecsTools
                 defaultLabel = "CommandRemoveWaypointLabel".Translate(),
                 defaultDesc = "CommandRemoveWaypointDesc".Translate(),
                 icon = TexCommand.RemoveRoutePlannerWaypoint,
-                action = delegate { Cancel(); }
+                action = () => Cancel(),
             };
             if (DebugSettings.godMode)
                 yield return new Command_Action
                 {
                     defaultLabel = "Dev: Instant build",
-                    action = delegate { Finish(); }
+                    action = Finish,
                 };
         }
 
         public void AddNumOfCheapestThings(List<Thing> allItems, Dictionary<Thing, int> toBeConsumed,
             ThingDefCountClass thingCount)
         {
-            var matchingItemsPriceSorted = allItems.Where(thing => thing.def == thingCount.thingDef
-                                                                   && (!toBeConsumed.TryGetValue(thing,
-                                                                           out int value) || thing.stackCount > value))
+            var matchingItemsPriceSorted = allItems
+                .Where(thing => thing.def == thingCount.thingDef &&
+                    (!toBeConsumed.TryGetValue(thing, out var value) || thing.stackCount > value))
                 .OrderBy(thing => thing.GetStatValue(StatDefOf.MarketValue));
-            int remainingCount = thingCount.count;
+            var remainingCount = thingCount.count;
             foreach (var thing in matchingItemsPriceSorted)
             {
-                toBeConsumed.TryGetValue(thing, out int currentTaken);
-                int numberToTake = Math.Min(thing.stackCount - currentTaken, remainingCount);
+                toBeConsumed.TryGetValue(thing, out var currentTaken);
+                var numberToTake = Math.Min(thing.stackCount - currentTaken, remainingCount);
                 if (currentTaken != 0)
                     toBeConsumed[thing] += numberToTake;
                 else
@@ -198,18 +196,16 @@ namespace JecsTools
         public void AddNumOfCheapestStuff(List<Thing> allItems, Dictionary<Thing, int> toBeConsumed,
             StuffCategoryCountClass stuffCount)
         {
-            var matchingItemsPriceSorted = allItems.Where(thing => ((thing.Stuff?.stuffProps ?? thing.def.stuffProps)
-                                                                    ?.categories?.Contains(stuffCount.stuffCatDef) ??
-                                                                    false)
-                                                                   && (toBeConsumed.TryGetValue(thing, out int value)
-                                                                       ? thing.stackCount > value
-                                                                       : true))
+            var matchingItemsPriceSorted = allItems
+                .Where(thing =>
+                    ((thing.Stuff?.stuffProps ?? thing.def.stuffProps)?.categories?.Contains(stuffCount.stuffCatDef) ?? false) &&
+                    (!toBeConsumed.TryGetValue(thing, out var value) || thing.stackCount > value))
                 .OrderBy(thing => thing.GetStatValue(StatDefOf.MarketValue));
-            int remainingCount = stuffCount.count;
+            var remainingCount = stuffCount.count;
             foreach (var thing in matchingItemsPriceSorted)
             {
-                toBeConsumed.TryGetValue(thing, out int currentTaken);
-                int numberToTake = Math.Min(thing.stackCount - currentTaken, remainingCount);
+                toBeConsumed.TryGetValue(thing, out var currentTaken);
+                var numberToTake = Math.Min(thing.stackCount - currentTaken, remainingCount);
                 if (currentTaken != 0)
                     toBeConsumed[thing] += numberToTake;
                 else
@@ -229,7 +225,8 @@ namespace JecsTools
         public virtual bool CheckAndConsumeResources(Caravan c, WorldObjectRecipeDef recipe,
             bool consumeResources = true)
         {
-            if (resourcesSupplied) return true;
+            if (resourcesSupplied)
+                return true;
             var toBeConsumed = new Dictionary<Thing, int>();
             var caravanInv = CaravanInventoryUtility.AllInventoryItems(c);
 
@@ -242,7 +239,8 @@ namespace JecsTools
 
             foreach (var thingCount in recipe?.costList ?? Enumerable.Empty<ThingDefCountClass>())
             {
-                int thingsFound = allItems.Where(thing => thing.def == thingCount.thingDef)
+                var thingsFound = allItems
+                    .Where(thing => thing.def == thingCount.thingDef)
                     .Sum(thing => thing.stackCount);
                 if (thingsFound >= thingCount.count)
                     AddNumOfCheapestThings(allItems, toBeConsumed, thingCount);
@@ -257,10 +255,11 @@ namespace JecsTools
             foreach (var stuffCount in recipe?.stuffCostList ?? Enumerable.Empty<StuffCategoryCountClass>())
             {
                 //Ensure I find stuffProps either under Stuff or def if any
-                int stuffFound = allItems.Where(thing => (thing.Stuff?.stuffProps ?? thing.def.stuffProps)
-                                                         ?.categories?.Contains(stuffCount.stuffCatDef) ?? false)
-                    .Sum(thing => thing.stackCount -
-                                  (toBeConsumed.TryGetValue(thing, out int value) ? value : 0));
+                var stuffFound = allItems
+                    .Where(thing =>
+                        (thing.Stuff?.stuffProps ?? thing.def.stuffProps)?.categories?.Contains(stuffCount.stuffCatDef) ?? false)
+                    .Sum(thing =>
+                        thing.stackCount - (toBeConsumed.TryGetValue(thing, out var value) ? value : 0));
                 if (stuffFound >= stuffCount.count)
                     AddNumOfCheapestStuff(allItems, toBeConsumed, stuffCount);
                 else

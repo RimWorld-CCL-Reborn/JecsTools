@@ -41,19 +41,13 @@ namespace AbilityUser
 
         public virtual void Tick(CompAbilityUser abilityUser)
         {
-            var rate = -1;
-            switch (Props.tickerType)
+            var rate = Props.tickerType switch
             {
-                case TickerType.Rare:
-                    rate = 250;
-                    break;
-                case TickerType.Normal:
-                    rate = 60;
-                    break;
-                case TickerType.Long:
-                    rate = 2000;
-                    break;
-            }
+                TickerType.Normal => GenTicks.TicksPerRealSecond, // TODO: shouldn't this be 1 instead?
+                TickerType.Rare => GenTicks.TickRareInterval,
+                TickerType.Long => GenTicks.TickLongInterval,
+                _ => -1,
+            };
             if (rate != -1)
                 if (Find.TickManager.TicksGame % rate == 0 && CanDoEffect(abilityUser))
                     TryDoEffect(abilityUser);

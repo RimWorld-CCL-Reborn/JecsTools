@@ -26,9 +26,11 @@ namespace CompOversizedWeapon
         public static bool DrawEquipmentAimingPreFix(Pawn ___pawn, Thing eq, Vector3 drawLoc, float aimAngle)
         {
             var compOversizedWeapon = eq.TryGetCompOversizedWeapon();
-            if (compOversizedWeapon == null) return true;
+            if (compOversizedWeapon == null)
+                return true;
             //If the deflector is animating now, deflector handles drawing (and already has the drawSize fix).
-            if (compOversizedWeapon.CompDeflectorIsAnimatingNow) return false;
+            if (compOversizedWeapon.CompDeflectorIsAnimatingNow)
+                return false;
 
             var props = compOversizedWeapon.Props;
             var isFighting = ___pawn.IsFighting();
@@ -58,23 +60,18 @@ namespace CompOversizedWeapon
                 {
                     num += 180f;
                 }
-                num += NonCombatAngleAdjustment(rotation, num, props);
+                num += NonCombatAngleAdjustment(rotation, props);
             }
             num %= 360f;
 
-            Material matSingle;
-            if (eq.Graphic is Graphic_StackCount graphic_StackCount)
-                matSingle = graphic_StackCount.SubGraphicForStackCount(1, eq.def).MatSingle;
-            else
-                matSingle = eq.Graphic.MatSingle;
-
+            var matSingle = eq.Graphic is Graphic_StackCount graphic_StackCount
+                ? graphic_StackCount.SubGraphicForStackCount(1, eq.def).MatSingle
+                : eq.Graphic.MatSingle;
             var s = new Vector3(eq.def.graphicData.drawSize.x, 1f, eq.def.graphicData.drawSize.y);
-            var matrix = default(Matrix4x4);
+            var curOffset = props != null ? OffsetFromRotation(rotation, props) : Vector3.zero;
+            var matrix = Matrix4x4.TRS(drawLoc + curOffset, Quaternion.AngleAxis(num, Vector3.up), s);
 
-            Vector3 curOffset = props != null ? OffsetFromRotation(rotation, props) : Vector3.zero;
-            matrix.SetTRS(drawLoc + curOffset, Quaternion.AngleAxis(num, Vector3.up), s);
-
-            Graphics.DrawMesh(!flip ? MeshPool.plane10 : MeshPool.plane10Flip, matrix, matSingle, 0);
+            Graphics.DrawMesh(flip ? MeshPool.plane10Flip : MeshPool.plane10, matrix, matSingle, 0);
             if (props != null && props.isDualWeapon)
             {
                 curOffset = new Vector3(-1f * curOffset.x, curOffset.y, curOffset.z);
@@ -83,12 +80,12 @@ namespace CompOversizedWeapon
                 {
                     num += 135f;
                     num %= 360f;
-                    curPool = !flip ? MeshPool.plane10Flip : MeshPool.plane10;
+                    curPool = flip ? MeshPool.plane10 : MeshPool.plane10Flip;
                 }
                 else
                 {
                     curOffset = new Vector3(curOffset.x, curOffset.y - 0.1f, curOffset.z + 0.15f);
-                    curPool = !flip ? MeshPool.plane10 : MeshPool.plane10Flip;
+                    curPool = flip ? MeshPool.plane10Flip : MeshPool.plane10;
                 }
                 matrix.SetTRS(drawLoc + curOffset, Quaternion.AngleAxis(num, Vector3.up), s);
                 Graphics.DrawMesh(curPool, matrix, matSingle, 0);
@@ -106,7 +103,7 @@ namespace CompOversizedWeapon
             return offsetAtPeace;
         }
 
-        private static float NonCombatAngleAdjustment(Rot4 rotation, float num, CompProperties_OversizedWeapon props)
+        private static float NonCombatAngleAdjustment(Rot4 rotation, CompProperties_OversizedWeapon props)
         {
             if (rotation == Rot4.North)
                 return props.angleAdjustmentNorth;
@@ -132,8 +129,10 @@ namespace CompOversizedWeapon
 
         public static void get_DefaultGraphic_PostFix(Thing __instance, Graphic ___graphicInt, ref Graphic __result)
         {
-            if (___graphicInt == null) return;
-            if (__instance.ParentHolder is Pawn) return;
+            if (___graphicInt == null)
+                return;
+            if (__instance.ParentHolder is Pawn)
+                return;
 
             var compOversizedWeapon = __instance.TryGetCompOversizedWeapon();
             if (compOversizedWeapon != null)

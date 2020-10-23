@@ -20,7 +20,6 @@ namespace CompExtraSounds
                 postfix: new HarmonyMethod(type, nameof(SoundHitBuildingPostfix)));
         }
 
-        //=================================== COMPEXTRASOUNDS
         public static void SoundHitPawnPostfix(ref SoundDef __result, Verb_MeleeAttack __instance)
         {
             if (__instance.caster is Pawn pawn)

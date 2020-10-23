@@ -88,7 +88,7 @@ namespace AbilityUser
 
         public static bool get_DirectOwner_Prefix(Verb __instance, ref IVerbOwner __result)
         {
-            if (__instance is Verb_UseAbility vua)
+            if (__instance is Verb_UseAbility)
             {
                 __result = __instance.CasterPawn;
                 return false;
@@ -97,7 +97,7 @@ namespace AbilityUser
         }
         public static bool get_Projectile_Prefix(Verb_LaunchProjectile __instance, ref ThingDef __result)
         {
-            if (__instance is Verb_UseAbility vua)
+            if (__instance is Verb_UseAbility)
             {
                 __result = __instance.verbProps.defaultProjectile;
                 return false;
@@ -224,7 +224,8 @@ namespace AbilityUser
             // to be generated (yet not yet spawned) so that CompAbilityUsers are available on these pawns.
             // This is why we can't simply patch PawnGenOption.Cost or PawnGroupMakerUtility.ChoosePawnGenOptionsByPoints.
 
-            if (__result.Count == 0) return;
+            if (__result.Count == 0)
+                return;
 
             var startTimestamp = 0L;
             DebugProfileStart(ref startTimestamp);
@@ -287,10 +288,10 @@ namespace AbilityUser
 
             if (specials.count > 0)
             {
-                DebugMessage(rgpMsgPrefix + "Target: " + (targetCount != origCount ?
-                    $"#pawns = {origCount} orig + {targetCount - origCount} special trader = {targetCount}, " +
-                    $"points = {parms.points} orig + {targetPoints - parms.points} special trader = {targetPoints}" :
-                    $"#pawns = {targetCount}, points = {targetPoints}"));
+                DebugMessage(rgpMsgPrefix + "Target: " + (targetCount != origCount
+                    ? $"#pawns = {origCount} orig + {targetCount - origCount} special trader = {targetCount}, " +
+                      $"points = {parms.points} orig + {targetPoints - parms.points} special trader = {targetPoints}"
+                    : $"#pawns = {targetCount}, points = {targetPoints}"));
                 DebugMessage(rgpMsgPrefix + "Special: " + specials);
                 DebugMessage(rgpMsgPrefix + "Normal: " + normals);
                 DebugMessage(rgpMsgPrefix + "Excluded: " + excluded);
@@ -310,14 +311,14 @@ namespace AbilityUser
                     var condition = specials.count > 0 && specials.count + normals.count > 1 &&
                         specials.points + normals.points > targetPoints;
                     DebugMessage(rgpMsgPrefix + (condition ? $"Rebalance iteration {++iterCount}" : "Final"));
-                    DebugMessage(rgpMsgPrefix + "#pawns: " + (targetCount != origCount ?
-                            $"{origCount} orig + {targetCount - origCount} special trader = {targetCount}" :
-                            $"{targetCount} orig") +
+                    DebugMessage(rgpMsgPrefix + "#pawns: " + (targetCount != origCount
+                            ? $"{origCount} orig + {targetCount - origCount} special trader = {targetCount}"
+                            : $"{targetCount} orig") +
                         $", {specials.count} special + {normals.count} normal = {specials.count + normals.count}, " +
                         $"{excluded.count} excluded, {destroyed.count} destroyed");
-                    DebugMessage(rgpMsgPrefix + "points: " + (targetPoints != parms.points ?
-                            $"{parms.points} orig + {targetPoints - parms.points} special trader = {targetPoints}" :
-                            $"{targetPoints} orig")+
+                    DebugMessage(rgpMsgPrefix + "points: " + (targetPoints != parms.points
+                            ? $"{parms.points} orig + {targetPoints - parms.points} special trader = {targetPoints}"
+                            : $"{targetPoints} orig") +
                         $", {specials.points} special + {normals.points} normal = {specials.points + normals.points}, " +
                         $"{excluded.points} excluded, {destroyed.points} destroyed");
                     if (!condition)
@@ -408,7 +409,8 @@ namespace AbilityUser
                         {
                             DebugMessage("  and they match types");
                             cai.AbilityUserTarget = cau;
-                            foreach (var abdef in cai.Props.Abilities) cau.AddWeaponAbility(abdef);
+                            foreach (var abdef in cai.Props.Abilities)
+                                cau.AddWeaponAbility(abdef);
                         }
                     }
                 }
@@ -430,7 +432,8 @@ namespace AbilityUser
                         if (cau.GetType() == cai.Props.AbilityUserClass)
                         {
                             DebugMessage("  and they match types");
-                            foreach (var abdef in cai.Props.Abilities) cau.RemoveWeaponAbility(abdef);
+                            foreach (var abdef in cai.Props.Abilities)
+                                cau.RemoveWeaponAbility(abdef);
                         }
                     }
                 }
@@ -454,7 +457,8 @@ namespace AbilityUser
                         {
                             DebugMessage("  and they match types");
                             cai.AbilityUserTarget = cau;
-                            foreach (var abdef in cai.Props.Abilities) cau.AddApparelAbility(abdef);
+                            foreach (var abdef in cai.Props.Abilities)
+                                cau.AddApparelAbility(abdef);
                         }
                     }
                 }
@@ -477,7 +481,8 @@ namespace AbilityUser
                         if (cau.GetType() == cai.Props.AbilityUserClass)
                         {
                             DebugMessage("  and they match types");
-                            foreach (var abdef in cai.Props.Abilities) cau.RemoveApparelAbility(abdef);
+                            foreach (var abdef in cai.Props.Abilities)
+                                cau.RemoveApparelAbility(abdef);
                         }
                     }
                 }
@@ -570,7 +575,8 @@ namespace AbilityUser
 
         public static void InitializeComps_PostFix(ThingWithComps __instance)
         {
-            if (__instance is Pawn p) InternalAddInAbilityUsers(p);
+            if (__instance is Pawn p)
+                InternalAddInAbilityUsers(p);
         }
 
         // Add in any AbilityUser Components, if the Pawn is accepting

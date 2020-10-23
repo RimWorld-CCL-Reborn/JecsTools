@@ -44,9 +44,9 @@ namespace AbilityUser
         {
             needLOSToCenter = true;
             var targetAoEProperties = UseAbilityProps.abilityDef.MainVerb.TargetAoEProperties;
-            if (targetAoEProperties?.showRangeOnSelect ?? false)
-                return targetAoEProperties.range;
-            return verbProps.defaultProjectile?.projectile?.explosionRadius ?? 1;
+            return targetAoEProperties?.showRangeOnSelect ?? false
+                ? targetAoEProperties.range
+                : verbProps.defaultProjectile?.projectile?.explosionRadius ?? 1;
         }
 
         protected virtual void UpdateTargets()
@@ -123,7 +123,7 @@ namespace AbilityUser
             {
                 return false;
             }
-            Thing thing = castTarg.Thing;
+            var thing = castTarg.Thing;
             if (thing.def.category != ThingCategory.Pawn && (thing.def.building == null || !thing.def.building.IsTurret))
             {
                 return false;
@@ -160,9 +160,9 @@ namespace AbilityUser
             }
 
             this.surpriseAttack = surpriseAttack;
-            this.canHitNonTargetPawnsNow = canHitNonTargetPawns;
-            this.currentTarget = castTarg;
-            this.currentDestination = destTarg;
+            canHitNonTargetPawnsNow = canHitNonTargetPawns;
+            currentTarget = castTarg;
+            currentDestination = destTarg;
             if (CasterIsPawn && verbProps.warmupTime > 0f)
             {
                 if (verbProps.requireLineOfSight)
@@ -174,8 +174,8 @@ namespace AbilityUser
                     }
                     CasterPawn.Drawer.Notify_WarmingCastAlongLine(resultingLine, caster.Position);
                 }
-                float statValue = CasterPawn.GetStatValue(StatDefOf.AimingDelayFactor);
-                int ticks = (verbProps.warmupTime * statValue).SecondsToTicks();
+                var statValue = CasterPawn.GetStatValue(StatDefOf.AimingDelayFactor);
+                var ticks = (verbProps.warmupTime * statValue).SecondsToTicks();
                 CasterPawn.stances.SetStance(new Stance_Warmup(ticks, castTarg, this));
             }
             else
@@ -223,18 +223,15 @@ namespace AbilityUser
             }
             for (var i = 0; i < TargetsAoE.Count; i++)
             {
-                //for (int j = 0; j < burstshots; j++)
+                //for (var j = 0; j < burstshots; j++)
                 //{
                 var target = TargetsAoE[i];
                 DebugMessage($"TryCastShot({this}) target={target} ({target.Thing}), defaultProjectile={verbProps.defaultProjectile}");
                 if (verbProps.defaultProjectile != null) //ranged attacks WILL have projectiles
                 {
                     var attempt = TryLaunchProjectile(verbProps.defaultProjectile, target);
-                    if (attempt != null)
-                    {
-                        if (attempt == true) result = true;
-                        if (attempt == false) result = false;
-                    }
+                    if (attempt.HasValue)
+                        result = attempt.GetValueOrDefault();
                 }
                 else //melee attacks WON'T have projectiles
                 {
@@ -277,22 +274,21 @@ namespace AbilityUser
             var props = UseAbilityProps;
             projectile.extraDamages = props.extraDamages;
             projectile.localSpawnThings = props.thingsToSpawn;
-            verbProps.soundCast?.PlayOneShot(new TargetInfo(caster.Position, caster.Map, false));
+            verbProps.soundCast?.PlayOneShot(new TargetInfo(caster.Position, caster.Map));
             verbProps.soundCastTail?.PlayOneShotOnCamera();
             if (DebugViewSettings.drawShooting)
-                MoteMaker.ThrowText(caster.DrawPos, caster.Map, "ToHit", -1f);
-            ProjectileHitFlags projectileHitFlags4 = ProjectileHitFlags.IntendedTarget;
-            if (this.canHitNonTargetPawnsNow)
+                MoteMaker.ThrowText(caster.DrawPos, caster.Map, "ToHit"); // TODO: Translate()?
+            var projectileHitFlags = ProjectileHitFlags.IntendedTarget;
+            if (canHitNonTargetPawnsNow)
             {
-                projectileHitFlags4 |= ProjectileHitFlags.NonTargetPawns;
+                projectileHitFlags |= ProjectileHitFlags.NonTargetPawns;
             }
-            if (!this.currentTarget.HasThing || this.currentTarget.Thing.def.Fillage == FillCategory.Full)
+            if (!currentTarget.HasThing || currentTarget.Thing.def.Fillage == FillCategory.Full)
             {
-                projectileHitFlags4 |= ProjectileHitFlags.NonTargetWorld;
+                projectileHitFlags |= ProjectileHitFlags.NonTargetWorld;
             }
-            projectile.Launch(caster, Ability.Def, drawPos, launchTarget, projectileHitFlags4, null,
-                props.hediffsToApply,
-                props.mentalStatesToApply, props.thingsToSpawn);
+            projectile.Launch(caster, Ability.Def, drawPos, launchTarget, projectileHitFlags, null,
+                props.hediffsToApply, props.mentalStatesToApply, props.thingsToSpawn);
             return true;
         }
 
@@ -310,15 +306,12 @@ namespace AbilityUser
 
         public override void WarmupComplete()
         {
-            if (verbTracker == null)
-                verbTracker = CasterPawn.verbTracker;
+            verbTracker ??= CasterPawn.verbTracker;
             burstShotsLeft = ShotsPerBurst;
             state = VerbState.Bursting;
             TryCastNextBurstShot();
-            //Find.BattleLog.Add(new BattleLogEntry_RangedFire(this.caster,
-            //    (!this.currentTarget.HasThing) ? null : this.currentTarget.Thing,
-            //    (base.EquipmentSource == null) ? null : base.EquipmentSource.def, this.Projectile,
-            //    this.ShotsPerBurst > 1));
+            //Find.BattleLog.Add(new BattleLogEntry_RangedFire(caster, currentTarget.Thing,
+            //    EquipmentSource?.def, Projectile, ShotsPerBurst > 1));
         }
     }
 }

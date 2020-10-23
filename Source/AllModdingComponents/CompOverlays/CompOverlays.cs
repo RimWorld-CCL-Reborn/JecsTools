@@ -57,7 +57,7 @@ namespace CompOverlays
                     var vec3 = drawPos + o.offset;
                     if (o.usesStuff)
                     {
-                        o.graphicData.GraphicColoredFor(this.parent).Draw(vec3, parent.Rotation, parent, 0f);
+                        o.graphicData.GraphicColoredFor(parent).Draw(vec3, parent.Rotation, parent, 0f);
                         continue;
                     }
                     o.graphicData.Graphic.Draw(vec3, parent.Rotation, parent, 0f);

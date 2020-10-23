@@ -75,7 +75,7 @@ namespace AbilityUserAI
 
                         //Log.Message("abilityVerb=" + abilityVerb.ability.powerdef.defName);
                         if (compAbilityUser.CanCastPowerCheck(abilityVerb,
-                                out var reason) /*&& !pawnAbility.NeedsCooldown*/
+                                out var reason) //&& !pawnAbility.NeedsCooldown
                         ) //To-Do: Put back check after Ability Framework redesign.
                             if (ability.usedOnCaster)
                             {

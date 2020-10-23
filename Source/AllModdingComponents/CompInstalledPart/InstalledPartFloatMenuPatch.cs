@@ -25,11 +25,11 @@ namespace CompInstalledPart
                         if (groundPart.GetEquippable != null)
                         {
                             var optToRemoveIndex = opts.FindIndex(x => x.Label.Contains(curThing.Label));
-                            if (optToRemoveIndex >= 0) opts.RemoveAt(optToRemoveIndex);
+                            if (optToRemoveIndex >= 0)
+                                opts.RemoveAt(optToRemoveIndex);
                         }
 
-                        var text = "CompInstalledPart_Install".Translate();
-                        opts.Add(new FloatMenuOption(text, delegate
+                        opts.Add(new FloatMenuOption("CompInstalledPart_Install".Translate(), () =>
                         {
                             var props = groundPart.Props;
                             if (props != null)
@@ -41,17 +41,15 @@ namespace CompInstalledPart
                                         canTargetPawns = true,
                                         canTargetBuildings = true,
                                         mapObjectTargetsMustBeAutoAttackable = false,
-                                        validator = delegate(TargetInfo targ)
+                                        validator = targ =>
                                         {
-                                            if (!targ.HasThing)
-                                                return false;
-                                            return props.allowedToInstallOn.Contains(targ.Thing.def);
-                                        }
-                                    }, delegate(LocalTargetInfo target)
+                                            return targ.HasThing && props.allowedToInstallOn.Contains(targ.Thing.def);
+                                        },
+                                    }, target =>
                                     {
                                         curThing.SetForbidden(false);
                                         groundPart.GiveInstallJob(pawn, target.Thing);
-                                    }, null, null, null);
+                                    }, null, null);
                                 }
                                 else
                                 {
@@ -59,7 +57,7 @@ namespace CompInstalledPart
                                         "CompInstalledPart :: allowedToInstallOn list needs to be defined in XML.",
                                         3242);
                                 }
-                        }, MenuOptionPriority.Default, null, null, 29f, null, null));
+                        }, extraPartWidth: 29f));
                     }
                 return opts;
             };

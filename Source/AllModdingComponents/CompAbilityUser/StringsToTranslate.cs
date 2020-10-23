@@ -1,5 +1,6 @@
 ﻿namespace AbilityUser
 {
+    // TODO: These should be translation keys
     public static class StringsToTranslate
     {
         public static readonly string AU_AoEProperties = "Area of Effect Properties";

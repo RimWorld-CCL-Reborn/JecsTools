@@ -79,22 +79,15 @@ namespace CompActivatableEffect
 
         public virtual void PlaySound(SoundDef soundToPlay)
         {
-            SoundInfo info;
-            if (Props.gizmosOnEquip)
-                info = SoundInfo.InMap(new TargetInfo(GetPawn.PositionHeld, GetPawn.MapHeld, false),
-                    MaintenanceType.None);
-            else
-                info = SoundInfo.InMap(new TargetInfo(parent.PositionHeld, parent.MapHeld, false),
-                    MaintenanceType.None);
-            soundToPlay?.PlayOneShot(info);
+            var pawn = Props.gizmosOnEquip ? GetPawn : parent;
+            soundToPlay?.PlayOneShot(SoundInfo.InMap(new TargetInfo(pawn.PositionHeld, pawn.MapHeld)));
         }
 
         private void StartSustainer()
         {
-            if (!Props.sustainerSound.NullOrUndefined() && sustainer == null)
+            if (!Props.sustainerSound.NullOrUndefined())
             {
-                var info = SoundInfo.InMap(GetPawn, MaintenanceType.None);
-                sustainer = Props.sustainerSound.TrySpawnSustainer(info);
+                sustainer ??= Props.sustainerSound.TrySpawnSustainer(SoundInfo.InMap(GetPawn));
             }
         }
 
@@ -111,7 +104,8 @@ namespace CompActivatableEffect
         {
             graphicInt = null;
             currentState = State.Activated;
-            if (Props.activateSound != null) PlaySound(Props.activateSound);
+            if (Props.activateSound != null)
+                PlaySound(Props.activateSound);
             StartSustainer();
             showNow = true;
         }
@@ -119,7 +113,8 @@ namespace CompActivatableEffect
         public virtual void Deactivate()
         {
             currentState = State.Deactivated;
-            if (Props.deactivateSound != null) PlaySound(Props.deactivateSound);
+            if (Props.deactivateSound != null)
+                PlaySound(Props.deactivateSound);
             EndSustainer();
             showNow = false;
             graphicInt = null;
@@ -127,8 +122,7 @@ namespace CompActivatableEffect
 
         public bool IsActive()
         {
-            if (currentState == State.Activated) return true;
-            return false;
+            return currentState == State.Activated;
         }
 
         // Caching comps needs to happen after all comps are created. Ideally, this would be done right after
@@ -143,8 +137,8 @@ namespace CompActivatableEffect
         public override void PostExposeData()
         {
             base.PostExposeData();
-            Scribe_Values.Look(ref showNow, "showNow", false);
-            Scribe_Values.Look(ref currentState, "currentState", State.Deactivated);
+            Scribe_Values.Look(ref showNow, nameof(showNow));
+            Scribe_Values.Look(ref currentState, nameof(currentState));
             if (Scribe.mode == LoadSaveMode.LoadingVars)
                 CacheComps();
         }
@@ -186,8 +180,10 @@ namespace CompActivatableEffect
 
         public override void CompTick()
         {
-            if (!IsInitialized) Initialize();
-            if (IsActive()) ActiveTick();
+            if (!IsInitialized)
+                Initialize();
+            if (IsActive())
+                ActiveTick();
             base.CompTick();
         }
 
@@ -204,14 +200,14 @@ namespace CompActivatableEffect
                     {
                         defaultLabel = Props.DeactivateLabel,
                         icon = IconDeactivate,
-                        action = delegate { TryDeactivate(); }
+                        action = () => TryDeactivate(),
                     };
                 else
                     yield return new Command_Action
                     {
                         defaultLabel = Props.ActivateLabel,
                         icon = IconActivate,
-                        action = delegate { TryActivate(); }
+                        action = () => TryActivate(),
                     };
         }
 
@@ -239,25 +235,13 @@ namespace CompActivatableEffect
             get => showNow;
         }
 
-        public Texture2D IconActivate
-        {
-            get
-            {
-                if (!Props.uiIconPathActivate.NullOrEmpty())
-                    return ContentFinder<Texture2D>.Get(Props.uiIconPathActivate, true);
-                return TexCommand.GatherSpotActive;
-            }
-        }
+        public Texture2D IconActivate => !Props.uiIconPathActivate.NullOrEmpty()
+            ? ContentFinder<Texture2D>.Get(Props.uiIconPathActivate)
+            : TexCommand.GatherSpotActive;
 
-        public Texture2D IconDeactivate
-        {
-            get
-            {
-                if (!Props.uiIconPathDeactivate.NullOrEmpty())
-                    return ContentFinder<Texture2D>.Get(Props.uiIconPathDeactivate, true);
-                return TexCommand.ClearPrioritizedWork;
-            }
-        }
+        public Texture2D IconDeactivate => !Props.uiIconPathDeactivate.NullOrEmpty()
+            ? ContentFinder<Texture2D>.Get(Props.uiIconPathDeactivate)
+            : TexCommand.ClearPrioritizedWork;
 
         public virtual Graphic Graphic
         {

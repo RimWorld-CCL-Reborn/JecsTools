@@ -10,9 +10,9 @@ namespace AbilityUser
 
         public void ExposeData()
         {
-            Scribe_Values.Look(ref damage, "damage", -1);
-            Scribe_Defs.Look(ref damageDef, "damageDef");
-            Scribe_Values.Look(ref chance, "chance", -1f);
+            Scribe_Values.Look(ref damage, nameof(damage), -1);
+            Scribe_Defs.Look(ref damageDef, nameof(damageDef));
+            Scribe_Values.Look(ref chance, nameof(chance), -1f);
         }
     }
 }

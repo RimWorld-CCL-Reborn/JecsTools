@@ -25,7 +25,7 @@ namespace CompInstalledPart
         public override void PostExposeData()
         {
             base.PostExposeData();
-            Scribe_Values.Look(ref uninstalled, "uninstalled", false);
+            Scribe_Values.Look(ref uninstalled, nameof(uninstalled));
             if (Scribe.mode == LoadSaveMode.LoadingVars)
                 CacheComps();
         }

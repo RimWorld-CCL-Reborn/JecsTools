@@ -13,11 +13,11 @@ namespace PawnShields
         public static List<ThingStuffPair> allShieldPairs;
         public static List<ThingStuffPair> workingShields = new List<ThingStuffPair>();
 
-        /*static PawnShieldGenerator()
-        {
-            //Initialise all shields.
-            Reset();
-        }*/
+        //static PawnShieldGenerator()
+        //{
+        //    //Initialise all shields.
+        //    Reset();
+        //}
 
         /// <summary>
         /// Tries to generate a shield for the pawn.
@@ -40,7 +40,7 @@ namespace PawnShields
             }
 
             var generatorPropsShieldMoney = generatorProps.shieldMoney;
-            float randomInRange = generatorPropsShieldMoney.RandomInRange;
+            var randomInRange = generatorPropsShieldMoney.RandomInRange;
             foreach (var w in allShieldPairs)
             {
                 if (w.Price <= randomInRange)
@@ -66,7 +66,7 @@ namespace PawnShields
             {
                 var thingWithComps = (ThingWithComps)ThingMaker.MakeThing(thingStuffPair.thing, thingStuffPair.stuff);
                 PawnGenerator.PostProcessGeneratedGear(thingWithComps, pawn);
-                float biocodeWeaponChance = (request.BiocodeWeaponChance > 0f) ? request.BiocodeWeaponChance : pawn.kindDef.biocodeWeaponChance;
+                var biocodeWeaponChance = (request.BiocodeWeaponChance > 0f) ? request.BiocodeWeaponChance : pawn.kindDef.biocodeWeaponChance;
                 if (Rand.Value < biocodeWeaponChance)
                 {
                     BiocodeForPawn(pawn, thingWithComps);
@@ -103,18 +103,19 @@ namespace PawnShields
 
             foreach (var thingDef in DefDatabase<ThingDef>.AllDefs.Where(IsShield))
             {
-                float num = (from pa in allShieldPairs
-                    where pa.thing == thingDef
-                    select pa).Sum(pa => pa.Commonality);
-                float num2 = thingDef.generateCommonality / num;
-                if (num2 == 1f) continue;
-                for (int i = 0; i < allShieldPairs.Count; i++)
+                var sum = (from pa in allShieldPairs
+                           where pa.thing == thingDef
+                           select pa).Sum(pa => pa.Commonality);
+                var avg = thingDef.generateCommonality / sum;
+                if (avg == 1f)
+                    continue;
+                for (var i = 0; i < allShieldPairs.Count; i++)
                 {
                     var thingStuffPair = allShieldPairs[i];
                     if (thingStuffPair.thing == thingDef)
                     {
                         allShieldPairs[i] = new ThingStuffPair(thingStuffPair.thing, thingStuffPair.stuff,
-                            thingStuffPair.commonalityMultiplier * num2);
+                            thingStuffPair.commonalityMultiplier * avg);
                     }
                 }
             }

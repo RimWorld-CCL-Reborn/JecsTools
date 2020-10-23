@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
 using RimWorld;
@@ -45,7 +44,8 @@ namespace CompSlotLoadable
         /// </summary>
         public static void PostApplyDamage_PostFix(Pawn __instance)
         {
-            if (__instance.Dead) return;
+            if (__instance.Dead)
+                return;
             var slots = __instance.equipment?.Primary?.GetSlots();
             if (slots != null)
                 foreach (var slot in slots)
@@ -74,8 +74,8 @@ namespace CompSlotLoadable
                 foreach (var rec in pawn.health.hediffSet.GetInjuredParts())
                     if (maxInjuries > 0 || woundLimit == 0)
                         foreach (var current in from injury in pawn.health.hediffSet.GetHediffs<Hediff_Injury>()
-                                where injury.Part == rec
-                                select injury)
+                                                where injury.Part == rec
+                                                select injury)
                             if (current.CanHealNaturally() && !current.IsPermanent()) // isOld // basically check for scars and old wounds
                             {
                                 current.Heal((int)current.Severity + 1);
@@ -85,21 +85,21 @@ namespace CompSlotLoadable
                 if (vampiricTarget != null)
                 {
                     var maxInjuriesToMake = woundLimit;
-                    if (woundLimit == 0) maxInjuriesToMake = 2;
+                    if (woundLimit == 0)
+                        maxInjuriesToMake = 2;
 
                     var vampiricPawn = vampiricTarget as Pawn;
                     foreach (var rec in vampiricPawn.health.hediffSet.GetNotMissingParts().InRandomOrder())
                         if (maxInjuriesToMake > 0)
                         {
                             vampiricPawn.TakeDamage(new DamageInfo(DamageDefOf.Burn, new IntRange(5, 10).RandomInRange,
-                                1f, 1, vampiricPawn, rec));
+                                1f, 1f, vampiricPawn, rec));
 
                             maxInjuriesToMake--;
                         }
                 }
             }
         }
-        //=================================== COMPSLOTLOADABLE
 
         public static void DrawThingRow_PostFix(ref float y, float width, Thing thing)
         {
@@ -134,9 +134,11 @@ namespace CompSlotLoadable
             LocalTargetInfo target)
         {
             var equipmentSource = __instance.EquipmentSource;
-            if (equipmentSource == null) return;
+            if (equipmentSource == null)
+                return;
             var casterPawn = __instance.CasterPawn;
-            if (casterPawn == null) return;
+            if (casterPawn == null)
+                return;
 
             var slots = equipmentSource.GetSlots();
             if (slots != null)
@@ -178,7 +180,7 @@ namespace CompSlotLoadable
 
                             damageAngle ??= (target.Thing.Position - casterPawn.Position).ToVector3();
                             var damageInfo = new DamageInfo(damageDef, damageAmount, slotBonusProps.armorPenetration,
-                                -1f, casterPawn, hitPart: null, equipmentSource.def);
+                                -1f, casterPawn, weapon: equipmentSource.def);
                             damageInfo.SetBodyRegion(BodyPartHeight.Undefined, BodyPartDepth.Outside);
                             damageInfo.SetWeaponBodyPartGroup(weaponBodyPartGroup);
                             damageInfo.SetWeaponHediff(weaponHediff);

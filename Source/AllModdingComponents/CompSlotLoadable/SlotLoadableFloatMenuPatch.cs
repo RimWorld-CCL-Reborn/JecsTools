@@ -38,35 +38,31 @@ namespace CompSlotLoadable
                                     if (!pawn.health.capacities.CapableOf(PawnCapacityDefOf.Manipulation))
                                     {
                                         itemSlotLoadable = new FloatMenuOption(
-                                            "CannotEquip".Translate(labelShort) + " (" + "Incapable".Translate() + ")",
-                                            null,
-                                            MenuOptionPriority.Default, null, null, 0f, null, null);
+                                            "CannotEquip".Translate(labelShort) + " (" + "Incapable".Translate() + ")", null);
                                     }
                                     else if (!pawn.CanReach(loadableThing, PathEndMode.ClosestTouch, Danger.Deadly))
                                     {
                                         itemSlotLoadable = new FloatMenuOption(
-                                            "CannotEquip".Translate(labelShort) + " (" + "NoPath".Translate() + ")", null,
-                                            MenuOptionPriority.Default, null, null, 0f, null, null);
+                                            "CannotEquip".Translate(labelShort) + " (" + "NoPath".Translate() + ")", null);
                                     }
                                     else if (!pawn.CanReserve(loadableThing, 1))
                                     {
                                         itemSlotLoadable = new FloatMenuOption(
                                             "CannotEquip".Translate(labelShort) + " (" +
                                             "ReservedBy".Translate(pawn.Map.physicalInteractionReservationManager
-                                                .FirstReserverOf(loadableThing).LabelShort) + ")", null,
-                                            MenuOptionPriority.Default, null, null, 0f, null, null);
+                                                .FirstReserverOf(loadableThing).LabelShort) + ")", null);
                                     }
                                     else
                                     {
-                                        var text2 = "Equip".Translate(labelShort);
-                                        itemSlotLoadable = new FloatMenuOption(text2, delegate
-                                        {
-                                            loadableThing.SetForbidden(false, true);
-                                            pawn.jobs.TryTakeOrderedJob(JobMaker.MakeJob(CompSlotLoadableDefOf.GatherSlotItem, loadableThing));
-                                            MoteMaker.MakeStaticMote(loadableThing.DrawPos, loadableThing.Map,
-                                                ThingDefOf.Mote_FeedbackEquip, 1f);
-                                            //PlayerKnowledgeDatabase.KnowledgeDemonstrated(ConceptDefOf.EquippingWeapons, KnowledgeAmount.Total);
-                                        }, MenuOptionPriority.High, null, null, 0f, null, null);
+                                        itemSlotLoadable = new FloatMenuOption(
+                                            "Equip".Translate(labelShort), () =>
+                                            {
+                                                loadableThing.SetForbidden(false, true);
+                                                pawn.jobs.TryTakeOrderedJob(JobMaker.MakeJob(CompSlotLoadableDefOf.GatherSlotItem, loadableThing));
+                                                MoteMaker.MakeStaticMote(loadableThing.DrawPos, loadableThing.Map,
+                                                    ThingDefOf.Mote_FeedbackEquip, 1f);
+                                                //PlayerKnowledgeDatabase.KnowledgeDemonstrated(ConceptDefOf.EquippingWeapons, KnowledgeAmount.Total);
+                                            }, MenuOptionPriority.High);
                                     }
                                     opts.Add(itemSlotLoadable);
                                 }

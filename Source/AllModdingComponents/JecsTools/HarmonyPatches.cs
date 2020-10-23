@@ -113,12 +113,11 @@ namespace JecsTools
         {
             if (!__result && __instance.def?.GetProjectileExtension() is ProjectileExtension ext)
             {
-                //Mods will often have their own walls, so we cannot do a def check for
-                //ThingDefOf.Wall
+                //Mods will often have their own walls, so we cannot do a def check for ThingDefOf.Wall
                 //Most "walls" should either be in the structure category or be able to hold walls.
                 if (thing?.def is ThingDef def)
                     if (def.designationCategory == DesignationCategoryDefOf.Structure ||
-                        def.holdsRoof == true)
+                        def.holdsRoof)
                     {
                         if (ext.passesWalls)
                         {
@@ -211,7 +210,8 @@ namespace JecsTools
         public static void GenerateStartingApparelFor_PostFix(Pawn pawn)
         {
             var allWornApparel = pawn.apparel?.WornApparel;
-            if (allWornApparel.NullOrEmpty()) return;
+            if (allWornApparel.NullOrEmpty())
+                return;
             List<(Apparel, Apparel)> swapEntries = null;
             foreach (var wornApparel in allWornApparel)
             {
@@ -219,7 +219,7 @@ namespace JecsTools
                     sc.swapWhenGender is Gender gen &&
                     gen != Gender.None && gen == pawn.gender)
                 {
-                    Apparel swapApparel = (Apparel)ThingMaker.MakeThing(sc.swapTo, wornApparel.Stuff);
+                    var swapApparel = (Apparel)ThingMaker.MakeThing(sc.swapTo, wornApparel.Stuff);
                     // Avoid modifying WornApparel during its enumeration by doing the swaps afterwards.
                     swapEntries ??= new List<(Apparel worn, Apparel swap)>();
                     swapEntries.Add((wornApparel, swapApparel));
@@ -256,9 +256,10 @@ namespace JecsTools
         //Faction
         public static bool Notify_MemberDied(Faction __instance, Pawn member, DamageInfo? dinfo)
         {
-            if (member?.Faction == null) return true;
-            if (!dinfo.HasValue) return true;
-            if (!(dinfo.Value.Instigator is Pawn instigator)) return true;
+            if (member?.Faction == null)
+                return true;
+            if (!(dinfo.HasValue && dinfo.Value.Instigator is Pawn instigator))
+                return true;
 
             var notLeader = __instance.leader != member;
 
@@ -270,16 +271,7 @@ namespace JecsTools
 
             var isPhoneFaction = __instance == lastPhoneAideFaction;
 
-            if (isPhoneFaction &&
-                inTime &&
-                notLeader &&
-                notPlayerKiller) // &&
-                //notAttackingPlayer)
-            {
-                return false;
-            }
-
-            return true;
+            return !isPhoneFaction || !inTime || !notLeader || !notPlayerKiller; //|| !notAttackingPlayer
         }
 
         /// <summary>
@@ -293,7 +285,8 @@ namespace JecsTools
                 return coverage == null || coverage.Count == 0 ? null : coverage;
             }
 
-            if (A == null || B == null || body == null || __result == true) return;
+            if (A == null || B == null || body == null || __result == true)
+                return;
             var coverageA = GetCoverage(A);
             var coverageB = GetCoverage(B);
             if (coverageA != null && coverageB != null)
@@ -315,9 +308,9 @@ namespace JecsTools
 
         public static void Post_GeneratePawn(Pawn __result)
         {
-            if (__result?.def?.race?.hediffGiverSets?.SelectMany(
-                x => x.hediffGivers.Where(y => y is HediffGiver_StartWithHediff)).FirstOrDefault() is
-                HediffGiver_StartWithHediff hediffGiver)
+            if (__result?.def?.race?.hediffGiverSets?
+                .SelectMany(x => x.hediffGivers.Where(y => y is HediffGiver_StartWithHediff))
+                .FirstOrDefault() is HediffGiver_StartWithHediff hediffGiver)
             {
                 hediffGiver.GiveHediff(__result);
             }
@@ -343,7 +336,7 @@ namespace JecsTools
         {
             if (tempDamageAmount != null && damAmount > 0)
             {
-                float damageDiff = Mathf.Clamp(damAmount - tempDamageAmount.Value, 0, damAmount);
+                var damageDiff = Mathf.Clamp(damAmount - tempDamageAmount.Value, 0, damAmount);
 
                 DebugMessage("Apply amount original: " + damAmount);
                 DebugMessage("Apply amount modified: " + tempDamageAmount);
@@ -380,7 +373,8 @@ namespace JecsTools
                         if (dinfo.Instigator is Pawn instigator)
                         {
                             DebugMessage("c6c:: Pawn has non-ranged weapon.");
-                            if (PreApplyDamage_ApplyExtraDamages(ref dinfo, out absorbed, instigator, ___pawn)) return false;
+                            if (PreApplyDamage_ApplyExtraDamages(out absorbed, instigator, ___pawn))
+                                return false;
                             PreApplyDamage_ApplyKnockback(instigator, ___pawn);
                         }
                 }
@@ -394,9 +388,9 @@ namespace JecsTools
 
         private static void PreApplyDamage_ApplyKnockback(Pawn instigator, Pawn pawn)
         {
-            var knockerProps =
-                instigator.health.hediffSet.hediffs.Select(y => y.TryGetComp<HediffComp_Knockback>()).FirstOrDefault(
-                    knockbackHediff => knockbackHediff != null)?.Props;
+            var knockerProps = instigator.health.hediffSet.hediffs
+                .Select(y => y.TryGetComp<HediffComp_Knockback>())
+                .FirstOrDefault(knockbackHediff => knockbackHediff != null)?.Props;
             if (knockerProps != null)
                 if (knockerProps.knockbackChance >= Rand.Value)
                 {
@@ -431,7 +425,7 @@ namespace JecsTools
                 }
         }
 
-        private static bool PreApplyDamage_ApplyExtraDamages(ref DamageInfo dinfo, out bool absorbed, Pawn instigator, Pawn pawn)
+        private static bool PreApplyDamage_ApplyExtraDamages(out bool absorbed, Pawn instigator, Pawn pawn)
         {
             DebugMessage($"c6c:: --- Enter PreApplyDamage_ApplyExtraDamages ---");
             var extraDamagesHediff =
@@ -455,7 +449,7 @@ namespace JecsTools
                         return true;
                     }
 
-                    //BattleLogEntry_MeleeCombat battleLogEntry_MeleeCombat = new BattleLogEntry_MeleeCombat(dinfo.Def.combatLogRules, true,
+                    //var battleLogEntry_MeleeCombat = new BattleLogEntry_MeleeCombat(dinfo.Def.combatLogRules, true,
                     //    instigator, pawn, ImplementOwnerTypeDefOf.Bodypart, (dinfo.Weapon != null) ? dinfo.Weapon.label : dinfo.Def.label);
                     //DebugMessage($"c6c:: MeleeCombat Log generated.");
                     //DamageWorker.DamageResult damageResult = new DamageWorker.DamageResult();
@@ -534,7 +528,7 @@ namespace JecsTools
                     DebugMessage("c6c:: Soak Damage Hediff has damage soak settings.");
                     foreach (var soakSettings in soakSetting.settings)
                     {
-                        DamageInfo info = dinfo;
+                        var info = dinfo;
 
                         DebugMessage($"c6c:: Hediff Damage: {info.Def}");
                         if (soakSettings.damageType != null)
@@ -599,8 +593,7 @@ namespace JecsTools
         {
             if (soakedDamage > 0 && pawn != null && pawn.Spawned && pawn.MapHeld != null &&
                 pawn.DrawPos is Vector3 drawVecDos && drawVecDos.InBounds(pawn.MapHeld))
-                MoteMaker.ThrowText(drawVecDos, pawn.MapHeld,
-                    "JT_DamageSoaked".Translate(soakedDamage), -1f);
+                MoteMaker.ThrowText(drawVecDos, pawn.MapHeld, "JT_DamageSoaked".Translate(soakedDamage));
         }
 
         public static Vector3 PushResult(Thing Caster, Thing thingToPush, int pushDist, out bool collision)
@@ -612,8 +605,10 @@ namespace JecsTools
             {
                 var pushDistX = i;
                 var pushDistZ = i;
-                if (origin.x < Caster.TrueCenter().x) pushDistX = -pushDistX;
-                if (origin.z < Caster.TrueCenter().z) pushDistZ = -pushDistZ;
+                if (origin.x < Caster.TrueCenter().x)
+                    pushDistX = -pushDistX;
+                if (origin.z < Caster.TrueCenter().z)
+                    pushDistZ = -pushDistZ;
                 var tempNewLoc = new Vector3(origin.x + pushDistX, 0f, origin.z + pushDistZ);
                 if (tempNewLoc.ToIntVec3().Standable(Caster.Map))
                 {
@@ -623,7 +618,7 @@ namespace JecsTools
                 {
                     if (thingToPush is Pawn)
                     {
-                        //target.TakeDamage(new DamageInfo(DamageDefOf.Blunt, Rand.Range(3, 6), -1, null, null, null));
+                        //target.TakeDamage(new DamageInfo(DamageDefOf.Blunt, Rand.Range(3, 6)));
                         collisionResult = true;
                         break;
                     }
@@ -636,7 +631,7 @@ namespace JecsTools
 
         public static void PushEffect(Thing Caster, Thing target, int distance, bool damageOnCollision = false)
         {
-            LongEventHandler.QueueLongEvent(delegate
+            LongEventHandler.QueueLongEvent(() =>
             {
                 if (target is Pawn p && p.Spawned && !p.Downed && !p.Dead && p.MapHeld != null)
                 {
@@ -646,7 +641,8 @@ namespace JecsTools
                     if (applyDamage && damageOnCollision)
                         flyingObject.Launch(Caster, new LocalTargetInfo(loc.ToIntVec3()), target,
                             new DamageInfo(DamageDefOf.Blunt, Rand.Range(8, 10)));
-                    else flyingObject.Launch(Caster, new LocalTargetInfo(loc.ToIntVec3()), target);
+                    else
+                        flyingObject.Launch(Caster, new LocalTargetInfo(loc.ToIntVec3()), target);
                 }
             }, "PushingCharacter", false, null);
         }

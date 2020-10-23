@@ -13,7 +13,7 @@ namespace JecsTools
             if (!pawn.HostileTo(Faction.OfPlayer))
                 return null;
             var flag = pawn.natives.IgniteVerb != null && pawn.HostileTo(Faction.OfPlayer);
-            var cellRect = CellRect.CenteredOn(pawn.Position, 5);
+            var cellRect = CellRect.CenteredOn(pawn.Position, CloseSearchRadius);
             for (var i = 0; i < 35; i++)
             {
                 var randomCell = cellRect.RandomCell;

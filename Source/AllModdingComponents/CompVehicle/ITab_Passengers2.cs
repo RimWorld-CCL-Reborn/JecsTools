@@ -255,7 +255,8 @@ namespace CompVehicle
             //Being super lazy...
             var things = new List<Thing>();
             if (!pawns.NullOrEmpty())
-                foreach (var p in pawns) things.Add(p);
+                foreach (var p in pawns)
+                    things.Add(p);
 
             if (things.Any(x => x is Pawn))
             {

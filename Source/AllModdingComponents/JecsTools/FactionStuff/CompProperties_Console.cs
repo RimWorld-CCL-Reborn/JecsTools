@@ -13,7 +13,7 @@ namespace JecsTools
 
         public CompProperties_Console()
         {
-            this.compClass = typeof(CompConsole);
+            compClass = typeof(CompConsole);
         }
     }
 }

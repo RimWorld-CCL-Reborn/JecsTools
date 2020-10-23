@@ -15,13 +15,13 @@ namespace CompAnimated
 
         public override void Render()
         {
-            Vector3 drawPos = this.parent.DrawPos;
+            var drawPos = parent.DrawPos;
 
             //apply offset
             drawPos.x += OverProps.xOffset + xOffset;
             drawPos.z += OverProps.yOffset + yOffset;
 
-            scaled.Draw(drawPos, Rot4.North, this.parent);
+            scaled.Draw(drawPos, Rot4.North, parent);
         }
 
         public override void NotifyGraphicsChange()
@@ -37,7 +37,7 @@ namespace CompAnimated
         public void Invalidate()
         {
             curGraphic = null;
-            this.dirty = true;
+            dirty = true;
         }
     }
 }

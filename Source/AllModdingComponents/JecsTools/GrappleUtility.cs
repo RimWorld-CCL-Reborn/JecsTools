@@ -30,8 +30,7 @@ namespace JecsTools
             if (!CanGrapple(grappler, victim))
                 return false;
 
-            BodyPartRecord grapplingPart;
-            if (!TryGetGrapplingPart(grappler, out grapplingPart))
+            if (!TryGetGrapplingPart(grappler, out var grapplingPart))
                 return false;
 
             //Special Case Handling
@@ -44,9 +43,7 @@ namespace JecsTools
 
             //Resolve Grapple Rolls
             //---------------------------------------------------------
-            if (IsGrappleSuccessful(grappler, victim, grapplingPart, grapplerBonusMod, victimBonusMod))
-                return true;
-            return false;
+            return IsGrappleSuccessful(grappler, victim, grapplingPart, grapplerBonusMod, victimBonusMod);
         }
 
         public static bool IsGrappleSuccessful(Pawn grappler, Pawn victim, BodyPartRecord grapplingPart,
@@ -74,19 +71,17 @@ namespace JecsTools
             if (rollGrappler + modifierGrappler > rollVictim + modifierVictim)
             {
                 MoteMaker.ThrowText(grappler.DrawPos, grappler.Map,
-                    rollGrappler + " + " + modifierGrappler + " = " + (rollGrappler + modifierGrappler)
-                    + " vs " +
-                    rollVictim + " + " + modifierVictim + " = " + (rollVictim + modifierVictim)
-                    + " : " + "JTGrapple_Success".Translate(), -1f);
+                    $"{rollGrappler} + {modifierGrappler} = {rollGrappler + modifierGrappler} vs " +
+                    $"{rollVictim} + {modifierVictim} = {rollVictim + modifierVictim} : " +
+                    "JTGrapple_Success".Translate());
 
                 TryMakeBattleLog(victim, grappler, grapplingPart);
                 return true;
             }
             MoteMaker.ThrowText(grappler.DrawPos, grappler.Map,
-                rollGrappler + " + " + modifierGrappler + " = " + (rollGrappler + modifierGrappler)
-                + " vs " +
-                rollVictim + " + " + modifierVictim + " = " + (rollVictim + modifierVictim)
-                + " : " + "JTGrapple_Failed".Translate(), -1f);
+                $"{rollGrappler} + {modifierGrappler} = {rollGrappler + modifierGrappler} vs " +
+                $"{rollVictim} + {modifierVictim} = {rollVictim + modifierVictim} : " +
+                "JTGrapple_Failed".Translate());
             return false;
         }
 
@@ -137,21 +132,21 @@ namespace JecsTools
             if (!victim.Awake())
             {
                 if (throwText)
-                    MoteMaker.ThrowText(grappler.DrawPos, grappler.Map, "JTGrapple_SleepingGrapple".Translate(), -1f);
+                    MoteMaker.ThrowText(grappler.DrawPos, grappler.Map, "JTGrapple_SleepingGrapple".Translate());
                 return true;
             }
 
             if (victim.Downed)
             {
                 if (throwText)
-                    MoteMaker.ThrowText(grappler.DrawPos, grappler.Map, "JTGrapple_DownedGrapple".Translate(), -1f);
+                    MoteMaker.ThrowText(grappler.DrawPos, grappler.Map, "JTGrapple_DownedGrapple".Translate());
                 return true;
             }
 
             if (victim.IsPrisonerOfColony && RestraintsUtility.InRestraints(victim))
             {
                 if (throwText)
-                    MoteMaker.ThrowText(grappler.DrawPos, grappler.Map, "JTGrapple_PrisonerGrapple".Translate(), -1f);
+                    MoteMaker.ThrowText(grappler.DrawPos, grappler.Map, "JTGrapple_PrisonerGrapple".Translate());
                 return true;
             }
             return false;
@@ -286,24 +281,14 @@ namespace JecsTools
         /// <returns></returns>
         public static GrappleType ResolveGrappleType(Pawn grappler, Pawn victim)
         {
-            var grappleType = GrappleType.None;
-
-            if (grappler.RaceProps.Humanlike &&
-                victim.RaceProps.Humanlike)
-                grappleType = GrappleType.Humanoid;
-
-            else if (grappler.RaceProps.Humanlike &&
-                     victim.RaceProps.Animal)
-                grappleType = GrappleType.HumanoidXAnimal;
-
-            else if (grappler.RaceProps.Animal &&
-                     victim.RaceProps.Humanlike)
-                grappleType = GrappleType.AnimalXHumanoid;
-
+            if (grappler.RaceProps.Humanlike && victim.RaceProps.Humanlike)
+                return GrappleType.Humanoid;
+            else if (grappler.RaceProps.Humanlike && victim.RaceProps.Animal)
+                return GrappleType.HumanoidXAnimal;
+            else if (grappler.RaceProps.Animal && victim.RaceProps.Humanlike)
+                return GrappleType.AnimalXHumanoid;
             else
-                grappleType = GrappleType.AnimalXAnimal;
-
-            return grappleType;
+                return GrappleType.AnimalXAnimal;
         }
 
         /// <summary>
