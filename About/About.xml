@@ -17,9 +17,9 @@
       <downloadUrl>https://github.com/pardeike/HarmonyRimWorld/releases/latest</downloadUrl>
     </li>
   </modDependencies>
-  <description>1.1.2.1 (08-13-2020)
+  <description>1.1.2.2 (10-23-2020)
 
-Adds modding components to RimWorld: vehicles, spell casting, weapon slots, oversized weapons, and more!
+Adds modding components to RimWorld: spell casting, weapon slots, oversized weapons, and more!
 
 Note to players: This mod will not change your game, but rather it lets modders do more, so you can have an even more amazing RimWorld experience.
 
@@ -55,14 +55,14 @@ CompVehicle (experimental for 1.0, removed for 1.1+)
  - Allows for a pawn to be treated as a vehicle that can be loaded with pilots, gunners, crew, and passengers.
 
 CompInstalledPart (WIP)
-- Allows installation and uninstallation of things onto other things. This is particularly useful for weapons on vehicles.
+- Allows installation and uninstallation of things onto other things.
 
 Additions by ChJees
 Additions by roxxploxx
 Additions by Swenzi
 Additions and transpilers by Erdelf
 Extensive hours of testing, debugging, and fixes by Xen
-Improvements by lbmaian
+Improvements and RW 1.1+ maintenance by lbmaian
 "Hey, should we make this into a public toolset for people to take advantage of all this cool stuff?" - Jecrell
 "Hell yes - this is awesome stuff - people will love it!" - Xen
 
@@ -74,6 +74,10 @@ Cade Perkinson, Jay Sacane, John Pahl, Tankok1998 also known as the Shermanlover
 ========================
 Changelog
 ========================
+1.1.2.2 (10-23-2020)
+========================
+Fix CompAbilityUser subtype search to not cause errors (such as broken world gen) if another mod's assembly contains references to missing/wrong-version dependencies (even if they are optional dependencies).
+
 1.1.2.1 (08-13-2020)
 ========================
 Fix regressions in RW 1.1 version by compiling separate assemblies for RW 1.1 and RW 1.2 to account for different enum/constant values in RW assemblies

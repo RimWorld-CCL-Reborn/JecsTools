@@ -1,3 +1,7 @@
+1.1.2.2 (10-23-2020)
+========================
+Fix CompAbilityUser subtype search to not cause errors (such as broken world gen) if another mod's assembly contains references to missing/wrong-version dependencies (even if they are optional dependencies).
+
 1.1.2.1 (08-13-2020)
 ========================
 Fix regressions in RW 1.1 version by compiling separate assemblies for RW 1.1 and RW 1.2 to account for different enum/constant values in RW assemblies
