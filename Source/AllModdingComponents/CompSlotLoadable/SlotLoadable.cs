@@ -56,7 +56,7 @@ namespace CompSlotLoadable
             if (defSlottableThingDefs != null && slottableThingDefs != null &&
                 defSlottableThingDefs.SequenceEqual(slottableThingDefs))
                 savedSlottableThingDefs = null;
-            Scribe_Collections.Look(ref savedSlottableThingDefs, nameof(slottableThingDefs));
+            Scribe_Collections.Look(ref savedSlottableThingDefs, nameof(slottableThingDefs), LookMode.Def);
             if (slottableThingDefs != null)
                 slottableThingDefs = savedSlottableThingDefs;
         }

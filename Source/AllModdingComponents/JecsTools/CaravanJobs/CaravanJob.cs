@@ -60,7 +60,7 @@ namespace JecsTools
 
         public bool overeat;
 
-        public List<ListerMergeables> placedThings;
+        public List<ThingCountClass> placedThings;
 
         public ThingDef plantDefToSow;
 
@@ -142,15 +142,15 @@ namespace JecsTools
             Scribe_TargetInfo.Look(ref targetA, nameof(targetA));
             Scribe_TargetInfo.Look(ref targetB, nameof(targetB));
             Scribe_TargetInfo.Look(ref targetC, nameof(targetC));
-            Scribe_Collections.Look(ref targetQueueA, nameof(targetQueueA));
-            Scribe_Collections.Look(ref targetQueueB, nameof(targetQueueB));
+            Scribe_Collections.Look(ref targetQueueA, nameof(targetQueueA), LookMode.GlobalTargetInfo);
+            Scribe_Collections.Look(ref targetQueueB, nameof(targetQueueB), LookMode.GlobalTargetInfo);
             Scribe_Values.Look(ref count, nameof(count), -1);
-            Scribe_Collections.Look(ref countQueue, nameof(countQueue));
+            Scribe_Collections.Look(ref countQueue, nameof(countQueue), LookMode.Value);
             Scribe_Values.Look(ref startTick, nameof(startTick), -1);
             Scribe_Values.Look(ref expiryInterval, nameof(expiryInterval), -1);
             Scribe_Values.Look(ref checkOverrideOnExpire, nameof(checkOverrideOnExpire));
             Scribe_Values.Look(ref playerForced, nameof(playerForced));
-            Scribe_Collections.Look(ref placedThings, nameof(placedThings));
+            Scribe_Collections.Look(ref placedThings, nameof(placedThings), LookMode.Deep);
             Scribe_Values.Look(ref maxNumMeleeAttacks, nameof(maxNumMeleeAttacks), int.MaxValue);
             Scribe_Values.Look(ref maxNumStaticAttacks, nameof(maxNumStaticAttacks), int.MaxValue);
             Scribe_Values.Look(ref exitMapOnArrival, nameof(exitMapOnArrival));
