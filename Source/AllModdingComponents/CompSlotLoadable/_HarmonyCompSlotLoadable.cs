@@ -67,20 +67,33 @@ namespace CompSlotLoadable
 
         public static void ApplyHealing(Thing thing, int woundLimit = 0, Thing vampiricTarget = null)
         {
+            // TODO: thing is always passed as Pawn - this check is unnecessary.
             if (thing is Pawn pawn)
             {
+                // This fully heals all non-permanent injury hediffs for the first x injured body parts,
+                // where x = woundLimit (or unlimited if woundLimit is 0).
+                // TODO: Should the body part be chosen at random like the vampiricTarget handling below?
+                // TODO: Should this heal only the first non-healed non-permament injury hediff per injured body part
+                // (rather than all such hediffs per injured body part)?
+                var hediffs = pawn.health.hediffSet.hediffs;
                 var maxInjuries = woundLimit;
-
                 foreach (var rec in pawn.health.hediffSet.GetInjuredParts())
                     if (maxInjuries > 0 || woundLimit == 0)
-                        foreach (var current in from injury in pawn.health.hediffSet.GetHediffs<Hediff_Injury>()
-                                                where injury.Part == rec
-                                                select injury)
-                            if (current.CanHealNaturally() && !current.IsPermanent()) // isOld // basically check for scars and old wounds
+                        for (var i = 0; i < hediffs.Count; i++)
+                        {
+                            var hediff = hediffs[i];
+                            if (hediff.Part == rec && (Hediff_Injury)hediff is var injury &&
+                                // TODO: Isn't !injury.IsPermanent() redundant?
+                                injury.CanHealNaturally() && !injury.IsPermanent()) // basically check for scars and old wounds
                             {
-                                current.Heal((int)current.Severity + 1);
+                                // Not using HealthUtility.CureHediff since it modifies hediffs list
+                                // and doesn't call the CompPostInjuryHeal hook.
+                                // TODO: Why not just pass injury.Severity?
+                                // Or heal a total random amount like the vampiricTarget handling below?
+                                injury.Heal((int)injury.Severity + 1);
                                 maxInjuries--;
                             }
+                        }
 
                 if (vampiricTarget != null)
                 {
@@ -88,10 +101,12 @@ namespace CompSlotLoadable
                     if (woundLimit == 0)
                         maxInjuriesToMake = 2;
 
+                    // TODO: If not a Pawn, will cause NRE.
                     var vampiricPawn = vampiricTarget as Pawn;
                     foreach (var rec in vampiricPawn.health.hediffSet.GetNotMissingParts().InRandomOrder())
                         if (maxInjuriesToMake > 0)
                         {
+                            // TODO: Instigator should be pawn, not vampiricPawn.
                             vampiricPawn.TakeDamage(new DamageInfo(DamageDefOf.Burn, new IntRange(5, 10).RandomInRange,
                                 1f, 1f, vampiricPawn, rec));
 

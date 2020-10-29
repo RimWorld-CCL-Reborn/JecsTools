@@ -35,22 +35,20 @@ namespace JecsTools
             //    prefix: new HarmonyMethod(type, nameof(MinPointsTest)));
             //------------
 
-            //Allow fortitude to soak damage
-
+            //Allow fortitude (HediffComp_DamageSoak) to soak damage
             //Adds HediffCompProperties_DamageSoak checks to damage
             harmony.Patch(AccessTools.Method(typeof(Pawn_HealthTracker), nameof(Pawn_HealthTracker.PreApplyDamage)),
                 prefix: new HarmonyMethod(type, nameof(PreApplyDamage_PrePatch)));
-
             //Applies cached armor damage and absorption
             harmony.Patch(AccessTools.Method(typeof(ArmorUtility), "ApplyArmor"),
-                prefix: new HarmonyMethod(type, nameof(ApplyProperDamage)));
-
+                prefix: new HarmonyMethod(type, nameof(Pre_ApplyArmor)));
             //Applies damage soak motes
             harmony.Patch(AccessTools.Method(typeof(ArmorUtility), nameof(ArmorUtility.GetPostArmorDamage)),
                 postfix: new HarmonyMethod(type, nameof(Post_GetPostArmorDamage)));
 
             //Allows for adding additional HediffSets when characters spawn using the StartWithHediff class.
-            harmony.Patch(AccessTools.Method(typeof(PawnGenerator), "GeneratePawn", new[] { typeof(PawnGenerationRequest) }),
+            harmony.Patch(AccessTools.Method(typeof(PawnGenerator), nameof(PawnGenerator.GeneratePawn),
+                    new[] { typeof(PawnGenerationRequest) }),
                 postfix: new HarmonyMethod(type, nameof(Post_GeneratePawn)));
 
             //Checks apparel that uses the ApparelExtension
@@ -316,14 +314,70 @@ namespace JecsTools
             }
         }
 
-        //ArmorUtility
+        // ArmorUtility patches:
+        // These are a workaround for PreApplyDamage_PrePatch changes to the dinfo struct not being saved, due to
+        // Pawn_HealthTracker.PreApplyDamage dinfo parameter being passed by value (PreApplyDamage_PrePatch has it passed
+        // by reference, but this only affects the patch; Pawn_HealthTracker.PreApplyDamage still has it passed by value).
+        // Incidentally, these patches have another purpose: it allows other Pawn_HealthTracker.PreApplyDamage code like
+        // Apparel.CheckPreAbsorbDamage (like shield belts), various pawn-specific notifications affecting pawn behavior,
+        // and other mod's patches on the method to run, some of which could affect dinfo.Amount and absorbed flag.
+        // Indeed, the choice of prefix patching Pawn_HealthTracker.PreApplyDamage rather than a Pawn.PreApplyDamage prefix
+        // or a Pawn_HealthTracker.PreApplyDamage postfix is likely a compromise to allow as much change to dinfo as
+        // possible yet still apply damage soaks before shield belt absorption.
+        // Pawn_HealthTracker.PreApplyDamage notification specifics: if it runs (no ThingComp.PostPreApplyDamage sets
+        // absorbed flag), prisoner guilt, AI updates, and current danger are triggered. If no Apparel.CheckPreAbsorbDamage
+        // sets the absorbed flag, stun effects, pawn thought/memory, and tale recording are triggered.
+        // XXX: I do not think this patch is reliable because:
+        // 1) It's not guaranteed to run under certain conditions (e.g. if dinfo.IgnoreArmor) when it should.
+        // 2) dinfo.Amount can be divided into multiple DamageInfos under certain conditions (bomb/flame damage),
+        //    which this doesn't take into account.
+        // 3) It assumes that all new damage amount since our PreApplyDamage_PrePatch ran should be damage soaked
+        //    (as long as this patch runs, e.g. not absorbed, etc.), by setting the damage amount back to tempDamageAmount,
+        //    the final damage amount recorded in PreApplyDamage_PrePatch, even if no damage soaks exist
+        //    (see TODO in PreApplyDamage_PrePatch).
+        // 4) If damage amount decreased yet still non-zero since our PreApplyDamage_PrePatch ran, this patch will
+        //    increase the damage amount back to tempDamageAmount, which is the total opposite of damage soaking.
+        // 5) Extra damages are also recorded in tempDamageAmount, which can unnecessarily trigger the above behavior,
+        //    although this is also necessary to avoid a stale tempDamageAmount being used in these patches.
+        // 6) The relationship of PreApplyDamage_PrePatch and this patch with respect to tempDamageAmount is fragile,
+        //    especially since (1) and tempDamageAmount not always being set in PreApplyDamage_PrePatch.
+        //    If another mod happens to use ArmorUtility without going through PreApplyDamage, this scheme will break.
+        // TODO:
+        // If we want to retain damage soaking before shield belt absorption:
+        //    Instead of this patch, postfix patch (highest patch priority) Pawn.PreApplyDamage to update the original
+        //    dinfo struct with any changes from PreApplyDamage_PrePatch. Make PreApplyDamage_PrePatch patch with lowest
+        //    patch priority so that it runs right before Pawn_HealthTracker.PreApplyDamage. This should ensure that there
+        //    no other changes to dinfo in between PreApplyDamage_PrePatch and the new Pawn.PreApplyDamage postfix patch
+        //    that should've been tracked. tempDamageAmount is still needed to to transfer the damage amount info between
+        //    these patches.
+        // If we're fine with damage soaks applying after shield belt absorption:
+        //    Simplify into a single Pawn.PreApplyDamage postfix patch.
+        public static void Pre_ApplyArmor(ref float damAmount, Pawn pawn)
+        {
+            if (tempDamageAmount != null && damAmount > 0f)
+            {
+                var damageDiff = Mathf.Max(damAmount - tempDamageAmount.Value, 0f);
+                // TODO: tempDamageAmount is an integer - so RoundRandom has no effect (other than float conversion).
+                // Shouldn't tempDamageAmount be a float?
+                var newDamAmount = GenMath.RoundRandom(tempDamageAmount.Value);
+                DebugMessage($"c6c:: ApplyArmor prefix on {pawn}: tempDamageAmount {tempDamageAmount} => null, damAmount {damAmount} => {newDamAmount}");
+                damAmount = newDamAmount;
+                tempDamageAmount = null;
+                if (damageDiff > 0f)
+                    tempDamageAbsorbed = GenMath.RoundRandom(damageDiff);
+            }
+        }
+
+        // XXX: Damage soak mote is already emitted in PreApplyDamage_ApplyDamageSoakers, so this leads to a misleading
+        // redundant soak mote. Worse, if the damage amount actually changes between PreApplyDamage_ApplyDamageSoakers
+        // and Pre_ApplyArmor, leading to a tempDamageAbsorbed that's different from PreApplyDamage_ApplyDamageSoakers's
+        // totalSoakedDamage, this is even more misleading.
         public static void Post_GetPostArmorDamage(Pawn pawn)
         {
             if (tempDamageAbsorbed != null)
             {
-                var hasFortitudeHediffs =
-                    pawn?.health?.hediffSet?.hediffs?.Any(x => x.TryGetComp<HediffComp_DamageSoak>() != null) ?? false;
-                if (hasFortitudeHediffs)
+                DebugMessage($"c6c:: GetPostArmorDamage postfix on {pawn}: tempDamageAbsorbed {tempDamageAbsorbed}");
+                if (pawn.GetHediffComp<HediffComp_DamageSoak>() != null)
                 {
                     DamageSoakedMote(pawn, tempDamageAbsorbed.Value);
                 }
@@ -332,70 +386,62 @@ namespace JecsTools
             }
         }
 
-        public static void ApplyProperDamage(ref float damAmount)
-        {
-            if (tempDamageAmount != null && damAmount > 0)
-            {
-                var damageDiff = Mathf.Clamp(damAmount - tempDamageAmount.Value, 0, damAmount);
-
-                DebugMessage("Apply amount original: " + damAmount);
-                DebugMessage("Apply amount modified: " + tempDamageAmount);
-                damAmount = GenMath.RoundRandom(tempDamageAmount.Value);
-                tempDamageAmount = null;
-                if (damageDiff > 0)
-                    tempDamageAbsorbed = GenMath.RoundRandom(damageDiff);
-            }
-        }
-
         public static bool PreApplyDamage_PrePatch(Pawn ___pawn, ref DamageInfo dinfo, out bool absorbed)
         {
-            DebugMessage($"c6c:: === Enter Harmony Prefix --- PreApplyDamage_ApplyExtraDamages ===");
+            DebugMessage($"c6c:: === Enter Harmony Prefix --- PreApplyDamage_PrePatch for {___pawn} and {dinfo} ===");
             if (___pawn != null && !StopPreApplyDamageCheck)
             {
                 DebugMessage("c6c:: Pawn exists. StopPreApplyDamageCheck: False");
-                var hediffs = ___pawn.health?.hediffSet?.hediffs;
-                if (!hediffs.NullOrEmpty())
+                var hediffSet = ___pawn.health.hediffSet;
+                if (hediffSet.hediffs.Count > 0)
                 {
-                    DebugMessage("c6c:: Pawn has health.");
-                    //A list will stack.
-                    var fortitudeHediffs = hediffs.FindAll(x => x.TryGetComp<HediffComp_DamageSoak>() != null);
-                    if (fortitudeHediffs.Count > 0)
+                    DebugMessage("c6c:: Pawn has hediffs.");
+                    // See above ArmorUtility comments.
+                    if (PreApplyDamage_ApplyDamageSoakers(ref dinfo, hediffSet, ___pawn))
                     {
-                        DebugMessage("c6c:: Pawn has Damage Soak hediff.");
-                        if (PreApplyDamage_ApplyDamageSoakers(ref dinfo, out absorbed, fortitudeHediffs, ___pawn))
-                        {
-                            DebugMessage($"c6c:: === Exit Harmony Prefix --- PreApplyDamage_ApplyExtraDamages ===");
-                            return false;
-                        }
+                        DebugMessage($"c6c:: === Exit Harmony Prefix --- PreApplyDamage_PrePatch for {___pawn} and {dinfo} ===");
+                        absorbed = true;
+                        return false;
                     }
 
-                    if (dinfo.Weapon is ThingDef weaponDef && !weaponDef.IsRangedWeapon)
-                        if (dinfo.Instigator is Pawn instigator)
+                    // Since this is a Pawn_HealthTracker.PreApplyDamage prefix patch, applying extra damage and knockback
+                    // only happens if no ThingComp.PostPreApplyDamage's (or earlier run patches) set the absorbed flag,
+                    // and it happens before any Apparel.CheckPreAbsorbDamage could set the absorbed flag, so e.g.
+                    // extra damage and knockback are applied regardless of a shield belt potentially setting absorbed flag.
+                    // TODO: Should these be applied before any possible absorbed flag (in a Pawn.PreApplyDamage prefix patch),
+                    // only after it's definitely not absorbed (in a Pawn_HealthTracker.PreApplyDamage postfix patch),
+                    // or retain the existing behavior (this Pawn_HealthTracker.PreApplyDamage prefix patch)?
+                    if (dinfo.Weapon is ThingDef weaponDef && !weaponDef.IsRangedWeapon &&
+                        dinfo.Instigator is Pawn instigator)
+                    {
+                        DebugMessage("c6c:: Pawn has non-ranged weapon.");
+                        if (PreApplyDamage_ApplyExtraDamages(instigator, ___pawn))
                         {
-                            DebugMessage("c6c:: Pawn has non-ranged weapon.");
-                            if (PreApplyDamage_ApplyExtraDamages(out absorbed, instigator, ___pawn))
-                                return false;
-                            PreApplyDamage_ApplyKnockback(instigator, ___pawn);
+                            absorbed = false;
+                            return false;
                         }
+                        PreApplyDamage_ApplyKnockback(instigator, ___pawn);
+                    }
                 }
             }
 
+            // TODO: tempDamageAmount shouldn't be set if there are no damage soaks (and no extra damages?).
             tempDamageAmount = (int)dinfo.Amount;
+            DebugMessage($"c6c:: tempDamageAmount <= {tempDamageAmount}");
             absorbed = false;
-            DebugMessage($"c6c:: === Exit Harmony Prefix --- PreApplyDamage_ApplyExtraDamages ===");
+            DebugMessage($"c6c:: === Exit Harmony Prefix --- PreApplyDamage_PrePatch for {___pawn} and {dinfo} ===");
             return true;
         }
 
         private static void PreApplyDamage_ApplyKnockback(Pawn instigator, Pawn pawn)
         {
-            var knockerProps = instigator.health.hediffSet.hediffs
-                .Select(y => y.TryGetComp<HediffComp_Knockback>())
-                .FirstOrDefault(knockbackHediff => knockbackHediff != null)?.Props;
+            var knockerProps = instigator.GetHediffComp<HediffComp_Knockback>()?.Props;
             if (knockerProps != null)
                 if (knockerProps.knockbackChance >= Rand.Value)
                 {
                     if (knockerProps.explosiveKnockback)
                     {
+                        // TODO: Use GenExplosion.DoExplosion instead?
                         var explosion = (Explosion)GenSpawn.Spawn(ThingDefOf.Explosion,
                             instigator.PositionHeld, instigator.MapHeld);
                         explosion.radius = knockerProps.explosionSize;
@@ -425,18 +471,21 @@ namespace JecsTools
                 }
         }
 
-        private static bool PreApplyDamage_ApplyExtraDamages(out bool absorbed, Pawn instigator, Pawn pawn)
+        private static bool PreApplyDamage_ApplyExtraDamages(Pawn instigator, Pawn pawn)
         {
-            DebugMessage($"c6c:: --- Enter PreApplyDamage_ApplyExtraDamages ---");
-            var extraDamagesHediff =
-                instigator.health.hediffSet.hediffs.FirstOrDefault(y =>
-                    y.TryGetComp<HediffComp_ExtraMeleeDamages>() != null);
-            DebugMessage("c6c:: ExtraDamagesHediff variable assigned.");
-            var damages = extraDamagesHediff?.TryGetComp<HediffComp_ExtraMeleeDamages>();
-            DebugMessage("c6c:: Damages variable assigned.");
-            if (damages?.Props?.ExtraDamages is List<Verse.ExtraDamage> extraDamages)
+            // TODO: This should be a patch on Verb_MeleeAttackDamage to have consistent behavior with vanilla usage
+            // of ExtraDamage (in Bullet and Verb_MeleeAttackDamage), including vanilla damage & armor penetration
+            // calculations, combat log association, and same interaction with damage soaks.
+            // TODO: Support multiple HediffComp_ExtraMeleeDamages on the same instigator?
+            DebugMessage($"c6c:: --- Enter PreApplyDamage_ApplyExtraDamages for {pawn} ---");
+            var extraDamagesComp = instigator.GetHediffComp<HediffComp_ExtraMeleeDamages>();
+            DebugMessage("c6c:: ExtraDamagesComp variable assigned.");
+            if (extraDamagesComp?.Props?.ExtraDamages is List<Verse.ExtraDamage> extraDamages)
             {
                 DebugMessage("c6c:: Extra damages list exists.");
+                // This flag prevents both infinite recursion (Thing.TakeDamage => PreApplyDamage_PrePatch)
+                // (It also prevents damage soaks from being applied to these extra damages, which is inconsistent
+                // with vanilla extra damage.)
                 StopPreApplyDamageCheck = true;
                 foreach (var dmg in extraDamages)
                 {
@@ -444,19 +493,19 @@ namespace JecsTools
                     if (pawn == null || !pawn.Spawned || pawn.Dead)
                     {
                         DebugMessage($"c6c:: Pawn is null, unspawned, or dead. Aborting.");
-                        absorbed = false;
                         StopPreApplyDamageCheck = false;
                         return true;
                     }
 
-                    //var battleLogEntry_MeleeCombat = new BattleLogEntry_MeleeCombat(dinfo.Def.combatLogRules, true,
-                    //    instigator, pawn, ImplementOwnerTypeDefOf.Bodypart, (dinfo.Weapon != null) ? dinfo.Weapon.label : dinfo.Def.label);
+                    //var battleLogEntry_MeleeCombat = new BattleLogEntry_MeleeCombat(damageDef.combatLogRules, true,
+                    //    instigator, pawn, ImplementOwnerTypeDefOf.Bodypart, (dinfo.Weapon != null) ? dinfo.Weapon.label : damageDef.label);
                     //DebugMessage($"c6c:: MeleeCombat Log generated.");
                     //DamageWorker.DamageResult damageResult = new DamageWorker.DamageResult();
                     //DebugMessage($"c6c:: MeleeCombat Damage Result generated.");
                     //damageResult = pawn.TakeDamage(new DamageInfo(dmg.def, dmg.amount, dmg.armorPenetration, -1, instigator));
-                    pawn.TakeDamage(new DamageInfo(dmg.def, dmg.amount, dmg.armorPenetration, -1, instigator));
-                    DebugMessage($"c6c:: MeleeCombat TakeDamage set to -- Def:{dmg.def} Amt:{dmg.amount} ArmorPen:{dmg.armorPenetration}.");
+                    var extraDinfo = new DamageInfo(dmg.def, dmg.amount, dmg.armorPenetration, -1, instigator);
+                    DebugMessage($"c6c:: MeleeCombat ExtraDamage dinfo: {extraDinfo}");
+                    pawn.TakeDamage(extraDinfo);
                     //damageResult.AssociateWithLog(battleLogEntry_MeleeCombat);
                     //DebugMessage($"c6c:: MeleeCombat Damage associated with log.");
                     //battleLogEntry_MeleeCombat.def = LogEntryDefOf.MeleeAttack;
@@ -467,70 +516,74 @@ namespace JecsTools
 
                 StopPreApplyDamageCheck = false;
             }
-            DebugMessage($"c6c:: --- Exit PreApplyDamage_ApplyExtraDamages ---");
-            absorbed = false;
+            DebugMessage($"c6c:: --- Exit PreApplyDamage_ApplyExtraDamages for {pawn} ---");
             return false;
         }
 
-        private static bool PreApplyDamage_ApplyDamageSoakers(ref DamageInfo dinfo, out bool absorbed,
-            List<Hediff> fortitudeHediffs, Pawn pawn)
+        private static bool PreApplyDamage_ApplyDamageSoakers(ref DamageInfo dinfo, HediffSet hediffSet, Pawn pawn)
         {
-            DebugMessage($"c6c:: --- Enter PreApplyDamage_ApplyDamageSoakers ---");
-            var soakedDamage = 0;
-            foreach (var fortitudeHediff in fortitudeHediffs)
+            // Multiple damage soak hediff comps stack.
+            DebugMessage($"c6c:: --- Enter PreApplyDamage_ApplyDamageSoakers for {pawn} and {dinfo} ---");
+            var damageDef = dinfo.Def;
+            var totalSoakedDamage = 0;
+            foreach (var hediffComp in hediffSet.GetAllComps())
             {
+                if (!(hediffComp is HediffComp_DamageSoak damageSoakComp))
+                    continue;
                 DebugMessage("c6c:: Soak Damage Hediff checked.");
 
-                var soakSetting = fortitudeHediff.TryGetComp<HediffComp_DamageSoak>()?.Props;
-                if (soakSetting == null)
+                var soakProps = damageSoakComp.Props;
+                if (soakProps == null)
                 {
                     DebugMessage("c6c:: Soak Damage Hediff has no damage soak XML properties.");
                     continue;
                 }
-                if (soakSetting.settings.NullOrEmpty())
+                if (soakProps.settings.NullOrEmpty())
                 {
                     DebugMessage("c6c:: Soak Damage Hediff has no damage soak settings.");
 
-                    //Null, here, means "all damage types"
-                    //So Null should pass this check.
-                    if (soakSetting.damageType != null && soakSetting.damageType != dinfo.Def)
+                    // Null, here, means "all damage types", so null should pass this check.
+                    if (soakProps.damageType != null && soakProps.damageType != damageDef)
                     {
-                        DebugMessage($"c6c:: {dinfo.Def.label.CapitalizeFirst()} is not in soak settings.");
+                        DebugMessage($"c6c:: {damageDef.label.CapitalizeFirst()} is not in soak settings.");
                         continue;
                     }
 
-                    if (soakSetting.damageTypesToExclude != null &&
-                        soakSetting.damageTypesToExclude.Contains(dinfo.Def))
+                    if (soakProps.damageTypesToExclude != null &&
+                        soakProps.damageTypesToExclude.Contains(damageDef))
                     {
-                        DebugMessage($"c6c:: {dinfo.Def.label.CapitalizeFirst()} is to be excluded from damage soak.");
+                        DebugMessage($"c6c:: {damageDef.label.CapitalizeFirst()} is to be excluded from damage soak.");
                         continue;
                     }
-                    var dmgAmount = Mathf.Clamp(dinfo.Amount - soakSetting.damageToSoak, 0, dinfo.Amount);
-                    DebugMessage($"c6c:: Min: 0, Max: {dinfo.Amount}. Calc: {dinfo.Amount} - {soakSetting.damageToSoak}.");
-                    soakedDamage += (int)Mathf.Min(dinfo.Amount, soakSetting.damageToSoak);
-                    DebugMessage($"c6c:: Soaked Running Total: {soakedDamage}");
+
+                    var dmgAmount = dinfo.Amount;
+                    var soakedDamage = Mathf.Min(soakProps.damageToSoak, dmgAmount);
+                    DebugMessage($"c6c:: Soaked: Min({soakProps.damageToSoak}, {dinfo.Amount}) => {soakedDamage}");
+                    dmgAmount -= soakedDamage;
+                    DebugMessage($"c6c:: Damage amount: {dinfo.Amount} - {soakedDamage} => {dmgAmount}");
+                    // TODO: Don't int-truncate here, and instead Mathf.RoundToInt or GenMath.RoundRandom when displaying it.
+                    totalSoakedDamage += (int)soakedDamage;
+                    DebugMessage($"c6c:: Total soaked: {totalSoakedDamage}");
                     dinfo.SetAmount(dmgAmount);
-                    DebugMessage($"c6c:: Result: {dinfo.Amount}");
+
                     if (dinfo.Amount > 0)
                     {
                         DebugMessage($"c6c:: More damage exists. Continuing check for soakers.");
                         continue;
                     }
-                    DamageSoakedMote(pawn, soakedDamage);
+
+                    DamageSoakedMote(pawn, totalSoakedDamage);
                     DebugMessage($"c6c:: Damage absorbed.");
-                    DebugMessage($"c6c::   FINAL RESULT -- Soak: {soakedDamage} Damage: {dinfo.Amount}.");
-                    DebugMessage($"c6c:: --- Exit PreApplyDamage_ApplyDamageSoakers ---");
-                    absorbed = true;
+                    DebugMessage($"c6c::   FINAL RESULT -- Total soaked: {totalSoakedDamage}, damage amount: {dinfo.Amount}.");
+                    DebugMessage($"c6c:: --- Exit PreApplyDamage_ApplyDamageSoakers for {pawn} and {dinfo} ---");
                     return true;
                 }
                 else
                 {
                     DebugMessage("c6c:: Soak Damage Hediff has damage soak settings.");
-                    foreach (var soakSettings in soakSetting.settings)
+                    foreach (var soakSettings in soakProps.settings)
                     {
-                        var info = dinfo;
-
-                        DebugMessage($"c6c:: Hediff Damage: {info.Def}");
+                        DebugMessage($"c6c:: Hediff Damage: {damageDef}");
                         if (soakSettings.damageType != null)
                             DebugMessage($"c6c:: Soak Type: {soakSettings.damageType}");
                         else
@@ -538,20 +591,19 @@ namespace JecsTools
 
                         //Null, here, means "all damage types"
                         //So Null should pass this check.
-                        if (soakSettings.damageType != null && soakSettings.damageType != info.Def)
+                        if (soakSettings.damageType != null && soakSettings.damageType != damageDef)
                         {
                             DebugMessage($"c6c:: No match. No soak.");
                             continue;
                         }
 
-                        // ReSharper disable once PossibleNullReferenceException
                         if (!soakSettings.damageTypesToExclude.NullOrEmpty())
                         {
                             DebugMessage($"c6c:: Damage Soak Exlusions: ");
                             foreach (var exclusion in soakSettings.damageTypesToExclude)
                             {
                                 DebugMessage($"c6c::    {exclusion}");
-                                if (exclusion == info.Def)
+                                if (exclusion == damageDef)
                                 {
                                     DebugMessage($"c6c:: Exclusion match. Damage soak aborted.");
                                     continue;
@@ -559,33 +611,36 @@ namespace JecsTools
                             }
                         }
 
-                        var dmgAmount = Mathf.Clamp(dinfo.Amount - soakSettings.damageToSoak, 0, dinfo.Amount);
-                        DebugMessage($"c6c:: Min: 0, Max: {dinfo.Amount}. Calc: {dinfo.Amount} - {soakSettings.damageToSoak}.");
-                        soakedDamage += (int)Mathf.Min(soakSettings.damageToSoak, dinfo.Amount);
+                        var dmgAmount = dinfo.Amount;
+                        var soakedDamage = Mathf.Min(soakSettings.damageToSoak, dmgAmount);
+                        DebugMessage($"c6c:: Soaked: Min({soakSettings.damageToSoak}, {dinfo.Amount}) => {soakedDamage}");
+                        dmgAmount -= soakedDamage;
+                        DebugMessage($"c6c:: Damage amount: {dinfo.Amount} - {soakedDamage} => {dmgAmount}");
+                        // TODO: Don't int-truncate here, and instead Mathf.RoundToInt or GenMath.RoundRandom when displaying it.
+                        totalSoakedDamage += (int)soakedDamage;
+                        DebugMessage($"c6c:: Total soaked: {totalSoakedDamage}");
                         dinfo.SetAmount(dmgAmount);
-                        DebugMessage($"c6c:: Result: {dinfo.Amount}");
-                        DebugMessage($"c6c:: Total soaked: {soakedDamage}");
+
                         if (dinfo.Amount > 0)
                         {
                             DebugMessage($"c6c:: Unsoaked damage remains. Checking for more soakers.");
                             continue;
                         }
-                        DamageSoakedMote(pawn, soakedDamage);
+
+                        DamageSoakedMote(pawn, totalSoakedDamage);
                         DebugMessage($"c6c:: Damage absorbed.");
-                        DebugMessage($"c6c::  FINAL RESULT -- Soak: {soakedDamage} Damage: {dinfo.Amount}.");
-                        DebugMessage($"c6c:: --- Exit PreApplyDamage_ApplyDamageSoakers ---");
-                        absorbed = true;
+                        DebugMessage($"c6c::  FINAL RESULT -- Total soaked: {totalSoakedDamage}, damage amount: {dinfo.Amount}.");
+                        DebugMessage($"c6c:: --- Exit PreApplyDamage_ApplyDamageSoakers for {pawn} and {dinfo} ---");
                         return true;
                     }
                 }
             }
-            if (soakedDamage > 0)
+            if (totalSoakedDamage > 0)
             {
-                DamageSoakedMote(pawn, soakedDamage);
-                DebugMessage($"c6c::   FINAL RESULT -- Soak: {soakedDamage} Damage: {dinfo.Amount}.");
+                DamageSoakedMote(pawn, totalSoakedDamage);
+                DebugMessage($"c6c::   FINAL RESULT -- Total soaked: {totalSoakedDamage}, damage amount: {dinfo.Amount}.");
             }
-            DebugMessage($"c6c:: --- Exit PreApplyDamage_ApplyDamageSoakers ---");
-            absorbed = false;
+            DebugMessage($"c6c:: --- Exit PreApplyDamage_ApplyDamageSoakers for {pawn} and {dinfo} ---");
             return false;
         }
 
@@ -593,7 +648,10 @@ namespace JecsTools
         {
             if (soakedDamage > 0 && pawn != null && pawn.Spawned && pawn.MapHeld != null &&
                 pawn.DrawPos is Vector3 drawVecDos && drawVecDos.InBounds(pawn.MapHeld))
+            {
+                Log.Message($"c6c:: DamageSoakedMote for {pawn}: {soakedDamage}");
                 MoteMaker.ThrowText(drawVecDos, pawn.MapHeld, "JT_DamageSoaked".Translate(soakedDamage));
+            }
         }
 
         public static Vector3 PushResult(Thing Caster, Thing thingToPush, int pushDist, out bool collision)
@@ -636,10 +694,12 @@ namespace JecsTools
                 if (target is Pawn p && p.Spawned && !p.Downed && !p.Dead && p.MapHeld != null)
                 {
                     var loc = PushResult(Caster, target, distance, out var applyDamage);
-                    //if (p.RaceProps.Humanlike) p.needs.mood.thoughts.memories.TryGainMemory(MiscDefOf.PJ_ThoughtPush, null);
+                    //if (p.RaceProps.Humanlike)
+                    //    p.needs.mood.thoughts.memories.TryGainMemory(MiscDefOf.PJ_ThoughtPush, null);
                     var flyingObject = (FlyingObject)GenSpawn.Spawn(MiscDefOf.JT_FlyingObject, p.PositionHeld, p.MapHeld);
                     if (applyDamage && damageOnCollision)
                         flyingObject.Launch(Caster, new LocalTargetInfo(loc.ToIntVec3()), target,
+                            // TODO: Make this configurable.
                             new DamageInfo(DamageDefOf.Blunt, Rand.Range(8, 10)));
                     else
                         flyingObject.Launch(Caster, new LocalTargetInfo(loc.ToIntVec3()), target);

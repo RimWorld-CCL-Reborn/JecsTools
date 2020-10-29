@@ -11,7 +11,7 @@ namespace JecsTools
         private readonly List<Hediff_MissingPart> temporarilyRemovedParts = new List<Hediff_MissingPart>();
 
         public override bool ShouldRemove =>
-            this.TryGetComp<HediffComp_Disappears>() is HediffComp_Disappears hdc_Disappears && hdc_Disappears.CompShouldRemove;
+            this.GetHediffComp<HediffComp_Disappears>() is HediffComp_Disappears hdc_Disappears && hdc_Disappears.CompShouldRemove;
 
         public override string TipStringExtra
         {
@@ -21,7 +21,7 @@ namespace JecsTools
                 var baseString = base.TipStringExtra;
                 if (!baseString.NullOrEmpty())
                     stringBuilder.Append(baseString);
-                if (def.comps.OfType<HediffCompProperties_VerbGiver>().FirstOrDefault()?.tools is List<Tool> tools)
+                if (def.GetHediffCompProps<HediffCompProperties_VerbGiver>()?.tools is List<Tool> tools)
                     for (var i = 0; i < tools.Count; i++)
                         stringBuilder.AppendLine("Damage".Translate() + ": " + tools[i].power);
                 return stringBuilder.ToString();

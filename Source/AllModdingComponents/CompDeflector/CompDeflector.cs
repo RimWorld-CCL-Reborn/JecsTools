@@ -137,7 +137,7 @@ namespace CompDeflector
                     if (UseManipulation(out var capable) && capable)
                         calc *= pawn.health.capacities.GetLevel(PawnCapacityDefOf.Manipulation);
                 }
-                return Mathf.Clamp(calc, 0, 1.0f);
+                return Mathf.Clamp01(calc);
             }
 
             public bool UseSkill(out SkillRecord skill)
