@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
 using RimWorld;
@@ -59,59 +60,77 @@ namespace CompSlotLoadable
                         {
                             MoteMaker.ThrowText(__instance.DrawPos, __instance.Map,
                                 "Heal Chance: Success", 6f); // TODO: Translate()?
-                            ApplyHealing(__instance, defensiveHealChance.woundLimit);
+                            ApplyHealing(__instance, defensiveHealChance.woundLimit, defensiveHealChance.amountRange);
                         }
                     }
                 }
         }
 
-        public static void ApplyHealing(Thing thing, int woundLimit = 0, Thing vampiricTarget = null)
+        [ThreadStatic]
+        private static List<BodyPartRecord> tempInjuredParts;
+
+        public static void ApplyHealing(Pawn pawn, int woundLimit, FloatRange amountRange, Pawn vampiricTarget = null,
+            DamageDef vampiricDamageDef = null, float vampiricArmorPenetration = 0f, Vector3? vampiricDamageAngle = default)
         {
-            // TODO: thing is always passed as Pawn - this check is unnecessary.
-            if (thing is Pawn pawn)
+            if (tempInjuredParts == null)
+                tempInjuredParts = new List<BodyPartRecord>();
+            else
+                tempInjuredParts.Clear();
+
+            // This heals non-permanent injury hediffs for x randomly chosen injured body parts,
+            // where x = woundLimit (or all injured body parts if woundLimit is 0).
+            // The amount healed per body part is randomly chosen from amountRange.
+            // If there are multiple injury hediffs that can be healed, they are healed in FIFO order.
+            var hediffSet = pawn.health.hediffSet;
+            var hediffs = hediffSet.hediffs;
+            var maxInjuriesToHeal = woundLimit;
+            foreach (var bodyPart in hediffSet.GetInjuredParts().InRandomOrder(tempInjuredParts))
             {
-                // This fully heals all non-permanent injury hediffs for the first x injured body parts,
-                // where x = woundLimit (or unlimited if woundLimit is 0).
-                // TODO: Should the body part be chosen at random like the vampiricTarget handling below?
-                // TODO: Should this heal only the first non-healed non-permament injury hediff per injured body part
-                // (rather than all such hediffs per injured body part)?
-                var hediffs = pawn.health.hediffSet.hediffs;
-                var maxInjuries = woundLimit;
-                foreach (var rec in pawn.health.hediffSet.GetInjuredParts())
-                    if (maxInjuries > 0 || woundLimit == 0)
-                        for (var i = 0; i < hediffs.Count; i++)
-                        {
-                            var hediff = hediffs[i];
-                            if (hediff.Part == rec && (Hediff_Injury)hediff is var injury &&
-                                // TODO: Isn't !injury.IsPermanent() redundant?
-                                injury.CanHealNaturally() && !injury.IsPermanent()) // basically check for scars and old wounds
-                            {
-                                // Not using HealthUtility.CureHediff since it modifies hediffs list
-                                // and doesn't call the CompPostInjuryHeal hook.
-                                // TODO: Why not just pass injury.Severity?
-                                // Or heal a total random amount like the vampiricTarget handling below?
-                                injury.Heal((int)injury.Severity + 1);
-                                maxInjuries--;
-                            }
-                        }
-
-                if (vampiricTarget != null)
+                if (maxInjuriesToHeal == 0)
+                    break;
+                var maxHealAmount = -1f;
+                for (var i = 0; i < hediffs.Count; i++)
                 {
-                    var maxInjuriesToMake = woundLimit;
-                    if (woundLimit == 0)
-                        maxInjuriesToMake = 2;
-
-                    // TODO: If not a Pawn, will cause NRE.
-                    var vampiricPawn = vampiricTarget as Pawn;
-                    foreach (var rec in vampiricPawn.health.hediffSet.GetNotMissingParts().InRandomOrder())
-                        if (maxInjuriesToMake > 0)
+                    var hediff = hediffs[i];
+                    if (hediff.Part == bodyPart && (Hediff_Injury)hediff is var injury &&
+                        !injury.ShouldRemove && injury.CanHealNaturally()) // basically check for scars and old wounds
+                    {
+                        if (maxHealAmount < 0f)
                         {
-                            // TODO: Instigator should be pawn, not vampiricPawn.
-                            vampiricPawn.TakeDamage(new DamageInfo(DamageDefOf.Burn, new IntRange(5, 10).RandomInRange,
-                                1f, 1f, vampiricPawn, rec));
-
-                            maxInjuriesToMake--;
+                            maxHealAmount = amountRange.RandomInRange;
+                            //Log.Message($"{pawn} {bodyPart} total heal amount {maxHealAmount}");
                         }
+                        var healAmount = Mathf.Min(maxHealAmount, injury.Severity); // this should be >0
+                        //Log.Message($"{pawn} {bodyPart} healed {healAmount} of {injury.Severity}; " +
+                        //    $"remaining max heal amount {maxHealAmount - healAmount}; " +
+                        //    $"remaining max injuries to heal {maxInjuriesToHeal - 1}");
+                        // Note: even if fully healing, not using HealthUtility.CureHediff since it modifies
+                        // hediffs list and doesn't call the CompPostInjuryHeal hook.
+                        injury.Heal(healAmount);
+                        maxInjuriesToHeal--;
+                        if (maxInjuriesToHeal == 0)
+                            break;
+                        maxHealAmount -= healAmount;
+                        if (maxHealAmount <= 0f)
+                            break;
+                    }
+                }
+            }
+
+            if (vampiricTarget != null)
+            {
+                var maxInjuriesToMake = woundLimit;
+                foreach (var bodyPart in vampiricTarget.health.hediffSet.GetNotMissingParts().InRandomOrder(tempInjuredParts))
+                {
+                    if (maxInjuriesToMake == 0)
+                        break;
+                    var dinfo = new DamageInfo(vampiricDamageDef, amountRange.RandomInRange, vampiricArmorPenetration, -1f,
+                        pawn, bodyPart);
+                    dinfo.SetAngle(vampiricDamageAngle.Value);
+                    //Log.Message($"{vampiricTarget} {bodyPart} vampiric dinfo {dinfo}; " +
+                    //    $"remaining max injuries to make {maxInjuriesToMake - 1}");
+                    vampiricTarget.TakeDamage(dinfo);
+                    maxInjuriesToMake--;
                 }
             }
         }
@@ -217,7 +236,9 @@ namespace CompSlotLoadable
                             {
                                 MoteMaker.ThrowText(casterPawn.DrawPos, casterPawn.Map, "Vampiric Effect: Success", 6f); // TODO: Translate()?
                                 //MoteMaker.ThrowText(casterPawn.DrawPos, casterPawn.Map, "Success".Translate(), 6f);
-                                ApplyHealing(casterPawn, vampiricEffect.woundLimit, target.Thing);
+                                damageAngle ??= (target.Thing.Position - casterPawn.Position).ToVector3();
+                                ApplyHealing(casterPawn, vampiricEffect.woundLimit, vampiricEffect.amountRange, target.Pawn,
+                                    vampiricEffect.damageDef, vampiricEffect.armorPenetration, damageAngle);
                             }
                         }
                     }

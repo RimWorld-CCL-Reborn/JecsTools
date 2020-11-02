@@ -286,17 +286,13 @@ namespace CompSlotLoadable
                         var defHealChance = slotBonusProps.defensiveHealChance;
                         if (defHealChance != null)
                         {
-                            var healText = StringOf.all;
-                            if (defHealChance.woundLimit != 0)
-                                healText = defHealChance.woundLimit.ToString();
+                            var healText = defHealChance.woundLimit == int.MaxValue ? StringOf.all : defHealChance.woundLimit.ToString();
                             s.AppendLine("  " + string.Format(StringOf.DefensiveHealChance, healText, defHealChance.chance.ToStringPercent()));
                         }
                         var vampChance = slotBonusProps.vampiricHealChance;
                         if (vampChance != null)
                         {
-                            var vampText = StringOf.all;
-                            if (vampChance.woundLimit != 0)
-                                vampText = defHealChance.woundLimit.ToString();
+                            var vampText = vampChance.woundLimit == int.MaxValue ? StringOf.all : vampChance.woundLimit.ToString();
                             s.AppendLine("  " + string.Format(StringOf.VampiricChance, vampText, vampChance.chance.ToStringPercent()));
                         }
                     }
