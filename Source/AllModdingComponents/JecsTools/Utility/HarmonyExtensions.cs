@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using HarmonyLib;
 
-namespace PawnShields
+namespace JecsTools
 {
     // Code copied between JecsTools and PawnShields - keep them in sync!
     public static class HarmonyExtensions

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace PawnShields
+namespace JecsTools
 {
     // Code copied between JecsTools and PawnShields - keep them in sync!
     public static class ListExtensions

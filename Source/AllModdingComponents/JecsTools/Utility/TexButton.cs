@@ -7,6 +7,5 @@ namespace JecsTools
     internal class TexButton
     {
         public static readonly Texture2D quickstartIconTex = ContentFinder<Texture2D>.Get("quickstartIcon");
-
     }
 }
