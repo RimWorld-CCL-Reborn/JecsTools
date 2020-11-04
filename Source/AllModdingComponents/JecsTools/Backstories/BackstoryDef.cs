@@ -69,20 +69,28 @@ namespace JecsTools
             {
                 if (bs.forcedTraits.NullOrEmpty())
                     return null;
-                return bs.forcedTraits
-                    .Where(trait => Rand.Range(0, 100) < trait.chance)
-                    .Select(trait => new TraitEntry(TraitDef.Named(trait.defName), trait.degree))
-                    .ToList();
+                var forcedTraits = new List<TraitEntry>();
+                foreach (var trait in bs.forcedTraits)
+                {
+                    if (Rand.Range(0, 100) < trait.chance)
+                        forcedTraits.Add(new TraitEntry(TraitDef.Named(trait.defName), trait.degree));
+                }
+                return forcedTraits;
             }
+
             static List<TraitEntry> DisallowedTraits(BackstoryDef bs)
             {
                 if (bs.disallowedTraits.NullOrEmpty())
                     return null;
-                return bs.disallowedTraits
-                    .Where(trait => Rand.Range(0, 100) < trait.chance)
-                    .Select(trait => new TraitEntry(TraitDef.Named(trait.defName), trait.degree))
-                    .ToList();
+                var disallowedTraits = new List<TraitEntry>();
+                foreach (var trait in bs.disallowedTraits)
+                {
+                    if (Rand.Range(0, 100) < trait.chance)
+                        disallowedTraits.Add(new TraitEntry(TraitDef.Named(trait.defName), trait.degree));
+                }
+                return disallowedTraits;
             }
+
             static WorkTags WorkDisables(BackstoryDef bs)
             {
                 var wt = WorkTags.None;
@@ -104,6 +112,7 @@ namespace JecsTools
                 }
                 return wt;
             }
+
             static WorkTags RequiredWorkTags(BackstoryDef bs)
             {
                 var wt = WorkTags.None;

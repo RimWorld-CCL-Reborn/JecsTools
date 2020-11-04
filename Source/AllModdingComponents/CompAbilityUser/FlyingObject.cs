@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using RimWorld;
+﻿using RimWorld;
 using UnityEngine;
 using Verse;
 
@@ -158,7 +157,8 @@ namespace AbilityUser
         protected virtual void Impact(Thing hitThing)
         {
             // TODO: Should this hitThing fallback really required to be a Pawn?
-            hitThing ??= Position.GetThingList(Map).FirstOrDefault(x => x == usedTarget) as Pawn;
+            if (hitThing == null && usedTarget is Pawn && Position.GetThingList(Map).Contains(usedTarget))
+                hitThing = usedTarget;
 
             if (impactDamage != null)
             {

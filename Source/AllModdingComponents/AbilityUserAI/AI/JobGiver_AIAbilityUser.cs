@@ -1,4 +1,4 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
 using AbilityUser;
 using Verse;
 using Verse.AI;
@@ -33,14 +33,8 @@ namespace AbilityUserAI
         protected override Job TryGiveJob(Pawn pawn)
         {
             //Do we have at least one elegible profile?
-            var profiles = pawn.EligibleAIProfiles();
-
-            //var builder = new System.Text.StringBuilder("profiles = ");
-            //foreach(AbilityUserAIProfileDef profile in profiles)
-            //{
-            //    builder.Append(profile.defName + ", ");
-            //}
-            //Log.Message(builder.ToString());
+            var profiles = (List<AbilityUserAIProfileDef>)pawn.EligibleAIProfiles(); // cast to list for performance
+            //Log.Message("EligibleAIProfiles: " + profiles.ToStringSafeEnumerable());
 
             foreach (var profile in profiles)
             {
@@ -115,7 +109,7 @@ namespace AbilityUserAI
                     {
                         //Get Ability from Pawn.
                         var useAbility = compAbilityUser.AbilityData.AllPowers
-                            .First(ability => ability.Def == useThisAbility.ability);
+                            .Find(ability => ability.Def == useThisAbility.ability);
 
                         //Give job.
                         if (useAbility.CanCastPowerCheck(AbilityContext.AI, out var reason))

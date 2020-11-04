@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using RimWorld;
 using Verse;
 
@@ -101,11 +100,17 @@ namespace PawnShields
 
             allShieldPairs = ThingStuffPair.AllWith(IsShield);
 
-            foreach (var thingDef in DefDatabase<ThingDef>.AllDefs.Where(IsShield))
+            foreach (var thingDef in DefDatabase<ThingDef>.AllDefsListForReading)
             {
-                var sum = (from pa in allShieldPairs
-                           where pa.thing == thingDef
-                           select pa).Sum(pa => pa.Commonality);
+                if (!IsShield(thingDef)) continue;
+                var sum = 0f;
+                foreach (var pa in allShieldPairs)
+                {
+                    if (pa.thing == thingDef)
+                    {
+                        sum += pa.Commonality;
+                    }
+                }
                 var avg = thingDef.generateCommonality / sum;
                 if (avg == 1f)
                     continue;

@@ -30,30 +30,31 @@ namespace JecsTools
             return Def.cleaveTargets;
         }
 
+        private const int maxDist = 4;
+
         public override DamageResult Apply(DamageInfo dinfo, Thing victim)
         {
-            float maxDist;
-            int cleaveAttacks;
-
             if (!dinfo.InstantPermanentInjury)
                 if (dinfo.Instigator != null)
                 {
-                    maxDist = 4;
-                    cleaveAttacks = NumToCleave(dinfo.Instigator);
+                    int cleaveAttacks = NumToCleave(dinfo.Instigator);
                     if (victim?.PositionHeld != default(IntVec3))
                         for (var i = 0; i < 8; i++)
                         {
                             var c = victim.PositionHeld + GenAdj.AdjacentCells[i];
                             if (cleaveAttacks > 0 && (dinfo.Instigator.Position - c).LengthHorizontalSquared < maxDist)
                             {
-                                var pawnsInCell = c.GetThingList(victim.Map).FindAll(x =>
-                                    x is Pawn && x != dinfo.Instigator && x.Faction != dinfo.Instigator.Faction);
-                                for (var k = 0; cleaveAttacks > 0 && k < pawnsInCell.Count; k++)
+                                var things = c.GetThingList(victim.Map);
+                                for (var k = 0; cleaveAttacks > 0 && k < things.Count; k++)
                                 {
-                                    --cleaveAttacks;
-                                    var p = (Pawn)pawnsInCell[k];
-                                    p.TakeDamage(new DamageInfo(Def.cleaveDamage,
-                                        (int)(dinfo.Amount * Def.cleaveFactor), Def.armorPenetration, -1, dinfo.Instigator));
+                                    if (things[k] is Pawn pawn && pawn != dinfo.Instigator &&
+                                        pawn.Faction != dinfo.Instigator.Faction)
+                                    {
+                                        --cleaveAttacks;
+                                        pawn.TakeDamage(new DamageInfo(Def.cleaveDamage,
+                                            (int)(dinfo.Amount * Def.cleaveFactor), Def.armorPenetration, -1,
+                                            dinfo.Instigator));
+                                    }
                                 }
                             }
                         }

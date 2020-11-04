@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Text;
 using HarmonyLib;
 using RimWorld;
@@ -119,19 +118,27 @@ namespace JecsTools
             lastOptsID = optsID;
             savedList.Clear();
             var things = c.GetThingList(pawn.Map);
-            if (things.Count > 0)
-                foreach (var (condition, funcs) in floatMenuOptionList)
+            if (things.Count == 0)
+                return;
+            foreach (var (condition, funcs) in floatMenuOptionList)
+            {
+                if (funcs.NullOrEmpty())
+                    continue;
+                foreach (var passer in things)
                 {
-                    if (!funcs.NullOrEmpty())
-                        foreach (var passer in things.Where(condition.Passes))
-                            foreach (var func in funcs)
-                                if (func.Invoke(clickPos, pawn, passer) is List<FloatMenuOption> newOpts &&
-                                    newOpts.Count > 0)
-                                {
-                                    opts?.AddRange(newOpts);
-                                    savedList.AddRange(newOpts);
-                                }
+                    if (!condition.Passes(passer))
+                        continue;
+                    foreach (var func in funcs)
+                    {
+                        if (func.Invoke(clickPos, pawn, passer) is List<FloatMenuOption> newOpts &&
+                            newOpts.Count > 0)
+                        {
+                            opts?.AddRange(newOpts);
+                            savedList.AddRange(newOpts);
+                        }
+                    }
                 }
+            }
         }
     }
 

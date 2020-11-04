@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Verse;
+﻿using Verse;
 using Verse.AI;
 
 namespace ThinkNodes
@@ -12,11 +11,11 @@ namespace ThinkNodes
         {
             if (pawn.Drafted)
                 return false;
-            foreach (var unused in pawn.health.hediffSet.hediffs.Where(x => x.def.defName.EqualsIgnoreCase(hediffDef)))
+            foreach (var hediff in pawn.health.hediffSet.hediffs)
             {
-                return true;
+                if (hediff.def.defName.EqualsIgnoreCase(hediffDef))
+                    return true;
             }
-
             return false;
         }
     }

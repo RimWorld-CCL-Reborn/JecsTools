@@ -5,7 +5,6 @@ using RimWorld;
 using RimWorld.Planet;
 using UnityEngine;
 using Verse;
-using Verse.AI;
 using Verse.Sound;
 
 namespace JecsTools
@@ -14,6 +13,7 @@ namespace JecsTools
     // It's based off the B18 version of FactionDialogMaker, which has undergone significant changes since.
     // For example, the QuestPeaceTalks IncidentDef no longer exists:
     // It was renamed to Quest_PeaceTalks in RW B19, then replaced with an OpportunitySite_PeaceTalks QuestScriptDef in RW 1.1.
+    // This needs to be rebased off the latest version of FactionDialogMaker (or reworked into Harmony patches if possible).
     [Obsolete("Hasn't worked properly since RW B19")]
     public static class JecsToolsFactionDialogMaker
     {
@@ -246,14 +246,14 @@ namespace JecsTools
             if (map.attackTargetsCache.TargetsHostileToColony.Any(GenHostility.IsActiveThreatToPlayer))
             {
                 if (!map.attackTargetsCache.TargetsHostileToColony
-                    .Any((IAttackTarget p) => ((Thing)p).Faction != null && ((Thing)p).Faction.HostileTo(faction)))
+                    .Any(p => ((Thing)p).Faction != null && ((Thing)p).Faction.HostileTo(faction)))
                 {
                     var source = (from pa in map.attackTargetsCache.TargetsHostileToColony
                                   where GenHostility.IsActiveThreatToPlayer(pa)
                                   select ((Thing)pa).Faction into fa
                                   where fa != null && !fa.HostileTo(faction)
-                                  // TODO: Faction doesn't have own GetHashCode or Equals, so Distinct below works on reference equality.
-                                  // Since this is only used for generating a faction name list string, this should select on Faction.Name.
+                                  // Faction doesn't have own GetHashCode or Equals, so Distinct below works on reference equality.
+                                  // ALthough this is iffy, this is what vanilla RW does, so leave it be.
                                   select fa).Distinct();
                     var key = "MilitaryAidConfirmMutualEnemy";
                     var diaNode = new DiaNode(key.Translate(faction.Name,

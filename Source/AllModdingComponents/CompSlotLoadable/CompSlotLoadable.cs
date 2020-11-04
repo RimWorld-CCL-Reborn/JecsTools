@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using RimWorld;
 using UnityEngine;
@@ -26,10 +25,10 @@ namespace CompSlotLoadable
         public List<SlotLoadable> Slots => slots;
 
         public SlotLoadable ColorChangingSlot =>
-            colorChangingSlot ??= slots.FirstOrDefault(slot => slot.Def?.doesChangeColor ?? false);
+            colorChangingSlot ??= slots.Find(slot => slot.Def?.doesChangeColor ?? false);
 
         public SlotLoadable SecondColorChangingSlot =>
-            secondColorChangingSlot ??= slots.FirstOrDefault(slot => slot.Def?.doesChangeSecondColor ?? false);
+            secondColorChangingSlot ??= slots.Find(slot => slot.Def?.doesChangeSecondColor ?? false);
 
         public List<SlotLoadableDef> SlotDefs => slots.ConvertAll(slot => slot.Def);
 
@@ -141,8 +140,8 @@ namespace CompSlotLoadable
         {
             //Log.Message("TryLoadSlot Called");
             isGathering = false;
-            var loadSlot = slots.FirstOrDefault(slot => slot.IsEmpty() && slot.CanLoad(thing.def)) ??
-                slots.FirstOrDefault(slot => slot.CanLoad(thing.def));
+            var loadSlot = slots.Find(slot => slot.IsEmpty() && slot.CanLoad(thing.def)) ??
+                slots.Find(slot => slot.CanLoad(thing.def));
             return loadSlot?.TryLoadSlot(thing, true) ?? false;
         }
 
@@ -162,7 +161,7 @@ namespace CompSlotLoadable
                         foreach (var current in loadTypes)
                         {
                             var thingToLoad = map.listerThings.ThingsOfDef(current)
-                                .FirstOrDefault(x => map.reservationManager.CanReserve(pawn, x));
+                                .Find(x => map.reservationManager.CanReserve(pawn, x));
                             if (thingToLoad != null)
                             {
                                 //bool extraPartOnGUI(Rect rect) => Widgets.InfoCardButton(rect.x + 5f, rect.y + (rect.height - 24f) / 2f, current);

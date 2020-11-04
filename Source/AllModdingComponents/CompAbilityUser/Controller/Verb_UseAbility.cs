@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using RimWorld;
 using Verse;
 using Verse.Sound;
@@ -60,7 +59,7 @@ namespace AbilityUser
                 if (targetAoEProperties == null)
                     Log.Error("Tried to Cast AoE-Ability without defining a target class");
 
-                IEnumerable<Thing> targets;
+                List<Thing> targets;
 
                 //Handle TargetAoE start location.
                 var aoeStartPosition = caster.PositionHeld;
@@ -70,7 +69,7 @@ namespace AbilityUser
                 //Handle friendly fire targets.
                 if (!targetAoEProperties.friendlyFire)
                 {
-                    targets = caster.Map.listerThings.AllThings.Where(x =>
+                    targets = caster.Map.listerThings.AllThings.FindAll(x =>
                         x.Position.InHorDistOf(aoeStartPosition, targetAoEProperties.range) &&
                         targetAoEProperties.targetClass.IsAssignableFrom(x.GetType()) &&
                         x.Faction.HostileTo(Faction.OfPlayer));
@@ -78,7 +77,7 @@ namespace AbilityUser
                 else if (targetAoEProperties.targetClass == typeof(Plant) ||
                          targetAoEProperties.targetClass == typeof(Building))
                 {
-                    targets = caster.Map.listerThings.AllThings.Where(x =>
+                    targets = caster.Map.listerThings.AllThings.FindAll(x =>
                         x.Position.InHorDistOf(aoeStartPosition, targetAoEProperties.range) &&
                         targetAoEProperties.targetClass.IsAssignableFrom(x.GetType()));
                     foreach (var targ in targets)
@@ -90,20 +89,19 @@ namespace AbilityUser
                 }
                 else
                 {
-                    targets = caster.Map.listerThings.AllThings.Where(x =>
+                    targets = caster.Map.listerThings.AllThings.FindAll(x =>
                         x.Position.InHorDistOf(aoeStartPosition, targetAoEProperties.range) &&
                         targetAoEProperties.targetClass.IsAssignableFrom(x.GetType()) &&
                         (x.HostileTo(Faction.OfPlayer) || targetAoEProperties.friendlyFire));
                 }
 
                 var maxTargets = props.abilityDef.MainVerb.TargetAoEProperties.maxTargets;
-                var randTargets = targets.ToArray();
-                GenList.Shuffle(randTargets);
-                for (var i = 0; i < maxTargets && i < randTargets.Length; i++)
+                GenList.Shuffle(targets);
+                for (var i = 0; i < maxTargets && i < targets.Count; i++)
                 {
-                    var tinfo = new TargetInfo(randTargets[i]);
+                    var tinfo = new TargetInfo(targets[i]);
                     if (props.targetParams.CanTarget(tinfo))
-                        TargetsAoE.Add(new LocalTargetInfo(randTargets[i]));
+                        TargetsAoE.Add(new LocalTargetInfo(targets[i]));
                 }
             }
             else

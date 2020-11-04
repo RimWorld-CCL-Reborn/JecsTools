@@ -2,7 +2,6 @@
 
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using AbilityUser;
 using HarmonyLib;
 using RimWorld;
@@ -306,11 +305,21 @@ namespace JecsTools
 
         public static void Post_GeneratePawn(Pawn __result)
         {
-            if (__result?.def?.race?.hediffGiverSets?
-                .SelectMany(x => x.hediffGivers.Where(y => y is HediffGiver_StartWithHediff))
-                .FirstOrDefault() is HediffGiver_StartWithHediff hediffGiver)
+            var hediffGiverSets = __result?.def?.race?.hediffGiverSets;
+            if (hediffGiverSets != null)
             {
-                hediffGiver.GiveHediff(__result);
+                foreach (var hediffGiverSet in hediffGiverSets)
+                {
+                    foreach (var hediffGiver in hediffGiverSet.hediffGivers)
+                    {
+                        if (hediffGiver is HediffGiver_StartWithHediff hediffGiverStartWithHediff)
+                        {
+                            hediffGiverStartWithHediff.GiveHediff(__result);
+                            // TODO: Should this really only use the first found HediffGiver_StartWithHediff?
+                            return;
+                        }
+                    }
+                }
             }
         }
 

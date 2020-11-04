@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using AbilityUser;
 using Verse;
 
@@ -35,31 +34,36 @@ namespace AbilityUserAI
 
         /// <summary>
         ///     Gets all profiles from the Def database.
+        ///     Returns it as a List, but for backwards compatibility, must return IEnumerable.
         /// </summary>
         /// <returns>All Def Database profiles.</returns>
         public static IEnumerable<AbilityUserAIProfileDef> Profiles()
         {
-            return DefDatabase<AbilityUserAIProfileDef>.AllDefs;
+            return DefDatabase<AbilityUserAIProfileDef>.AllDefsListForReading;
         }
 
         /// <summary>
         ///     Gets all AI profiles which are eligible for this pawn.
+        ///     Returns it as a List, but for backwards compatibility, must return IEnumerable.
         /// </summary>
         /// <param name="pawn">Pawn to get for.</param>
         /// <returns>Matching profiles.</returns>
         public static IEnumerable<AbilityUserAIProfileDef> EligibleAIProfiles(this Pawn pawn)
         {
-            return
-                from matchingProfileDef in Profiles()
-                //Initial filtering.
-                where pawn.GetExactCompAbilityUser(matchingProfileDef.compAbilityUserClass) != null
-                //Finer filtering.
-                //where matchingProfileDef.matchingTraits.Count <= 0 ||
-                //    (matchingProfileDef.matchingTraits.Count > 0 &&
-                //        matchingProfileDef.matchingTraits.Any(traitDef => pawn.story.traits.HasTrait(traitDef)))
-                where matchingProfileDef.Worker.ValidProfileFor(matchingProfileDef, pawn)
-                orderby matchingProfileDef.priority descending
-                select matchingProfileDef;
+            var eligibleProfiles = new List<AbilityUserAIProfileDef>();
+            foreach (var matchingProfile in (List<AbilityUserAIProfileDef>)Profiles()) // cast to List for performance
+            {
+                if (pawn.GetExactCompAbilityUser(matchingProfile.compAbilityUserClass) != null &&
+                    //(matchingProfile.matchingTraits.Count == 0 ||
+                    //    matchingProfile.matchingTraits.Exists(traitDef => pawn.story.traits.HasTrait(traitDef))) &&
+                    matchingProfile.Worker.ValidProfileFor(matchingProfile, pawn))
+                {
+                    eligibleProfiles.Add(matchingProfile);
+                }
+            }
+            // orderby matchingProfile.priority descending
+            eligibleProfiles.Sort((x, y) => y.priority.CompareTo(x.priority));
+            return eligibleProfiles;
         }
 
         /// <summary>

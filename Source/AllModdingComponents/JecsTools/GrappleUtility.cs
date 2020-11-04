@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using AbilityUser;
 using RimWorld;
@@ -160,12 +161,14 @@ namespace JecsTools
         /// <returns></returns>
         public static bool TryGetGrapplingPart(Pawn grappler, out BodyPartRecord bodyPartRec)
         {
-            bodyPartRec = grappler.health.hediffSet.GetNotMissingParts()
-                .Where(x =>
-                    x.def.tags.Contains(BodyPartTagDefOf.ManipulationLimbSegment) ||
-                    x.def.tags.Contains(BodyPartTagDefOf.ManipulationLimbCore))
-                .RandomElementWithFallback();
-            return bodyPartRec != null;
+            var grapplingParts = new List<BodyPartRecord>();
+            foreach (var part in grappler.health.hediffSet.GetNotMissingParts())
+            {
+                if (part.def.tags.Contains(BodyPartTagDefOf.ManipulationLimbSegment) ||
+                    part.def.tags.Contains(BodyPartTagDefOf.ManipulationLimbCore))
+                    grapplingParts.Add(part);
+            }
+            return grapplingParts.TryRandomElement(out bodyPartRec);
         }
 
         /// <summary>
@@ -224,7 +227,17 @@ namespace JecsTools
         /// <returns></returns>
         public static float ResolveToolModifier(Pawn pawn)
         {
-            return pawn.def?.tools?.Max(x => x.power) ?? 0;
+            var maxPower = 0f;
+            var tools = pawn.def?.tools;
+            if (tools != null)
+            {
+                foreach (var tool in tools)
+                {
+                    if (maxPower < tool.power)
+                        maxPower = tool.power;
+                }
+            }
+            return maxPower;
         }
 
         private class CompAbilityUserGrappleModifier : IGrappleModifier
