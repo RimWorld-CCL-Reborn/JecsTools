@@ -1,7 +1,11 @@
 ﻿//#define DEBUGLOG
 
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Reflection;
+using System.Reflection.Emit;
 using AbilityUser;
 using HarmonyLib;
 using RimWorld;
@@ -17,9 +21,6 @@ namespace JecsTools
         //For alternating fire on some weapons
         public static Dictionary<Thing, int> AlternatingFireTracker = new Dictionary<Thing, int>();
 
-        // Verse.Pawn_HealthTracker
-        public static bool StopPreApplyDamageCheck;
-
         public static int? tempDamageAmount = null;
         public static int? tempDamageAbsorbed = null;
 
@@ -33,6 +34,10 @@ namespace JecsTools
             //harmony.Patch(AccessTools.Method(typeof(PawnGroupKindWorker_Normal), nameof(PawnGroupKindWorker_Normal.MinPointsToGenerateAnything)),
             //    prefix: new HarmonyMethod(type, nameof(MinPointsTest)));
             //------------
+
+            //Applies hediff-based extra damage to melee attacks.
+            harmony.Patch(typeof(Verb_MeleeAttackDamage).FindIteratorMethod("DamageInfosToApply"),
+                transpiler: new HarmonyMethod(type, nameof(Verb_MeleeAttackDamage_DamageInfosToApply_Transpiler)));
 
             //Allow fortitude (HediffComp_DamageSoak) to soak damage
             //Adds HediffCompProperties_DamageSoak checks to damage
@@ -77,6 +82,10 @@ namespace JecsTools
                 postfix: new HarmonyMethod(type, nameof(CanHit_PostFix)));
             harmony.Patch(AccessTools.Method(typeof(Verb), "CanHitCellFromCellIgnoringRange"),
                 prefix: new HarmonyMethod(type, nameof(CanHitCellFromCellIgnoringRange_Prefix)));
+
+            //Improve DamageInfo.ToString for debugging purposes.
+            harmony.Patch(AccessTools.Method(typeof(DamageInfo), nameof(DamageInfo.ToString)),
+                postfix: new HarmonyMethod(type, nameof(DamageInfo_ToString_Postfix)));
 
             //optionally use "CutoutComplex" shader for apparel that wants it
             //harmony.Patch(AccessTools.Method(typeof(ApparelGraphicRecordGetter), nameof(ApparelGraphicRecordGetter.TryGetGraphicApparel)),
@@ -323,6 +332,113 @@ namespace JecsTools
             }
         }
 
+        public static IEnumerable<CodeInstruction> Verb_MeleeAttackDamage_DamageInfosToApply_Transpiler(
+            IEnumerable<CodeInstruction> instructions, MethodBase method, ILGenerator ilGen)
+        {
+            // Transforms following:
+            //  if (tool != null && tool.extraMeleeDamages != null)
+            //  {
+            //      foreach (ExtraDamage extraMeleeDamage in tool.extraMeleeDamages)
+            //          ...
+            //  }
+            // into:
+            //  var extraDamages = DamageInfosToApply_ExtraDamages(this);
+            //  if (extraDamages != null)
+            //  {
+            //      foreach (ExtraDamage extraMeleeDamage in extraDamages)
+            //          ...
+            //  }
+            // Note: We're actually modifying an iterator method, which delegates all of its logic to a compiler-generated
+            // IEnumerator class with a convoluted FSM with the primary logic in the MoveNext method.
+            // The logic surrounding yields within loops is especially complex, so it's best to just modify what's being
+            // looped over; in this case, that's replacing the tool.extraMeleeDamages with our own enumerable
+            // (along with adjusting the null check conditionals).
+
+            var fieldof_Verb_tool = AccessTools.Field(typeof(Verb), nameof(Verb.tool));
+            var fieldof_Tool_extraMeleeDamages = AccessTools.Field(typeof(Tool), nameof(Tool.extraMeleeDamages));
+            var methodof_List_GetEnumerator =
+                AccessTools.Method(typeof(List<Verse.ExtraDamage>), nameof(IEnumerable.GetEnumerator));
+            var instructionList = instructions.AsList();
+            var locals = new Locals(method, ilGen);
+
+            var extraDamagesVar = locals.DeclareLocal<List<Verse.ExtraDamage>>();
+
+            var verbToolFieldNullCheckIndex = instructionList.FindSequenceIndex(
+                locals.IsLdloc,
+                instr => instr.Is(OpCodes.Ldfld, fieldof_Verb_tool),
+                instr => instr.IsBrfalse());
+            var toolExtraDamagesIndex = instructionList.FindIndex(verbToolFieldNullCheckIndex + 3, // after above 3 predicates
+                instr => instr.Is(OpCodes.Ldfld, fieldof_Tool_extraMeleeDamages));
+            var verbToolFieldIndex = verbToolFieldNullCheckIndex + 1;
+            instructionList.SafeReplaceRange(verbToolFieldIndex, toolExtraDamagesIndex + 1 - verbToolFieldIndex, new[]
+            {
+                new CodeInstruction(OpCodes.Call,
+                    AccessTools.Method(typeof(HarmonyPatches), nameof(DamageInfosToApply_ExtraDamages))),
+                extraDamagesVar.ToStloc(),
+                extraDamagesVar.ToLdloc(),
+            });
+
+            var verbToolExtraDamagesEnumeratorIndex = instructionList.FindSequenceIndex(verbToolFieldIndex,
+                locals.IsLdloc,
+                instr => instr.Is(OpCodes.Ldfld, fieldof_Verb_tool),
+                instr => instr.Is(OpCodes.Ldfld, fieldof_Tool_extraMeleeDamages),
+                instr => instr.Calls(methodof_List_GetEnumerator));
+            instructionList.SafeReplaceRange(verbToolExtraDamagesEnumeratorIndex, 4, new[] // after above 4 predicates
+            {
+                extraDamagesVar.ToLdloc(),
+                new CodeInstruction(OpCodes.Call,
+                    AccessTools.Method(typeof(List<Verse.ExtraDamage>), nameof(IEnumerable.GetEnumerator))),
+            });
+
+            return instructionList;
+        }
+
+        [ThreadStatic]
+        private static Dictionary<(Tool, Pawn), List<Verse.ExtraDamage>> extraDamageCache;
+
+        // In the above transpiler, this replaces tool.extraMeleeDamages as the foreach loop enumeration target in
+        // Verb_MeleeAttackDamage.DamageInfosToApply.
+        // This must return a List<ExtraDamage> rather than IEnumerator<ExtraDamage> since Tool.extraMeleeDamages is a list.
+        // Specifically, the compiler-generated code calls List<ExtraDamage>.GetEnumerator(), stores it in a
+        // List<ExtraDamage>.Enumerator field in the internal iterator class (necessary for the FSM to work), then explicitly
+        // calls List<ExtraDamage>.Enumerator methods/properties in multiple iterator class methods along with an initobj
+        // rather than ldnull for clearing it (since List<ExtraDamage>.Enumerator is a struct). Essentially, it would be
+        // difficult to replace all this with IEnumerator<ExtraDamage> versions in the above transpiler, we just have this
+        // method return the same type as Tool.extraMeleeDamages: List<ExtraDamage>.
+        // If either tool.extraMeleeDamages and CasterPawn.GetHediffComp<HediffComp_ExtraMeleeDamages>().Props.ExtraDamages
+        // are null, we can simply return the other, since both are lists. However, if both are non-null, we cannot simply
+        // return Enumerable.Concat of them both; we need to create a new list that contains both. Since list creation and
+        // getting the hediff extra damages are both relatively expensive operations, we utilize a cache.
+        // This cache is ThreadStatic to be optimized for single-threaded usage yet safe for multithreaded usage.
+        private static List<Verse.ExtraDamage> DamageInfosToApply_ExtraDamages(Verb_MeleeAttackDamage verb)
+        {
+            extraDamageCache ??= new Dictionary<(Tool, Pawn), List<Verse.ExtraDamage>>();
+            var key = (verb.tool, verb.CasterPawn);
+            if (!extraDamageCache.TryGetValue(key, out var extraDamages))
+            {
+                var toolExtraDamages = key.tool?.extraMeleeDamages;
+                var hediffExtraDamages = key.CasterPawn.GetHediffComp<HediffComp_ExtraMeleeDamages>()?.Props?.ExtraDamages;
+                if (toolExtraDamages == null)
+                    extraDamages = hediffExtraDamages;
+                else if (hediffExtraDamages == null)
+                    extraDamages = toolExtraDamages;
+                else
+                {
+                    extraDamages = new List<Verse.ExtraDamage>(toolExtraDamages.Count + hediffExtraDamages.Count);
+                    extraDamages.AddRange(toolExtraDamages);
+                    extraDamages.AddRange(hediffExtraDamages);
+                }
+                DebugMessage($"DamageInfosToApply_ExtraDamages({verb}) => caching for {key}: {extraDamages.Join(ToString)}");
+                extraDamageCache[key] = extraDamages;
+            }
+            return extraDamages;
+        }
+
+        private static string ToString(Verse.ExtraDamage ed)
+        {
+            return $"(def={ed.def}, amount={ed.amount}, armorPenetration={ed.armorPenetration}, chance={ed.chance})";
+        }
+
         // ArmorUtility patches:
         // These are a workaround for PreApplyDamage_PrePatch changes to the dinfo struct not being saved, due to
         // Pawn_HealthTracker.PreApplyDamage dinfo parameter being passed by value (PreApplyDamage_PrePatch has it passed
@@ -346,9 +462,7 @@ namespace JecsTools
         //    (see TODO in PreApplyDamage_PrePatch).
         // 4) If damage amount decreased yet still non-zero since our PreApplyDamage_PrePatch ran, this patch will
         //    increase the damage amount back to tempDamageAmount, which is the total opposite of damage soaking.
-        // 5) Extra damages are also recorded in tempDamageAmount, which can unnecessarily trigger the above behavior,
-        //    although this is also necessary to avoid a stale tempDamageAmount being used in these patches.
-        // 6) The relationship of PreApplyDamage_PrePatch and this patch with respect to tempDamageAmount is fragile,
+        // 5) The relationship of PreApplyDamage_PrePatch and this patch with respect to tempDamageAmount is fragile,
         //    especially since (1) and tempDamageAmount not always being set in PreApplyDamage_PrePatch.
         //    If another mod happens to use ArmorUtility without going through PreApplyDamage, this scheme will break.
         // TODO:
@@ -398,9 +512,9 @@ namespace JecsTools
         public static bool PreApplyDamage_PrePatch(Pawn ___pawn, ref DamageInfo dinfo, out bool absorbed)
         {
             DebugMessage($"c6c:: === Enter Harmony Prefix --- PreApplyDamage_PrePatch for {___pawn} and {dinfo} ===");
-            if (___pawn != null && !StopPreApplyDamageCheck)
+            if (___pawn != null)
             {
-                DebugMessage("c6c:: Pawn exists. StopPreApplyDamageCheck: False");
+                DebugMessage("c6c:: Pawn exists.");
                 var hediffSet = ___pawn.health.hediffSet;
                 if (hediffSet.hediffs.Count > 0)
                 {
@@ -413,28 +527,23 @@ namespace JecsTools
                         return false;
                     }
 
-                    // Since this is a Pawn_HealthTracker.PreApplyDamage prefix patch, applying extra damage and knockback
+                    // Since this is a Pawn_HealthTracker.PreApplyDamage prefix patch, applying knockback
                     // only happens if no ThingComp.PostPreApplyDamage's (or earlier run patches) set the absorbed flag,
                     // and it happens before any Apparel.CheckPreAbsorbDamage could set the absorbed flag, so e.g.
-                    // extra damage and knockback are applied regardless of a shield belt potentially setting absorbed flag.
-                    // TODO: Should these be applied before any possible absorbed flag (in a Pawn.PreApplyDamage prefix patch),
+                    // knockback are applied regardless of a shield belt potentially setting absorbed flag.
+                    // TODO: Should knockback be applied before any possible absorbed flag (in a Pawn.PreApplyDamage prefix patch),
                     // only after it's definitely not absorbed (in a Pawn_HealthTracker.PreApplyDamage postfix patch),
                     // or retain the existing behavior (this Pawn_HealthTracker.PreApplyDamage prefix patch)?
                     if (dinfo.Weapon is ThingDef weaponDef && !weaponDef.IsRangedWeapon &&
                         dinfo.Instigator is Pawn instigator)
                     {
                         DebugMessage("c6c:: Pawn has non-ranged weapon.");
-                        if (PreApplyDamage_ApplyExtraDamages(instigator, ___pawn))
-                        {
-                            absorbed = false;
-                            return false;
-                        }
                         PreApplyDamage_ApplyKnockback(instigator, ___pawn);
                     }
                 }
             }
 
-            // TODO: tempDamageAmount shouldn't be set if there are no damage soaks (and no extra damages?).
+            // TODO: tempDamageAmount shouldn't be set if there are no damage soaks.
             tempDamageAmount = (int)dinfo.Amount;
             DebugMessage($"c6c:: tempDamageAmount <= {tempDamageAmount}");
             absorbed = false;
@@ -478,55 +587,6 @@ namespace JecsTools
                         PushEffect(instigator, pawn, knockerProps.knockDistance.RandomInRange, damageOnCollision: true);
                     }
                 }
-        }
-
-        private static bool PreApplyDamage_ApplyExtraDamages(Pawn instigator, Pawn pawn)
-        {
-            // TODO: This should be a patch on Verb_MeleeAttackDamage to have consistent behavior with vanilla usage
-            // of ExtraDamage (in Bullet and Verb_MeleeAttackDamage), including vanilla damage & armor penetration
-            // calculations, combat log association, and same interaction with damage soaks.
-            // TODO: Support multiple HediffComp_ExtraMeleeDamages on the same instigator?
-            DebugMessage($"c6c:: --- Enter PreApplyDamage_ApplyExtraDamages for {pawn} ---");
-            var extraDamagesComp = instigator.GetHediffComp<HediffComp_ExtraMeleeDamages>();
-            DebugMessage("c6c:: ExtraDamagesComp variable assigned.");
-            if (extraDamagesComp?.Props?.ExtraDamages is List<Verse.ExtraDamage> extraDamages)
-            {
-                DebugMessage("c6c:: Extra damages list exists.");
-                // This flag prevents both infinite recursion (Thing.TakeDamage => PreApplyDamage_PrePatch)
-                // (It also prevents damage soaks from being applied to these extra damages, which is inconsistent
-                // with vanilla extra damage.)
-                StopPreApplyDamageCheck = true;
-                foreach (var dmg in extraDamages)
-                {
-                    DebugMessage($"c6c:: Extra Damage: {dmg.def}");
-                    if (pawn == null || !pawn.Spawned || pawn.Dead)
-                    {
-                        DebugMessage($"c6c:: Pawn is null, unspawned, or dead. Aborting.");
-                        StopPreApplyDamageCheck = false;
-                        return true;
-                    }
-
-                    //var battleLogEntry_MeleeCombat = new BattleLogEntry_MeleeCombat(damageDef.combatLogRules, true,
-                    //    instigator, pawn, ImplementOwnerTypeDefOf.Bodypart, (dinfo.Weapon != null) ? dinfo.Weapon.label : damageDef.label);
-                    //DebugMessage($"c6c:: MeleeCombat Log generated.");
-                    //DamageWorker.DamageResult damageResult = new DamageWorker.DamageResult();
-                    //DebugMessage($"c6c:: MeleeCombat Damage Result generated.");
-                    //damageResult = pawn.TakeDamage(new DamageInfo(dmg.def, dmg.amount, dmg.armorPenetration, -1, instigator));
-                    var extraDinfo = new DamageInfo(dmg.def, dmg.amount, dmg.armorPenetration, -1, instigator);
-                    DebugMessage($"c6c:: MeleeCombat ExtraDamage dinfo: {extraDinfo}");
-                    pawn.TakeDamage(extraDinfo);
-                    //damageResult.AssociateWithLog(battleLogEntry_MeleeCombat);
-                    //DebugMessage($"c6c:: MeleeCombat Damage associated with log.");
-                    //battleLogEntry_MeleeCombat.def = LogEntryDefOf.MeleeAttack;
-                    //DebugMessage($"c6c:: MeleeCombat Log def set as MeleeAttack.");
-                    //Find.BattleLog.Add(battleLogEntry_MeleeCombat);
-                    //DebugMessage($"c6c:: MeleeCombat Log added to battle log.");
-                }
-
-                StopPreApplyDamageCheck = false;
-            }
-            DebugMessage($"c6c:: --- Exit PreApplyDamage_ApplyExtraDamages for {pawn} ---");
-            return false;
         }
 
         private static bool PreApplyDamage_ApplyDamageSoakers(ref DamageInfo dinfo, HediffSet hediffSet, Pawn pawn)
@@ -658,7 +718,7 @@ namespace JecsTools
             if (soakedDamage > 0 && pawn != null && pawn.Spawned && pawn.MapHeld != null &&
                 pawn.DrawPos is Vector3 drawVecDos && drawVecDos.InBounds(pawn.MapHeld))
             {
-                Log.Message($"c6c:: DamageSoakedMote for {pawn}: {soakedDamage}");
+                DebugMessage($"c6c:: DamageSoakedMote for {pawn}: {soakedDamage}");
                 MoteMaker.ThrowText(drawVecDos, pawn.MapHeld, "JT_DamageSoaked".Translate(soakedDamage));
             }
         }
@@ -714,6 +774,12 @@ namespace JecsTools
                         flyingObject.Launch(Caster, new LocalTargetInfo(loc.ToIntVec3()), target);
                 }
             }, "PushingCharacter", false, null);
+        }
+
+        public static string DamageInfo_ToString_Postfix(string result, ref DamageInfo __instance)
+        {
+            var instigatorIndex = result.IndexOf(", instigator=");
+            return result.Insert(instigatorIndex, ", armorPenetration=" + __instance.ArmorPenetrationInt);
         }
 
         //added 2018/12/13 - Mehni.
