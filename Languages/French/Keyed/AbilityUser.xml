@@ -16,9 +16,9 @@
 
 
 <AU_AoEProperties>Propriétés de la zone d'effet</AU_AoEProperties>
-<AU_TargetClass>Targets: </AU_TargetClass>
+<AU_TargetClass>Cibles: </AU_TargetClass>
 <AU_AoECharacters>Personnages</AU_AoECharacters>
-<AU_AoEFriendlyFire>Tir fratricide: </AU_AoEFriendlyFire>
+<AU_AoEFriendlyFire>Tir amie: </AU_AoEFriendlyFire>
 <AU_AoEMaxTargets>Nombre de cibles maximal: </AU_AoEMaxTargets>
 <AU_AoEStartsFromCaster>Se déclenche a partir du sorcier: </AU_AoEStartsFromCaster>
 	
