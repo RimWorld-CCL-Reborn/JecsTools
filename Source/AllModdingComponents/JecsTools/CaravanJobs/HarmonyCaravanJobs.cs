@@ -13,33 +13,27 @@ namespace JecsTools
         static HarmonyCaravanPatches()
         {
             var harmony = new Harmony("jecstools.jecrell.caravanjobs");
+            var type = typeof(HarmonyCaravanPatches);
 
-            harmony.Patch(AccessTools.Method(typeof(Caravan), "GetInspectString"), null,
-                new HarmonyMethod(typeof(HarmonyCaravanPatches), nameof(GetInspectString_Jobs)), null);
-            harmony.Patch(AccessTools.Method(typeof(WorldSelector), "AutoOrderToTileNow"), null,
-                new HarmonyMethod(typeof(HarmonyCaravanPatches), nameof(AutoOrderToTileNow_Jobs)), null);
-            harmony.Patch(AccessTools.Method(typeof(Caravan), "GetGizmos"), null,
-                new HarmonyMethod(typeof(HarmonyCaravanPatches), nameof(GetGizmos_Jobs)), null);
-            harmony.Patch(
-                AccessTools.Method(typeof(WorldSelector), "SelectableObjectsUnderMouse",
+            harmony.Patch(AccessTools.Method(typeof(Caravan), "GetInspectString"),
+                postfix: new HarmonyMethod(type, nameof(GetInspectString_Jobs)));
+            harmony.Patch(AccessTools.Method(typeof(WorldSelector), "AutoOrderToTileNow"),
+                postfix: new HarmonyMethod(type, nameof(AutoOrderToTileNow_Jobs)));
+            harmony.Patch(AccessTools.Method(typeof(Caravan), "GetGizmos"),
+                postfix: new HarmonyMethod(type, nameof(GetGizmos_Jobs)));
+            harmony.Patch(AccessTools.Method(typeof(WorldSelector), "SelectableObjectsUnderMouse",
                     new[] { typeof(bool).MakeByRefType(), typeof(bool).MakeByRefType() }),
-                null, new HarmonyMethod(typeof(HarmonyCaravanPatches),
-                    nameof(SelectableObjectsUnderMouse_InvisHandler)), null);
+                postfix: new HarmonyMethod(type, nameof(SelectableObjectsUnderMouse_InvisHandler)));
         }
 
         // RimWorld.Planet.WorldSelector
-        public static void SelectableObjectsUnderMouse_InvisHandler(ref bool clickedDirectlyOnCaravan,
-            ref bool usedColonistBar, ref IEnumerable<WorldObject> __result)
+        public static void SelectableObjectsUnderMouse_InvisHandler(ref IEnumerable<WorldObject> __result)
         {
-            var objects = new List<WorldObject>(__result);
-            if (objects.Count > 0)
-            {
-                var temp = new HashSet<WorldObject>(objects);
-                foreach (var o in temp)
-                    if (!o.SelectableNow)
-                        objects.Remove(o);
-            }
-            __result = objects;
+            static bool NotSelectableNow(WorldObject o) => !o.SelectableNow;
+            if (__result is List<WorldObject> list)
+                list.RemoveAll(NotSelectableNow);
+            else
+                __result = __result.Where(NotSelectableNow);
         }
 
         // RimWorld.Planet.Caravan
@@ -49,18 +43,12 @@ namespace JecsTools
             {
                 var curTile = Find.WorldGrid[__instance.Tile];
                 if (Find.World.GetComponent<CaravanJobGiver>().CurJob(__instance) != null)
-                    __result = __result.Concat(new[]
+                    __result = __result.Append(new Command_Action
                     {
-                        new Command_Action
-                        {
-                            defaultLabel = "CommandCancelConstructionLabel".Translate(),
-                            defaultDesc = "CommandClearPrioritizedWorkDesc".Translate(),
-                            icon = TexCommand.ClearPrioritizedWork,
-                            action = delegate
-                            {
-                                Find.World.GetComponent<CaravanJobGiver>().Tracker(__instance).StopAll();
-                            }
-                        }
+                        defaultLabel = "CommandCancelConstructionLabel".Translate(),
+                        defaultDesc = "CommandClearPrioritizedWorkDesc".Translate(),
+                        icon = TexCommand.ClearPrioritizedWork,
+                        action = () => Find.World.GetComponent<CaravanJobGiver>().Tracker(__instance).StopAll(),
                     });
             }
         }

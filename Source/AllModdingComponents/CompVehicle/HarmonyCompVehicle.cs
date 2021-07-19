@@ -587,7 +587,8 @@ namespace CompVehicle
                 {
                     var newDamageInfo = new DamageInfo(dinfo);
                     var criticalBonus = 0f;
-                    if (Rand.Value < compPilotable.Props.seatHitCriticalHitChance) criticalBonus = dinfo.Amount * 2;
+                    if (Rand.Value < compPilotable.Props.seatHitCriticalHitChance)
+                        criticalBonus = dinfo.Amount * 2;
                     var newDamFloat = dinfo.Amount * compPilotable.Props.seatHitDamageFactor + criticalBonus;
                     newDamageInfo.SetAmount((int)newDamFloat);
                     affectedPawns.RandomElement().TakeDamage(newDamageInfo);
@@ -730,7 +731,8 @@ namespace CompVehicle
             {
                 var compPilotable = pawn.GetComp<CompVehicle>();
                 if (compPilotable != null)
-                    if (!compPilotable.Props.canWiggleWhenDowned) return false;
+                    if (!compPilotable.Props.canWiggleWhenDowned)
+                        return false;
             }
             return true;
         }
@@ -785,7 +787,8 @@ namespace CompVehicle
         {
             var vehicle = __instance.GetComp<CompVehicle>();
             if (vehicle != null)
-                if (__instance.Faction == Faction.OfPlayer) __result = true;
+                if (__instance.Faction == Faction.OfPlayer)
+                    __result = true;
         }
 
         //J Moving vehicles can't be used.
@@ -794,7 +797,8 @@ namespace CompVehicle
         {
             var vehicle = __instance.GetComp<CompVehicle>();
             if (vehicle != null)
-                if (!__instance.pather.MovingNow) __result = true;
+                if (!__instance.pather.MovingNow)
+                    __result = true;
         }
 
         //J Drafted vehicles can move.
@@ -820,7 +824,8 @@ namespace CompVehicle
             {
                 var compPilotable = pawn.GetComp<CompVehicle>();
                 if (compPilotable != null)
-                    if (compPilotable.movingStatus == MovingState.frozen) return false;
+                    if (compPilotable.movingStatus == MovingState.frozen)
+                        return false;
             }
             return true;
         }
@@ -869,7 +874,8 @@ namespace CompVehicle
                     //Remove "Equip" option from right click.
                     var toCheck = "Rescue".Translate(groundPawn.LabelCap);
                     var optToRemove = opts.FirstOrDefault(x => x.Label.Contains(toCheck));
-                    if (optToRemove != null) opts.Remove(optToRemove);
+                    if (optToRemove != null)
+                        opts.Remove(optToRemove);
                 }
         }
 
@@ -878,7 +884,8 @@ namespace CompVehicle
         public static void MechanoidsFixerAncient(ref bool __result, PawnKindDef kind)
         {
             ////Log.Message("1");
-            if (kind.race.HasComp(typeof(CompVehicle))) __result = false;
+            if (kind.race.HasComp(typeof(CompVehicle)))
+                __result = false;
         }
 
         //E No vehicles in crashed ships.
@@ -886,7 +893,8 @@ namespace CompVehicle
         public static void MechanoidsFixer(ref bool __result, PawnKindDef def)
         {
             ////Log.Message("1");
-            if (def.race.HasComp(typeof(CompVehicle))) __result = false;
+            if (def.race.HasComp(typeof(CompVehicle)))
+                __result = false;
         }
 
         //E Stops verb exceptions.
@@ -1181,12 +1189,14 @@ namespace CompVehicle
                     Log.Warning("Tried to add a null or dead pawn to " + __instance);
                     return false;
                 }
-                if (p.Spawned) p.DeSpawn();
+                if (p.Spawned)
+                    p.DeSpawn();
                 if (p.holdingOwner != null)
                 {
                     p.holdingOwner?.TryTransferToContainer(p, __instance.pawns);
                 }
-                else __instance.pawns.TryAdd(p);
+                else
+                    __instance.pawns.TryAdd(p);
                 //if (__instance.pawns.TryAdd(p, true))
                 //{
                 ////Log.Message("AddVehicles2");
@@ -1212,7 +1222,8 @@ namespace CompVehicle
                             var innerPawn = group.handlers[i];
 
                             //Remove the pawn from the vehicle and add it to the caravan
-                            if (innerPawn.Spawned) innerPawn.DeSpawn();
+                            if (innerPawn.Spawned)
+                                innerPawn.DeSpawn();
                             if (innerPawn.holdingOwner != null)
                             {
                                 ////Log.Message("AddVehicles7a");
@@ -1512,9 +1523,10 @@ namespace CompVehicle
             List<TransferableOneWay> transferables)
         {
             var source = from x in transferables
-                where x.ThingDef.category == ThingCategory.Pawn
-                select x;
-            widget.AddSection("CompVehicle_VehicleSection".Translate(), from x in source
+                         where x.ThingDef.category == ThingCategory.Pawn
+                         select x;
+            widget.AddSection("CompVehicle_VehicleSection".Translate(),
+                from x in source
                 where ((Pawn)x.AnyThing).GetComp<CompVehicle>() != null &&
                       ((Pawn)x.AnyThing).GetComp<CompVehicle>().MovementHandlerAvailable
                 select x);
@@ -1622,18 +1634,23 @@ namespace CompVehicle
                                     if ((group?.handlers?.Count ?? 0) > 0)
                                         foreach (var p in group.handlers)
                                         {
-                                            if (pawnsOutsideVehicle.Count == 0) break;
-                                            if (pawnsOutsideVehicle.Contains(p)) pawnsOutsideVehicle.Remove(p);
+                                            if (pawnsOutsideVehicle.Count == 0)
+                                                break;
+                                            if (pawnsOutsideVehicle.Contains(p))
+                                                pawnsOutsideVehicle.Remove(p);
                                         }
-                                    if (pawnsOutsideVehicle.Count == 0) break;
+                                    if (pawnsOutsideVehicle.Count == 0)
+                                        break;
                                 }
-                            if (pawnsOutsideVehicle.Count == 0) break;
+                            if (pawnsOutsideVehicle.Count == 0)
+                                break;
                         }
 
                 //Are there any characters not inside vehicles?
                 //If so, make no changes to default speeds.
                 //This will be similar to vehicles slowly coasing alongside walking characters.
-                if ((pawnsOutsideVehicle?.Count ?? 0) > 0) return;
+                if ((pawnsOutsideVehicle?.Count ?? 0) > 0)
+                    return;
 
                 ////Log.Message("2");
                 var slowestLandSpeed = 999f;

@@ -34,8 +34,8 @@ namespace CompDeflector
         {
             foreach (var error in base.ConfigErrors(parentDef))
                 yield return error;
-            if (useSkillInCalc && deflectRatePerSkillPoint == 0)
-                yield return "deflectRatePerSkillPoint is set to 0, but useSkillInCalc is set to true";
+            if (useSkillInCalc && deflectRatePerSkillPoint == 0f)
+                yield return $"{nameof(deflectRatePerSkillPoint)} is set to zero, but {nameof(useSkillInCalc)} is set to true";
         }
 
         public virtual IEnumerable<StatDrawEntry> PostSpecialDisplayStats()
@@ -54,7 +54,7 @@ namespace CompDeflector
             else
             {
                 var deflectRatePerSkillPointStr = deflectRatePerSkillPoint.ToStringPercent();
-                var maxDeflectChanceStr = Mathf.Clamp(baseDeflectChance + deflectRatePerSkillPoint * 20, 0f, 1.0f).ToStringPercent();
+                var maxDeflectChanceStr = Mathf.Clamp01(baseDeflectChance + deflectRatePerSkillPoint * 20).ToStringPercent();
                 yield return new StatDrawEntry(StatCategoryDefOf.Weapon, "MaxDeflectChance".Translate(), maxDeflectChanceStr,
                     "MaxDeflectChanceEx".Translate(deflectSkill.label, deflectRatePerSkillPointStr, maxDeflectChanceStr), 0);
                 yield return new StatDrawEntry(StatCategoryDefOf.Weapon, "DeflectChancePerLevel".Translate(deflectSkill.label), deflectRatePerSkillPointStr,

@@ -109,7 +109,7 @@ namespace PawnShields
             // Setup stuffed sounds dictionary.
             if (sounds != null)
             {
-                foreach (StuffedSound stuffedSound in sounds)
+                foreach (var stuffedSound in sounds)
                 {
                     stuffedSounds[stuffedSound.stuffCategory] = stuffedSound.sound;
                 }

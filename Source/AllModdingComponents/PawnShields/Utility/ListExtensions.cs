@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace PawnShields
 {
+    // Code copied between JecsTools and PawnShields - keep them in sync!
     public static class ListExtensions
     {
         public static List<T> AsList<T>(this IEnumerable<T> enumerable) =>

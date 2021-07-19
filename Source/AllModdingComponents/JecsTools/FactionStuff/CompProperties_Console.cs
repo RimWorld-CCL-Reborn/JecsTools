@@ -1,8 +1,10 @@
-﻿using Verse;
+﻿using System;
+using Verse;
 
 namespace JecsTools
 {
-
+    // See comments on JecsToolsFactionDialogMaker.
+    [Obsolete("Hasn't worked properly since RW B19")]
     public class CompProperties_Console : CompProperties
     {
         public bool usesPower = true;
@@ -11,8 +13,7 @@ namespace JecsTools
 
         public CompProperties_Console()
         {
-            this.compClass = typeof(CompConsole);
+            compClass = typeof(CompConsole);
         }
-
     }
 }

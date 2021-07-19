@@ -8,7 +8,8 @@ namespace CompVehicle
         protected override bool Satisfied(Pawn pawn)
         {
             if (pawn?.GetComp<CompVehicle>() is CompVehicle compVehicle &&
-                compVehicle.manipulationStatus == ManipulationState.able) return true;
+                compVehicle.manipulationStatus == ManipulationState.able)
+                return true;
             return false;
         }
     }

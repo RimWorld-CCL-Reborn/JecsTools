@@ -60,33 +60,28 @@ namespace AbilityUser
             SoundDefOf.Tick_Tiny.PlayOneShotOnCamera();
 
             Find.Targeter.StopTargeting();
-            BeginTargetingWithVerb(verb, verb.verbProps.targetParams, delegate(LocalTargetInfo info)
+            BeginTargetingWithVerb(verb, verb.verbProps.targetParams, info =>
             {
                 action.Invoke(info.Thing);
-                if (CurActivateSound != null)
-                    CurActivateSound.PlayOneShotOnCamera();
-            }, compAbilityUser.AbilityUser, null, null);
-            //(info.Thing ?? null);
+                CurActivateSound?.PlayOneShotOnCamera();
+            }, compAbilityUser.Pawn);
         }
 
         //public override bool GroupsWith(Gizmo other)
         //{
-        //    if (other is Command_PawnAbility p && p.pawnAbility.Def.abilityClass == this.pawnAbility.Def.abilityClass)
-        //        return true;
-        //    return false;
+        //    return other is Command_PawnAbility p && p.pawnAbility.Def.abilityClass == pawnAbility.Def.abilityClass;
         //}
 
         public override GizmoResult GizmoOnGUI(Vector2 topLeft, float maxWidth)
         {
-            var rect = new Rect(topLeft.x, topLeft.y, this.GetWidth(maxWidth), 75f);
+            var rect = new Rect(topLeft.x, topLeft.y, GetWidth(maxWidth), 75f);
             var isMouseOver = false;
             if (Mouse.IsOver(rect))
             {
                 isMouseOver = true;
                 GUI.color = GenUI.MouseoverColor;
             }
-            var badTex = icon;
-            if (badTex == null) badTex = BaseContent.BadTex;
+            var badTex = icon ?? BaseContent.BadTex;
 
             GUI.DrawTexture(rect, BGTex);
             MouseoverSounds.DoRegion(rect, SoundDefOf.Mouseover_Command);
@@ -94,13 +89,12 @@ namespace AbilityUser
             Widgets.DrawTextureFitted(new Rect(rect), badTex, iconDrawScale * 0.85f, iconProportions, iconTexCoords);
             GUI.color = Color.white;
             var isUsed = false;
-            //Rect rectFil = new Rect(topLeft.x, topLeft.y, this.Width, this.Width);
 
             var keyCode = hotKey != null ? hotKey.MainKey : KeyCode.None;
             if (keyCode != KeyCode.None && !GizmoGridDrawer.drawnHotKeys.Contains(keyCode))
             {
-                var rect2 = new Rect(rect.x + 5f, rect.y + 5f, rect.width - 10f, 18f);
-                Widgets.Label(rect2, keyCode.ToStringReadable());
+                var hotkeyRect = new Rect(rect.x + 5f, rect.y + 5f, rect.width - 10f, 18f);
+                Widgets.Label(hotkeyRect, keyCode.ToStringReadable());
                 GizmoGridDrawer.drawnHotKeys.Add(keyCode);
                 if (hotKey.KeyDownEvent)
                 {
@@ -108,17 +102,17 @@ namespace AbilityUser
                     Event.current.Use();
                 }
             }
-            if (Widgets.ButtonInvisible(rect, false)) isUsed = true;
+            if (Widgets.ButtonInvisible(rect, false))
+                isUsed = true;
             var labelCap = LabelCap;
             if (!labelCap.NullOrEmpty())
             {
-                var num = Text.CalcHeight(labelCap, rect.width);
-                num -= 2f;
-                var rect3 = new Rect(rect.x, rect.yMax - num + 12f, rect.width, num);
-                GUI.DrawTexture(rect3, TexUI.GrayTextBG);
+                var labelHeight = Text.CalcHeight(labelCap, rect.width) - 2f;
+                var labelRect = new Rect(rect.x, rect.yMax - labelHeight + 12f, rect.width, labelHeight);
+                GUI.DrawTexture(labelRect, TexUI.GrayTextBG);
                 GUI.color = Color.white;
                 Text.Anchor = TextAnchor.UpperCenter;
-                Widgets.Label(rect3, labelCap);
+                Widgets.Label(labelRect, labelCap);
                 Text.Anchor = TextAnchor.UpperLeft;
                 GUI.color = Color.white;
             }
@@ -127,7 +121,7 @@ namespace AbilityUser
             {
                 TipSignal tip = Desc;
                 if (disabled && !disabledReason.NullOrEmpty())
-                    tip.text = tip.text + "\n" + StringsToTranslate.AU_DISABLED + ": " + disabledReason;
+                    tip.text += "\n" + StringsToTranslate.AU_DISABLED + ": " + disabledReason;
                 TooltipHandler.TipRegion(rect, tip);
             }
             if (pawnAbility.CooldownTicksLeft != -1 && pawnAbility.CooldownTicksLeft < pawnAbility.MaxCastingTicks)
@@ -152,8 +146,7 @@ namespace AbilityUser
                 TutorSystem.Notify_Event(TutorTagSelect);
                 return result;
             }
-            if (isMouseOver) return new GizmoResult(GizmoState.Mouseover, null);
-            return new GizmoResult(GizmoState.Clear, null);
+            return new GizmoResult(isMouseOver ? GizmoState.Mouseover : GizmoState.Clear, null);
         }
 
         public void FillableBarBottom(Rect rect, float fillPercent, Texture2D fillTex, Texture2D bgTex, bool doBorder)

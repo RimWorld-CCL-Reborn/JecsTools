@@ -9,7 +9,7 @@ namespace AbilityUser
     {
         public bool canStartFire;
         public float drawingIntensity;
-        public Matrix4x4 drawingMatrix = default(Matrix4x4);
+        public Matrix4x4 drawingMatrix;
         public Vector3 drawingPosition;
         public Vector3 drawingScale;
         public Material drawingTexture;
@@ -63,7 +63,7 @@ namespace AbilityUser
         public override void ExposeData()
         {
             base.ExposeData();
-            Scribe_Values.Look(ref tickCounter, "tickCounter", 0);
+            Scribe_Values.Look(ref tickCounter, nameof(tickCounter));
 
             if (Scribe.mode == LoadSaveMode.PostLoadInit)
                 GetParametersFromXml();
@@ -81,7 +81,7 @@ namespace AbilityUser
             {
                 if (tickCounter == 0)
                 {
-                    this.hitThing = intendedTarget.Thing;
+                    hitThing = intendedTarget.Thing;
                     GetParametersFromXml();
                     PerformPreFiringTreatment();
                 }
@@ -103,19 +103,20 @@ namespace AbilityUser
                     GetPostFiringDrawingParameters();
                 }
                 if (tickCounter == preFiringDuration + postFiringDuration && !Destroyed)
-                    Destroy(DestroyMode.Vanish);
+                    Destroy();
                 if (launcher != null)
                     if (launcher is Pawn)
                     {
                         var launcherPawn = launcher as Pawn;
                         if (launcherPawn.Dead && !Destroyed)
-                            Destroy(DestroyMode.Vanish);
+                            Destroy();
                     }
                 tickCounter++;
             }
             catch
             {
-                if (!Destroyed) Destroy(DestroyMode.Vanish);
+                if (!Destroyed)
+                    Destroy();
             }
         }
 
@@ -164,12 +165,11 @@ namespace AbilityUser
 
             var temporaryDestination = origin; // Last valid tested position in case of an out of boundaries shot.
             var exactTestedPosition = origin;
-            var testedPosition = exactTestedPosition.ToIntVec3();
 
             for (var segmentIndex = 1; segmentIndex <= numberOfSegments; segmentIndex++)
             {
                 exactTestedPosition += trajectorySegment;
-                testedPosition = exactTestedPosition.ToIntVec3();
+                var testedPosition = exactTestedPosition.ToIntVec3();
 
                 if (!exactTestedPosition.InBounds(Map))
                 {
@@ -231,7 +231,7 @@ namespace AbilityUser
                 }
 
                 temporaryDestination = exactTestedPosition;
-                if (hitThing != null) Log.Message("Hit thig = " + hitThing.ToString());
+                //if (hitThing != null) Log.Message("Hit thing = " + hitThing.ToString());
             }
         }
 
@@ -256,9 +256,10 @@ namespace AbilityUser
                 //Log.Message("Hit thing found: " + hitThing.ToString() );
 
                 var damageAmountBase = def.projectile.GetDamageAmount(1f);
-                var dinfo = new DamageInfo(def.projectile.damageDef, damageAmountBase, this.def.projectile.GetArmorPenetration(1f), ExactRotation.eulerAngles.y,
-                    launcher, null, equipmentDef, DamageInfo.SourceCategory.ThingOrUnknown, hitThing);
-                BattleLogEntry_RangedImpact battleLogEntry_RangedImpact = new BattleLogEntry_RangedImpact(this.launcher, hitThing, this.intendedTarget.Thing, this.launcher.def, this.def, this.targetCoverDef);
+                var dinfo = new DamageInfo(def.projectile.damageDef, damageAmountBase,
+                    def.projectile.GetArmorPenetration(1f), ExactRotation.eulerAngles.y,
+                    launcher, weapon: equipmentDef, intendedTarget: hitThing);
+                var battleLogEntry_RangedImpact = new BattleLogEntry_RangedImpact(launcher, hitThing, intendedTarget.Thing, launcher.def, def, targetCoverDef);
                 Find.BattleLog.Add(battleLogEntry_RangedImpact);
                 hitThing.TakeDamage(dinfo).AssociateWithLog(battleLogEntry_RangedImpact);
                 //Log.Message("Hit thing taken damage: " + dinfo.Amount.ToString() + " " + dinfo.Def.label);
@@ -275,15 +276,14 @@ namespace AbilityUser
             }
             else
             {
-                var info = SoundInfo.InMap(new TargetInfo(Position, Map, false), MaintenanceType.None);
-                SoundDefOf.BulletImpact_Ground.PlayOneShot(info);
+                SoundDefOf.BulletImpact_Ground.PlayOneShot(SoundInfo.InMap(new TargetInfo(Position, Map)));
                 MoteMaker.MakeStaticMote(ExactPosition, Map, ThingDefOf.Mote_ShotHit_Dirt, 1f);
                 MoteMaker.ThrowMicroSparks(ExactPosition, Map);
             }
-            var pawn1 = hitThing as Pawn;
-            if (pawn1?.stances != null && pawn1.BodySize <= this.def.projectile.stoppingPower + 0.001f)
+            var hitPawn = hitThing as Pawn;
+            if (hitPawn?.stances != null && hitPawn.BodySize <= def.projectile.stoppingPower + 0.001f)
             {
-                pawn1.stances.StaggerFor(95);
+                hitPawn.stances.StaggerFor(95);
             }
         }
 

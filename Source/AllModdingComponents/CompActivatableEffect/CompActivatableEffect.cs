@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using HarmonyLib;
 using RimWorld;
 using UnityEngine;
@@ -9,6 +8,7 @@ using Verse.Sound;
 
 namespace CompActivatableEffect
 {
+
     public class CompActivatableEffect : CompUseEffect
     {
         public enum State
@@ -17,73 +17,32 @@ namespace CompActivatableEffect
             Activated
         }
 
+        public CompProperties_ActivatableEffect Props => (CompProperties_ActivatableEffect)props;
+
         private State currentState = State.Deactivated;
 
         public bool IsInitialized;
 
         private Sustainer sustainer;
 
-        private bool initComps = false;
         private CompEquippable compEquippable;
         private Func<bool> compDeflectorIsAnimatingNow;
         private Func<int> compDeflectorAnimationDeflectionTicks;
+        private CompOversizedWeapon.CompOversizedWeapon compOversizedWeapon;
 
-        private void InitCompsAsNeeded()
-        {
-            if (!initComps)
-            {
-                if (parent == null) return;
-                compEquippable = parent.GetComp<CompEquippable>();
-                var deflector = parent.AllComps.FirstOrDefault(y =>
-                    y.GetType().ToString() == "CompDeflector.CompDeflector" ||
-                    y.GetType().BaseType.ToString() == "CompDeflector.CompDeflector");
-                if (deflector != null)
-                {
-                    compDeflectorIsAnimatingNow =
-                        (Func<bool>)AccessTools.PropertyGetter(deflector.GetType(), "IsAnimatingNow").CreateDelegate(
-                            typeof(Func<bool>), deflector);
-                    compDeflectorAnimationDeflectionTicks =
-                        (Func<int>)AccessTools.PropertyGetter(deflector.GetType(), "AnimationDeflectionTicks").CreateDelegate(
-                            typeof(Func<int>), deflector);
-                }
-                initComps = true;
-            }
-        }
+        private static readonly Type compDeflectorType = GenTypes.GetTypeInAnyAssembly("CompDeflector.CompDeflector");
 
-        public CompEquippable GetEquippable
-        {
-            get
-            {
-                InitCompsAsNeeded();
-                return compEquippable;
-            }
-        }
+        public CompEquippable GetEquippable => compEquippable;
+
+        public CompOversizedWeapon.CompOversizedWeapon GetOversizedWeapon => compOversizedWeapon;
 
         public Pawn GetPawn => GetEquippable.verbTracker.PrimaryVerb.CasterPawn;
 
         //public List<Verb> GetVerbs => GetEquippable.verbTracker.AllVerbs;
 
-        public bool CompDeflectorIsAnimatingNow
-        {
-            get
-            {
-                InitCompsAsNeeded();
-                if (compDeflectorIsAnimatingNow != null)
-                    return compDeflectorIsAnimatingNow();
-                return false;
-            }
-        }
+        public bool CompDeflectorIsAnimatingNow => compDeflectorIsAnimatingNow?.Invoke() ?? false;
 
-        public int CompDeflectorAnimationDeflectionTicks
-        {
-            get
-            {
-                InitCompsAsNeeded();
-                if (compDeflectorAnimationDeflectionTicks != null)
-                    return compDeflectorAnimationDeflectionTicks();
-                return 0;
-            }
-        }
+        public int CompDeflectorAnimationDeflectionTicks => compDeflectorAnimationDeflectionTicks?.Invoke() ?? 0;
 
         public bool GizmosOnEquip => Props.gizmosOnEquip;
         public State CurrentState => currentState;
@@ -120,22 +79,15 @@ namespace CompActivatableEffect
 
         public virtual void PlaySound(SoundDef soundToPlay)
         {
-            SoundInfo info;
-            if (Props.gizmosOnEquip)
-                info = SoundInfo.InMap(new TargetInfo(GetPawn.PositionHeld, GetPawn.MapHeld, false),
-                    MaintenanceType.None);
-            else
-                info = SoundInfo.InMap(new TargetInfo(parent.PositionHeld, parent.MapHeld, false),
-                    MaintenanceType.None);
-            soundToPlay?.PlayOneShot(info);
+            var pawn = Props.gizmosOnEquip ? GetPawn : parent;
+            soundToPlay?.PlayOneShot(SoundInfo.InMap(new TargetInfo(pawn.PositionHeld, pawn.MapHeld)));
         }
 
         private void StartSustainer()
         {
-            if (!Props.sustainerSound.NullOrUndefined() && sustainer == null)
+            if (!Props.sustainerSound.NullOrUndefined())
             {
-                var info = SoundInfo.InMap(GetPawn, MaintenanceType.None);
-                sustainer = Props.sustainerSound.TrySpawnSustainer(info);
+                sustainer ??= Props.sustainerSound.TrySpawnSustainer(SoundInfo.InMap(GetPawn));
             }
         }
 
@@ -152,7 +104,8 @@ namespace CompActivatableEffect
         {
             graphicInt = null;
             currentState = State.Activated;
-            if (Props.activateSound != null) PlaySound(Props.activateSound);
+            if (Props.activateSound != null)
+                PlaySound(Props.activateSound);
             StartSustainer();
             showNow = true;
         }
@@ -160,7 +113,8 @@ namespace CompActivatableEffect
         public virtual void Deactivate()
         {
             currentState = State.Deactivated;
-            if (Props.deactivateSound != null) PlaySound(Props.deactivateSound);
+            if (Props.deactivateSound != null)
+                PlaySound(Props.deactivateSound);
             EndSustainer();
             showNow = false;
             graphicInt = null;
@@ -168,10 +122,56 @@ namespace CompActivatableEffect
 
         public bool IsActive()
         {
-            if (currentState == State.Activated) return true;
-            return false;
+            return currentState == State.Activated;
         }
 
+        // Caching comps needs to happen after all comps are created. Ideally, this would be done right after
+        // ThingWithComps.InitializeComps(). This requires overriding two hooks: PostPostMake and PostExposeData.
+
+        public override void PostPostMake()
+        {
+            base.PostPostMake();
+            CacheComps();
+        }
+
+        public override void PostExposeData()
+        {
+            base.PostExposeData();
+            Scribe_Values.Look(ref showNow, nameof(showNow));
+            Scribe_Values.Look(ref currentState, nameof(currentState));
+            if (Scribe.mode == LoadSaveMode.LoadingVars)
+                CacheComps();
+        }
+
+        private void CacheComps()
+        {
+            // Avoiding ThingWithComps.GetComp<T> and implementing a specific non-generic version of it here.
+            // That method is slow because the `isinst` instruction with generic type arg operands is very slow,
+            // while `isinst` instruction against non-generic type operand like used below is fast.
+            // For the optional CompDeflector, we have to use the slower IsAssignableFrom reflection check.
+            var comps = parent.AllComps;
+            for (int i = 0, count = comps.Count; i < count; i++)
+            {
+                var comp = comps[i];
+                if (comp is CompEquippable compEquippable)
+                    this.compEquippable = compEquippable;
+                else if (comp is CompOversizedWeapon.CompOversizedWeapon compOversizedWeapon)
+                    this.compOversizedWeapon = compOversizedWeapon;
+                else if (compDeflectorType != null)
+                {
+                    var compType = comp.GetType();
+                    if (compDeflectorType.IsAssignableFrom(compType))
+                    {
+                        compDeflectorIsAnimatingNow =
+                            (Func<bool>)AccessTools.PropertyGetter(compType, "IsAnimatingNow").CreateDelegate(typeof(Func<bool>), comp);
+                        compDeflectorAnimationDeflectionTicks =
+                            (Func<int>)AccessTools.PropertyGetter(compType, "AnimationDeflectionTicks").CreateDelegate(typeof(Func<int>), comp);
+                    }
+                }
+            }
+        }
+
+        // This is called on the first tick - not rolled into above Initialize since it's still needed in case subclasses implement it.
         public virtual void Initialize()
         {
             IsInitialized = true;
@@ -180,8 +180,10 @@ namespace CompActivatableEffect
 
         public override void CompTick()
         {
-            if (!IsInitialized) Initialize();
-            if (IsActive()) ActiveTick();
+            if (!IsInitialized)
+                Initialize();
+            if (IsActive())
+                ActiveTick();
             base.CompTick();
         }
 
@@ -198,14 +200,14 @@ namespace CompActivatableEffect
                     {
                         defaultLabel = Props.DeactivateLabel,
                         icon = IconDeactivate,
-                        action = delegate { TryDeactivate(); }
+                        action = () => TryDeactivate(),
                     };
                 else
                     yield return new Command_Action
                     {
                         defaultLabel = Props.ActivateLabel,
                         icon = IconActivate,
-                        action = delegate { TryActivate(); }
+                        action = () => TryActivate(),
                     };
         }
 
@@ -221,13 +223,6 @@ namespace CompActivatableEffect
             }
         }
 
-        public override void PostExposeData()
-        {
-            base.PostExposeData();
-            Scribe_Values.Look(ref showNow, "showNow", false);
-            Scribe_Values.Look(ref currentState, "currentState", State.Deactivated);
-        }
-
         #region Graphics
 
         private Graphic graphicInt;
@@ -240,29 +235,13 @@ namespace CompActivatableEffect
             get => showNow;
         }
 
-        public Texture2D IconActivate
-        {
-            get
-            {
-                var resolvedTexture = TexCommand.GatherSpotActive;
-                if (!Props.uiIconPathActivate.NullOrEmpty())
-                    resolvedTexture = ContentFinder<Texture2D>.Get(Props.uiIconPathActivate, true);
-                return resolvedTexture;
-            }
-        }
+        public Texture2D IconActivate => !Props.uiIconPathActivate.NullOrEmpty()
+            ? ContentFinder<Texture2D>.Get(Props.uiIconPathActivate)
+            : TexCommand.GatherSpotActive;
 
-        public Texture2D IconDeactivate
-        {
-            get
-            {
-                var resolvedTexture = TexCommand.ClearPrioritizedWork;
-                if (!Props.uiIconPathDeactivate.NullOrEmpty())
-                    resolvedTexture = ContentFinder<Texture2D>.Get(Props.uiIconPathDeactivate, true);
-                return resolvedTexture;
-            }
-        }
-
-        public CompProperties_ActivatableEffect Props => (CompProperties_ActivatableEffect)props;
+        public Texture2D IconDeactivate => !Props.uiIconPathDeactivate.NullOrEmpty()
+            ? ContentFinder<Texture2D>.Get(Props.uiIconPathDeactivate)
+            : TexCommand.ClearPrioritizedWork;
 
         public virtual Graphic Graphic
         {

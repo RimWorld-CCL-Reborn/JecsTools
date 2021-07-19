@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using RimWorld;
+﻿using RimWorld;
 using UnityEngine;
 using Verse;
 
@@ -35,7 +34,6 @@ namespace AbilityUser
             }
         }
 
-
         protected IntVec3 DestinationCell => new IntVec3(destination);
 
         public virtual Vector3 ExactPosition
@@ -54,15 +52,15 @@ namespace AbilityUser
         public override void ExposeData()
         {
             base.ExposeData();
-            Scribe_Values.Look(ref origin, "origin", default(Vector3), false);
-            Scribe_Values.Look(ref destination, "destination", default(Vector3), false);
-            Scribe_Values.Look(ref ticksToImpact, "ticksToImpact", 0, false);
-            Scribe_Values.Look(ref timesToDamage, "timesToDamage", 0, false);
-            Scribe_Values.Look(ref damageLaunched, "damageLaunched", true);
-            Scribe_Values.Look(ref explosion, "explosion", false);
-            Scribe_References.Look(ref usedTarget, "usedTarget", false);
-            Scribe_References.Look(ref launcher, "launcher", false);
-            Scribe_References.Look(ref flyingThing, "flyingThing");
+            Scribe_Values.Look(ref origin, nameof(origin));
+            Scribe_Values.Look(ref destination, nameof(destination));
+            Scribe_Values.Look(ref ticksToImpact, nameof(ticksToImpact));
+            Scribe_Values.Look(ref timesToDamage, nameof(timesToDamage));
+            Scribe_Values.Look(ref damageLaunched, nameof(damageLaunched), true);
+            Scribe_Values.Look(ref explosion, nameof(explosion));
+            Scribe_References.Look(ref usedTarget, nameof(usedTarget));
+            Scribe_References.Look(ref launcher, nameof(launcher));
+            Scribe_References.Look(ref flyingThing, nameof(flyingThing));
         }
 
         public void Launch(Thing launcher, LocalTargetInfo targ, Thing flyingThing, DamageInfo? impactDamage)
@@ -79,7 +77,8 @@ namespace AbilityUser
             DamageInfo? newDamageInfo = null)
         {
             //Despawn the object to fly
-            if (flyingThing.Spawned) flyingThing.DeSpawn();
+            if (flyingThing.Spawned)
+                flyingThing.DeSpawn();
 
             this.launcher = launcher;
             this.origin = origin;
@@ -90,27 +89,34 @@ namespace AbilityUser
             destination = targ.Cell.ToVector3Shifted() +
                           new Vector3(Rand.Range(-0.3f, 0.3f), 0f, Rand.Range(-0.3f, 0.3f));
             ticksToImpact = StartingTicksToImpact;
+            //Log.Message($"FlyingObject.Launch({this})");
         }
 
         public override void Tick()
         {
+            //if (ticksToImpact % 10 == 0) Log.Message($"FlyingObject.Tick({this})");
             base.Tick();
-            var exactPosition = ExactPosition;
             ticksToImpact--;
-            if (!ExactPosition.InBounds(Map))
+            var exactPosition = ExactPosition;
+            if (!exactPosition.InBounds(Map))
             {
                 ticksToImpact++;
-                Position = ExactPosition.ToIntVec3();
-                Destroy(DestroyMode.Vanish);
-                return;
+                exactPosition = ExactPosition;
+                Position = exactPosition.ToIntVec3();
+                Destroy();
             }
-
-            Position = ExactPosition.ToIntVec3();
-            if (ticksToImpact <= 0)
+            else
             {
-                if (DestinationCell.InBounds(Map))
-                    Position = DestinationCell;
-                ImpactSomething();
+                if (ticksToImpact <= 0)
+                {
+                    var destinationCell = DestinationCell;
+                    Position = destinationCell.InBounds(Map) ? destinationCell : exactPosition.ToIntVec3();
+                    ImpactSomething();
+                }
+                else
+                {
+                    Position = exactPosition.ToIntVec3();
+                }
             }
         }
 
@@ -118,13 +124,10 @@ namespace AbilityUser
         {
             if (flyingThing != null)
             {
-                if (flyingThing is Pawn)
+                if (flyingThing is Pawn pawn)
                 {
-                    if (DrawPos == null) return;
-                    if (!DrawPos.ToIntVec3().IsValid) return;
-                    var pawn = flyingThing as Pawn;
+                    // Temp note: DrawPos can't be null and ToIntVec3().IsValid is always true. TODO: remove this comment
                     pawn.Drawer.DrawAt(DrawPos);
-                    //Graphics.DrawMesh(MeshPool.plane10, this.DrawPos, this.ExactRotation, this.flyingThing.def.graphic.MatFront, 0);
                 }
                 else
                 {
@@ -136,16 +139,14 @@ namespace AbilityUser
 
         private void ImpactSomething()
         {
+            //Log.Message($"FlyingObject.ImpactSomething({this})");
             if (usedTarget != null)
             {
-                var pawn = usedTarget as Pawn;
-                if (pawn != null && pawn.GetPosture() != PawnPosture.Standing &&
+                if (usedTarget is Pawn pawn && pawn.GetPosture() != PawnPosture.Standing &&
                     (origin - destination).MagnitudeHorizontalSquared() >= 20.25f && Rand.Value > 0.2f)
-                {
                     Impact(null);
-                    return;
-                }
-                Impact(usedTarget);
+                else
+                    Impact(usedTarget);
             }
             else
             {
@@ -155,10 +156,9 @@ namespace AbilityUser
 
         protected virtual void Impact(Thing hitThing)
         {
-            if (hitThing == null)
-                if (Position.GetThingList(Map).FirstOrDefault(x => x == usedTarget) is Pawn p)
-                    hitThing = p;
-
+            // TODO: Should this hitThing fallback really required to be a Pawn?
+            if (hitThing == null && usedTarget is Pawn && Position.GetThingList(Map).Contains(usedTarget))
+                hitThing = usedTarget;
 
             if (impactDamage != null)
             {
@@ -171,7 +171,14 @@ namespace AbilityUser
                     GenExplosion.DoExplosion(Position, Map, 0.9f, DamageDefOf.Stun, this);
             }
             GenSpawn.Spawn(flyingThing, Position, Map);
-            Destroy(DestroyMode.Vanish);
+            Destroy();
+        }
+
+        public override string ToString()
+        {
+            return $"{base.ToString()}(launcher={launcher}, flyingThing={flyingThing}, usedTarget={usedTarget}, " +
+                $"origin={origin}, destination={destination}, pos={ExactPosition}, speed={speed}, ticksToImpact={ticksToImpact}, " +
+                $"impactDamage={impactDamage}, damageLaunched={damageLaunched}, timesToDamage={timesToDamage}, explosion={explosion})";
         }
     }
 }

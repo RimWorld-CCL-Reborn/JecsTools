@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using AbilityUser;
 using RimWorld;
 using Verse;
@@ -10,8 +9,10 @@ static internal class AbilityEffectUtility
     public static Faction ResolveFaction(SpawnThings spawnables, Pawn caster)
     {
         var factionDefToAssign = FactionDefOf.PlayerColony;
-        if (caster?.Faction is Faction f && f.IsPlayer == false) return f;
-        if (spawnables.factionDef != null) factionDefToAssign = spawnables.factionDef;
+        if (caster?.Faction is Faction f && f.IsPlayer == false)
+            return f;
+        if (spawnables.factionDef != null)
+            factionDefToAssign = spawnables.factionDef;
         if (spawnables.kindDef != null)
             if (spawnables.kindDef.defaultFactionType != null)
                 factionDefToAssign = spawnables.kindDef.defaultFactionType;
@@ -32,7 +33,7 @@ static internal class AbilityEffectUtility
             Lord lord = null;
             if (newPawn.Map.mapPawns.SpawnedPawnsInFaction(faction).Any(p => p != newPawn))
             {
-                Predicate<Thing> validator = p => p != newPawn && ((Pawn)p).GetLord() != null;
+                bool validator(Thing p) => p != newPawn && ((Pawn)p).GetLord() != null;
                 var p2 = (Pawn)GenClosest.ClosestThing_Global(newPawn.Position,
                     newPawn.Map.mapPawns.SpawnedPawnsInFaction(faction), 99999f, validator);
                 lord = p2.GetLord();
@@ -49,7 +50,7 @@ static internal class AbilityEffectUtility
 
     public static void SingleSpawnLoop(SpawnThings spawnables, IntVec3 positionHeld, Map mapHeld, Pawn caster)
     {
-        //Log.Message("SingleSpawnLoops");
+        //Log.Message($"AbilityEffectUtility.SingleSpawnLoop({spawnables}, ...)");
         if (spawnables.def != null)
         {
             var factionToAssign = ResolveFaction(spawnables, caster);
@@ -60,7 +61,8 @@ static internal class AbilityEffectUtility
                     Log.Error("Missing kinddef");
                     return;
                 }
-                Pawn p = SpawnPawn(spawnables, factionToAssign, caster, positionHeld);
+                //Pawn p =
+                SpawnPawn(spawnables, factionToAssign, caster, positionHeld);
                 //if (caster?.Faction is Faction f && Faction.OfPlayerSilentFail != f) p.SetFactionDirect(f);
             }
             else
@@ -78,15 +80,13 @@ static internal class AbilityEffectUtility
 
     public static void SpawnSpawnables(List<SpawnThings> localSpawnThings, Pawn caster, Map mapHeld, IntVec3 positionHeld)
     {
-        //Log.Message("SpawnSpawnables");
+        //Log.Message($"AbilityEffectUtility.SpawnSpawnables(..., caster={caster}, mapHeld={mapHeld}, positionHeld={positionHeld})");
         if (localSpawnThings != null)
             foreach (var spawnables in localSpawnThings)
-                //Log.Message("2S");
                 if (spawnables.spawnCount == 1)
                     SingleSpawnLoop(spawnables, positionHeld, mapHeld, caster);
                 else
                     for (var i = 0; i < spawnables.spawnCount; i++)
-                        //Log.Message("3S");
                         SingleSpawnLoop(spawnables, positionHeld, mapHeld, caster);
     }
 
@@ -107,11 +107,11 @@ static internal class AbilityEffectUtility
                 {
                     victim.Drawer.Notify_DebugAffected();
                     MoteMaker.ThrowText(victim.DrawPos, victim.Map,
-                        hediffs.hediffDef.LabelCap + ": " + StringsToTranslate.AU_CastSuccess, -1f);
+                        hediffs.hediffDef.LabelCap + ": " + StringsToTranslate.AU_CastSuccess);
                 }
                 else
                 {
-                    MoteMaker.ThrowText(victim.DrawPos, victim.Map, StringsToTranslate.AU_CastFailure, -1f);
+                    MoteMaker.ThrowText(victim.DrawPos, victim.Map, StringsToTranslate.AU_CastFailure);
                 }
             }
     }
@@ -149,14 +149,12 @@ static internal class AbilityEffectUtility
                 {
                     victim.Drawer.Notify_DebugAffected();
                     MoteMaker.ThrowText(victim.DrawPos, victim.Map,
-                        mentalStateGiver.mentalStateDef.LabelCap + ": " + StringsToTranslate.AU_CastSuccess,
-                        -1f);
+                        mentalStateGiver.mentalStateDef.LabelCap + ": " + StringsToTranslate.AU_CastSuccess);
                 }
                 else
                 {
                     MoteMaker.ThrowText(victim.DrawPos, victim.Map,
-                        mentalStateGiver.mentalStateDef.LabelCap + ": " + StringsToTranslate.AU_CastFailure,
-                        -1f);
+                        mentalStateGiver.mentalStateDef.LabelCap + ": " + StringsToTranslate.AU_CastFailure);
                 }
             }
     }

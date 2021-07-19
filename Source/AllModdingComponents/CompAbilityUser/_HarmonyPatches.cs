@@ -1,5 +1,8 @@
-﻿using System;
+﻿//#define DEBUGLOG
+
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using HarmonyLib;
 using RimWorld;
@@ -14,60 +17,62 @@ namespace AbilityUser
         public AbilityUserMod(ModContentPack content) : base(content)
         {
             var harmony = new Harmony("jecstools.jecrell.abilityuser");
-            harmony.Patch(AccessTools.Method(typeof(Targeter), nameof(Targeter.TargeterUpdate)), null,
-                new HarmonyMethod(typeof(AbilityUserMod), nameof(TargeterUpdate_PostFix)), null);
+            var type = typeof(AbilityUserMod);
+
+            harmony.Patch(AccessTools.Method(typeof(Targeter), nameof(Targeter.TargeterUpdate)),
+                postfix: new HarmonyMethod(type, nameof(TargeterUpdate_PostFix)));
             harmony.Patch(AccessTools.Method(typeof(Targeter), nameof(Targeter.ProcessInputEvents)),
-                new HarmonyMethod(typeof(AbilityUserMod), nameof(ProcessInputEvents_PreFix)), null);
+                prefix: new HarmonyMethod(type, nameof(ProcessInputEvents_PreFix)));
             harmony.Patch(AccessTools.Method(typeof(Targeter), "ConfirmStillValid"),
-                new HarmonyMethod(typeof(AbilityUserMod), nameof(ConfirmStillValid)), null);
+                prefix: new HarmonyMethod(type, nameof(ConfirmStillValid)));
 
             // Initializes the AbilityUsers on Pawns
-            harmony.Patch(AccessTools.Method(typeof(ThingWithComps), nameof(ThingWithComps.InitializeComps)), null,
-                new HarmonyMethod(typeof(AbilityUserMod), nameof(InitializeComps_PostFix)), null);
+            harmony.Patch(AccessTools.Method(typeof(ThingWithComps), nameof(ThingWithComps.InitializeComps)),
+                postfix: new HarmonyMethod(type, nameof(InitializeComps_PostFix)));
 
             // when the Pawn_EquipmentTracker is notified of a new item, see if that has CompAbilityItem.
-            harmony.Patch(
-                AccessTools.Method(typeof(Pawn_EquipmentTracker), nameof(Pawn_EquipmentTracker.Notify_EquipmentAdded)),
-                null,
-                new HarmonyMethod(typeof(AbilityUserMod), nameof(Notify_EquipmentAdded_PostFix)), null);
+            harmony.Patch(AccessTools.Method(typeof(Pawn_EquipmentTracker), nameof(Pawn_EquipmentTracker.Notify_EquipmentAdded)),
+                postfix: new HarmonyMethod(type, nameof(Notify_EquipmentAdded_PostFix)));
             // when the Pawn_EquipmentTracker is notified of one less item, see if that has CompAbilityItem.
-            harmony.Patch(
-                AccessTools.Method(typeof(Pawn_EquipmentTracker),
-                    nameof(Pawn_EquipmentTracker.Notify_EquipmentRemoved)), null,
-                new HarmonyMethod(typeof(AbilityUserMod), nameof(Notify_EquipmentRemoved_PostFix)), null);
+            harmony.Patch(AccessTools.Method(typeof(Pawn_EquipmentTracker), nameof(Pawn_EquipmentTracker.Notify_EquipmentRemoved)),
+                postfix: new HarmonyMethod(type, nameof(Notify_EquipmentRemoved_PostFix)));
 
             // when the Pawn_ApparelTracker is notified of a new item, see if that has CompAbilityItem.
-            harmony.Patch(
-                AccessTools.Method(typeof(Pawn_ApparelTracker), nameof(Pawn_ApparelTracker.Notify_ApparelAdded)), null,
-                new HarmonyMethod(typeof(AbilityUserMod), nameof(Notify_ApparelAdded_PostFix)), null);
+            harmony.Patch(AccessTools.Method(typeof(Pawn_ApparelTracker), nameof(Pawn_ApparelTracker.Notify_ApparelAdded)),
+                postfix: new HarmonyMethod(type, nameof(Notify_ApparelAdded_PostFix)));
             // when the Pawn_ApparelTracker is notified of one less item, see if that has CompAbilityItem.
-            harmony.Patch(
-                AccessTools.Method(typeof(Pawn_ApparelTracker), nameof(Pawn_ApparelTracker.Notify_ApparelRemoved)),
-                null,
-                new HarmonyMethod(typeof(AbilityUserMod), nameof(Notify_ApparelRemoved_PostFix)), null);
+            harmony.Patch(AccessTools.Method(typeof(Pawn_ApparelTracker), nameof(Pawn_ApparelTracker.Notify_ApparelRemoved)),
+                postfix: new HarmonyMethod(type, nameof(Notify_ApparelRemoved_PostFix)));
 
             harmony.Patch(AccessTools.Method(typeof(ShortHashGiver), "GiveShortHash"),
-                new HarmonyMethod(typeof(AbilityUserMod), nameof(GiveShortHash_PrePatch)), null);
+                prefix: new HarmonyMethod(type, nameof(GiveShortHash_PrePatch)));
 
             harmony.Patch(AccessTools.Method(typeof(PawnGroupKindWorker), nameof(PawnGroupKindWorker.GeneratePawns),
-                    new Type[] { typeof(PawnGroupMakerParms), typeof(PawnGroupMaker), typeof(bool) }), null,
-                new HarmonyMethod(typeof(AbilityUserMod), nameof(GeneratePawns_PostFix)));
+                    new[] { typeof(PawnGroupMakerParms), typeof(PawnGroupMaker), typeof(bool) }),
+                postfix: new HarmonyMethod(type, nameof(GeneratePawns_PostFix)));
 
             harmony.Patch(AccessTools.PropertyGetter(typeof(Verb), nameof(Verb.UIIcon)),
-                new HarmonyMethod(typeof(AbilityUserMod), nameof(get_UIIcon)), null);
+                prefix: new HarmonyMethod(type, nameof(get_UIIcon)));
 
             harmony.Patch(AccessTools.PropertyGetter(typeof(Verb_LaunchProjectile), nameof(Verb_LaunchProjectile.Projectile)),
-                new HarmonyMethod(typeof(AbilityUserMod), nameof(get_Projectile_Prefix)), null);
+                prefix: new HarmonyMethod(type, nameof(get_Projectile_Prefix)));
 
             harmony.Patch(AccessTools.PropertyGetter(typeof(Verb), nameof(Verb.DirectOwner)),
-                new HarmonyMethod(typeof(AbilityUserMod), nameof(get_DirectOwner_Prefix)), null);
+                prefix: new HarmonyMethod(type, nameof(get_DirectOwner_Prefix)));
 
-            harmony.Patch(
-                AccessTools.Method(typeof(Verb), nameof(Verb.TryStartCastOn), new Type[] { typeof(LocalTargetInfo), typeof(LocalTargetInfo), typeof(bool), typeof(bool) })
-                ,
-                new HarmonyMethod(typeof(AbilityUserMod), nameof(TryStartCastOn_Prefix), null));
+            harmony.Patch(AccessTools.Method(typeof(Verb), nameof(Verb.TryStartCastOn),
+                    new[] { typeof(LocalTargetInfo), typeof(LocalTargetInfo), typeof(bool), typeof(bool) }),
+                prefix: new HarmonyMethod(type, nameof(TryStartCastOn_Prefix)));
         }
 
+#if DEBUGLOG
+        private const bool isDebugLog = true;
+#else
+        private const bool isDebugLog = false;
+#endif
+
+        [Conditional("DEBUGLOG")]
+        private static void DebugMessage(string s) => Log.Message(s);
 
         public static bool TryStartCastOn_Prefix(Verb __instance, LocalTargetInfo castTarg, LocalTargetInfo destTarg, bool surpriseAttack, bool canHitNonTargetPawns, ref bool __result)
         {
@@ -83,7 +88,7 @@ namespace AbilityUser
 
         public static bool get_DirectOwner_Prefix(Verb __instance, ref IVerbOwner __result)
         {
-            if (__instance is Verb_UseAbility vua)
+            if (__instance is Verb_UseAbility)
             {
                 __result = __instance.CasterPawn;
                 return false;
@@ -92,7 +97,7 @@ namespace AbilityUser
         }
         public static bool get_Projectile_Prefix(Verb_LaunchProjectile __instance, ref ThingDef __result)
         {
-            if (__instance is Verb_UseAbility vua)
+            if (__instance is Verb_UseAbility)
             {
                 __result = __instance.verbProps.defaultProjectile;
                 return false;
@@ -111,173 +116,302 @@ namespace AbilityUser
             return true;
         }
 
-        // RimWorld.PawnGroupKindWorker_Normal
-        public static void GeneratePawns_PostFix(PawnGroupMakerParms parms, ref List<Pawn> __result)
+        private struct PawnAbilityPointsEntry
         {
-            //Anyone special?
-            if (__result.NullOrEmpty()) return;
-            var specialPawns = __result.FindAll(x => x.GetComp<CompAbilityUser>() is CompAbilityUser cu && cu.CombatPoints() > 0);
-            if (specialPawns.Count > 0)
+            public readonly Pawn pawn;
+            public readonly CompAbilityUser[] comps;
+            public readonly float basePoints;
+            public readonly float points;
+
+            private PawnAbilityPointsEntry(Pawn pawn, CompAbilityUser[] comps, float basePoints, float points)
             {
-                //Log.Message("Special Pawns Detected");
-                //Log.Message("------------------");
+                this.pawn = pawn;
+                this.comps = comps;
+                this.basePoints = basePoints;
+                this.points = points;
+            }
 
-                //Points
-                var previousPoints = parms.points;
-                //Log.Message("Points: " +  previousPoints);
+            public bool IsSpecial => points > basePoints;
 
-                //Log.Message("Average Characters");
-                //Log.Message("------------------");
+            public static PawnAbilityPointsEntry For(Pawn pawn)
+            {
+                var comps = pawn.GetCompAbilityUsers().ToArray();
+                var basePoints = pawn.kindDef.combatPower;
+                var points = basePoints;
+                foreach (var comp in comps)
+                    points += comp.CombatPoints();
+                return new PawnAbilityPointsEntry(pawn, comps, basePoints, points);
+            }
 
-                //Anyone average?
-                var averagePawns = __result.FindAll(x => x.GetComp<CompAbilityUser>() == null);
-                int avgPawns = averagePawns.Count;
-                var avgCombatPoints = new Dictionary<Pawn, float>();
-                averagePawns.ForEach(x =>
+            public PawnAbilityPointsEntry DisableAbilityUser()
+            {
+                var basePoints = pawn.kindDef.combatPower;
+                var points = basePoints;
+                foreach (var comp in comps)
                 {
-                    avgCombatPoints.Add(x, x.kindDef.combatPower);
-                    //Log.Message(x.LabelShort + " : " + x.kindDef.combatPower);
-                });
-
-                //Log.Message("------------------");
-                //Log.Message("Special Characters");
-                //Log.Message("------------------");
-
-                //What's your powers?
-                var specCombatPoints = new Dictionary<Pawn, float>();
-                specialPawns.ForEach(x =>
-                {
-                    var combatValue = x.kindDef.combatPower;
-                    foreach (var thingComp in x.GetComps<CompAbilityUser>())
-                    {
-                        //var compAbilityUser = (CompAbilityUser) thingComp;
-                        var val = Traverse.Create(thingComp).Method("CombatPoints").GetValue<float>();
-                        combatValue += val; //compAbilityUser.CombatPoints();
-                    }
-                    specCombatPoints.Add(x, combatValue);
-                    //Log.Message(x.LabelShort + " : " + combatValue);
-                });
-
-                //Special case -- single raider/character should not be special to avoid problems (e.g. Werewolf raid destroys everyone).
-                if (avgPawns == 0 && specialPawns.Count == 1 && specCombatPoints.Sum(x => x.Value) > 0)
-                {
-                    //Log.Message("Special case called: Single character");
-                    specialPawns[0].GetComp<CompAbilityUser>().DisableAbilityUser();
-                    return;
+                    comp.DisableAbilityUser();
+                    points += comp.CombatPoints();
                 }
+                return new PawnAbilityPointsEntry(pawn, comps, basePoints, points);
+            }
 
-                //Special case -- no special characters.
-                if (specialPawns.Count == 0)
-                    return;
-
-                //Should we rebalance?
-                int tryLimit = avgPawns + specialPawns.Count + 1;
-                int initTryLimit = tryLimit;
-                var tempAvgCombatPoints = new Dictionary<Pawn, float>(avgCombatPoints);
-                var tempSpecCombatPoints = new Dictionary<Pawn, float>(specCombatPoints);
-                var removedCharacters = new List<Pawn>();
-                while (previousPoints < tempAvgCombatPoints.Sum(x => x.Value) + tempSpecCombatPoints.Sum(x => x.Value))
-                {
-                    //Log.Message("------------------");
-                    //Log.Message("Rebalance Attempt # " + (initTryLimit - tryLimit + 1));
-                    //Log.Message("------------------");
-                    //Log.Message("Scenario Points: " + previousPoints + ". Total Points: " + tempAvgCombatPoints.Sum(x => x.Value) + tempSpecCombatPoints.Sum(x => x.Value));
-
-                    //In-case some stupid stuff occurs
-                    --tryLimit;
-                    if (tryLimit < 0)
-                        break;
-
-                    //If special characters outnumber the avg characters, try removing some of the special characters instead.
-                    if (tempSpecCombatPoints.Count >= tempAvgCombatPoints.Count)
-                    {
-                        var toRemove = tempSpecCombatPoints.Keys.RandomElement();
-                        if (toRemove != null)
-                        {
-                            //Log.Message("Removed: " + toRemove.LabelShort + " : " + tempSpecCombatPoints[toRemove]);
-                            removedCharacters.Add(toRemove);
-                            tempSpecCombatPoints.Remove(toRemove);
-                        }
-                    }
-                    //If average characters outnumber special characters, then check if the combat value of avg is greater.
-                    else if (tempSpecCombatPoints.Count < tempAvgCombatPoints.Count)
-                    {
-                        //Remove a random average character if the average characters have more combat points for a score
-                        if (tempAvgCombatPoints.Sum(x => x.Value) > tempSpecCombatPoints.Sum(x => x.Value))
-                        {
-                            var toRemove = tempAvgCombatPoints.Keys.RandomElement();
-                            if (toRemove != null)
-                            {
-                                //Log.Message("Removed: " + toRemove.LabelShort + " : " + tempSpecCombatPoints[toRemove]);
-                                removedCharacters.Add(toRemove);
-                                tempAvgCombatPoints.Remove(toRemove);
-                            }
-                        }
-                        else
-                        {
-                            var toRemove = tempSpecCombatPoints.Keys.RandomElement();
-                            //Log.Message("Removed: " + toRemove.LabelShort + " : " + tempSpecCombatPoints[toRemove]);
-                            if (toRemove != null)
-                            {
-                                removedCharacters.Add(toRemove);
-                                tempSpecCombatPoints.Remove(toRemove);
-                            }
-                        }
-                    }
-                }
-                avgCombatPoints = tempAvgCombatPoints;
-                specCombatPoints = tempSpecCombatPoints;
-
-                //Log.Message("------------");
-                //Log.Message("Final Report");
-                //Log.Message("------------");
-                //Log.Message("Scenario Points: " + previousPoints + ". Total Points: " + tempAvgCombatPoints.Sum(x => x.Value) + tempSpecCombatPoints.Sum(x => x.Value));
-                //Log.Message("------------");
-                //Log.Message("Characters");
-                //Log.Message("------------------");
-                __result.ForEach(x =>
-                {
-                    var combatValue = x.kindDef.combatPower + x.GetComp<CompAbilityUser>()?.CombatPoints() ?? 0f;
-                    //Log.Message(x.LabelShort + " : " + combatValue);
-                });
-                foreach (var x in removedCharacters)
-                {
-                    if (x.GetComp<CompAbilityUser>() is CompAbilityUser cu && cu.CombatPoints() > 0)
-                        cu.DisableAbilityUser();
-                    else x.DestroyOrPassToWorld();
-                }
-                removedCharacters.Clear();
-                avgCombatPoints.Clear();
-                specCombatPoints.Clear();
+            public override string ToString()
+            {
+                var pointStr = points == basePoints ? $"{points}" : $"{points}={basePoints}+{points - basePoints}";
+                return $"({pawn}, kindDef={pawn.kindDef}, role={pawn.GetTraderCaravanRole()}, #comps={comps.Length}, points={pointStr})";
             }
         }
 
-        //Verse.ShortHashGiver
+        private struct PawnAbilityPointsEntries
+        {
+            public List<PawnAbilityPointsEntry> list; // allocated only if necessary
+            public int count;
+            public float points;
+
+            public void Add(PawnAbilityPointsEntry entry, bool addToList = true)
+            {
+                if (addToList)
+                {
+                    list ??= new List<PawnAbilityPointsEntry>();
+                    list.Add(entry);
+                }
+                count++;
+                points += entry.points;
+            }
+
+            public void Remove(PawnAbilityPointsEntry entry)
+            {
+                if (list?.Remove(entry) ?? false)
+                {
+                    count--;
+                    points -= entry.points;
+                }
+            }
+
+            public override string ToString()
+            {
+                var str = $"#pawns = {count}, points = {points}";
+                ToStringAppendList(ref str);
+                return str;
+            }
+
+            [Conditional("DEBUGLOG")]
+            private void ToStringAppendList(ref string str)
+            {
+                if (list != null)
+                    str += list.Join(entry => $"\n\t{entry}", "");
+            }
+        }
+
+        [Conditional("DEBUGLOG")]
+        private static void DebugAdd(ref PawnAbilityPointsEntries entries, PawnAbilityPointsEntry entry, bool addToList = true) =>
+            entries.Add(entry, addToList);
+
+        [Conditional("DEBUGLOG")]
+        private static void DebugAdd(ref int x, int y) => x += y;
+
+        [Conditional("DEBUGLOG")]
+        private static void DebugProfileStart(ref long startTimestamp) => startTimestamp = Stopwatch.GetTimestamp();
+
+        [Conditional("DEBUGLOG")]
+        private static void DebugProfileStop(string format, long startTimestamp) =>
+            DebugMessage(string.Format(format, (Stopwatch.GetTimestamp() - startTimestamp) * 1000 / Stopwatch.Frequency));
+
+        // RimWorld.PawnGroupKindWorker
+        public static void GeneratePawns_PostFix(PawnGroupMakerParms parms, List<Pawn> __result)
+        {
+            // PawnGroupKindWorker.GeneratePawns is about the earliest we can patch, since we need pawns
+            // to be generated (yet not yet spawned) so that CompAbilityUsers are available on these pawns.
+            // This is why we can't simply patch PawnGenOption.Cost or PawnGroupMakerUtility.ChoosePawnGenOptionsByPoints.
+
+            if (__result.Count == 0)
+                return;
+
+            var startTimestamp = 0L;
+            DebugProfileStart(ref startTimestamp);
+            RebalanceGeneratedPawns(parms, __result);
+            DebugProfileStop(rgpMsgPrefix + "Elapsed time: {0} msecs", startTimestamp);
+        }
+
+        private const string rgpMsgPrefix = nameof(CompAbilityUser) + "." + nameof(RebalanceGeneratedPawns) + ": ";
+
+        private static void RebalanceGeneratedPawns(PawnGroupMakerParms parms, List<Pawn> pawns)
+        {
+            // PawnGroupKindWorker does not guaranteed that the sum of pawn points (pawn.kindDef.combatPower) <= parms.points.
+            // Chattel pawns (slaves and animals) are not included in parms.points yet are in __result.
+            // Also, PawnGroupKindWorker_Trader decrements parms.points for trader pawns, effectively likewise excluding them.
+            var targetPoints = parms.points; // parms.points + special trader points (see below)
+            var targetCount = 0; // debug only, represents the pawns contributing to targetPoints
+            var origCount = 0; // debug only, represents the pawns contributing to parms.points
+
+            // Partition into special and normal pawns, calculating combat points for each.
+            // Note: entry lists are allocated only if necessary.
+            var specials = new PawnAbilityPointsEntries();
+            var normals = new PawnAbilityPointsEntries();
+            var excluded = new PawnAbilityPointsEntries(); // debug only
+            foreach (var pawn in pawns)
+            {
+                var entry = PawnAbilityPointsEntry.For(pawn);
+                // parms.points is not used for slaves and animals, so exclude them.
+                // Using GetTraderCaravanRole() for this, since Humanoid Alien Races patches this method to account for alienslavekinds.
+                var traderCaravanRole = pawn.GetTraderCaravanRole();
+                if (traderCaravanRole == TraderCaravanRole.Chattel || traderCaravanRole == TraderCaravanRole.Carrier)
+                {
+                    DebugAdd(ref excluded, entry);
+                }
+                // Not using TraderCaravanRole.Trader for determining traders - non-null pawn.traders is the authoritative source.
+                else if (pawn.trader == null)
+                {
+                    if (entry.IsSpecial)
+                        specials.Add(entry);
+                    else
+                        normals.Add(entry);
+                    DebugAdd(ref origCount, 1);
+                    DebugAdd(ref targetCount, 1);
+                }
+                else
+                {
+                    // PawnGroupKindWorker_Trader reduces parms.points by trader's cost, so exclude them as well.
+                    if (entry.IsSpecial)
+                    {
+                        // Not excluding 'special' traders yet, to allow them to be disabled into normal traders in below rebalancing loop.
+                        specials.Add(entry);
+                        // Since they're not excluded yet, include them in targetPoints (and targetCount);
+                        // this will be "undone" if disabled in below rebalancing loop.
+                        DebugAdd(ref targetCount, 1);
+                        targetPoints += entry.basePoints;
+                    }
+                    else
+                        DebugAdd(ref excluded, entry, isDebugLog);
+                }
+            }
+
+            if (specials.count > 0)
+            {
+                DebugMessage(rgpMsgPrefix + "Target: " + (targetCount != origCount
+                    ? $"#pawns = {origCount} orig + {targetCount - origCount} special trader = {targetCount}, " +
+                      $"points = {parms.points} orig + {targetPoints - parms.points} special trader = {targetPoints}"
+                    : $"#pawns = {targetCount}, points = {targetPoints}"));
+                DebugMessage(rgpMsgPrefix + "Special: " + specials);
+                DebugMessage(rgpMsgPrefix + "Normal: " + normals);
+                DebugMessage(rgpMsgPrefix + "Excluded: " + excluded);
+
+                // Rebalancing loop:
+                // Until # special pawns = 0 or # pawns <= 1 or special pawn + normal pawn points <= target points:
+                //   If # special pawns > # normal pawns or special pawn points > normal pawn points:
+                //     Try to disable a random special pawn into a normal pawn.
+                //     If this fails, remove the special pawn instead.
+                //     Except if the special pawn being disabled is a trader, just exclude them like normal traders even if disabling fails.
+                //   Else:
+                //     Remove a random normal pawn.
+                var iterCount = 0; // debug only
+                var destroyed = new PawnAbilityPointsEntries(); // debug only
+                while (true)
+                {
+                    var condition = specials.count > 0 && specials.count + normals.count > 1 &&
+                        specials.points + normals.points > targetPoints;
+                    DebugMessage(rgpMsgPrefix + (condition ? $"Rebalance iteration {++iterCount}" : "Final"));
+                    DebugMessage(rgpMsgPrefix + "#pawns: " + (targetCount != origCount
+                            ? $"{origCount} orig + {targetCount - origCount} special trader = {targetCount}"
+                            : $"{targetCount} orig") +
+                        $", {specials.count} special + {normals.count} normal = {specials.count + normals.count}, " +
+                        $"{excluded.count} excluded, {destroyed.count} destroyed");
+                    DebugMessage(rgpMsgPrefix + "points: " + (targetPoints != parms.points
+                            ? $"{parms.points} orig + {targetPoints - parms.points} special trader = {targetPoints}"
+                            : $"{targetPoints} orig") +
+                        $", {specials.points} special + {normals.points} normal = {specials.points + normals.points}, " +
+                        $"{excluded.points} excluded, {destroyed.points} destroyed");
+                    if (!condition)
+                        break;
+
+                    if (specials.count >= normals.count || specials.points >= normals.points)
+                    {
+                        var entry = specials.list.RandomElement();
+                        var pawn = entry.pawn;
+                        specials.Remove(entry);
+                        var newEntry = entry.DisableAbilityUser();
+                        if (pawn.trader != null)
+                        {
+                            if (newEntry.IsSpecial)
+                            {
+                                Log.Warning(rgpMsgPrefix + "DisableAbilityUser on 'special' trader pawn {entry} into " +
+                                    $"'normal' trader pawn {newEntry} may not have worked, but keeping this pawn due to trader status");
+                                // Even if disabling didn't work, exclude them like normal trader pawns from more rebalancing, but do NOT
+                                // "undo" their inclusion in targetPoints, so that rebalancing still has to account for their base points.
+                            }
+                            else
+                            {
+                                DebugMessage(rgpMsgPrefix + "Disabled special trader pawn {entry} into normal trader pawn {newEntry}");
+                                // Once disabled, exclude them like normal trader pawns from more rebalancing,
+                                // and "undo" their inclusion in targetPoints (and targetCount).
+                                targetPoints -= newEntry.basePoints;
+                                DebugAdd(ref targetCount, -1);
+                            }
+                            DebugAdd(ref excluded, newEntry, addToList: false);
+                        }
+                        else
+                        {
+                            if (newEntry.IsSpecial)
+                            {
+                                Log.Warning(rgpMsgPrefix + "DisableAbilityUser on 'special' pawn {entry} into 'normal' pawn {newEntry} " +
+                                    "may not have worked, so destroying this pawn");
+                                pawn.DestroyOrPassToWorld();
+                                pawns.Remove(pawn);
+                                DebugAdd(ref destroyed, newEntry, addToList: false);
+                            }
+                            else
+                            {
+                                DebugMessage(rgpMsgPrefix + "Disabled special non-trader pawn {entry} into normal non-trader pawn {newEntry}");
+                                normals.Add(newEntry);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // Note: Since specCount < avgCount, there's at least one normal pawn.
+                        var entry = normals.list.RandomElement();
+                        var pawn = entry.pawn;
+                        DebugMessage(rgpMsgPrefix + "Destroyed normal non-trader pawn {entry}");
+                        normals.Remove(entry);
+                        pawn.DestroyOrPassToWorld();
+                        pawns.Remove(pawn);
+                        DebugAdd(ref destroyed, entry, addToList: false);
+                    }
+                }
+                DebugMessage(rgpMsgPrefix + "Result: #pawns = {pawns.Count}" +
+                    pawns.Join(pawn => $"\n\t{PawnAbilityPointsEntry.For(pawn)}", ""));
+            }
+        }
+
+        // Verse.ShortHashGiver
         public static bool GiveShortHash_PrePatch(Def def, Type defType)
         {
-            //Log.Message("Shorthash called");
+            DebugMessage($"GiveShortHash_PrePatch({def}, {defType})");
             if (def.shortHash != 0)
-                if (defType.IsAssignableFrom(typeof(AbilityDef)) || defType == typeof(AbilityDef) ||
-                    def is AbilityDef)
+                if (def is AbilityDef || typeof(AbilityDef).IsAssignableFrom(defType))
                     return false;
             return true;
         }
 
         public static void Notify_EquipmentAdded_PostFix(Pawn_EquipmentTracker __instance, ThingWithComps eq)
         {
-            //Log.Message("Notify_EquipmentAdded_PostFix 1 : " + eq);
-            var compAbilityUsers = ((Pawn)__instance.ParentHolder).GetComps<CompAbilityUser>();
-            foreach (var cai in eq.GetComps<CompAbilityItem>())
+            DebugMessage("Notify_EquipmentAdded_PostFix : " + eq);
+            var compAbilityUsers = __instance.pawn.GetCompAbilityUsers().ToArray();
+            if (compAbilityUsers.Length > 0)
             {
-                //Log.Message("  Found CompAbilityItem, for CompAbilityUser of " + cai.Props.AbilityUserClass);
-                foreach (var cau in compAbilityUsers)
+                foreach (var cai in eq.GetCompAbilityItems())
                 {
-                    //Log.Message("  Found CompAbilityUser, " + cau + " : " + cau.GetType() + ":" + cai.Props.AbilityUserClass);
-                    if (cau.GetType() == cai.Props.AbilityUserClass)
+                    DebugMessage("  Found CompAbilityItem, for CompAbilityUser of " + cai.Props.AbilityUserClass);
+                    foreach (var cau in compAbilityUsers)
                     {
-                        //Log.Message("  and they match types");
-                        cai.AbilityUserTarget = cau;
-                        foreach (var abdef in cai.Props.Abilities) cau.AddWeaponAbility(abdef);
+                        DebugMessage("  Found CompAbilityUser, " + cau + " : " + cau.GetType() + ":" + cai.Props.AbilityUserClass);
+                        if (cau.GetType() == cai.Props.AbilityUserClass)
+                        {
+                            DebugMessage("  and they match types");
+                            cai.AbilityUserTarget = cau;
+                            foreach (var abdef in cai.Props.Abilities)
+                                cau.AddWeaponAbility(abdef);
+                        }
                     }
                 }
             }
@@ -285,72 +419,84 @@ namespace AbilityUser
 
         public static void Notify_EquipmentRemoved_PostFix(Pawn_EquipmentTracker __instance, ThingWithComps eq)
         {
-            //Log.Message("Notify_EquipmentRemoved_PostFix : " + eq);
-            var compAbilityUsers = ((Pawn)__instance.ParentHolder).GetComps<CompAbilityUser>();
-            foreach (var cai in eq.GetComps<CompAbilityItem>())
+            DebugMessage("Notify_EquipmentRemoved_PostFix : " + eq);
+            var compAbilityUsers = __instance.pawn.GetCompAbilityUsers().ToArray();
+            if (compAbilityUsers.Length > 0)
             {
-                //Log.Message("  Found CompAbilityItem, for CompAbilityUser of " + cai.Props.AbilityUserClass);
-                foreach (var cau in compAbilityUsers)
+                foreach (var cai in eq.GetCompAbilityItems())
                 {
-                    //Log.Message("  Found CompAbilityUser, " + cau + " : " + cau.GetType() + ":" + cai.Props.AbilityUserClass);
-                    if (cau.GetType() == cai.Props.AbilityUserClass)
+                    DebugMessage("  Found CompAbilityItem, for CompAbilityUser of " + cai.Props.AbilityUserClass);
+                    foreach (var cau in compAbilityUsers)
                     {
-                        //Log.Message("  and they match types");
-                        foreach (var abdef in cai.Props.Abilities) cau.RemoveWeaponAbility(abdef);
+                        DebugMessage("  Found CompAbilityUser, " + cau + " : " + cau.GetType() + ":" + cai.Props.AbilityUserClass);
+                        if (cau.GetType() == cai.Props.AbilityUserClass)
+                        {
+                            DebugMessage("  and they match types");
+                            foreach (var abdef in cai.Props.Abilities)
+                                cau.RemoveWeaponAbility(abdef);
+                        }
                     }
                 }
             }
         }
 
+        // Compatibility note: as of 2020-10-20, a mod (A RimWorld of Magic) directly calls this method.
         public static void Notify_ApparelAdded_PostFix(Pawn_ApparelTracker __instance, Apparel apparel)
         {
-            //Log.Message("Notify_ApparelAdded_PostFix : " + apparel);
-            var compAbilityUsers = ((Pawn)__instance.ParentHolder).GetComps<CompAbilityUser>();
-            foreach (var cai in apparel.GetComps<CompAbilityItem>())
+            DebugMessage("Notify_ApparelAdded_PostFix : " + apparel);
+            var compAbilityUsers = __instance.pawn.GetCompAbilityUsers().ToArray();
+            if (compAbilityUsers.Length > 0)
             {
-                //Log.Message("  Found CompAbilityItem, for CompAbilityUser of " + cai.Props.AbilityUserClass);
-                foreach (var cau in compAbilityUsers)
+                foreach (var cai in apparel.GetCompAbilityItems())
                 {
-                    //Log.Message("  Found CompAbilityUser, " + cau + " : " + cau.GetType() + ":" + cai.Props.AbilityUserClass);
-                    if (cau.GetType() == cai.Props.AbilityUserClass)
+                    DebugMessage("  Found CompAbilityItem, for CompAbilityUser of " + cai.Props.AbilityUserClass);
+                    foreach (var cau in compAbilityUsers)
                     {
-                        //Log.Message("  and they match types");
-                        cai.AbilityUserTarget = cau;
-                        foreach (var abdef in cai.Props.Abilities) cau.AddApparelAbility(abdef);
+                        DebugMessage("  Found CompAbilityUser, " + cau + " : " + cau.GetType() + ":" + cai.Props.AbilityUserClass);
+                        if (cau.GetType() == cai.Props.AbilityUserClass)
+                        {
+                            DebugMessage("  and they match types");
+                            cai.AbilityUserTarget = cau;
+                            foreach (var abdef in cai.Props.Abilities)
+                                cau.AddApparelAbility(abdef);
+                        }
                     }
                 }
             }
         }
 
+        // Compatibility note: as of 2020-10-20, a mod (A RimWorld of Magic) directly calls this method.
         public static void Notify_ApparelRemoved_PostFix(Pawn_ApparelTracker __instance, Apparel apparel)
         {
-            //Log.Message("Notify_ApparelRemoved_PostFix 1 : " + apparel);
-            var compAbilityUsers = ((Pawn)__instance.ParentHolder).GetComps<CompAbilityUser>();
-            foreach (var cai in apparel.GetComps<CompAbilityItem>())
+            DebugMessage("Notify_ApparelRemoved_PostFix : " + apparel);
+            var compAbilityUsers = __instance.pawn.GetCompAbilityUsers().ToArray();
+            if (compAbilityUsers.Length > 0)
             {
-                //Log.Message("  Found CompAbilityItem, for CompAbilityUser of " + cai.Props.AbilityUserClass);
-                foreach (var cau in compAbilityUsers)
+                foreach (var cai in apparel.GetCompAbilityItems())
                 {
-                    //Log.Message("  Found CompAbilityUser, " + cau + " : " + cau.GetType() + ":" + cai.Props.AbilityUserClass);
-                    if (cau.GetType() == cai.Props.AbilityUserClass)
+                    DebugMessage("  Found CompAbilityItem, for CompAbilityUser of " + cai.Props.AbilityUserClass);
+                    foreach (var cau in compAbilityUsers)
                     {
-                        //Log.Message("  and they match types");
-                        foreach (var abdef in cai.Props.Abilities) cau.RemoveApparelAbility(abdef);
+                        DebugMessage("  Found CompAbilityUser, " + cau + " : " + cau.GetType() + ":" + cai.Props.AbilityUserClass);
+                        if (cau.GetType() == cai.Props.AbilityUserClass)
+                        {
+                            DebugMessage("  and they match types");
+                            foreach (var abdef in cai.Props.Abilities)
+                                cau.RemoveApparelAbility(abdef);
+                        }
                     }
                 }
             }
         }
 
         // RimWorld.Targeter
-        public static bool ConfirmStillValid(Targeter __instance)
+        public static bool ConfirmStillValid(Targeter __instance, Pawn ___caster)
         {
             if (__instance.targetingSource is Verb_UseAbility)
             {
-                var caster = Traverse.Create(__instance).Field("caster").GetValue<Pawn>();
-
-                if (caster != null && (caster.Map != Find.CurrentMap || caster.Destroyed ||
-                                       !Find.Selector.IsSelected(caster) ||
-                                       caster.Faction != Faction.OfPlayerSilentFail))
+                if (___caster != null && (___caster.Map != Find.CurrentMap || ___caster.Destroyed ||
+                                       !Find.Selector.IsSelected(___caster) ||
+                                       ___caster.Faction != Faction.OfPlayerSilentFail))
                     __instance.StopTargeting();
                 if (__instance.targetingSource != null)
                 {
@@ -429,13 +575,13 @@ namespace AbilityUser
 
         public static void InitializeComps_PostFix(ThingWithComps __instance)
         {
-            if (__instance is Pawn p) InternalAddInAbilityUsers(p);
+            if (__instance is Pawn p)
+                InternalAddInAbilityUsers(p);
         }
 
         // Add in any AbilityUser Components, if the Pawn is accepting
         public static void InternalAddInAbilityUsers(Pawn pawn)
         {
-            //Log.Message("Trying to add AbilityUsers to Pawn");
             if (pawn != null && pawn.RaceProps != null && pawn.RaceProps.Humanlike)
                 AbilityUserUtility.TransformPawn(pawn);
         }

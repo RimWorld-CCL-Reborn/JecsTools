@@ -17,13 +17,7 @@ namespace AbilityUserAI
 
         public override bool CanContinueTraversing(Pawn caster)
         {
-            var result = caster.HealthScale >= minHealth &&
-                         caster.health.summaryHealth.SummaryHealthPercent <= maxHealth;
-
-            if (invert)
-                return !result;
-
-            return result;
+            return (caster.HealthScale >= minHealth && caster.health.summaryHealth.SummaryHealthPercent <= maxHealth) ^ invert;
         }
     }
 }

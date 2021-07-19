@@ -22,7 +22,7 @@ namespace CompInstalledPart
 
         protected float workLeft;
 
-        protected CompInstalledPart InstallComp => PartToInstall.GetComp<CompInstalledPart>();
+        protected CompInstalledPart InstallComp => PartToInstall.GetCompInstalledPart();
 
         protected ThingWithComps PartToInstall => (ThingWithComps)job.targetA.Thing;
 
@@ -30,14 +30,7 @@ namespace CompInstalledPart
 
         protected int WorkDone => TotalNeededWork - (int)workLeft;
 
-        protected int TotalNeededWork
-        {
-            get
-            {
-                var value = InstallComp.Props.workToInstall;
-                return Mathf.Clamp(value, 20, 3000);
-            }
-        }
+        protected int TotalNeededWork => Mathf.Clamp(InstallComp.Props.workToInstall, 20, 3000);
 
         public override bool TryMakePreToilReservations(bool errorOnFailed)
         {
@@ -56,14 +49,15 @@ namespace CompInstalledPart
             yield return Toils_Haul.PlaceHauledThingInCell(TargetIndex.B, null, false);
             var repair = new Toil
             {
-                initAction = delegate
+                initAction = () =>
                 {
-                    ticksToNextRepair = 80f;
+                    ticksToNextRepair = WarmupTicks;
                     workLeft = TotalNeededWork;
                 },
-                tickAction = delegate
+                tickAction = () =>
                 {
-                    if (InstallTarget is Pawn pawnTarget) pawnTarget.pather.StopDead();
+                    if (InstallTarget is Pawn pawnTarget)
+                        pawnTarget.pather.StopDead();
                     pawn.rotationTracker.FaceCell(TargetB.Cell);
                     var actor = pawn;
                     actor.skills.Learn(SkillDefOf.Construction, 0.275f, false);
@@ -71,7 +65,7 @@ namespace CompInstalledPart
                     ticksToNextRepair -= statValue;
                     if (ticksToNextRepair <= 0f)
                     {
-                        ticksToNextRepair += 20f;
+                        ticksToNextRepair += TicksBetweenRepairs;
                         workLeft -= 20 + actor.GetStatValue(StatDefOf.ConstructionSpeed, true);
                         if (workLeft <= 0)
                         {
@@ -80,7 +74,7 @@ namespace CompInstalledPart
                             actor.jobs.EndCurrentJob(JobCondition.Succeeded, true);
                         }
                     }
-                }
+                },
             };
             repair.FailOnCannotTouch(TargetIndex.B, PathEndMode.Touch);
             repair.WithEffect(InstallComp.Props.workEffect, TargetIndex.B);
@@ -92,7 +86,7 @@ namespace CompInstalledPart
         public override void ExposeData()
         {
             base.ExposeData();
-            Scribe_Values.Look(ref workLeft, "workLeft", -1);
+            Scribe_Values.Look(ref workLeft, nameof(workLeft), -1);
         }
     }
 }

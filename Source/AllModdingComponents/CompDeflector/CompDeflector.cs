@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using HarmonyLib;
 using RimWorld;
 using UnityEngine;
@@ -8,6 +7,7 @@ using Verse.AI;
 
 namespace CompDeflector
 {
+
     public class CompDeflector : ThingComp
     {
         public enum AccuracyRoll
@@ -34,56 +34,61 @@ namespace CompDeflector
 
         public bool IsAnimatingNow => animationDeflectionTicks >= 0;
 
-        private bool initComps;
         private CompEquippable compEquippable;
         private ThingComp compActivatableEffect;
         private Func<bool> compActivatableEffectIsActive;
 
-        private void InitCompsAsNeeded()
-        {
-            if (!initComps)
-            {
-                if (parent == null) return;
-                compEquippable = parent.GetComp<CompEquippable>();
-                compActivatableEffect = parent.AllComps.FirstOrDefault(y => y.GetType().ToString().Contains("ActivatableEffect"));
-                if (compActivatableEffect != null)
-                {
-                    compActivatableEffectIsActive =
-                        (Func<bool>)AccessTools.Method(compActivatableEffect.GetType(), "IsActive").CreateDelegate(
-                            typeof(Func<bool>), compActivatableEffect);
-                }
-                initComps = true;
-            }
-        }
+        private static readonly Type compActivatableEffectType = GenTypes.GetTypeInAnyAssembly("CompActivatableEffect.CompActivatableEffect");
 
-        public CompEquippable GetEquippable
-        {
-            get
-            {
-                InitCompsAsNeeded();
-                return compEquippable;
-            }
-        }
+        public CompEquippable GetEquippable => compEquippable;
 
         public Pawn GetPawn => GetEquippable?.verbTracker.PrimaryVerb.CasterPawn;
 
-        public ThingComp GetActivatableEffect
-        {
-            get
-            {
-                InitCompsAsNeeded();
-                return compActivatableEffect;
-            }
-        }
+        public ThingComp GetActivatableEffect => compActivatableEffect;
 
         public bool HasCompActivatableEffect => GetActivatableEffect != null;
 
-        public bool CompActivatableEffectiveIsActive
+        public bool CompActivatableEffectiveIsActive => compActivatableEffectIsActive?.Invoke() ?? false;
+
+        // Caching comps needs to happen after all comps are created. Ideally, this would be done right after
+        // ThingWithComps.InitializeComps(). This requires overriding two hooks: PostPostMake and PostExposeData.
+
+        public override void PostPostMake()
         {
-            get
+            base.PostPostMake();
+            CacheComps();
+        }
+
+        public override void PostExposeData()
+        {
+            base.PostExposeData();
+            Scribe_Values.Look(ref animationDeflectionTicks, nameof(animationDeflectionTicks));
+            if (Scribe.mode == LoadSaveMode.LoadingVars)
+                CacheComps();
+        }
+
+        private void CacheComps()
+        {
+            // Avoiding ThingWithComps.GetComp<T> and implementing a specific non-generic version of it here.
+            // That method is slow because the `isinst` instruction with generic type arg operands is very slow,
+            // while `isinst` instruction against non-generic type operand like used below is fast.
+            // For the optional CompActivatableEffect, we have to use the slower IsAssignableFrom reflection check.
+            var comps = parent.AllComps;
+            for (int i = 0, count = comps.Count; i < count; i++)
             {
-                InitCompsAsNeeded();
-                return compActivatableEffectIsActive?.Invoke() ?? false;
+                var comp = comps[i];
+                if (comp is CompEquippable compEquippable)
+                    this.compEquippable = compEquippable;
+                else if (compActivatableEffectType != null)
+                {
+                    var compType = comp.GetType();
+                    if (compActivatableEffectType.IsAssignableFrom(compType))
+                    {
+                        compActivatableEffect = comp;
+                        compActivatableEffectIsActive =
+                            (Func<bool>)AccessTools.Method(compType, "IsActive").CreateDelegate(typeof(Func<bool>), comp);
+                    }
+                }
             }
         }
 
@@ -132,7 +137,7 @@ namespace CompDeflector
                     if (UseManipulation(out var capable) && capable)
                         calc *= pawn.health.capacities.GetLevel(PawnCapacityDefOf.Manipulation);
                 }
-                return Mathf.Clamp(calc, 0, 1.0f);
+                return Mathf.Clamp01(calc);
             }
 
             public bool UseSkill(out SkillRecord skill)
@@ -165,6 +170,7 @@ namespace CompDeflector
 
         public void ReflectionSkillGain(SkillRecord skill)
         {
+            // TODO: GetPawn should be passed in, though doing so would break binary compatibility
             GetPawn.skills?.Learn(Props.reflectSkill, Props.reflectSkillLearnRate, false);
         }
 
@@ -234,11 +240,12 @@ namespace CompDeflector
             var subtotal = d100 + modifier;
             if (subtotal >= 90)
                 return AccuracyRoll.CriticalSuccess;
-            if (subtotal > difficulty)
+            else if (subtotal > difficulty)
                 return AccuracyRoll.Success;
-            if (subtotal <= 30)
+            else if (subtotal <= 30)
                 return AccuracyRoll.CritialFailure;
-            return AccuracyRoll.Failure;
+            else
+                return AccuracyRoll.Failure;
         }
 
         public virtual void ReflectionAccuracy_InFix(ref int modifier, ref int difficulty)
@@ -273,12 +280,12 @@ namespace CompDeflector
                     muzzleFlashScale = newVerb.verbProps.muzzleFlashScale,
                     warmupTime = 0,
                     defaultCooldownTime = 0,
-                    soundCast = Props.deflectSound
+                    soundCast = Props.deflectSound,
                 };
                 switch (lastAccuracyRoll)
                 {
                     case AccuracyRoll.CriticalSuccess:
-                        if (GetPawn is Pawn pawn)
+                        if (GetPawn is Pawn pawn) // TODO: GetPawn should be passed in, though doing so would break binary compatibility
                             MoteMaker.ThrowText(pawn.DrawPos, pawn.Map,
                                 "SWSaber_TextMote_CriticalSuccess".Translate(), 6f);
                         newVerbProps.accuracyLong = 999.0f;
@@ -328,7 +335,7 @@ namespace CompDeflector
             if (newVerb != null)
             {
                 deflectVerb = (Verb_Deflected)Activator.CreateInstance(typeof(Verb_Deflected));
-                deflectVerb.caster = GetPawn;
+                deflectVerb.caster = GetPawn; // TODO: GetPawn should be passed in, though doing so would break binary compatibility
 
                 //Initialize VerbProperties
                 var newVerbProps = new VerbProperties
@@ -340,7 +347,7 @@ namespace CompDeflector
                     muzzleFlashScale = newVerb.verbProps.muzzleFlashScale,
                     warmupTime = 0,
                     defaultCooldownTime = 0,
-                    soundCast = Props.deflectSound
+                    soundCast = Props.deflectSound,
                 };
 
                 //Apply values
@@ -348,7 +355,8 @@ namespace CompDeflector
             }
             else
             {
-                if (deflectVerb != null) return deflectVerb;
+                if (deflectVerb != null)
+                    return deflectVerb;
                 deflectVerb = (Verb_Deflected)Activator.CreateInstance(typeof(Verb_Deflected));
                 deflectVerb.caster = GetPawn;
                 deflectVerb.verbProps = Props.DeflectVerb;
@@ -363,29 +371,27 @@ namespace CompDeflector
 
         public virtual Pawn ResolveDeflectionTarget(Pawn defaultTarget = null)
         {
-            if (lastAccuracyRoll != AccuracyRoll.CritialFailure) return defaultTarget;
-            var thisPawn = GetPawn;
-            if (thisPawn == null || thisPawn.Dead) return defaultTarget;
-
-            bool Validator(Thing t)
-            {
-                return t is Pawn pawn3 && pawn3 != thisPawn;
-            }
-
+            if (lastAccuracyRoll != AccuracyRoll.CritialFailure)
+                return defaultTarget;
+            var thisPawn = GetPawn; // TODO: GetPawn should be passed in, though doing so would break binary compatibility
             var closestPawn = (Pawn)GenClosest.ClosestThingReachable(thisPawn.Position, thisPawn.Map,
                 ThingRequest.ForGroup(ThingRequestGroup.Pawn), PathEndMode.InteractionCell,
-                TraverseParms.For(thisPawn, Danger.Deadly, TraverseMode.ByPawn, false), 9999f, Validator, null,
+                TraverseParms.For(thisPawn, Danger.Deadly, TraverseMode.ByPawn, false), 9999f, t => t is Pawn && t != thisPawn, null,
                 0, -1, false, RegionType.Set_Passable, false);
-            if (closestPawn == null) return defaultTarget;
-            return closestPawn == defaultTarget ? thisPawn : closestPawn;
+            if (closestPawn == null)
+                return defaultTarget;
+            else if (closestPawn == defaultTarget)
+                return thisPawn;
+            else
+                return closestPawn;
         }
 
         public virtual void CriticalFailureHandler(DamageInfo dinfo, Pawn newTarget, out bool shouldContinue)
         {
             shouldContinue = true;
-            if (lastAccuracyRoll != AccuracyRoll.CritialFailure) return;
-            var thisPawn = GetPawn;
-            if (thisPawn == null || thisPawn.Dead) return;
+            if (lastAccuracyRoll != AccuracyRoll.CritialFailure)
+                return;
+            var thisPawn = GetPawn; // TODO: GetPawn should be passed in, though doing so would break binary compatibility
             //If the target isn't the old target, then get out of this
             if (newTarget != dinfo.Instigator as Pawn)
                 return;
@@ -395,32 +401,30 @@ namespace CompDeflector
 
         public virtual void GiveDeflectJob(DamageInfo dinfo)
         {
-            try
-            {
-                if (!(dinfo.Instigator is Pawn pawn)) return;
-                var job = JobMaker.MakeJob(CompDeflectorDefOf.CastDeflectVerb);
-                job.playerForced = true;
-                job.locomotionUrgency = LocomotionUrgency.Sprint;
-                var compEquipVerb = pawn.equipment?.PrimaryEq?.PrimaryVerb;
-                if (compEquipVerb == null) return;
-                var thisPawn = GetPawn;
-                var verbToUse = (Verb_Deflected)CopyAndReturnNewVerb(compEquipVerb);
-                verbToUse = (Verb_Deflected)ReflectionHandler(deflectVerb);
-                verbToUse.lastShotReflected = lastShotReflected;
-                verbToUse.verbTracker = thisPawn.VerbTracker;
-                pawn = ResolveDeflectionTarget(pawn);
-                CriticalFailureHandler(dinfo, pawn, out var shouldContinue);
-                if (!shouldContinue) return;
-                job.targetA = pawn;
-                job.verbToUse = verbToUse;
-                job.killIncappedTarget = pawn.Downed;
-                thisPawn.jobs.TryTakeOrderedJob(job);
-            }
-            catch (NullReferenceException e) // TODO: Is this still needed?
-            {
-                Log.Message(e.ToString());
-            }
-            ////Log.Message("TryToTakeOrderedJob Called");
+            if (!(dinfo.Instigator is Pawn pawn))
+                return;
+            var job = JobMaker.MakeJob(CompDeflectorDefOf.CastDeflectVerb);
+            job.playerForced = true;
+            job.locomotionUrgency = LocomotionUrgency.Sprint;
+            var compEquipVerb = pawn.equipment?.PrimaryEq?.PrimaryVerb;
+            if (compEquipVerb == null)
+                return;
+            var thisPawn = GetPawn;
+            if (thisPawn == null || thisPawn.Dead)
+                return;
+            var deflectVerb = (Verb_Deflected)CopyAndReturnNewVerb(compEquipVerb);
+            var verbToUse = (Verb_Deflected)ReflectionHandler(deflectVerb);
+            verbToUse.lastShotReflected = lastShotReflected;
+            verbToUse.verbTracker = thisPawn.VerbTracker;
+            pawn = ResolveDeflectionTarget(pawn);
+            CriticalFailureHandler(dinfo, pawn, out var shouldContinue);
+            if (!shouldContinue)
+                return;
+            job.targetA = pawn;
+            job.verbToUse = verbToUse;
+            job.killIncappedTarget = pawn.Downed;
+            thisPawn.jobs.TryTakeOrderedJob(job);
+            //Log.Message("TryToTakeOrderedJob Called");
         }
 
         /// <summary>
@@ -457,12 +461,6 @@ namespace CompDeflector
                     return;
                 }
             absorbed = false;
-        }
-
-        public override void PostExposeData()
-        {
-            Scribe_Values.Look(ref animationDeflectionTicks, "animationDeflectionTicks", 0);
-            base.PostExposeData();
         }
     }
 }

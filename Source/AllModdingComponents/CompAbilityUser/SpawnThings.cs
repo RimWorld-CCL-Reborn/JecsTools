@@ -13,11 +13,16 @@ namespace AbilityUser
 
         public void ExposeData()
         {
-            Scribe_Defs.Look(ref def, "def");
-            Scribe_Defs.Look(ref kindDef, "kindDef");
-            Scribe_Defs.Look(ref factionDef, "factionDef");
-            Scribe_Values.Look(ref spawnCount, "spawnCount", 1);
-            Scribe_Values.Look(ref temporary, "temporary", false);
+            Scribe_Defs.Look(ref def, nameof(def));
+            Scribe_Defs.Look(ref kindDef, nameof(kindDef));
+            Scribe_Defs.Look(ref factionDef, nameof(factionDef));
+            Scribe_Values.Look(ref spawnCount, nameof(spawnCount), 1);
+            Scribe_Values.Look(ref temporary, nameof(temporary));
+        }
+
+        public override string ToString()
+        {
+            return $"(def={def}, factionDef={factionDef}, kindDef={kindDef}, spawnCount={spawnCount}, temporary={temporary})";
         }
     }
 }

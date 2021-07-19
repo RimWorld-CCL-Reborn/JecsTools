@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -15,8 +16,6 @@ namespace CompSlotLoadable
         public SlotLoadable(Thing newOwner)
         {
             //Log.Message("Slot started");
-            var def = this.def as SlotLoadableDef;
-            slottableThingDefs = def.slottableThingDefs;
             owner = newOwner;
             ThingIDMaker.GiveIDTo(this);
             slot = new ThingOwner<Thing>(this, false, LookMode.Deep);
@@ -32,35 +31,15 @@ namespace CompSlotLoadable
             slot = new ThingOwner<Thing>(this, false, LookMode.Deep);
         }
 
-        public Texture2D SlotIcon()
-        {
-            if (SlotOccupant != null)
-                if (SlotOccupant.def != null)
-                    return SlotOccupant.def.uiIcon;
-            return null;
-        }
+        public SlotLoadableDef Def => def as SlotLoadableDef;
 
-        public Color SlotColor()
-        {
-            if (SlotOccupant != null)
-                if (SlotOccupant.def != null)
-                    return SlotOccupant.def.graphic.Color;
-            return Color.white;
-        }
+        public Texture2D SlotIcon() => SlotOccupant?.def?.uiIcon;
 
-        public bool IsEmpty()
-        {
-            if (SlotOccupant != null) return false;
-            return true;
-        }
+        public Color SlotColor() => SlotOccupant?.def?.graphic.Color ?? Color.white;
 
-        public bool CanLoad(ThingDef defType)
-        {
-            if (slottableThingDefs != null)
-                if (slottableThingDefs.Contains(defType))
-                    return true;
-            return false;
-        }
+        public bool IsEmpty() => SlotOccupant == null;
+
+        public bool CanLoad(ThingDef defType) => SlottableTypes.Contains(defType);
 
         public override void ExposeData()
         {
@@ -68,53 +47,46 @@ namespace CompSlotLoadable
             if (Scribe.mode == LoadSaveMode.Saving)
                 if (thingIDNumber == -1)
                     ThingIDMaker.GiveIDTo(this);
-            Scribe_Deep.Look(ref slot, "slot", this);
-            Scribe_Collections.Look(ref slottableThingDefs, "slottableThingDefs", LookMode.Undefined);
-            Scribe_References.Look(ref owner, "owner");
-            //Scribe_References.Look<Thing>(ref this.slotOccupant, "slotOccupant");
+            Scribe_Deep.Look(ref slot, nameof(slot), this);
+            Scribe_References.Look(ref owner, nameof(owner));
+
+            // Only save slottableThingDefs if it isn't Def.slottableThingDefs (otherwise, save null) to save space.
+            var defSlottableThingDefs = Def?.slottableThingDefs;
+            var savedSlottableThingDefs = slottableThingDefs;
+            if (defSlottableThingDefs != null && slottableThingDefs != null &&
+                defSlottableThingDefs.SequenceEqual(slottableThingDefs))
+                savedSlottableThingDefs = null;
+            Scribe_Collections.Look(ref savedSlottableThingDefs, nameof(slottableThingDefs), LookMode.Def);
+            if (slottableThingDefs != null)
+                slottableThingDefs = savedSlottableThingDefs;
         }
 
         #region Variables
 
         //Exposable Variables
-        //private Thing slotOccupant;
         private ThingOwner slot;
+        private List<ThingDef> slottableThingDefs;
 
-        //Settable variables
-        public List<ThingDef> slottableThingDefs;
-
-        //
         //Spawn variables
         public Thing owner;
+        private CompSlotLoadable parentComp;
 
         #endregion Variables
 
         #region IThingOwnerOwner
 
-        public Map GetMap()
-        {
-            return ParentMap;
-        }
+        public Map GetMap() => ParentMap;
 
-        public ThingOwner GetInnerContainer()
-        {
-            return slot;
-        }
+        public ThingOwner GetInnerContainer() => slot;
 
-        public IntVec3 GetPosition()
-        {
-            return ParentLoc;
-        }
+        public IntVec3 GetPosition() => ParentLoc;
 
         public void GetChildHolders(List<IThingHolder> outChildren)
         {
             ThingOwnerUtility.AppendThingHoldersFromThings(outChildren, GetDirectlyHeldThings());
         }
 
-        public ThingOwner GetDirectlyHeldThings()
-        {
-            return slot;
-        }
+        public ThingOwner GetDirectlyHeldThings() => slot;
 
         #endregion IThingOwnerOwner
 
@@ -122,6 +94,9 @@ namespace CompSlotLoadable
 
         //Get methods
 
+        // XXX: Not sure of all the ways SlotLoadable is initialized (like whether client code does it itself),
+        // but they should all have parent CompSlotLoadable, which is lazily initialized here from owner.
+        public CompSlotLoadable ParentComp => parentComp ??= owner?.TryGetCompSlotLoadable();
 
         public Thing SlotOccupant
         {
@@ -140,22 +115,13 @@ namespace CompSlotLoadable
                 {
                     var takenThing = value.holdingOwner.Take(value, 1);
                     value.DeSpawn();
-                    slot.TryAdd(takenThing, true);
+                    slot.TryAdd(takenThing);
                 }
                 else
                 {
-                    slot.TryAdd(value, true);
+                    slot.TryAdd(value);
                 }
             }
-
-            //get
-            //{
-            //    return slotOccupant;
-            //}
-            //set
-            //{
-            //    slotOccupant = value;
-            //}
         }
 
         public ThingOwner Slot
@@ -164,41 +130,21 @@ namespace CompSlotLoadable
             set => slot = value;
         }
 
-        public Pawn Holder
-        {
-            get
-            {
-                Pawn result = null;
-                if (owner != null)
-                {
-                    var eq = owner.TryGetComp<CompEquippable>();
-                    if (eq != null)
-                        if (eq.PrimaryVerb != null)
-                        {
-                            var pawn = eq.PrimaryVerb.CasterPawn;
-                            if (pawn != null)
-                                if (pawn.Spawned)
-                                    result = pawn;
-                        }
-                }
-                return result;
-            }
-        }
+        public Pawn Holder => ParentComp?.GetPawn is Pawn pawn && pawn.Spawned ? pawn : null;
 
         public Map ParentMap
         {
             get
             {
-                Map result = null;
                 //Does our parent have an equippable class?
                 //Use that to find a pawn location if it's equipped.
                 if (owner != null)
                 {
-                    if (Holder != null)
-                        return Holder.Map;
+                    if (Holder is Pawn holder)
+                        return holder.Map;
                     return owner.Map;
                 }
-                return result;
+                return null;
             }
         }
 
@@ -206,20 +152,24 @@ namespace CompSlotLoadable
         {
             get
             {
-                var result = IntVec3.Invalid;
                 //Does our parent have an equippable class?
                 //Use that to find a pawn location if it's equipped.
                 if (owner != null)
                 {
-                    if (Holder != null)
-                        return Holder.Position;
+                    if (Holder is Pawn holder)
+                        return holder.Position;
                     return owner.Position;
                 }
-                return result;
+                return IntVec3.Invalid;
             }
         }
 
-        public List<ThingDef> SlottableTypes => slottableThingDefs;
+        public List<ThingDef> SlottableTypes
+        {
+            // def isn't available during constructor, so slottableThingDefs is lazily initialized here.
+            get => slottableThingDefs ??= Def?.slottableThingDefs ?? new List<ThingDef>();
+            set => slottableThingDefs = value;
+        }
 
         #endregion Properties
 
@@ -228,34 +178,28 @@ namespace CompSlotLoadable
         public virtual bool TryLoadSlot(Thing thingToLoad, bool emptyIfFilled = false)
         {
             //Log.Message("TryLoadSlot Called");
-            if (SlotOccupant != null && emptyIfFilled || SlotOccupant == null)
+            if (SlotOccupant == null || emptyIfFilled)
             {
                 TryEmptySlot();
-                if (thingToLoad != null)
-                    if (slottableThingDefs != null)
-                        if (slottableThingDefs.Contains(thingToLoad.def))
-                        {
-                            SlotOccupant = thingToLoad;
-                            //slot.TryAdd(thingToLoad, false);
-                            if (((SlotLoadableDef)def).doesChangeColor)
-                                owner.Notify_ColorChanged();
-                            return true;
-                        }
+                if (thingToLoad != null && CanLoad(thingToLoad.def))
+                {
+                    SlotOccupant = thingToLoad;
+                    //slot.TryAdd(thingToLoad, false);
+                    if (Def?.doesChangeColor ?? false)
+                        owner.Notify_ColorChanged();
+                    return true;
+                }
             }
             else
             {
-                Messages.Message(string.Format(StringOf.ExceptionSlotAlreadyFilled, new object[]
-                {
-                    owner.Label
-                }), MessageTypeDefOf.RejectInput);
+                Messages.Message(string.Format(StringOf.ExceptionSlotAlreadyFilled, owner.Label), MessageTypeDefOf.RejectInput);
             }
             return false;
         }
 
         public virtual bool TryEmptySlot()
         {
-            if (!CanEmptySlot()) return false;
-            return slot.TryDropAll(ParentLoc, ParentMap, ThingPlaceMode.Near);
+            return CanEmptySlot() && slot.TryDropAll(ParentLoc, ParentMap, ThingPlaceMode.Near);
         }
 
         public virtual bool CanEmptySlot()

@@ -16,7 +16,8 @@ namespace JecsTools
         {
             if (researchPrerequisites != null)
                 foreach (var r in researchPrerequisites)
-                    if (!r.IsFinished) return false;
+                    if (!r.IsFinished)
+                        return false;
             return true;
         }
     }

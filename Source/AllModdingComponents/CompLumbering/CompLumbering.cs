@@ -32,10 +32,9 @@ namespace CompLumbering
 
                 //Duplicated code from -> Verse.PawnGrapic -> ResolveAllGraphics
                 var curKindLifeStage = Lumberer.ageTracker.CurKindLifeStage;
-                if (Lumberer.gender != Gender.Female || curKindLifeStage.femaleGraphicData == null)
-                    pawnGraphicSet.nakedGraphic = curKindLifeStage.bodyGraphicData.Graphic;
-                else
-                    pawnGraphicSet.nakedGraphic = curKindLifeStage.femaleGraphicData.Graphic;
+                pawnGraphicSet.nakedGraphic = Lumberer.gender != Gender.Female || curKindLifeStage.femaleGraphicData == null
+                    ? curKindLifeStage.bodyGraphicData.Graphic
+                    : curKindLifeStage.femaleGraphicData.Graphic;
                 pawnGraphicSet.rottingGraphic = pawnGraphicSet.nakedGraphic.GetColoredVersion(ShaderDatabase.CutoutSkin,
                     PawnGraphicSet.RottingColor, PawnGraphicSet.RottingColor);
                 if (Lumberer.RaceProps.packAnimal)
@@ -61,20 +60,21 @@ namespace CompLumbering
                 {
                     cycled = !cycled;
                     ticksToCycle = Find.TickManager.TicksGame + Props.secondsPerStep.SecondsToTicks();
-                    if (Props.sound != null) Props.sound.PlayOneShot(SoundInfo.InMap(Lumberer));
+                    Props.sound?.PlayOneShot(SoundInfo.InMap(Lumberer));
                     if (cycled)
                         ResolveCycledGraphic();
                     else
                         ResolveBaseGraphic();
-                    if (Props.staggerEffect) Lumberer.stances.StaggerFor(Props.secondsBetweenSteps.SecondsToTicks());
+                    if (Props.staggerEffect)
+                        Lumberer.stances.StaggerFor(Props.secondsBetweenSteps.SecondsToTicks());
                 }
         }
 
         public override void PostExposeData()
         {
             base.PostExposeData();
-            Scribe_Values.Look(ref cycled, "cycled", false);
-            Scribe_Values.Look(ref ticksToCycle, "ticksToCycle", -1);
+            Scribe_Values.Look(ref cycled, nameof(cycled));
+            Scribe_Values.Look(ref ticksToCycle, nameof(ticksToCycle), -1);
         }
     }
 }

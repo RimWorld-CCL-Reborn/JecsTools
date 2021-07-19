@@ -16,7 +16,8 @@ namespace CompVehicle
         /// Adds a right click option to unpack and spawn the vehicle.
         public override IEnumerable<FloatMenuOption> CompFloatMenuOptions(Pawn selPawn)
         {
-            foreach (var o in base.CompFloatMenuOptions(selPawn)) yield return o;
+            foreach (var o in base.CompFloatMenuOptions(selPawn))
+                yield return o;
 
             if (!Spawner.DestroyedOrNull() && Spawner.Spawned &&
                 !selPawn.DestroyedOrNull() && selPawn.Spawned)

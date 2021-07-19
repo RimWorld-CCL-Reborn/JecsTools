@@ -1,6 +1,8 @@
-﻿using System;
+﻿//#define DEBUGLOG
+
+using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Diagnostics;
 using RimWorld;
 using Verse;
 using Verse.Sound;
@@ -15,50 +17,69 @@ namespace AbilityUser
 
         public VerbProperties_Ability UseAbilityProps => (VerbProperties_Ability)verbProps;
         public ProjectileDef_Ability AbilityProjectileDef => UseAbilityProps.defaultProjectile as ProjectileDef_Ability;
-        public CompAbilityUser AbilityUserComp => CasterPawn.GetComp<CompAbilityUser>();
+        public CompAbilityUser AbilityUserComp
+        {
+            get
+            {
+                var abilityUser = Ability?.AbilityUser;
+                if (abilityUser == null)
+                {
+                    Log.ErrorOnce("Verb_UseAbility.Ability?.AbilityUser is unexpectedly null - " +
+                        "defaulting Verb_UseAbility.AbilityUserComp to CasterPawn's first CompAbilityUser", 21938760);
+#pragma warning disable CS0618 // Type or member is obsolete
+                    abilityUser = CasterPawn.GetCompAbilityUser();
+#pragma warning restore CS0618 // Type or member is obsolete
+                }
+                return abilityUser;
+            }
+        }
 
         protected override int ShotsPerBurst => verbProps.burstShotCount;
+
+        [Conditional("DEBUGLOG")]
+        private static void DebugMessage(string s) => Log.Message(s);
 
         public override float HighlightFieldRadiusAroundTarget(out bool needLOSToCenter)
         {
             needLOSToCenter = true;
-            var result = verbProps.defaultProjectile?.projectile?.explosionRadius ?? 1;
-            if (UseAbilityProps.abilityDef.MainVerb.TargetAoEProperties != null)
-                if (UseAbilityProps.abilityDef.MainVerb.TargetAoEProperties.showRangeOnSelect)
-                    result = UseAbilityProps.abilityDef.MainVerb.TargetAoEProperties.range;
-            return result;
+            var targetAoEProperties = UseAbilityProps.abilityDef.MainVerb.TargetAoEProperties;
+            return targetAoEProperties?.showRangeOnSelect ?? false
+                ? targetAoEProperties.range
+                : verbProps.defaultProjectile?.projectile?.explosionRadius ?? 1;
         }
 
         protected virtual void UpdateTargets()
         {
             TargetsAoE.Clear();
-            if (UseAbilityProps.AbilityTargetCategory == AbilityTargetCategory.TargetAoE)
+            var props = UseAbilityProps;
+            if (props.AbilityTargetCategory == AbilityTargetCategory.TargetAoE)
             {
                 //Log.Message("AoE Called");
-                if (UseAbilityProps.TargetAoEProperties == null)
+                var targetAoEProperties = props.TargetAoEProperties;
+                if (targetAoEProperties == null)
                     Log.Error("Tried to Cast AoE-Ability without defining a target class");
 
-                var targets = new List<Thing>();
+                List<Thing> targets;
 
                 //Handle TargetAoE start location.
                 var aoeStartPosition = caster.PositionHeld;
-                if (!UseAbilityProps.TargetAoEProperties.startsFromCaster)
+                if (!targetAoEProperties.startsFromCaster)
                     aoeStartPosition = currentTarget.Cell;
 
                 //Handle friendly fire targets.
-                if (!UseAbilityProps.TargetAoEProperties.friendlyFire)
+                if (!targetAoEProperties.friendlyFire)
                 {
-                    targets = caster.Map.listerThings.AllThings.Where(x =>
-                        x.Position.InHorDistOf(aoeStartPosition, UseAbilityProps.TargetAoEProperties.range) &&
-                        UseAbilityProps.TargetAoEProperties.targetClass.IsAssignableFrom(x.GetType()) &&
-                        x.Faction.HostileTo(Faction.OfPlayer)).ToList();
+                    targets = caster.Map.listerThings.AllThings.FindAll(x =>
+                        x.Position.InHorDistOf(aoeStartPosition, targetAoEProperties.range) &&
+                        targetAoEProperties.targetClass.IsAssignableFrom(x.GetType()) &&
+                        x.Faction.HostileTo(Faction.OfPlayer));
                 }
-                else if (UseAbilityProps.TargetAoEProperties.targetClass == typeof(Plant) ||
-                         UseAbilityProps.TargetAoEProperties.targetClass == typeof(Building))
+                else if (targetAoEProperties.targetClass == typeof(Plant) ||
+                         targetAoEProperties.targetClass == typeof(Building))
                 {
-                    targets = caster.Map.listerThings.AllThings.Where(x =>
-                        x.Position.InHorDistOf(aoeStartPosition, UseAbilityProps.TargetAoEProperties.range) &&
-                        UseAbilityProps.TargetAoEProperties.targetClass.IsAssignableFrom(x.GetType())).ToList();
+                    targets = caster.Map.listerThings.AllThings.FindAll(x =>
+                        x.Position.InHorDistOf(aoeStartPosition, targetAoEProperties.range) &&
+                        targetAoEProperties.targetClass.IsAssignableFrom(x.GetType()));
                     foreach (var targ in targets)
                     {
                         var tinfo = new LocalTargetInfo(targ);
@@ -68,20 +89,19 @@ namespace AbilityUser
                 }
                 else
                 {
-                    targets.Clear();
-                    targets = caster.Map.listerThings.AllThings.Where(x =>
-                        x.Position.InHorDistOf(aoeStartPosition, UseAbilityProps.TargetAoEProperties.range) &&
-                        UseAbilityProps.TargetAoEProperties.targetClass.IsAssignableFrom(x.GetType()) &&
-                        (x.HostileTo(Faction.OfPlayer) || UseAbilityProps.TargetAoEProperties.friendlyFire)).ToList();
+                    targets = caster.Map.listerThings.AllThings.FindAll(x =>
+                        x.Position.InHorDistOf(aoeStartPosition, targetAoEProperties.range) &&
+                        targetAoEProperties.targetClass.IsAssignableFrom(x.GetType()) &&
+                        (x.HostileTo(Faction.OfPlayer) || targetAoEProperties.friendlyFire));
                 }
 
-                var maxTargets = UseAbilityProps.abilityDef.MainVerb.TargetAoEProperties.maxTargets;
-                var randTargets = new List<Thing>(targets.InRandomOrder());
-                for (var i = 0; i < maxTargets && i < randTargets.Count; i++)
+                var maxTargets = props.abilityDef.MainVerb.TargetAoEProperties.maxTargets;
+                GenList.Shuffle(targets);
+                for (var i = 0; i < maxTargets && i < targets.Count; i++)
                 {
-                    var tinfo = new TargetInfo(randTargets[i]);
-                    if (UseAbilityProps.targetParams.CanTarget(tinfo))
-                        TargetsAoE.Add(new LocalTargetInfo(randTargets[i]));
+                    var tinfo = new TargetInfo(targets[i]);
+                    if (props.targetParams.CanTarget(tinfo))
+                        TargetsAoE.Add(new LocalTargetInfo(targets[i]));
                 }
             }
             else
@@ -101,7 +121,7 @@ namespace AbilityUser
             {
                 return false;
             }
-            Thing thing = castTarg.Thing;
+            var thing = castTarg.Thing;
             if (thing.def.category != ThingCategory.Pawn && (thing.def.building == null || !thing.def.building.IsTurret))
             {
                 return false;
@@ -138,23 +158,22 @@ namespace AbilityUser
             }
 
             this.surpriseAttack = surpriseAttack;
-            this.canHitNonTargetPawnsNow = canHitNonTargetPawns;
-            this.currentTarget = castTarg;
-            this.currentDestination = destTarg;
+            canHitNonTargetPawnsNow = canHitNonTargetPawns;
+            currentTarget = castTarg;
+            currentDestination = destTarg;
             if (CasterIsPawn && verbProps.warmupTime > 0f)
             {
                 if (verbProps.requireLineOfSight)
                 {
-                    ShootLine resultingLine;
-                    if (!TryFindShootLineFromTo(caster.Position, castTarg, out resultingLine))
+                    if (!TryFindShootLineFromTo(caster.Position, castTarg, out var resultingLine))
                     {
                         Messages.Message("AU_NoLineOfSight".Translate(), MessageTypeDefOf.RejectInput);
                         return false;
                     }
                     CasterPawn.Drawer.Notify_WarmingCastAlongLine(resultingLine, caster.Position);
                 }
-                float statValue = CasterPawn.GetStatValue(StatDefOf.AimingDelayFactor);
-                int ticks = (verbProps.warmupTime * statValue).SecondsToTicks();
+                var statValue = CasterPawn.GetStatValue(StatDefOf.AimingDelayFactor);
+                var ticks = (verbProps.warmupTime * statValue).SecondsToTicks();
                 CasterPawn.stances.SetStance(new Stance_Warmup(ticks, castTarg, this));
             }
             else
@@ -168,8 +187,12 @@ namespace AbilityUser
         {
             if (PreCastShotCheck(castTarg, destTarg, surpriseAttack, canHitNonTargetPawns))
             {
+                DebugMessage($"Verb_UseAbility.PreCastShotCheck({this}, castTarg={castTarg}, destTarg={destTarg}, " +
+                    $"surpriseAttack={surpriseAttack}, canHitNonTargetPawns={canHitNonTargetPawns}) => true");
                 return true;
             }
+            DebugMessage($"Verb_UseAbility.PreCastShotCheck({this}, castTarg={castTarg}, destTarg={destTarg}, " +
+                $"surpriseAttack={surpriseAttack}, canHitNonTargetPawns={canHitNonTargetPawns}) => false");
             Ability.Notify_AbilityFailed(true);
             return false;
         }
@@ -183,14 +206,14 @@ namespace AbilityUser
 
         protected override bool TryCastShot()
         {
-            //Log.Message("Cast");
+            DebugMessage($"TryCastShot({this})");
             var result = false;
             TargetsAoE.Clear();
             UpdateTargets();
-            var burstShots = ShotsPerBurst;
-            if (UseAbilityProps.AbilityTargetCategory != AbilityTargetCategory.TargetAoE && TargetsAoE.Count > 1)
+            var props = UseAbilityProps;
+            if (props.AbilityTargetCategory != AbilityTargetCategory.TargetAoE && TargetsAoE.Count > 1)
                 TargetsAoE.RemoveRange(0, TargetsAoE.Count - 1);
-            if (UseAbilityProps.mustHaveTarget && TargetsAoE.Count == 0)
+            if (props.mustHaveTarget && TargetsAoE.Count == 0)
             {
                 Messages.Message("AU_NoTargets".Translate(), MessageTypeDefOf.RejectInput);
                 Ability.Notify_AbilityFailed(true);
@@ -198,62 +221,46 @@ namespace AbilityUser
             }
             for (var i = 0; i < TargetsAoE.Count; i++)
             {
-                //                for (int j = 0; j < burstshots; j++)
-                //                {
+                //for (var j = 0; j < burstshots; j++)
+                //{
+                var target = TargetsAoE[i];
+                DebugMessage($"TryCastShot({this}) target={target} ({target.Thing}), defaultProjectile={verbProps.defaultProjectile}");
                 if (verbProps.defaultProjectile != null) //ranged attacks WILL have projectiles
                 {
-                    //Log.Message("Yes Projectile");
-                    var attempt = TryLaunchProjectile(verbProps.defaultProjectile, TargetsAoE[i]);
-                    ////Log.Message(TargetsAoE[i].ToString());
-                    if (attempt != null)
-                    {
-                        if (attempt == true) result = true;
-                        if (attempt == false) result = false;
-                    }
+                    var attempt = TryLaunchProjectile(verbProps.defaultProjectile, target);
+                    if (attempt.HasValue)
+                        result = attempt.GetValueOrDefault();
                 }
                 else //melee attacks WON'T have projectiles
                 {
-                    //Log.Message("No Projectile");
-                    var victim = TargetsAoE[i].Thing;
+                    var victim = target.Thing;
                     if (victim != null)
                     {
-                        //Log.Message("Yes victim");
                         if (victim is Pawn pawnVictim)
                         {
-                            //Log.Message("Yes victim is pawn");
-                            AbilityEffectUtility.ApplyMentalStates(pawnVictim, CasterPawn, UseAbilityProps.mentalStatesToApply, UseAbilityProps.abilityDef, null);
-                            AbilityEffectUtility.ApplyHediffs(pawnVictim, CasterPawn, UseAbilityProps.hediffsToApply, null);
-                            AbilityEffectUtility.SpawnSpawnables(UseAbilityProps.thingsToSpawn, pawnVictim, victim.MapHeld, victim.PositionHeld);
+                            AbilityEffectUtility.ApplyMentalStates(pawnVictim, CasterPawn, props.mentalStatesToApply, props.abilityDef, null);
+                            AbilityEffectUtility.ApplyHediffs(pawnVictim, CasterPawn, props.hediffsToApply, null);
+                            AbilityEffectUtility.SpawnSpawnables(props.thingsToSpawn, pawnVictim, victim.MapHeld, victim.PositionHeld);
                         }
                     }
                     else
                     {
-                        //Log.Message("Victim is null");
-                        AbilityEffectUtility.SpawnSpawnables(UseAbilityProps.thingsToSpawn, CasterPawn, CasterPawn.MapHeld, CasterPawn.PositionHeld);
+                        AbilityEffectUtility.SpawnSpawnables(props.thingsToSpawn, CasterPawn, CasterPawn.MapHeld, CasterPawn.PositionHeld);
                     }
                 }
-                //                }
+                //}
             }
 
             PostCastShot(result, out result);
             if (result == false)
             {
-                Ability.Notify_AbilityFailed(UseAbilityProps.refundsPointsAfterFailing);
+                Ability.Notify_AbilityFailed(props.refundsPointsAfterFailing);
             }
             return result;
         }
 
-        private bool debugMode = false;
-
-        private void DebugMessage(string s)
-        {
-            if (debugMode) Log.Message(s);
-        }
-
-
         public bool TryLaunchProjectileCheck(ThingDef projectileDef, LocalTargetInfo launchTarget)
         {
-            DebugMessage(launchTarget.ToString());
             var flag = TryFindShootLineFromTo(caster.Position, launchTarget, out var shootLine);
             if (verbProps.requireLineOfSight && verbProps.stopBurstWithoutLos && !flag)
             {
@@ -262,25 +269,24 @@ namespace AbilityUser
             }
             var drawPos = caster.DrawPos;
             var projectile = (Projectile_AbilityBase)GenSpawn.Spawn(projectileDef, shootLine.Source, caster.Map);
-            projectile.extraDamages = UseAbilityProps.extraDamages;
-            projectile.localSpawnThings = UseAbilityProps.thingsToSpawn;
-            verbProps.soundCast?.PlayOneShot(new TargetInfo(caster.Position, caster.Map, false));
+            var props = UseAbilityProps;
+            projectile.extraDamages = props.extraDamages;
+            projectile.localSpawnThings = props.thingsToSpawn;
+            verbProps.soundCast?.PlayOneShot(new TargetInfo(caster.Position, caster.Map));
             verbProps.soundCastTail?.PlayOneShotOnCamera();
             if (DebugViewSettings.drawShooting)
-                MoteMaker.ThrowText(caster.DrawPos, caster.Map, "ToHit", -1f);
-            ProjectileHitFlags projectileHitFlags4 = ProjectileHitFlags.IntendedTarget;
-            if (this.canHitNonTargetPawnsNow)
+                MoteMaker.ThrowText(caster.DrawPos, caster.Map, "ToHit"); // TODO: Translate()?
+            var projectileHitFlags = ProjectileHitFlags.IntendedTarget;
+            if (canHitNonTargetPawnsNow)
             {
-                projectileHitFlags4 |= ProjectileHitFlags.NonTargetPawns;
+                projectileHitFlags |= ProjectileHitFlags.NonTargetPawns;
             }
-            if (!this.currentTarget.HasThing || this.currentTarget.Thing.def.Fillage == FillCategory.Full)
+            if (!currentTarget.HasThing || currentTarget.Thing.def.Fillage == FillCategory.Full)
             {
-                projectileHitFlags4 |= ProjectileHitFlags.NonTargetWorld;
+                projectileHitFlags |= ProjectileHitFlags.NonTargetWorld;
             }
-            DebugMessage(launchTarget.ToString());
-            projectile.Launch(caster, Ability.Def, drawPos, launchTarget, projectileHitFlags4, null,
-                UseAbilityProps.hediffsToApply,
-                UseAbilityProps.mentalStatesToApply, UseAbilityProps.thingsToSpawn);
+            projectile.Launch(caster, Ability.Def, drawPos, launchTarget, projectileHitFlags, null,
+                props.hediffsToApply, props.mentalStatesToApply, props.thingsToSpawn);
             return true;
         }
 
@@ -288,23 +294,22 @@ namespace AbilityUser
         {
             if (TryLaunchProjectileCheck(projectileDef, launchTarget))
             {
+                DebugMessage($"Verb_UseAbility.TryLaunchProjectileCheck({this}, projectileDef={projectileDef}, launchTarget={launchTarget}) => true");
                 return true;
             }
+            DebugMessage($"Verb_UseAbility.TryLaunchProjectileCheck({this}, projectileDef={projectileDef}, launchTarget={launchTarget}) => false");
             Ability.Notify_AbilityFailed(true);
             return false;
         }
 
         public override void WarmupComplete()
         {
-            if (verbTracker == null)
-                verbTracker = CasterPawn.verbTracker;
+            verbTracker ??= CasterPawn.verbTracker;
             burstShotsLeft = ShotsPerBurst;
             state = VerbState.Bursting;
             TryCastNextBurstShot();
-            //Find.BattleLog.Add(new BattleLogEntry_RangedFire(this.caster,
-            //    (!this.currentTarget.HasThing) ? null : this.currentTarget.Thing,
-            //    (base.EquipmentSource == null) ? null : base.EquipmentSource.def, this.Projectile,
-            //    this.ShotsPerBurst > 1));
+            //Find.BattleLog.Add(new BattleLogEntry_RangedFire(caster, currentTarget.Thing,
+            //    EquipmentSource?.def, Projectile, ShotsPerBurst > 1));
         }
     }
 }

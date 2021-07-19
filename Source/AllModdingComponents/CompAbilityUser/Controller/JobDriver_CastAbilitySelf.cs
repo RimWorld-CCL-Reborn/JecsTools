@@ -9,19 +9,6 @@ namespace AbilityUser
     {
         public AbilityContext Context => job.count == 1 ? AbilityContext.Player : AbilityContext.AI;
 
-        private List<CompAbilityUser> CompAbilityUsers
-        {
-            get
-            {
-                var results = new List<CompAbilityUser>();
-                var allCompAbilityUsers = pawn.GetComps<CompAbilityUser>();
-                if (allCompAbilityUsers.TryRandomElement(out var comp))
-                    foreach (var compy in allCompAbilityUsers)
-                        results.Add(compy);
-                return results;
-            }
-        }
-
         public override bool TryMakePreToilReservations(bool errorOnFailed)
         {
             return true;
@@ -36,19 +23,19 @@ namespace AbilityUser
             yield return Toils_Combat.CastVerb(TargetIndex.A, false);
             yield return new Toil
             {
-                initAction = delegate { verb.Ability.PostAbilityAttempt(); },
-                defaultCompleteMode = ToilCompleteMode.Instant
+                initAction = verb.Ability.PostAbilityAttempt,
+                defaultCompleteMode = ToilCompleteMode.Instant,
             };
             yield return new Toil
             {
-                initAction = delegate
+                initAction = () =>
                 {
                     if (verb.UseAbilityProps.isViolent)
                     {
-                        JobDriver_CastAbilityVerb.CheckForAutoAttack(this.pawn);
+                        JobDriver_CastAbilityVerb.CheckForAutoAttack(pawn);
                     }
                 },
-                defaultCompleteMode = ToilCompleteMode.Instant
+                defaultCompleteMode = ToilCompleteMode.Instant,
             };
         }
     }

@@ -18,31 +18,19 @@ namespace JecsTools
         {
             if (count < 0)
             {
-                Log.Warning(string.Concat(new object[]
-                {
-                    "Tried to set StuffCategoryCountClass count to ",
-                    count,
-                    ". stuffDef=",
-                    stuffCatDef
-                }), false);
+                Log.Warning($"Tried to set StuffCategoryCountClass count to {count}. stuffDef={stuffCatDef}", false);
                 count = 0;
             }
             this.stuffCatDef = stuffCatDef;
             this.count = count;
         }
 
-        public string Summary
-        {
-            get
-            {
-                return this.count + "x " + ((this.stuffCatDef == null) ? "null" : this.stuffCatDef.label);
-            }
-        }
+        public string Summary => $"{count}x {stuffCatDef?.label ?? "null"}";
 
         public void ExposeData()
         {
-            Scribe_Defs.Look<StuffCategoryDef>(ref this.stuffCatDef, "stuffCatDef");
-            Scribe_Values.Look<int>(ref this.count, "count", 1, false);
+            Scribe_Defs.Look(ref stuffCatDef, nameof(stuffCatDef));
+            Scribe_Values.Look(ref count, nameof(count), 1);
         }
 
         public void LoadDataFromXmlCustom(XmlNode xmlRoot)
@@ -54,26 +42,13 @@ namespace JecsTools
             else
             {
                 DirectXmlCrossRefLoader.RegisterObjectWantsCrossRef(this, "stuffCatDef", xmlRoot.Name);
-                this.count = (int)ParseHelper.FromString(xmlRoot.FirstChild.Value, typeof(int));
+                count = (int)ParseHelper.FromString(xmlRoot.FirstChild.Value, typeof(int));
             }
         }
 
-        public override string ToString()
-        {
-            return string.Concat(new object[]
-            {
-                "(",
-                this.count,
-                "x ",
-                (this.stuffCatDef == null) ? "null" : this.stuffCatDef.defName,
-                ")"
-            });
-        }
+        public override string ToString() => $"{count}x {stuffCatDef?.defName ?? "null"}";
 
-        public override int GetHashCode()
-        {
-            return (int)this.stuffCatDef.shortHash + this.count << 16;
-        }
+        public override int GetHashCode() => stuffCatDef.shortHash + count << 16;
 
         public static implicit operator StuffCategoryCountClass(StuffDefCount t)
         {

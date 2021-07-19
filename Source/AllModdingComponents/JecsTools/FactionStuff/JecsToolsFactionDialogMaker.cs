@@ -1,16 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using RimWorld;
 using RimWorld.Planet;
 using UnityEngine;
 using Verse;
-using Verse.AI;
 using Verse.Sound;
 
 namespace JecsTools
 {
+    // TODO: This hasn't worked properly since RW B19.
+    // It's based off the B18 version of FactionDialogMaker, which has undergone significant changes since.
+    // For example, the QuestPeaceTalks IncidentDef no longer exists:
+    // It was renamed to Quest_PeaceTalks in RW B19, then replaced with an OpportunitySite_PeaceTalks QuestScriptDef in RW 1.1.
+    // This needs to be rebased off the latest version of FactionDialogMaker (or reworked into Harmony patches if possible).
+    [Obsolete("Hasn't worked properly since RW B19")]
     public static class JecsToolsFactionDialogMaker
     {
         public static DiaNode FactionDialogFor(Pawn negotiator, Faction faction)
@@ -19,12 +23,12 @@ namespace JecsTools
             JecsToolsFactionDialogMaker.negotiator = negotiator;
             JecsToolsFactionDialogMaker.faction = faction;
             var text = (faction.leader != null) ? faction.leader.Name.ToStringFull : faction.Name;
-            var factionSettings = faction.def?.GetModExtension<FactionSettings>();
+            var factionSettings = faction.def?.GetFactionSettings();
             var greetingHostileKey = factionSettings?.greetingHostileKey ?? "FactionGreetingHostile";
             var greetingWaryKey = factionSettings?.greetingWaryKey ?? "FactionGreetingWary";
             var greetingWarmKey = factionSettings?.greetingWarmKey ?? "FactionGreetingWarm";
-            var waryMinimum = factionSettings?.waryMinimumRelations ?? -70f;
-            var warmMinimum = factionSettings?.warmMinimumRelations ?? 40f;
+            var waryMinimum = factionSettings?.waryMinimumRelations ?? MinRelationsToCommunicate;
+            var warmMinimum = factionSettings?.warmMinimumRelations ?? MinRelationsFriendly;
 
             var greetingHostile = greetingHostileKey.Translate(text);
             var greetingWary = greetingWaryKey.Translate(text, negotiator.LabelShort);
@@ -35,7 +39,7 @@ namespace JecsTools
                 root = new DiaNode(greetingHostile);
                 if (!SettlementUtility.IsPlayerAttackingAnySettlementOf(faction) && negotiator.Spawned && negotiator.Map.IsPlayerHome)
                 {
-                    root.options.Add(PeaceTalksOption(faction, negotiator.Map));
+                    root.options.Add(PeaceTalksOption(faction));
                 }
             }
             else
@@ -50,7 +54,7 @@ namespace JecsTools
                     }
                     if (!faction.HostileTo(Faction.OfPlayer) && negotiator.Spawned && negotiator.Map.IsPlayerHome)
                     {
-                        root.options.Add(RequestTraderOption(map, 1100));
+                        root.options.Add(RequestTraderOption(map, TradeRequestCost_Wary));
                     }
                 }
                 else
@@ -62,7 +66,7 @@ namespace JecsTools
                     }
                     if (!faction.HostileTo(Faction.OfPlayer) && negotiator.Spawned && negotiator.Map.IsPlayerHome)
                     {
-                        root.options.Add(RequestTraderOption(map, 700));
+                        root.options.Add(RequestTraderOption(map, TradeRequestCost_Warm));
                         root.options.Add(RequestMilitaryAidOption(map));
                     }
                 }
@@ -74,48 +78,46 @@ namespace JecsTools
                     root.options.Add(item);
                 }
             }
-            var diaOption = new DiaOption("(" + "Disconnect".Translate() + ")");
-            diaOption.resolveTree = true;
+            var diaOption = new DiaOption("(" + "Disconnect".Translate() + ")")
+            {
+                resolveTree = true,
+            };
             root.options.Add(diaOption);
             return root;
         }
 
         private static IEnumerable<DiaOption> DebugOptions()
         {
-            var opt = new DiaOption("(Debug) Goodwill +10");
-            opt.action = delegate
+            var opt = new DiaOption("(Debug) Goodwill +10")
             {
-                faction.TryAffectGoodwillWith(Faction.OfPlayer, 10, false, true, null, null);
+                action = () => faction.TryAffectGoodwillWith(Faction.OfPlayer, 10, false, true),
+                linkLateBind = () => FactionDialogFor(negotiator, faction),
             };
-            opt.linkLateBind = (() => FactionDialogFor(negotiator, faction));
             yield return opt;
-            var opt2 = new DiaOption("(Debug) Goodwill -10");
-            opt2.action = delegate
+            var opt2 = new DiaOption("(Debug) Goodwill -10")
             {
-                faction.TryAffectGoodwillWith(Faction.OfPlayer, -10, false, true, null, null);
+                action = () => faction.TryAffectGoodwillWith(Faction.OfPlayer, -10, false, true),
+                linkLateBind = () => FactionDialogFor(negotiator, faction),
             };
-            opt2.linkLateBind = (() => FactionDialogFor(negotiator, faction));
             yield return opt2;
-            var opt3 = new DiaOption("(Debug) Potatoes");
-            opt3.action = delegate
+            var opt3 = new DiaOption("(Debug) Potatoes")
             {
-                Messages.Message("Boil 'em, mash 'em, stick em in a stew.", MessageTypeDefOf.PositiveEvent);
+                action = () => Messages.Message("Boil 'em, mash 'em, stick em in a stew.", MessageTypeDefOf.PositiveEvent),
+                linkLateBind = () => FactionDialogFor(negotiator, faction),
             };
-            opt3.linkLateBind = (() => FactionDialogFor(negotiator, faction));
             yield return opt3;
         }
 
         private static int AmountSendableSilver(Map map)
         {
             return (from t in TradeUtility.AllLaunchableThingsForTrade(map)
-                where t.def == ThingDefOf.Silver
-                select t).Sum((Thing t) => t.stackCount);
+                    where t.def == ThingDefOf.Silver
+                    select t).Sum((Thing t) => t.stackCount);
         }
 
-
-        private static DiaOption PeaceTalksOption(Faction faction, Map map)
+        private static DiaOption PeaceTalksOption(Faction faction)
         {
-            var def = IncidentDef.Named("QuestPeaceTalks");
+            var def = IncidentDef.Named("QuestPeaceTalks"); // XXX: this doesn't exist anymore - see comment on class
             if (PeaceTalksExist(faction))
             {
                 var diaOption = new DiaOption(def.letterLabel);
@@ -125,12 +127,12 @@ namespace JecsTools
 
             var diaOption2 = new DiaOption(def.letterLabel)
             {
-                action = delegate
+                action = () =>
                 {
                     PlaySoundFor(faction);
                     if (!TryStartPeaceTalks(faction))
                         Log.Error("Peace talks event failed to start. This should never happen.");
-                }
+                },
             };
             var text = string.Format(def.letterText.AdjustedFor(faction.leader), faction.def.leaderTitle, faction.Name, 15)
                 .CapitalizeFirst();
@@ -138,36 +140,37 @@ namespace JecsTools
             {
                 options =
                 {
-                    OKToRoot()
-                }
+                    OKToRoot(),
+                },
             };
             return diaOption2;
         }
 
-
         private static DiaOption OfferGiftOption(Map map)
         {
-            if (AmountSendableSilver(map) < 300)
+            if (AmountSendableSilver(map) < GiftSilverAmount)
             {
                 var diaOption = new DiaOption("OfferGift".Translate());
-                diaOption.Disable("NeedSilverLaunchable".Translate(300));
+                diaOption.Disable("NeedSilverLaunchable".Translate(GiftSilverAmount));
                 return diaOption;
             }
-            var goodwillDelta = 12f * negotiator.GetStatValue(StatDefOf.NegotiationAbility, true);
-            var diaOption2 = new DiaOption("OfferGift".Translate() + " (" + "SilverForGoodwill".Translate(300, goodwillDelta.ToString("#####0")) + ")");
-            diaOption2.action = delegate
+            var goodwillDelta = GiftSilverGoodwillChange * negotiator.GetStatValue(StatDefOf.NegotiationAbility, true);
+            var diaOption2 = new DiaOption("OfferGift".Translate() + " (" + "SilverForGoodwill".Translate(GiftSilverAmount, goodwillDelta.ToString("#####0")) + ")")
             {
-                TradeUtility.LaunchThingsOfType(ThingDefOf.Silver, 300, map, null);
-                faction.TryAffectGoodwillWith(Faction.OfPlayer, (int)goodwillDelta);
-                PlaySoundFor(faction);
+                action = () =>
+                {
+                    TradeUtility.LaunchThingsOfType(ThingDefOf.Silver, GiftSilverAmount, map, null);
+                    faction.TryAffectGoodwillWith(Faction.OfPlayer, (int)goodwillDelta);
+                    PlaySoundFor(faction);
+                },
             };
             var text = "SilverGiftSent".Translate(faction.leader.LabelIndefinite(), Mathf.RoundToInt(goodwillDelta)).CapitalizeFirst();
             diaOption2.link = new DiaNode(text)
             {
                 options =
                 {
-                    OKToRoot()
-                }
+                    OKToRoot(),
+                },
             };
             return diaOption2;
         }
@@ -201,24 +204,30 @@ namespace JecsTools
             foreach (var localTk2 in faction.def.caravanTraderKinds)
             {
                 var localTk = localTk2;
-                var diaOption5 = new DiaOption(localTk.LabelCap);
-                diaOption5.action = delegate
+                var diaOption5 = new DiaOption(localTk.LabelCap)
                 {
-                    var incidentParms = new IncidentParms();
-                    incidentParms.target = map;
-                    incidentParms.faction = faction;
-                    incidentParms.traderKind = localTk;
-                    incidentParms.forced = true;
-                    Find.Storyteller.incidentQueue.Add(IncidentDefOf.TraderCaravanArrival, Find.TickManager.TicksGame + 120000, incidentParms);
-                    faction.lastTraderRequestTick = Find.TickManager.TicksGame;
-                    TradeUtility.LaunchThingsOfType(ThingDefOf.Silver, silverCost, map, null);
-                    PlaySoundFor(faction);
+                    action = () =>
+                    {
+                        var incidentParms = new IncidentParms
+                        {
+                            target = map,
+                            faction = faction,
+                            traderKind = localTk,
+                            forced = true,
+                        };
+                        Find.Storyteller.incidentQueue.Add(IncidentDefOf.TraderCaravanArrival, Find.TickManager.TicksGame + 120000, incidentParms);
+                        faction.lastTraderRequestTick = Find.TickManager.TicksGame;
+                        TradeUtility.LaunchThingsOfType(ThingDefOf.Silver, silverCost, map, null);
+                        PlaySoundFor(faction);
+                    },
+                    link = diaNode,
                 };
-                diaOption5.link = diaNode;
                 diaNode2.options.Add(diaOption5);
             }
-            var diaOption6 = new DiaOption("GoBack".Translate());
-            diaOption6.linkLateBind = ResetToRoot();
+            var diaOption6 = new DiaOption("GoBack".Translate())
+            {
+                linkLateBind = ResetToRoot(),
+            };
             diaNode2.options.Add(diaOption6);
             diaOption4.link = diaNode2;
             return diaOption4;
@@ -226,7 +235,7 @@ namespace JecsTools
 
         private static DiaOption RequestMilitaryAidOption(Map map)
         {
-            var text = "RequestMilitaryAid".Translate(-25f);
+            var text = "RequestMilitaryAid".Translate(MilitaryAidRelsChange);
             if (!faction.def.allowedArrivalTemperatureRange.ExpandedBy(-4f).Includes(map.mapTemperature.SeasonalTemp))
             {
                 var diaOption = new DiaOption(text);
@@ -234,45 +243,37 @@ namespace JecsTools
                 return diaOption;
             }
             var diaOption2 = new DiaOption(text);
-            IEnumerable<IAttackTarget> targetsHostileToColony = map.attackTargetsCache.TargetsHostileToColony;
-            if (JecsToolsFactionDialogMaker.megaOne == null)
+            if (map.attackTargetsCache.TargetsHostileToColony.Any(GenHostility.IsActiveThreatToPlayer))
             {
-                JecsToolsFactionDialogMaker.megaOne = new Func<IAttackTarget, bool>(GenHostility.IsActiveThreatToPlayer);
-            }
-            if (targetsHostileToColony.Any(JecsToolsFactionDialogMaker.megaOne))
-            {
-                if (!map.attackTargetsCache.TargetsHostileToColony.Any((IAttackTarget p) => ((Thing)p).Faction != null && ((Thing)p).Faction.HostileTo(faction)))
+                if (!map.attackTargetsCache.TargetsHostileToColony
+                    .Any(p => ((Thing)p).Faction != null && ((Thing)p).Faction.HostileTo(faction)))
                 {
-                    IEnumerable<IAttackTarget> targetsHostileToColony2 = map.attackTargetsCache.TargetsHostileToColony;
-                    if (JecsToolsFactionDialogMaker.megaTwo == null)
-                    {
-                        JecsToolsFactionDialogMaker.megaTwo = new Func<IAttackTarget, bool>(GenHostility.IsActiveThreatToPlayer);
-                    }
-                    IEnumerable<Faction> source = (from pa in targetsHostileToColony2.Where(JecsToolsFactionDialogMaker.megaTwo)
-                        select ((Thing)pa).Faction into fa
-                        where fa != null && !fa.HostileTo(faction)
-                        select fa).Distinct<Faction>();
+                    var source = (from pa in map.attackTargetsCache.TargetsHostileToColony
+                                  where GenHostility.IsActiveThreatToPlayer(pa)
+                                  select ((Thing)pa).Faction into fa
+                                  where fa != null && !fa.HostileTo(faction)
+                                  // Faction doesn't have own GetHashCode or Equals, so Distinct below works on reference equality.
+                                  // ALthough this is iffy, this is what vanilla RW does, so leave it be.
+                                  select fa).Distinct();
                     var key = "MilitaryAidConfirmMutualEnemy";
                     var diaNode = new DiaNode(key.Translate(faction.Name,
                         GenText.ToCommaList(from fa in source select fa.Name, true)));
-                    var diaOption3 = new DiaOption("CallConfirm".Translate());
-                    diaOption3.action = delegate
+                    var diaOption3 = new DiaOption("CallConfirm".Translate())
                     {
-                        CallForAid(map);
+                        action = () => CallForAid(map),
+                        link = FightersSent(),
                     };
-                    diaOption3.link = FightersSent();
-                    var diaOption4 = new DiaOption("CallCancel".Translate());
-                    diaOption4.linkLateBind = ResetToRoot();
+                    var diaOption4 = new DiaOption("CallCancel".Translate())
+                    {
+                        linkLateBind = ResetToRoot(),
+                    };
                     diaNode.options.Add(diaOption3);
                     diaNode.options.Add(diaOption4);
                     diaOption2.link = diaNode;
                     return diaOption2;
                 }
             }
-            diaOption2.action = delegate
-            {
-                CallForAid(map);
-            };
+            diaOption2.action = () => CallForAid(map);
             diaOption2.link = FightersSent();
             return diaOption2;
         }
@@ -283,8 +284,8 @@ namespace JecsTools
             {
                 options =
                 {
-                    OKToRoot()
-                }
+                    OKToRoot(),
+                },
             };
         }
 
@@ -296,7 +297,7 @@ namespace JecsTools
             {
                 target = map,
                 faction = faction,
-                points = (float)Rand.Range(150, 400)
+                points = Rand.Range(150, 400),
             };
             IncidentDefOf.RaidFriendly.Worker.TryExecute(incidentParms);
             HarmonyPatches.lastPhoneAideFaction = faction;
@@ -305,7 +306,7 @@ namespace JecsTools
 
         public static void PlaySoundFor(Faction faction)
         {
-            if (faction.def.GetModExtension<FactionSettings>() is FactionSettings fs)
+            if (faction.def.GetFactionSettings() is FactionSettings fs)
             {
                 fs.entrySoundDef?.PlayOneShotOnCamera();
             }
@@ -315,7 +316,7 @@ namespace JecsTools
         {
             return new DiaOption("OK".Translate())
             {
-                linkLateBind = ResetToRoot()
+                linkLateBind = ResetToRoot(),
             };
         }
 
@@ -344,27 +345,19 @@ namespace JecsTools
 
         private const int TradeRequestCost_Warm = 700;
 
-        [CompilerGenerated]
-        private static Func<IAttackTarget, bool> megaOne;
-
-        [CompilerGenerated]
-        private static Func<IAttackTarget, bool> megaTwo;
-
-
         private static bool TryStartPeaceTalks(Faction faction)
         {
-            int tile;
-            if (!JecsToolsFactionDialogMaker.TryFindTile(out tile))
+            if (!TryFindTile(out var tile))
             {
                 return false;
             }
-            PeaceTalks peaceTalks = (PeaceTalks)WorldObjectMaker.MakeWorldObject(WorldObjectDefOf.PeaceTalks);
+            var peaceTalks = (PeaceTalks)WorldObjectMaker.MakeWorldObject(WorldObjectDefOf.PeaceTalks);
             peaceTalks.Tile = tile;
             peaceTalks.SetFaction(faction);
             peaceTalks.GetComponent<TimeoutComp>().StartTimeout(900000);
             Find.WorldObjects.Add(peaceTalks);
-            var def = IncidentDef.Named("QuestPeaceTalks");
-            string text = string.Format(def.letterText.AdjustedFor(faction.leader), faction.def.leaderTitle, faction.Name, 15).CapitalizeFirst();
+            var def = IncidentDef.Named("QuestPeaceTalks"); // XXX: this doesn't exist anymore - see comment on class
+            var text = string.Format(def.letterText.AdjustedFor(faction.leader), faction.def.leaderTitle, faction.Name, 15).CapitalizeFirst();
             Find.LetterStack.ReceiveLetter(def.letterLabel, text, def.letterDef, peaceTalks, null);
             return true;
         }
@@ -374,7 +367,7 @@ namespace JecsTools
         private static bool PeaceTalksExist(Faction faction)
         {
             var peaceTalks = Find.WorldObjects.PeaceTalks;
-            for (int i = 0; i < peaceTalks.Count; i++)
+            for (var i = 0; i < peaceTalks.Count; i++)
                 if (peaceTalks[i].Faction == faction)
                     return true;
             return false;

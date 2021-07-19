@@ -34,7 +34,6 @@ namespace AbilityUser
         {
         }
 
-
         public override void Tick()
         {
             base.Tick();
@@ -46,7 +45,8 @@ namespace AbilityUser
             if (temporary)
             {
                 ticksLeft--;
-                if (ticksLeft <= 0) Destroy();
+                if (ticksLeft <= 0)
+                    Destroy();
 
                 if (Spawned)
                     if (effecter == null)
@@ -56,7 +56,6 @@ namespace AbilityUser
                     }
                     else
                     {
-                        LocalTargetInfo target = this;
                         if (Spawned)
                             effecter.EffectTick(this, TargetInfo.Invalid);
                         var mote = ((SubEffecter_ProgressBar)effecter.children[0]).mote;
@@ -73,16 +72,16 @@ namespace AbilityUser
 
         public override void DeSpawn(DestroyMode mode = DestroyMode.Vanish)
         {
-            if (effecter != null) effecter.Cleanup();
+            effecter?.Cleanup();
             base.DeSpawn(mode);
         }
 
         public override void ExposeData()
         {
             base.ExposeData();
-            Scribe_Values.Look(ref temporary, "temporary", false);
-            Scribe_Values.Look(ref ticksLeft, "ticksLeft", 0);
-            Scribe_Values.Look(ref ticksToDestroy, "ticksToDestroy", 1800);
+            Scribe_Values.Look(ref temporary, nameof(temporary));
+            Scribe_Values.Look(ref ticksLeft, nameof(ticksLeft));
+            Scribe_Values.Look(ref ticksToDestroy, nameof(ticksToDestroy), 1800);
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using RimWorld;
+﻿using RimWorld;
 using UnityEngine;
 using Verse;
 
@@ -13,13 +12,7 @@ namespace PawnShields
         /// <summary>
         /// Shield properties.
         /// </summary>
-        public CompProperties_Shield ShieldProps
-        {
-            get
-            {
-                return props as CompProperties_Shield;
-            }
-        }
+        public CompProperties_Shield ShieldProps => props as CompProperties_Shield;
 
         /// <summary>
         /// Determines whether the shield is broken or not.
@@ -30,8 +23,7 @@ namespace PawnShields
             {
                 if (!ShieldProps.canBeAutoDiscarded)
                     return false;
-
-                return ((float)parent.HitPoints / (float)parent.MaxHitPoints) <= ShieldProps.healthAutoDiscardThreshold;
+                return (parent.HitPoints / (float)parent.MaxHitPoints) <= ShieldProps.healthAutoDiscardThreshold;
             }
         }
 
@@ -42,10 +34,15 @@ namespace PawnShields
         {
             get
             {
-                if (parent.Stuff?.stuffProps?.categories?.FirstOrDefault() is StuffCategoryDef category &&
-                    ShieldProps?.stuffedSounds?.TryGetValue(category) is SoundDef def)
+                var categories = parent.Stuff?.stuffProps?.categories;
+                if (!categories.NullOrEmpty())
                 {
-                    return def;
+                    var stuffedSounds = ShieldProps?.stuffedSounds;
+                    if (stuffedSounds != null)
+                    {
+                        if (stuffedSounds.TryGetValue(categories[0], out var soundDef))
+                            return soundDef;
+                    }
                 }
 
                 //Default sound
@@ -62,19 +59,19 @@ namespace PawnShields
         /// <returns>True if it absorbed damage successfully.</returns>
         public virtual bool AbsorbDamage(Pawn defender, DamageInfo dinfo, bool ranged)
         {
-            bool absorbedDamage = false;
+            var absorbedDamage = false;
 
             //Check if we blocked the attack at all.
             if (ShieldProps.canBlockMelee && !ranged)
             {
-                float chance = defender.GetStatValue(ShieldStatsDefOf.MeleeShieldBlockChance, true);
+                var chance = defender.GetStatValue(ShieldStatsDefOf.MeleeShieldBlockChance, true);
                 //Log.Message("Melee block chance: " + chance.ToStringPercent());
                 if (Rand.Chance(chance))
                     absorbedDamage = true;
             }
             else if (ShieldProps.canBlockRanged && ranged)
             {
-                float chance = defender.GetStatValue(ShieldStatsDefOf.RangedShieldBlockChance, true);
+                var chance = defender.GetStatValue(ShieldStatsDefOf.RangedShieldBlockChance, true);
                 //Log.Message("Ranged block chance: " + chance.ToStringPercent());
                 if (Rand.Chance(chance))
                     absorbedDamage = true;
@@ -86,15 +83,15 @@ namespace PawnShields
             //Fatigue damage.
             if (absorbedDamage && ShieldProps.useFatigue)
             {
-                float finalDamage = (float)dinfo.Amount * ShieldProps.damageToFatigueFactor;
+                var finalDamage = (float)dinfo.Amount * ShieldProps.damageToFatigueFactor;
                 HealthUtility.AdjustSeverity(defender, ShieldHediffDefOf.ShieldFatigue, finalDamage);
             }
 
             //Take damage from attack.
             if (ShieldProps.shieldTakeDamage)
             {
-                int finalDamage = Mathf.CeilToInt((float)dinfo.Amount * parent.GetStatValue(ShieldStatsDefOf.Shield_DamageAbsorbed));
-                DamageInfo shieldDamage = new DamageInfo(dinfo);
+                var finalDamage = Mathf.CeilToInt((float)dinfo.Amount * parent.GetStatValue(ShieldStatsDefOf.Shield_DamageAbsorbed));
+                var shieldDamage = new DamageInfo(dinfo);
                 shieldDamage.SetAmount(finalDamage);
 
                 parent.TakeDamage(shieldDamage);
@@ -130,7 +127,7 @@ namespace PawnShields
         /// <param name="pawn">Shield bearer.</param>
         public virtual void RenderShield(Vector3 loc, Rot4 rot, Pawn pawn, Thing thing)
         {
-            bool carryShieldOpenly =
+            var carryShieldOpenly =
                 (pawn.carryTracker == null || pawn.carryTracker.CarriedThing == null) &&
                 (pawn.Drafted || (pawn.CurJob != null && pawn.CurJob.def.alwaysShowWeapon) ||
                 (pawn.mindState.duty != null && pawn.mindState.duty.def.alwaysShowWeapon));
@@ -142,7 +139,7 @@ namespace PawnShields
             {
                 if (rot == Rot4.North)
                 {
-                    float angle = -thing.def.equippedAngleOffset;
+                    var angle = -thing.def.equippedAngleOffset;
                     if (ShieldProps.renderProperties.flipRotation)
                         angle = -angle;
 
@@ -153,7 +150,7 @@ namespace PawnShields
                 }
                 else if (rot == Rot4.South)
                 {
-                    float angle = thing.def.equippedAngleOffset;
+                    var angle = thing.def.equippedAngleOffset;
                     if (ShieldProps.renderProperties.flipRotation)
                         angle = -angle;
 

@@ -15,18 +15,18 @@ namespace CompDeflector
             return 0f;
         }
 
-        private CompDeflector GetDeflector(StatRequest req)
+        private static CompDeflector GetDeflector(StatRequest req)
         {
             return req.Thing is Pawn pawn ? GetDeflector(pawn) : null;
         }
 
-        private CompDeflector GetDeflector(Pawn pawn)
+        private static CompDeflector GetDeflector(Pawn pawn)
         {
             if (pawn.equipment is Pawn_EquipmentTracker equipmentTracker)
             {
                 foreach (var equipment in equipmentTracker.AllEquipmentListForReading)
                 {
-                    if (equipment?.GetComp<CompDeflector>() is CompDeflector compDeflector)
+                    if (equipment?.GetCompDeflector() is CompDeflector compDeflector)
                         return compDeflector;
                 }
             }

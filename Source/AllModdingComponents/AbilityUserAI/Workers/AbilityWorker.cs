@@ -43,17 +43,20 @@ namespace AbilityUserAI
                     TraverseParms.For(TraverseMode.NoPassClosedDoors), abilityDef.maxRange,
                     thing => AbilityUtility.AreAllies(pawn, thing));
             }
-            if (pawn.mindState.enemyTarget != null && pawn.mindState.enemyTarget is Pawn targetPawn)
+            var enemyTarget = pawn.mindState.enemyTarget;
+            if (enemyTarget is Pawn targetPawn)
             {
                 if (!targetPawn.Dead)
-                    return pawn.mindState.enemyTarget;
+                    return enemyTarget;
             }
-            else
+            else if (enemyTarget is Corpse)
             {
-                if (pawn.mindState.enemyTarget != null && !(pawn.mindState.enemyTarget is Corpse))
-                    return pawn.mindState.enemyTarget;
+                return null;
             }
-
+            else if (enemyTarget != null)
+            {
+                return enemyTarget;
+            }
             return null;
         }
 

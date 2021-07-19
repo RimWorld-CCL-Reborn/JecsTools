@@ -7,29 +7,28 @@ using Verse;
 
 namespace JecsTools
 {
+    // TODO: This doesn't seem to be used - remove?
     public static partial class HarmonyPatches
     {
-        public static void GUIPatches(Harmony harmony)
+        public static void GUIPatches()
         {
-            // Changed by Tad : New Harmony Instance creation required
-            var instance = new Harmony("jecstools.jecrell.main-gui");
-
-            //Allow fortitude to soak damage
+            var harmony = new Harmony("jecstools.jecrell.main-gui");
             var type = typeof(HarmonyPatches);
-            instance.Patch(AccessTools.Method(typeof(MoteMaker), "MakeMoodThoughtBubble"), null,
-                new HarmonyMethod(type, nameof(ToggleMoodThoughtBubble)),
-                null);
+
+            harmony.Patch(AccessTools.Method(typeof(MoteMaker), nameof(MoteMaker.MakeMoodThoughtBubble)),
+                postfix: new HarmonyMethod(type, nameof(ToggleMoodThoughtBubble)));
         }
 
         public static void ToggleMoodThoughtBubble(ref MoteBubble __result)
         {
-            if (!bubblesEnabled) __result = null;
+            if (!bubblesEnabled)
+                __result = null;
         }
 
         private static int TryGetLocalIndexOfConstructedObject(IEnumerable<CodeInstruction> instructions, Type constructedType, Type[] constructorParams = null)
         {
             var constructor = AccessTools.Constructor(constructedType, constructorParams);
-            int localIndex = -1;
+            var localIndex = -1;
             if (constructor == null)
             {
                 Log.Message($"Could not reflect constructor for type {constructedType}: {Environment.StackTrace}");
@@ -60,7 +59,8 @@ namespace JecsTools
                     {
                         localIndex = (int)inst.operand;
                     }
-                    if (localIndex >= 0) break;
+                    if (localIndex >= 0)
+                        break;
                 }
                 prevInstruction = inst;
             }

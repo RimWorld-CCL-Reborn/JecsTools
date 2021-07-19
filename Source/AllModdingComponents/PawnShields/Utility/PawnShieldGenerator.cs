@@ -1,23 +1,22 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using RimWorld;
 using Verse;
 
 namespace PawnShields
 {
     /// <summary>
-    /// Assists in generating shields for pawns.
+    /// Assists in generating shields for pawns. Based off PawnWeaponGenerator.
     /// </summary>
     public static class PawnShieldGenerator
     {
         public static List<ThingStuffPair> allShieldPairs;
         public static List<ThingStuffPair> workingShields = new List<ThingStuffPair>();
 
-        /*static PawnShieldGenerator()
-        {
-            //Initialise all shields.
-            Reset();
-        }*/
+        //static PawnShieldGenerator()
+        //{
+        //    //Initialise all shields.
+        //    Reset();
+        //}
 
         /// <summary>
         /// Tries to generate a shield for the pawn.
@@ -26,70 +25,69 @@ namespace PawnShields
         /// <param name="request"></param>
         public static void TryGenerateShieldFor(Pawn pawn, PawnGenerationRequest request)
         {
-            //Shield stuff.
-            ShieldPawnGeneratorProperties generatorProps =
-                request.KindDef?.GetModExtension<ShieldPawnGeneratorProperties>();
+            workingShields.Clear();
 
-            //Abort early if there is no mention at all of shield properties.
-            if (generatorProps == null)
+            // Same conditions as weapon generation, except using PawnKindDef ShieldPawnGeneratorProperties.shieldTags instead of pawn.kindDef.weaponTags
+            var generatorProps = request.KindDef.GetShieldPawnGeneratorProperties();
+            if (generatorProps == null || generatorProps.shieldTags.NullOrEmpty())
                 return;
-
-            workingShields = new List<ThingStuffPair>();
-
-            //Initial filtering
-            if (generatorProps.shieldTags.NullOrEmpty())
+            if (!pawn.RaceProps.ToolUser ||
+                !pawn.health.capacities.CapableOf(PawnCapacityDefOf.Manipulation) ||
+                pawn.WorkTagIsDisabled(WorkTags.Violent))
             {
-                Log.Warning("PawnShields :: XML element shieldTags is null or empty for " + request.KindDef.defName);
                 return;
             }
-
-            if (!(pawn?.RaceProps?.ToolUser ?? false))
-            {
-                Log.Warning("PawnShields :: " + request.KindDef.defName +
-                            " is not a ToolUser or Humanlike in RaceProps.");
-                return;
-            }
-            if (!(pawn.health?.capacities.CapableOf(PawnCapacityDefOf.Manipulation) ?? false))
-            {
-                Log.Warning("PawnShields :: " + request.KindDef.defName + " is not capable of manipulation.");
-                return;
-            }
-            if (pawn.story != null && pawn.WorkTagIsDisabled(WorkTags.Violent))
-                return;
 
             var generatorPropsShieldMoney = generatorProps.shieldMoney;
-            float randomInRange = generatorPropsShieldMoney.RandomInRange;
-            if (allShieldPairs != null)
-                foreach (var w in allShieldPairs)
-                {
-                    if (w.Price <= randomInRange)
-                        if (!w.thing.weaponTags.NullOrEmpty())
+            var randomInRange = generatorPropsShieldMoney.RandomInRange;
+            foreach (var w in allShieldPairs)
+            {
+                if (w.Price <= randomInRange)
+                    if (!w.thing.weaponTags.NullOrEmpty())
+                    {
+                        if (generatorProps.shieldTags.Any(tag => w.thing.weaponTags.Contains(tag)))
                         {
-                            if (generatorProps.shieldTags.Any(tag =>
-                                (w.thing.weaponTags.Contains(tag))))
+                            if (w.thing.generateAllowChance >= 1f ||
+                                Rand.ChanceSeeded(w.thing.generateAllowChance, pawn.thingIDNumber ^ w.thing.shortHash ^ 0x1B3B648))
                             {
-                                if (w.thing.generateAllowChance >= 1f ||
-                                    Rand.ValueSeeded(pawn.thingIDNumber ^ 28554824) <= w.thing.generateAllowChance)
-                                {
-                                    workingShields.Add(w);
-                                }
-
+                                workingShields.Add(w);
                             }
                         }
-                }
-            if (workingShields.NullOrEmpty())
+                    }
+            }
+            if (workingShields.Count == 0)
             {
-                Log.Warning("No working shields found for " + pawn.Label + "::" + pawn.KindLabel);
+                //Log.Warning("No working shields found for " + pawn.Label + "::" + pawn.KindLabel);
                 return;
             }
 
             if (workingShields.TryRandomElementByWeight(w => w.Commonality * w.Price, out var thingStuffPair))
             {
-                ThingWithComps thingWithComps =
-                    (ThingWithComps)ThingMaker.MakeThing(thingStuffPair.thing, thingStuffPair.stuff);
+                var thingWithComps = (ThingWithComps)ThingMaker.MakeThing(thingStuffPair.thing, thingStuffPair.stuff);
                 PawnGenerator.PostProcessGeneratedGear(thingWithComps, pawn);
-                pawn.equipment?.AddEquipment(thingWithComps);
-                //Log.Message(pawn.Label + " added shield " + thingWithComps.Label);
+                var biocodeWeaponChance = (request.BiocodeWeaponChance > 0f) ? request.BiocodeWeaponChance : pawn.kindDef.biocodeWeaponChance;
+                if (Rand.Value < biocodeWeaponChance)
+                {
+                    BiocodeForPawn(pawn, thingWithComps);
+                }
+                pawn.equipment.AddEquipment(thingWithComps);
+            }
+
+            workingShields.Clear();
+        }
+
+        // Avoiding ThingWithComps.GetComp<T> and implementing a specific non-generic version of it here.
+        // That method is slow because the `isinst` instruction with generic type arg operands is very slow,
+        // while `isinst` instruction against non-generic type operand like used below is fast (~6x as fast for me).
+        private static void BiocodeForPawn(Pawn pawn, ThingWithComps thingWithComps)
+        {
+            var comps = thingWithComps.AllComps;
+            for (int i = 0, count = comps.Count; i < count; i++)
+            {
+                if (comps[i] is CompBiocodableWeapon compBiocodableWeapon)
+                {
+                    compBiocodableWeapon.CodeFor(pawn);
+                }
             }
         }
 
@@ -98,26 +96,31 @@ namespace PawnShields
         /// </summary>
         public static void Reset()
         {
-            bool IsShield(ThingDef td) => td.equipmentType != EquipmentType.Primary &&
-                                          td.HasComp(typeof(CompShield));
+            static bool IsShield(ThingDef td) => td.equipmentType != EquipmentType.Primary && td.HasComp(typeof(CompShield));
 
             allShieldPairs = ThingStuffPair.AllWith(IsShield);
 
-            foreach (var thingDef in DefDatabase<ThingDef>.AllDefs.Where(IsShield))
+            foreach (var thingDef in DefDatabase<ThingDef>.AllDefsListForReading)
             {
-                float num = (from pa in allShieldPairs
-                    where pa.thing == thingDef
-                    select pa).Sum(pa => pa.Commonality);
-                if (thingDef == null) continue;
-                float num2 = thingDef.generateCommonality / num;
-                if (num2 == 1f) continue;
-                for (int i = 0; i < allShieldPairs.Count; i++)
+                if (!IsShield(thingDef)) continue;
+                var sum = 0f;
+                foreach (var pa in allShieldPairs)
                 {
-                    ThingStuffPair thingStuffPair = allShieldPairs[i];
+                    if (pa.thing == thingDef)
+                    {
+                        sum += pa.Commonality;
+                    }
+                }
+                var avg = thingDef.generateCommonality / sum;
+                if (avg == 1f)
+                    continue;
+                for (var i = 0; i < allShieldPairs.Count; i++)
+                {
+                    var thingStuffPair = allShieldPairs[i];
                     if (thingStuffPair.thing == thingDef)
                     {
                         allShieldPairs[i] = new ThingStuffPair(thingStuffPair.thing, thingStuffPair.stuff,
-                            thingStuffPair.commonalityMultiplier * num2);
+                            thingStuffPair.commonalityMultiplier * avg);
                     }
                 }
             }

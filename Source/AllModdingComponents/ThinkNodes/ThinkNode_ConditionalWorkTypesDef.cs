@@ -6,7 +6,7 @@ namespace ThinkNodes
 {
     public class ThinkNodeConditionalWorkTypes : ThinkNode_Conditional
     {
-        private List<WorkTypeDef> workTypeDefs = new List<WorkTypeDef>();
+        private List<WorkTypeDef> workTypeDefs = new List<WorkTypeDef>(); // set via reflection
 
         protected override bool Satisfied(Pawn pawn)
         {

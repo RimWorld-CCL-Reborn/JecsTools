@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using Verse;
 using Verse.Sound;
@@ -18,16 +17,7 @@ namespace AbilityUser
         public Vector3 targetVec;
         public Pawn Caster => launcher as Pawn;
 
-        public ProjectileDef_Ability Mpdef
-        {
-            get
-            {
-                ProjectileDef_Ability mpdef = null;
-                if (def is ProjectileDef_Ability)
-                    mpdef = def as ProjectileDef_Ability;
-                return mpdef;
-            }
-        }
+        public ProjectileDef_Ability Mpdef => def as ProjectileDef_Ability;
 
         public override void ExposeData()
         {
@@ -41,7 +31,7 @@ namespace AbilityUser
         // Verse.Projectile
         public override void Tick()
         {
-            //Log.Message("Tick");
+            //Log.Message($"Projectile_AbilityBase.Tick({this})");
             if (landed)
                 return;
             ticksToImpact--;
@@ -62,7 +52,7 @@ namespace AbilityUser
         /// </summary>
         protected void ApplyDamage(Thing hitThing)
         {
-            //Log.Message("ApplyDamage");
+            //Log.Message($"Projectile_AbilityBase.ApplyDamage({this}, {hitThing})");
             if (hitThing != null)
                 Impact(hitThing);
             else
@@ -78,27 +68,22 @@ namespace AbilityUser
             if (def.projectile.flyOverhead)
             {
                 var roofDef = Map.roofGrid.RoofAt(DestinationCell);
-                if (roofDef != null && roofDef.isThickRoof)
-                    if (def.projectile != null)
-                        if (def.projectile.soundHitThickRoof != null)
-                        {
-                            var info = SoundInfo.InMap(new TargetInfo(DestinationCell, Map, false),
-                                MaintenanceType.None);
-                            def.projectile.soundHitThickRoof.PlayOneShot(info);
-                            return;
-                        }
+                if (roofDef != null && roofDef.isThickRoof &&
+                    // TODO: Are these null checks necessary? Projectile.ImpactSomething doesn't have it.
+                    def.projectile != null && def.projectile.soundHitThickRoof != null)
+                {
+                    def.projectile.soundHitThickRoof.PlayOneShot(SoundInfo.InMap(new TargetInfo(DestinationCell, Map)));
+                    return;
+                }
             }
 
             // Impact the initial targeted pawn.
             if (intendedTarget != null)
             {
-                if (intendedTarget.Thing is Pawn pawn && pawn.Downed && (origin - destination).magnitude > 5f &&
-                    Rand.Value < 0.2f)
-                {
+                if (intendedTarget.Thing is Pawn pawn && pawn.Downed && (origin - destination).magnitude > 5f && Rand.Value < 0.2f)
                     Impact(null);
-                    return;
-                }
-                Impact(intendedTarget.Thing);
+                else
+                    Impact(intendedTarget.Thing);
             }
             else
             {
@@ -107,16 +92,20 @@ namespace AbilityUser
                 if (thing != null)
                 {
                     Impact(thing);
-                    return;
                 }
-                // Impact any cover object.
-                foreach (var current in Map.thingGrid.ThingsAt(DestinationCell))
-                    if (current.def.fillPercent > 0f || current.def.passability != Traversability.Standable)
+                else
+                {
+                    // Impact any cover object.
+                    foreach (var current in Map.thingGrid.ThingsAt(DestinationCell))
                     {
-                        Impact(current);
-                        return;
+                        if (current.def.fillPercent > 0f || current.def.passability != Traversability.Standable)
+                        {
+                            Impact(current);
+                            return;
+                        }
                     }
-                Impact(null);
+                    Impact(null);
+                }
             }
         }
 
@@ -128,21 +117,14 @@ namespace AbilityUser
 
         public void ApplyHediffsAndMentalStates(Pawn victim, Pawn caster, List<ApplyMentalStates> localApplyMentalStates, AbilityDef localAbilityDef)
         {
-            try
-            {
-                //Log.Message("ApplyHediffsAndMentalStates");
-                AbilityEffectUtility.ApplyMentalStates(victim, caster, localApplyMentalStates, localAbilityDef, this);
-                AbilityEffectUtility.ApplyHediffs(victim, caster, localApplyHediffs, null);
-            }
-            catch (NullReferenceException e)
-            {
-                Log.Message(e.ToString());
-            }
+            //Log.Message($"Projectile_AbilityBase.ApplyHediffsAndMentalStates({this}, ...)");
+            AbilityEffectUtility.ApplyMentalStates(victim, caster, localApplyMentalStates, localAbilityDef, this);
+            AbilityEffectUtility.ApplyHediffs(victim, caster, localApplyHediffs, null);
         }
 
         public virtual void Impact_Override(Thing hitThing)
         {
-            //Log.Message("ImpactOverride");
+            //Log.Message($"Projectile_AbilityBase.Impact_Override({this}, {hitThing})");
             if (hitThing != null)
                 if (hitThing is Pawn victim)
                     if (Mpdef != null)
@@ -160,24 +142,26 @@ namespace AbilityUser
             ProjectileHitFlags hitFlags, Thing equipment = null, List<ApplyHediffs> applyHediffs = null,
             List<ApplyMentalStates> applyMentalStates = null, List<SpawnThings> spawnThings = null)
         {
-            //Log.Message("Projectile_AbilityBase");
+            //Log.Message($"Projectile_AbilityBase.Launch({this}, ...)");
             localApplyHediffs = applyHediffs;
             localApplyMentalStates = applyMentalStates;
             localSpawnThings = spawnThings;
             localAbilityDef = abilityDef;
-            base.Launch(launcher, targ, targ, hitFlags, equipment); //TODO
+            Launch(launcher, targ, targ, hitFlags, equipment); //TODO
         }
 
         protected override void Impact(Thing hitThing)
         {
-            //Log.Message("Impact");
+            //Log.Message($"Projectile_AbilityBase.Impact({this}, {hitThing})");
             Impact_Override(hitThing);
             if (hitThing != null)
                 if (extraDamages != null)
                     foreach (var damage in extraDamages)
                     {
-                        var extraDinfo = new DamageInfo(damage.damageDef, damage.damage, this.def.projectile.GetArmorPenetration(1f), ExactRotation.eulerAngles.y,
-                            launcher, null, equipmentDef);
+                        var extraDinfo = new DamageInfo(damage.damageDef, damage.damage,
+                            def.projectile.GetArmorPenetration(1f), ExactRotation.eulerAngles.y,
+                            launcher, weapon: equipmentDef);
+                        //Log.Message($"Projectile_AbilityBase.Impact({this}, {hitThing}) extraDinfo={extraDinfo}");
                         hitThing.TakeDamage(extraDinfo);
                     }
             base.Impact(hitThing);

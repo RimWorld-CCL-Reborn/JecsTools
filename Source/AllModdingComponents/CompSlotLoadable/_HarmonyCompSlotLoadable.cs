@@ -18,8 +18,8 @@ namespace CompSlotLoadable
         static HarmonyCompSlotLoadable()
         {
             var harmony = new Harmony("jecstools.jecrell.comps.slotloadable");
-
             var type = typeof(HarmonyCompSlotLoadable);
+
             harmony.Patch(AccessTools.Method(typeof(Pawn), nameof(Pawn.GetGizmos)),
                 postfix: new HarmonyMethod(type, nameof(GetGizmos_PostFix)));
             harmony.Patch(AccessTools.Method(typeof(StatExtension), nameof(StatExtension.GetStatValue), new[] { typeof(Thing), typeof(StatDef), typeof(bool) }),
@@ -37,16 +37,7 @@ namespace CompSlotLoadable
         //try to extend this
         public static void StatOffsetFromGear_PostFix(ref float __result, Thing gear, StatDef stat)
         {
-            var retValue = 0.0f;
-            try
-            {
-                retValue = SlotLoadableUtility.CheckThingSlotsForStatAugment(gear, stat);
-            }
-            catch (Exception e)
-            {
-                Log.Warning("Failed to add stats for " + gear.Label + "\n" + e.ToString());
-            }
-            __result += retValue;
+            __result += SlotLoadableUtility.CheckThingSlotsForStatAugment(gear, stat);
         }
 
         /// <summary>
@@ -54,171 +45,200 @@ namespace CompSlotLoadable
         /// </summary>
         public static void PostApplyDamage_PostFix(Pawn __instance)
         {
-            if (__instance.Dead || __instance.equipment == null) return;
-            var thingWithComps = __instance.equipment.Primary;
-            if (thingWithComps != null)
-            {
-                var compSlotLoadable = thingWithComps.GetComp<CompSlotLoadable>();
-                if (compSlotLoadable?.Slots != null)
-                    foreach (var slot in compSlotLoadable.Slots)
-                        if (!slot.IsEmpty())
+            if (__instance.Dead)
+                return;
+            var slots = __instance.equipment?.Primary?.GetSlots();
+            if (slots != null)
+                foreach (var slot in slots)
+                {
+                    var defensiveHealChance = slot.SlotOccupant?.TryGetCompSlottedBonus()?.Props?.defensiveHealChance;
+                    if (defensiveHealChance != null)
+                    {
+                        var randValue = Rand.Value;
+                        //Log.Message("defensiveHealingCalled: randValue = " + randValue.ToString());
+                        if (randValue <= defensiveHealChance.chance)
                         {
-                            var slotBonus = slot.SlotOccupant.TryGetComp<CompSlottedBonus>();
-                            if (slotBonus?.Props != null)
-                            {
-                                var defensiveHealChance = slotBonus.Props.defensiveHealChance;
-                                if (defensiveHealChance != null)
-                                {
-                                    var randValue = Rand.Value;
-                                    //Log.Message("defensiveHealingCalled: randValue = " + randValue.ToString());
-                                    if (randValue <= defensiveHealChance.chance)
-                                    {
-                                        MoteMaker.ThrowText(__instance.DrawPos, __instance.Map,
-                                            "Heal Chance: Success", 6f);
-                                        ApplyHealing(__instance, defensiveHealChance.woundLimit);
-                                    }
-                                }
-                            }
+                            MoteMaker.ThrowText(__instance.DrawPos, __instance.Map,
+                                "Heal Chance: Success", 6f); // TODO: Translate()?
+                            ApplyHealing(__instance, defensiveHealChance.woundLimit, defensiveHealChance.amountRange);
                         }
-            }
+                    }
+                }
         }
 
-        public static void ApplyHealing(Thing thing, int woundLimit = 0, Thing vampiricTarget = null)
+        [ThreadStatic]
+        private static List<BodyPartRecord> tempInjuredParts;
+
+        public static void ApplyHealing(Pawn pawn, int woundLimit, FloatRange amountRange, Pawn vampiricTarget = null,
+            DamageDef vampiricDamageDef = null, float vampiricArmorPenetration = 0f, Vector3? vampiricDamageAngle = default)
         {
-            if (thing is Pawn pawn)
+            if (tempInjuredParts == null)
+                tempInjuredParts = new List<BodyPartRecord>();
+            else
+                tempInjuredParts.Clear();
+
+            // This heals non-permanent injury hediffs for x randomly chosen injured body parts,
+            // where x = woundLimit (or all injured body parts if woundLimit is 0).
+            // The amount healed per body part is randomly chosen from amountRange.
+            // If there are multiple injury hediffs that can be healed, they are healed in FIFO order.
+            var hediffSet = pawn.health.hediffSet;
+            var hediffs = hediffSet.hediffs;
+            var maxInjuriesToHeal = woundLimit;
+            foreach (var bodyPart in hediffSet.GetInjuredParts().InRandomOrder(tempInjuredParts))
             {
-                var maxInjuries = woundLimit;
-
-                foreach (var rec in pawn.health.hediffSet.GetInjuredParts())
-                    if (maxInjuries > 0 || woundLimit == 0)
-                        foreach (var current in from injury in pawn.health.hediffSet.GetHediffs<Hediff_Injury>()
-                                where injury.Part == rec
-                                select injury)
-                            if (current.CanHealNaturally() && !current.IsPermanent()) // isOld // basically check for scars and old wounds
-                            {
-                                current.Heal((int)current.Severity + 1);
-                                maxInjuries--;
-                            }
-
-                if (vampiricTarget != null)
+                if (maxInjuriesToHeal == 0)
+                    break;
+                var maxHealAmount = -1f;
+                for (var i = 0; i < hediffs.Count; i++)
                 {
-                    var maxInjuriesToMake = woundLimit;
-                    if (woundLimit == 0) maxInjuriesToMake = 2;
-
-                    var vampiricPawn = vampiricTarget as Pawn;
-                    foreach (var rec in vampiricPawn.health.hediffSet.GetNotMissingParts().InRandomOrder())
-                        if (maxInjuriesToMake > 0)
+                    var hediff = hediffs[i];
+                    if (hediff.Part == bodyPart && (Hediff_Injury)hediff is var injury &&
+                        !injury.ShouldRemove && injury.CanHealNaturally()) // basically check for scars and old wounds
+                    {
+                        if (maxHealAmount < 0f)
                         {
-                            vampiricPawn.TakeDamage(new DamageInfo(DamageDefOf.Burn, new IntRange(5, 10).RandomInRange,
-                                1f, 1, vampiricPawn, rec));
-
-                            maxInjuriesToMake--;
+                            maxHealAmount = amountRange.RandomInRange;
+                            //Log.Message($"{pawn} {bodyPart} total heal amount {maxHealAmount}");
                         }
+                        var healAmount = Mathf.Min(maxHealAmount, injury.Severity); // this should be >0
+                        //Log.Message($"{pawn} {bodyPart} healed {healAmount} of {injury.Severity}; " +
+                        //    $"remaining max heal amount {maxHealAmount - healAmount}; " +
+                        //    $"remaining max injuries to heal {maxInjuriesToHeal - 1}");
+                        // Note: even if fully healing, not using HealthUtility.CureHediff since it modifies
+                        // hediffs list and doesn't call the CompPostInjuryHeal hook.
+                        injury.Heal(healAmount);
+                        maxInjuriesToHeal--;
+                        if (maxInjuriesToHeal == 0)
+                            break;
+                        maxHealAmount -= healAmount;
+                        if (maxHealAmount <= 0f)
+                            break;
+                    }
+                }
+            }
+
+            if (vampiricTarget != null)
+            {
+                var maxInjuriesToMake = woundLimit;
+                foreach (var bodyPart in vampiricTarget.health.hediffSet.GetNotMissingParts().InRandomOrder(tempInjuredParts))
+                {
+                    if (maxInjuriesToMake == 0)
+                        break;
+                    var dinfo = new DamageInfo(vampiricDamageDef, amountRange.RandomInRange, vampiricArmorPenetration, -1f,
+                        pawn, bodyPart);
+                    dinfo.SetAngle(vampiricDamageAngle.Value);
+                    //Log.Message($"{vampiricTarget} {bodyPart} vampiric dinfo {dinfo}; " +
+                    //    $"remaining max injuries to make {maxInjuriesToMake - 1}");
+                    vampiricTarget.TakeDamage(dinfo);
+                    maxInjuriesToMake--;
                 }
             }
         }
-        //=================================== COMPSLOTLOADABLE
 
         public static void DrawThingRow_PostFix(ref float y, float width, Thing thing)
         {
-            var compSlotLoadable = thing.TryGetComp<CompSlotLoadable>();
-            if (compSlotLoadable?.Slots != null)
-                foreach (var slot in compSlotLoadable.Slots)
-                    if (!slot.IsEmpty())
+            var slots = thing.GetSlots();
+            if (slots != null)
+                foreach (var slot in slots)
+                    if (slot.SlotOccupant is Thing slotOccupant)
                     {
                         var rect = new Rect(0f, y, width, 28f);
-                        Widgets.InfoCardButton(rect.width - 24f, y, slot.SlotOccupant);
+                        Widgets.InfoCardButton(rect.width - 24f, y, slotOccupant);
                         rect.width -= 24f;
                         if (Mouse.IsOver(rect))
                         {
                             GUI.color = HighlightColor;
                             GUI.DrawTexture(rect, TexUI.HighlightTex);
                         }
-                        if (slot.SlotOccupant.def.DrawMatSingle != null &&
-                            slot.SlotOccupant.def.DrawMatSingle.mainTexture != null)
-                            Widgets.ThingIcon(new Rect(4f, y, 28f, 28f), slot.SlotOccupant, 1f);
+                        if (slotOccupant.def.DrawMatSingle?.mainTexture != null)
+                            Widgets.ThingIcon(new Rect(4f, y, 28f, 28f), slotOccupant, 1f);
                         Text.Anchor = TextAnchor.MiddleLeft;
                         GUI.color = ThingLabelColor;
                         var rect4 = new Rect(36f, y, width - 36f, 28f);
-                        var text = slot.SlotOccupant.LabelCap;
+                        var text = slotOccupant.LabelCap;
                         Widgets.Label(rect4, text);
                         y += 28f;
                     }
         }
 
-        // RimWorld.Verb_MeleeAttack
+        // RimWorld.Verb_MeleeAttackDamage
+        private const float MeleeDamageRandomFactorMin = 0.8f;
+        private const float MeleeDamageRandomFactorMax = 1.2f;
         public static void DamageInfosToApply_PostFix(Verb_MeleeAttack __instance, ref IEnumerable<DamageInfo> __result,
             LocalTargetInfo target)
         {
-            var slots = __instance.EquipmentSource?.GetComp<CompSlotLoadable>()?.Slots;
+            var equipmentSource = __instance.EquipmentSource;
+            if (equipmentSource == null)
+                return;
+            var casterPawn = __instance.CasterPawn;
+            if (casterPawn == null)
+                return;
+
+            var slots = equipmentSource.GetSlots();
             if (slots != null)
             {
+                Vector3? damageAngle = null;
+                var hediffCompSource = __instance.HediffCompSource;
+                var verbProps = __instance.verbProps;
+
                 List<DamageInfo> newList = null;
-                var statSlots = slots.FindAll(z =>
-                    !z.IsEmpty() && ((SlotLoadableDef)z.def).doesChangeStats);
-                foreach (var slot in statSlots)
+                foreach (var slot in slots)
                 {
-                    var slotBonus = slot.SlotOccupant.TryGetComp<CompSlottedBonus>();
+                    // Skip slot if doesChangeStats (defaults to false) is false.
+                    if (!(slot.Def?.doesChangeStats ?? false))
+                        continue;
+                    var slotBonus = slot.SlotOccupant?.TryGetCompSlottedBonus();
                     if (slotBonus != null)
                     {
-                        if (slotBonus.Props.damageDef != null)
+                        var slotBonusProps = slotBonus.Props;
+                        var damageDef = slotBonusProps.damageDef;
+                        if (damageDef != null)
                         {
-                            var num = __instance.verbProps.AdjustedMeleeDamageAmount(__instance,
-                                __instance.CasterPawn);
-                            var def = __instance.verbProps.meleeDamageDef;
-                            BodyPartGroupDef weaponBodyPartGroup = null;
+                            // This logic should be same as the first Verb_MeleeAttackDamage.DamageInfosToApply DamageInfo,
+                            // except using damageDef (and CasterPawn always being non-null as established above).
+                            var damageAmount = verbProps.AdjustedMeleeDamageAmount(__instance, casterPawn);
+                            var weaponBodyPartGroup = verbProps.AdjustedLinkedBodyPartsGroup(__instance.tool);
                             HediffDef weaponHediff = null;
-                            if (__instance.CasterIsPawn)
-                                if (num >= 1f)
-                                {
-                                    weaponBodyPartGroup = __instance.verbProps.linkedBodyPartsGroup;
-                                    if (__instance.HediffCompSource != null)
-                                        weaponHediff = __instance.HediffCompSource.Def;
-                                }
-                                else
-                                {
-                                    num = 1f;
-                                    def = DamageDefOf.Blunt;
-                                }
-
-                            ThingDef def2;
-                            if (__instance.EquipmentSource != null)
-                                def2 = __instance.EquipmentSource.def;
+                            damageAmount = Rand.Range(damageAmount * MeleeDamageRandomFactorMin,
+                                damageAmount * MeleeDamageRandomFactorMax);
+                            if (damageAmount >= 1f)
+                            {
+                                if (hediffCompSource != null)
+                                    weaponHediff = hediffCompSource.Def;
+                            }
                             else
-                                def2 = __instance.CasterPawn.def;
+                            {
+                                damageAmount = 1f;
+                                damageDef = DamageDefOf.Blunt;
+                            }
 
-                            var angle = (target.Thing.Position - __instance.CasterPawn.Position)
-                                .ToVector3();
-
-                            var caster = __instance.caster;
-
-                            var newdamage = GenMath.RoundRandom(num);
-                            //Log.Message("applying damage " + newdamage + " out of "+num);
-                            var damageInfo = new DamageInfo(slotBonus.Props.damageDef, newdamage, slotBonus.Props.armorPenetration, -1f,
-                                caster, null, def2);
+                            damageAngle ??= (target.Thing.Position - casterPawn.Position).ToVector3();
+                            var damageInfo = new DamageInfo(damageDef, damageAmount, slotBonusProps.armorPenetration,
+                                -1f, casterPawn, weapon: equipmentSource.def);
                             damageInfo.SetBodyRegion(BodyPartHeight.Undefined, BodyPartDepth.Outside);
                             damageInfo.SetWeaponBodyPartGroup(weaponBodyPartGroup);
                             damageInfo.SetWeaponHediff(weaponHediff);
-                            damageInfo.SetAngle(angle);
+                            damageInfo.SetAngle(damageAngle.Value);
 
                             if (newList == null)
+                            {
                                 newList = new List<DamageInfo>();
+                                __result = newList;
+                            }
                             newList.Add(damageInfo);
-
-                            __result = newList.AsEnumerable();
                         }
-                        var vampiricEffect = slotBonus.Props.vampiricHealChance;
+                        var vampiricEffect = slotBonusProps.vampiricHealChance;
                         if (vampiricEffect != null)
                         {
                             var randValue = Rand.Value;
                             //Log.Message("vampiricHealingCalled: randValue = " + randValue.ToString());
-
                             if (randValue <= vampiricEffect.chance)
                             {
-                                MoteMaker.ThrowText(__instance.CasterPawn.DrawPos,
-                                    __instance.CasterPawn.Map, "Vampiric Effect: Success", 6f);
-                                //MoteMaker.ThrowText(__instance.CasterPawn.DrawPos, __instance.CasterPawn.Map, "Success".Translate(), 6f);
-                                ApplyHealing(__instance.caster, vampiricEffect.woundLimit, target.Thing);
+                                MoteMaker.ThrowText(casterPawn.DrawPos, casterPawn.Map, "Vampiric Effect: Success", 6f); // TODO: Translate()?
+                                //MoteMaker.ThrowText(casterPawn.DrawPos, casterPawn.Map, "Success".Translate(), 6f);
+                                damageAngle ??= (target.Thing.Position - casterPawn.Position).ToVector3();
+                                ApplyHealing(casterPawn, vampiricEffect.woundLimit, vampiricEffect.amountRange, target.Pawn,
+                                    vampiricEffect.damageDef, vampiricEffect.armorPenetration, damageAngle);
                             }
                         }
                     }
@@ -228,41 +248,17 @@ namespace CompSlotLoadable
 
         public static void GetStatValue_PostFix(ref float __result, Thing thing, StatDef stat)
         {
-            var retValue = 0.0f;
-            try
-            {
-                retValue = SlotLoadableUtility.CheckThingSlotsForStatAugment(thing, stat);
-            }
-            catch (Exception e)
-            {
-                Log.Warning("Failed to add stats for " + thing.Label + "\n" + e.ToString());
-            }
-            __result += retValue;
-        }
-
-        public static IEnumerable<Gizmo> GizmoGetter(CompSlotLoadable CompSlotLoadable)
-        {
-            if (CompSlotLoadable.GizmosOnEquip)
-            {
-                foreach (var current in CompSlotLoadable.EquippedGizmos())
-                    yield return current;
-            }
+            __result += SlotLoadableUtility.CheckThingSlotsForStatAugment(thing, stat);
         }
 
         public static void GetGizmos_PostFix(Pawn __instance, ref IEnumerable<Gizmo> __result)
         {
-            var pawn_EquipmentTracker = __instance.equipment;
-            if (pawn_EquipmentTracker != null)
+            if (__instance.Faction == Faction.OfPlayer)
             {
-                if (__instance.Faction == Faction.OfPlayer)
+                var compSlotLoadable = __instance.equipment?.Primary?.GetCompSlotLoadable();
+                if (compSlotLoadable != null && compSlotLoadable.GizmosOnEquip)
                 {
-                    var compSlotLoadable = pawn_EquipmentTracker.Primary?.GetComp<CompSlotLoadable>();
-                    if (compSlotLoadable != null)
-                    {
-                        var gizmos = GizmoGetter(compSlotLoadable);
-                        if (gizmos.Any())
-                            __result = __result.Concat(gizmos);
-                    }
+                    __result = __result.Concat(compSlotLoadable.EquippedGizmos());
                 }
             }
         }

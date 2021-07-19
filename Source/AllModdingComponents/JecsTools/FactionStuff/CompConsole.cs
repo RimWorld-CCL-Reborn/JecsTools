@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
 using Verse;
@@ -6,17 +7,53 @@ using Verse.AI;
 
 namespace JecsTools
 {
+    // See comments on JecsToolsFactionDialogMaker.
+    [Obsolete("Hasn't worked properly since RW B19")]
     public class CompConsole : ThingComp
     {
-        public CompProperties_Console Props => this.props as CompProperties_Console;
+        public CompProperties_Console Props => props as CompProperties_Console;
+
+        private CompPowerTrader compPowerTrader;
 
         public bool CanUseCommsNow =>
             (!parent.Spawned || !parent.Map.gameConditionManager.ConditionIsActive(GameConditionDefOf.SolarFlare)) &&
-            (!Props.usesPower || (parent.GetComp<CompPowerTrader>()?.PowerOn ?? false));
+            (!Props.usesPower || (compPowerTrader?.PowerOn ?? false));
+
+        // Caching comps needs to happen after all comps are created. Ideally, this would be done right after
+        // ThingWithComps.InitializeComps(). This requires overriding two hooks: PostPostMake and PostExposeData.
+
+        public override void PostPostMake()
+        {
+            base.PostPostMake();
+            CacheComps();
+        }
+
+        public override void PostExposeData()
+        {
+            base.PostExposeData();
+            if (Scribe.mode == LoadSaveMode.LoadingVars)
+                CacheComps();
+        }
+
+        private void CacheComps()
+        {
+            // Avoiding ThingWithComps.GetComp<T> and implementing a specific non-generic version of it here.
+            // That method is slow because the `isinst` instruction with generic type arg operands is very slow,
+            // while `isinst` instruction against non-generic type operand like used below is fast.
+            var comps = parent.AllComps;
+            for (int i = 0, count = comps.Count; i < count; i++)
+            {
+                if (comps[i] is CompPowerTrader compPowerTrader)
+                {
+                    this.compPowerTrader = compPowerTrader;
+                    break;
+                }
+            }
+        }
 
         private void UseAct(Pawn myPawn, ICommunicable commTarget)
         {
-            var job = JobMaker.MakeJob(DefDatabase<JobDef>.GetNamed("JecsTools_UseConsole"), this.parent);
+            var job = JobMaker.MakeJob(JobDefMaker.JecsTools_UseConsole, parent);
             job.commTarget = commTarget;
             myPawn.jobs.TryTakeOrderedJob(job);
             PlayerKnowledgeDatabase.KnowledgeDemonstrated(ConceptDefOf.OpeningComms, KnowledgeAmount.Total);
@@ -37,7 +74,7 @@ namespace JecsTools
                 yield return new FloatMenuOption("CannotUseSolarFlare".Translate(), null);
                 yield break;
             }
-            if (Props.usesPower && (!parent.GetComp<CompPowerTrader>()?.PowerOn ?? false))
+            if (Props.usesPower && (!compPowerTrader?.PowerOn ?? false))
             {
                 yield return new FloatMenuOption("CannotUseNoPower".Translate(), null);
                 yield break;
@@ -52,7 +89,7 @@ namespace JecsTools
                 yield return new FloatMenuOption("CannotPrioritizeWorkTypeDisabled".Translate(SkillDefOf.Social.LabelCap), null);
                 yield break;
             }
-            if (!this.CanUseCommsNow)
+            if (!CanUseCommsNow)
             {
                 Log.Error(myPawn + " could not use " + parent.Label + " for unknown reason.");
                 yield return new FloatMenuOption("Cannot use now", null);
@@ -62,7 +99,8 @@ namespace JecsTools
             foreach (var localCommTarget in myPawn.Map.passingShipManager.passingShips.Cast<ICommunicable>().Concat(
                 Find.FactionManager.AllFactionsInViewOrder.Cast<ICommunicable>()))
             {
-                if (localCommTarget == null) continue;
+                if (localCommTarget == null)
+                    continue;
                 var text = "CallOnRadio".Translate(localCommTarget.GetCallLabel());
                 if (localCommTarget is Faction faction)
                 {
@@ -70,11 +108,9 @@ namespace JecsTools
                         continue;
                     if (!LeaderIsAvailableToTalk(faction))
                     {
-                        string str;
-                        if (faction.leader != null)
-                            str = "LeaderUnavailable".Translate(faction.leader.LabelShort);
-                        else
-                            str = "LeaderUnavailableNoLeader".Translate();
+                        var str = faction.leader != null
+                            ? "LeaderUnavailable".Translate(faction.leader.LabelShort)
+                            : "LeaderUnavailableNoLeader".Translate();
                         yield return new FloatMenuOption(text + " (" + str + ")", null);
                         continue;
                     }
@@ -90,7 +126,8 @@ namespace JecsTools
                     UseAct(myPawn, localCommTarget);
                 }
 
-                yield return FloatMenuUtility.DecoratePrioritizedTask(new FloatMenuOption(text, Action, MenuOptionPriority.InitiateSocial), myPawn, parent, "ReservedBy");
+                yield return FloatMenuUtility.DecoratePrioritizedTask(
+                    new FloatMenuOption(text, Action, MenuOptionPriority.InitiateSocial), myPawn, parent, "ReservedBy");
             }
         }
 

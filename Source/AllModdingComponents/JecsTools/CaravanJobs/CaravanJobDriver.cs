@@ -15,6 +15,7 @@ namespace JecsTools
         LayingInBed
     }
 
+    // Based off JobDriver.
     public abstract class CaravanJobDriver : ICaravanJobEndable, IExposable
     {
         public bool asleep;
@@ -54,8 +55,7 @@ namespace JecsTools
                     return null;
                 if (curToilIndex >= toils.Count)
                 {
-                    Log.Error(string.Concat(caravan, " with job ", CurJob, " tried to get CurToil with curToilIndex=",
-                        curToilIndex, " but only has ", toils.Count, " toils."));
+                    Log.Error($"{caravan} with job {CurJob} tried to get CurToil with curToilIndex={curToilIndex} but only has {toils.Count} toils.");
                     return null;
                 }
                 return toils[curToilIndex];
@@ -64,14 +64,14 @@ namespace JecsTools
 
         public bool HaveCurToil => curToilIndex >= 0 && curToilIndex < toils.Count;
 
-        private bool CanStartNextToilInBusyStance
-        {
-            get
-            {
-                var num = curToilIndex + 1;
-                return num < toils.Count && toils[num].atomicWithPrevious;
-            }
-        }
+        //private bool CanStartNextToilInBusyStance
+        //{
+        //    get
+        //    {
+        //        var num = curToilIndex + 1;
+        //        return num < toils.Count && toils[num].atomicWithPrevious;
+        //    }
+        //}
 
         public virtual PawnPosture Posture =>
             layingDown == LayingDownState.NotLaying ? PawnPosture.Standing : PawnPosture.LayingOnGroundNormal;
@@ -122,28 +122,22 @@ namespace JecsTools
 
         public virtual void ExposeData()
         {
-            Scribe_References.Look(ref caravan, "caravan");
-            Scribe_Values.Look(ref ended, "ended", false, false);
-            Scribe_Values.Look(ref curToilIndex, "curToilIndex", 0, true);
-            Scribe_Values.Look(ref ticksLeftThisToil, "ticksLeftThisToil", 0, false);
-            Scribe_Values.Look(ref wantBeginNextToil, "wantBeginNextToil", false, false);
-            Scribe_Values.Look(ref curToilCompleteMode, "curToilCompleteMode", ToilCompleteMode.Undefined, false);
-            Scribe_Values.Look(ref startTick, "startTick", 0, false);
-            Scribe_Values.Look(ref rotateToFace, "rotateToFace", TargetIndex.A, false);
-            Scribe_Values.Look(ref layingDown, "layingDown", LayingDownState.NotLaying, false);
-            Scribe_Values.Look(ref asleep, "asleep", false, false);
-            Scribe_Values.Look(ref uninstallWorkLeft, "uninstallWorkLeft", 0f, false);
+            Scribe_References.Look(ref caravan, nameof(caravan));
+            Scribe_Values.Look(ref ended, nameof(ended));
+            Scribe_Values.Look(ref curToilIndex, nameof(curToilIndex), forceSave: true);
+            Scribe_Values.Look(ref ticksLeftThisToil, nameof(ticksLeftThisToil));
+            Scribe_Values.Look(ref wantBeginNextToil, nameof(wantBeginNextToil));
+            Scribe_Values.Look(ref curToilCompleteMode, nameof(curToilCompleteMode));
+            Scribe_Values.Look(ref startTick, nameof(startTick));
+            Scribe_Values.Look(ref rotateToFace, nameof(rotateToFace), TargetIndex.A);
+            Scribe_Values.Look(ref layingDown, nameof(layingDown));
+            Scribe_Values.Look(ref asleep, nameof(asleep));
+            Scribe_Values.Look(ref uninstallWorkLeft, nameof(uninstallWorkLeft));
             if (Scribe.mode == LoadSaveMode.PostLoadInit)
                 SetupToils();
         }
 
-        //public Map Map
-        //{
-        //    get
-        //    {
-        //        return this.caravan.Map;
-        //    }
-        //}
+        //public Map Map => caravan.Map;
 
         public virtual string GetReport()
         {
@@ -153,18 +147,9 @@ namespace JecsTools
         public string ReportStringProcessed(string str)
         {
             var curJob = CurJob;
-            if (curJob.targetA.HasThing)
-                str = str.Replace("TargetA", curJob.targetA.Thing.LabelShort);
-            else
-                str = str.Replace("TargetA", "AreaLower".Translate());
-            if (curJob.targetB.HasThing)
-                str = str.Replace("TargetB", curJob.targetB.Thing.LabelShort);
-            else
-                str = str.Replace("TargetB", "AreaLower".Translate());
-            if (curJob.targetC.HasThing)
-                str = str.Replace("TargetC", curJob.targetC.Thing.LabelShort);
-            else
-                str = str.Replace("TargetC", "AreaLower".Translate());
+            str = str.Replace("TargetA", curJob.targetA.HasThing ? curJob.targetA.Thing.LabelShort : (string)"AreaLower".Translate());
+            str = str.Replace("TargetB", curJob.targetB.HasThing ? curJob.targetB.Thing.LabelShort : (string)"AreaLower".Translate());
+            str = str.Replace("TargetC", curJob.targetC.HasThing ? curJob.targetC.Thing.LabelShort : (string)"AreaLower".Translate());
             return str;
         }
 
@@ -179,9 +164,7 @@ namespace JecsTools
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(string.Concat("Pawn ", caravan,
-                        " threw exception while executing a global finish action (", i, "), jobDriver=", GetType(),
-                        ": ", ex));
+                    Log.Error($"Pawn {caravan} threw exception while executing a global finish action ({i}), jobDriver={GetType()}: {ex}");
                 }
             if (HaveCurToil)
                 CurToil.Cleanup();
@@ -206,7 +189,7 @@ namespace JecsTools
             catch (Exception ex)
             {
                 Find.World.GetComponent<CaravanJobGiver>().Tracker(caravan).StartErrorRecoverJob(
-                    string.Concat("Exception in SetupToils (pawn=", caravan, ", job=", CurJob, "): ", ex));
+                    $"Exception in SetupToils (pawn={caravan}, job={CurJob}): {ex}");
             }
         }
 
@@ -218,7 +201,7 @@ namespace JecsTools
                 debugTicksSpentThisToil++;
                 if (CurToil == null)
                 {
-                    //if (!this.caravan.stances.FullBodyBusy || this.CanStartNextToilInBusyStance)
+                    //if (!caravan.stances.FullBodyBusy || CanStartNextToilInBusyStance)
                     //{
                     ReadyForNextToil();
                     //}
@@ -233,8 +216,7 @@ namespace JecsTools
                             return;
                         }
                     }
-                    else if (curToilCompleteMode == ToilCompleteMode.FinishedBusy
-                    ) //&& !this.caravan.stances.FullBodyBusy)
+                    else if (curToilCompleteMode == ToilCompleteMode.FinishedBusy) //&& !caravan.stances.FullBodyBusy
                     {
                         ReadyForNextToil();
                         return;
@@ -245,8 +227,7 @@ namespace JecsTools
                     }
                     else if (curToilCompleteMode == ToilCompleteMode.Instant && debugTicksSpentThisToil > 300)
                     {
-                        Log.Error(string.Concat(caravan, " had to be broken from frozen state. He was doing job ",
-                            CurJob, ", toilindex=", curToilIndex));
+                        Log.Error($"{caravan} had to be broken from frozen state. He was doing job {CurJob}, toilindex={curToilIndex}");
                         ReadyForNextToil();
                     }
                     else
@@ -264,16 +245,14 @@ namespace JecsTools
                                     return;
                             }
                         }
-                        if (CurToil.tickAction != null)
-                            CurToil.tickAction();
+                        CurToil.tickAction?.Invoke();
                     }
                 }
             }
             catch (Exception ex)
             {
                 Find.World.GetComponent<CaravanJobGiver>().Tracker(caravan).StartErrorRecoverJob(
-                    string.Concat("Exception in Tick (pawn=", caravan, ", job=", CurJob, ", CurToil=", curToilIndex,
-                        "): ", ex));
+                    $"Exception in Tick (pawn={caravan}, job={CurJob}, CurToil={curToilIndex}): {ex}");
             }
         }
 
@@ -319,8 +298,7 @@ namespace JecsTools
                         catch (Exception ex)
                         {
                             Find.World.GetComponent<CaravanJobGiver>().Tracker(caravan)
-                                .StartErrorRecoverJob(string.Concat("JobDriver threw exception in initAction. Pawn=",
-                                    caravan, ", Job=", CurJob, ", Exception: ", ex));
+                                .StartErrorRecoverJob($"JobDriver threw exception in initAction. Pawn={caravan}, Job={CurJob}, Exception: {ex}");
                             return;
                         }
                     if (CurToilIndex == num && !ended && curToilCompleteMode == ToilCompleteMode.Instant)
@@ -400,12 +378,7 @@ namespace JecsTools
 
         public void AddFailCondition(Func<bool> newFailCondition)
         {
-            globalFailConditions.Add(delegate
-            {
-                if (newFailCondition())
-                    return JobCondition.Incompletable;
-                return JobCondition.Ongoing;
-            });
+            globalFailConditions.Add(() => newFailCondition() ? JobCondition.Incompletable : JobCondition.Ongoing);
         }
 
         public void AddFinishAction(Action newAct)
@@ -420,9 +393,7 @@ namespace JecsTools
 
         public virtual RandomSocialMode DesiredSocialMode()
         {
-            if (CurToil != null)
-                return CurToil.socialMode;
-            return RandomSocialMode.Normal;
+            return CurToil != null ? CurToil.socialMode : RandomSocialMode.Normal;
         }
 
         public virtual bool IsContinuation(Job j)

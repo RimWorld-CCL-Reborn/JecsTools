@@ -1,6 +1,9 @@
-﻿using System;
+﻿//#define DEBUGLOG
+
+using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Diagnostics;
+using System.Text;
 using HarmonyLib;
 using RimWorld;
 using UnityEngine;
@@ -25,23 +28,19 @@ namespace JecsTools
     [StaticConstructorOnStartup]
     public static class _HumanlikeOrdersUtility
     {
-        private static Dictionary<_Condition, List<Func<Vector3, Pawn, Thing, List<FloatMenuOption>>>>
-            floatMenuOptionList;
-
-        private static readonly bool debugMode = false;
+        private static readonly Dictionary<_Condition, List<Func<Vector3, Pawn, Thing, List<FloatMenuOption>>>> floatMenuOptionList;
 
         //private static int floatMenuID = 0;
         //private static int lastSavedFloatMenuID = -1;
         private static readonly List<FloatMenuOption> savedList = new List<FloatMenuOption>();
 
-        public static string optsID = "";
-        public static string lastOptsID = "1";
+        public static string optsID = null;
+        public static string lastOptsID = null;
 
         static _HumanlikeOrdersUtility()
         {
             DebugMessage("FMOL :: Initialized Constructor");
-            optsID = "";
-            lastOptsID = "1";
+            floatMenuOptionList = new Dictionary<_Condition, List<Func<Vector3, Pawn, Thing, List<FloatMenuOption>>>>();
             foreach (var current in typeof(FloatMenuPatch).AllSubclassesNonAbstract())
             {
                 var item = (FloatMenuPatch)Activator.CreateInstance(current);
@@ -53,54 +52,42 @@ namespace JecsTools
                 if (floatMenus != null)
                 {
                     DebugMessage("FMOL :: Float Menus Available Check Passed");
-                    foreach (var floatMenu in floatMenus)
+                    foreach (var (condition, func) in floatMenus)
                     {
                         DebugMessage("FMOL :: Enter Float Menu Check Loop");
-                        if (FloatMenuOptionList.ContainsKey(floatMenu.Key))
+                        if (floatMenuOptionList.TryGetValue(condition, out var funcs))
                         {
-                            DebugMessage("FMOL :: Existing condition found for " + floatMenu.Key +
+                            DebugMessage("FMOL :: Existing condition found for " + condition +
                                          " adding actions to dictionary.");
-                            FloatMenuOptionList[floatMenu.Key].Add(floatMenu.Value);
+                            funcs.Add(func);
                         }
                         else
                         {
-                            DebugMessage("FMOL :: Existing condition not found for " + floatMenu.Key +
+                            DebugMessage("FMOL :: Existing condition not found for " + condition +
                                          " adding key and actions to dictionary.");
-                            FloatMenuOptionList.Add(floatMenu.Key,
-                                new List<Func<Vector3, Pawn, Thing, List<FloatMenuOption>>> { floatMenu.Value });
+                            floatMenuOptionList.Add(condition,
+                                new List<Func<Vector3, Pawn, Thing, List<FloatMenuOption>>> { func });
                         }
                     }
                 }
             }
 
             var harmony = new Harmony("jecstools.jecrell.humanlikeorders");
-            harmony.Patch(AccessTools.Method(typeof(FloatMenuMakerMap), "AddHumanlikeOrders"), null,
-                new HarmonyMethod(typeof(_HumanlikeOrdersUtility), nameof(AddHumanlikeOrders_PostFix)));
-            //harmony.Patch(AccessTools.Method(typeof(FloatMenuMakerMap), "CanTakeOrder"), null, new HarmonyMethod(typeof(_HumanlikeOrdersUtility), nameof(CanTakeOrder_PostFix)));
+            var type = typeof(_HumanlikeOrdersUtility);
+
+            harmony.Patch(AccessTools.Method(typeof(FloatMenuMakerMap), "AddHumanlikeOrders"),
+                postfix: new HarmonyMethod(type, nameof(AddHumanlikeOrders_PostFix)));
+            //harmony.Patch(AccessTools.Method(typeof(FloatMenuMakerMap), "CanTakeOrder"),
+            //    postfix: new HarmonyMethod(type, nameof(CanTakeOrder_PostFix)));
         }
 
-        public static Dictionary<_Condition, List<Func<Vector3, Pawn, Thing, List<FloatMenuOption>>>>
-            FloatMenuOptionList
+        [Conditional("DEBUGLOG")]
+        private static void DebugMessage(string s)
         {
-            get
-            {
-                if (floatMenuOptionList == null)
-                {
-                    DebugMessage("FMOL :: Initialized List");
-                    floatMenuOptionList =
-                        new Dictionary<_Condition, List<Func<Vector3, Pawn, Thing, List<FloatMenuOption>>>>();
-                }
-                return floatMenuOptionList;
-            }
+            Log.Message(s);
         }
 
-        public static void DebugMessage(string s)
-        {
-            if (debugMode) Log.Message(s);
-        }
-
-
-        //private static void CanTakeOrder_PostFix(Pawn pawn, ref bool __result)
+        //private static void CanTakeOrder_PostFix(Pawn pawn, bool __result)
         //{
         //    if (__result)
         //    {
@@ -109,51 +96,58 @@ namespace JecsTools
         //    }
         //}
 
-
         // RimWorld.FloatMenuMakerMap
         public static void AddHumanlikeOrders_PostFix(Vector3 clickPos, Pawn pawn, List<FloatMenuOption> opts)
         {
             var c = IntVec3.FromVector3(clickPos);
-            optsID = "";
-            optsID += pawn.ThingID;
-            optsID += c.ToString();
+
+            // Heuristic to prevent computing our custom orders if pawn + location + float menu option labels haven't changed.
+            var optsIDBuilder = new StringBuilder(pawn.ThingID).Append(c);
             if (opts != null)
-                for (var i = 0; i < opts.Count; i++)
-                    optsID += opts[i].Label;
+                for (int i = 0, count = opts.Count; i < count; i++)
+                    optsIDBuilder.Append(opts[i].Label);
+            optsID = optsIDBuilder.ToString();
             if (optsID == lastOptsID)
             {
                 opts?.AddRange(savedList);
                 return;
             }
+
             DebugMessage("FMOL :: New list constructed");
             DebugMessage(optsID);
             lastOptsID = optsID;
             savedList.Clear();
             var things = c.GetThingList(pawn.Map);
-            if (things.Count > 0)
-                foreach (var pair in FloatMenuOptionList)
-                    if (!pair.Value.NullOrEmpty())
+            if (things.Count == 0)
+                return;
+            foreach (var (condition, funcs) in floatMenuOptionList)
+            {
+                if (funcs.NullOrEmpty())
+                    continue;
+                foreach (var passer in things)
+                {
+                    if (!condition.Passes(passer))
+                        continue;
+                    foreach (var func in funcs)
                     {
-                        var passers = things.FindAll(x => pair.Key.Passes(x));
-                        foreach (var passer in passers)
-                            foreach (var func in pair.Value)
-                                if (func.Invoke(clickPos, pawn, passer) is List<FloatMenuOption> newOpts &&
-                                    newOpts.Count > 0)
-                                {
-                                    opts?.AddRange(newOpts);
-                                    savedList.AddRange(newOpts);
-                                }
+                        if (func.Invoke(clickPos, pawn, passer) is List<FloatMenuOption> newOpts &&
+                            newOpts.Count > 0)
+                        {
+                            opts?.AddRange(newOpts);
+                            savedList.AddRange(newOpts);
+                        }
                     }
+                }
+            }
         }
     }
-
 
     public enum _ConditionType
     {
         IsType,
         IsTypeStringMatch,
         ThingHasComp,
-        HediffHasComp
+        HediffHasComp,
     }
 
     public struct _Condition : IEquatable<_Condition>
@@ -167,15 +161,17 @@ namespace JecsTools
             Data = data;
         }
 
-        public override string ToString()
-        {
-            return "Condition_" + Condition + "_" + Data;
-        }
+        public override string ToString() => "Condition_" + Condition + "_" + Data;
 
-        public bool Equals(_Condition other)
-        {
-            return Data == other.Data && Condition == other.Condition;
-        }
+        public bool Equals(_Condition other) => Condition == other.Condition && Equals(Data, other.Data);
+
+        public override bool Equals(object obj) => obj is _Condition other && Equals(other);
+
+        public override int GetHashCode() => Gen.HashCombineInt(Condition.GetHashCode(), Data?.GetHashCode() ?? 0);
+
+        public static bool operator ==(_Condition left, _Condition right) => left.Equals(right);
+
+        public static bool operator !=(_Condition left, _Condition right) => !left.Equals(right);
 
         public bool Passes(object toCheck)
         {
@@ -185,36 +181,37 @@ namespace JecsTools
             switch (Condition)
             {
                 case _ConditionType.IsType:
-                    //////////////////////////
-                    ///PSYCHOLOGY SPECIAL CASE
-                    if (toCheck.GetType().ToString() == "Psychology.PsychologyPawn" && Data.ToString() == "Verse.Pawn")
-                        return true;
-                    //////////////////////////
-                    if (toCheck.GetType() == Data.GetType() || Equals(toCheck.GetType(), Data) ||
-                        toCheck.GetType() == Data as Type || toCheck.GetType().ToString() == Data.ToString() ||
-                        Data.GetType().IsInstanceOfType(toCheck))
-                        return true;
-                    break;
+                {
+                    var dataType = Data as Type ?? Data.GetType();
+                    return dataType.IsInstanceOfType(toCheck);
+                }
                 case _ConditionType.IsTypeStringMatch:
-                    if (toCheck.GetType().ToString() == (string)toCheck)
-                        return true;
-                    break;
+                    return toCheck.GetType().ToString() == (string)toCheck;
                 case _ConditionType.ThingHasComp:
-                    var dataTypeStr = Data?.ToString();
-                    if (toCheck is ThingWithComps t && t.AllComps.Any(comp =>
-                            comp?.props?.compClass is Type compClass &&
-                            (compClass.ToString() == dataTypeStr ||
-                             compClass.BaseType?.ToString() == dataTypeStr)))
-                        return true;
-                    break;
+                {
+                    if (toCheck is ThingWithComps t)
+                    {
+                        var dataType = Data is string typeName ? GenTypes.GetTypeInAnyAssembly(typeName) : Data as Type;
+                        if (dataType != null)
+                        {
+                            var comps = t.AllComps;
+                            for (int i = 0, count = comps.Count; i < count; i++)
+                            {
+                                if (dataType.IsAssignableFrom(comps[i].GetType()))
+                                    return true;
+                            }
+                        }
+                    }
+                    return false;
+                }
+                default:
+                    throw new ArgumentException("Unrecognized condition type " + Condition);
             }
-            return false;
         }
     }
 
     public abstract class FloatMenuPatch
     {
-        public abstract IEnumerable<KeyValuePair<_Condition, Func<Vector3, Pawn, Thing, List<FloatMenuOption>>>>
-            GetFloatMenus();
+        public abstract IEnumerable<KeyValuePair<_Condition, Func<Vector3, Pawn, Thing, List<FloatMenuOption>>>> GetFloatMenus();
     }
 }

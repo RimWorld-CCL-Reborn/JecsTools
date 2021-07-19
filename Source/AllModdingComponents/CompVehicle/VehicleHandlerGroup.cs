@@ -52,9 +52,12 @@ namespace CompVehicle
             if ((newHandlers?.Count ?? 0) > 0)
                 foreach (var p in newHandlers)
                 {
-                    if (p.Spawned) p.DeSpawn();
-                    if (p.holdingOwner != null) p.holdingOwner = null;
-                    if (!p.IsWorldPawn()) Find.WorldPawns.PassToWorld(p, PawnDiscardDecideMode.Decide);
+                    if (p.Spawned)
+                        p.DeSpawn();
+                    if (p.holdingOwner != null)
+                        p.holdingOwner = null;
+                    if (!p.IsWorldPawn())
+                        Find.WorldPawns.PassToWorld(p, PawnDiscardDecideMode.Decide);
                 }
             handlers.TryAddRangeOrTransfer(newHandlers);
             //this.handlers = newHandlers;

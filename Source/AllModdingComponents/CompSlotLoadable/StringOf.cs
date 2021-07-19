@@ -1,5 +1,6 @@
 ﻿namespace CompSlotLoadable
 {
+    // TODO: These should be translation keys
     public static class StringOf
     {
         public static string all = "all";

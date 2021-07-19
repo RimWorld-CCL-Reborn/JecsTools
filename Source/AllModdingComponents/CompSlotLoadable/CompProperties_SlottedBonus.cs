@@ -32,5 +32,35 @@ namespace CompSlotLoadable
         {
             compClass = typeof(CompSlottedBonus);
         }
+
+        public override void ResolveReferences(ThingDef parentDef)
+        {
+            base.ResolveReferences(parentDef);
+            if (defensiveHealChance != null)
+            {
+                if (defensiveHealChance.woundLimit <= 0)
+                    defensiveHealChance.woundLimit = int.MaxValue;
+            }
+            if (vampiricHealChance != null)
+            {
+                if (vampiricHealChance.woundLimit <= 0)
+                    vampiricHealChance.woundLimit = 2;
+                vampiricHealChance.damageDef ??= DamageDefOf.Burn;
+            }
+        }
+
+        public override IEnumerable<string> ConfigErrors(ThingDef parentDef)
+        {
+            foreach (var error in base.ConfigErrors(parentDef))
+                yield return error;
+            if (statModifiers != null)
+            {
+                for (var i = 0; i < statModifiers.Count; i++)
+                {
+                    if (statModifiers[i]?.stat == null)
+                        yield return $"{nameof(statModifiers)}[{i}] is null or has null stat";
+                }
+            }
+        }
     }
 }

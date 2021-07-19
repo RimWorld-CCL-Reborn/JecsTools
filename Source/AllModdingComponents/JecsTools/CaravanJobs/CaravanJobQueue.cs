@@ -25,7 +25,7 @@ namespace JecsTools
 
         public void ExposeData()
         {
-            Scribe_Collections.Look(ref jobs, "jobs", LookMode.Deep);
+            Scribe_Collections.Look(ref jobs, nameof(jobs), LookMode.Deep);
         }
 
         public void EnqueueFirst(CaravanJob j, JobTag? tag = null)

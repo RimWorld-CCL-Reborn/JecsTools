@@ -126,7 +126,8 @@ namespace CompVehicle
                 var result = new List<Pawn>();
                 if (handlers != null && handlers.Count > 0)
                     foreach (var group in handlers)
-                        if (group.handlers != null && group.handlers.Count > 0) result.AddRange(group.handlers);
+                        if (group.handlers != null && group.handlers.Count > 0)
+                            result.AddRange(group.handlers);
                 return result;
             }
         }
@@ -171,7 +172,8 @@ namespace CompVehicle
 
         public void InitializeVehicleHandlers()
         {
-            if (handlers != null && handlers.Count > 0) return;
+            if (handlers != null && handlers.Count > 0)
+                return;
 
             if (Props.roles != null && Props.roles.Count > 0)
                 foreach (var role in Props.roles)
@@ -276,7 +278,8 @@ namespace CompVehicle
                                             EjectAll();
                                         weaponStatus = WeaponState.frozen;
                                         movingStatus = MovingState.frozen;
-                                        if (Pawn.Downed) Pawn.SetFaction(Faction.OfPlayerSilentFail);
+                                        if (Pawn.Downed)
+                                            Pawn.SetFaction(Faction.OfPlayerSilentFail);
                                     }
                             }
                     }
@@ -368,7 +371,8 @@ namespace CompVehicle
                     {
                         //No more fake momentum, vehicle should stop
                         //this.Pawn.jobs.
-                        if (Pawn.pather.Moving) Pawn.jobs.EndCurrentJob(JobCondition.None, false);
+                        if (Pawn.pather.Moving)
+                            Pawn.jobs.EndCurrentJob(JobCondition.None, false);
                         Pawn.pather.StopDead();
                         tickCount = 0;
                     }
@@ -406,7 +410,8 @@ namespace CompVehicle
                             {
                                 var pawn = group.handlers[i];
                                 //Don't change needs while a caravan member.
-                                if (pawn.IsCaravanMember()) continue;
+                                if (pawn.IsCaravanMember())
+                                    continue;
                                 var pawn_needs = pawn.needs.AllNeeds;
                                 //These needs are major and should change
                                 for (var j = 0; j < pawn_needs.Count; j++)
@@ -499,7 +504,8 @@ namespace CompVehicle
                     pawnToLoad.DeSpawn();
                     if (pawnToLoad.holdingOwner != null)
                         pawnToLoad.holdingOwner.TryTransferToContainer(pawnToLoad, bill.group.handlers);
-                    else bill.group.handlers.TryAdd(pawnToLoad);
+                    else
+                        bill.group.handlers.TryAdd(pawnToLoad);
                     if (!pawnToLoad.IsWorldPawn())
                         Find.WorldPawns.PassToWorld(pawnToLoad, PawnDiscardDecideMode.Decide);
                     //pawnToLoad.SetFaction(curFaction);
@@ -651,7 +657,8 @@ namespace CompVehicle
                         new TargetingParameters
                         {
                             validator = ti => ti.Thing is Pawn p && p.Faction != null && p.Faction.IsPlayer && p.training != null && p.training.HasLearned(DefDatabase<TrainableDef>.GetNamed("Haul")) && p.BodySize > Props.minBodySize
-                        }, delegate (LocalTargetInfo target) { GiveLoadJob(target.Thing, group); }, null, null, null);
+                        }, delegate (LocalTargetInfo target)
+                        { GiveLoadJob(target.Thing, group); }, null, null, null);
                 }
                 else
                 {
@@ -659,7 +666,8 @@ namespace CompVehicle
                         new TargetingParameters
                         {
                             validator = ti => ti.Thing is Pawn p && p.RaceProps.Humanlike && p.IsColonistPlayerControlled
-                        }, delegate (LocalTargetInfo target) { GiveLoadJob(target.Thing, group); }, null, null, null);
+                        }, delegate (LocalTargetInfo target)
+                        { GiveLoadJob(target.Thing, group); }, null, null, null);
 
                 }
                 return;
@@ -681,7 +689,8 @@ namespace CompVehicle
                             {
                                 validator = ti =>
                                 ti.Thing is Pawn p && p.Faction != null && p.Faction.IsPlayer && p.training != null && p.training.HasLearned(DefDatabase<TrainableDef>.GetNamed("Haul")) && p.BodySize > Props.minBodySize
-                            }, delegate (LocalTargetInfo target) { GiveLoadJob(target.Thing, group); }, null, null, null);
+                            }, delegate (LocalTargetInfo target)
+                            { GiveLoadJob(target.Thing, group); }, null, null, null);
                     }, MenuOptionPriority.Default, null, null, 29f, null, null));
                 }
                 else
@@ -694,7 +703,8 @@ namespace CompVehicle
                             {
                                 validator = ti =>
                                     ti.Thing is Pawn p && p.RaceProps.Humanlike && p.IsColonistPlayerControlled
-                            }, delegate (LocalTargetInfo target) { GiveLoadJob(target.Thing, group); }, null, null, null);
+                            }, delegate (LocalTargetInfo target)
+                            { GiveLoadJob(target.Thing, group); }, null, null, null);
                     }, MenuOptionPriority.Default, null, null, 29f, null, null));
 
                 }
@@ -714,7 +724,8 @@ namespace CompVehicle
                     var arg_121_0 = list;
                     Func<Rect, bool> extraPartOnGUI = rect =>
                         Widgets.InfoCardButton(rect.x + 5f, rect.y + (rect.height - 24f) / 2f, handler);
-                    list.Add(new FloatMenuOption(text, delegate { Eject(handler); }, MenuOptionPriority.Default, null,
+                    list.Add(new FloatMenuOption(text, delegate
+                    { Eject(handler); }, MenuOptionPriority.Default, null,
                         null, 29f, extraPartOnGUI, null));
                 }
             Find.WindowStack.Add(new FloatMenu(list));
@@ -780,7 +791,8 @@ namespace CompVehicle
                                 yield return button;
                             }
                         }
-                if (Pawn.drafter == null) Pawn.drafter = new Pawn_DraftController(Pawn);
+                if (Pawn.drafter == null)
+                    Pawn.drafter = new Pawn_DraftController(Pawn);
             }
         }
 

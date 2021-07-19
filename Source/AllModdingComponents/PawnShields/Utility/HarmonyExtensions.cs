@@ -7,6 +7,7 @@ using HarmonyLib;
 
 namespace PawnShields
 {
+    // Code copied between JecsTools and PawnShields - keep them in sync!
     public static class HarmonyExtensions
     {
         public static void SafeInsertRange(this List<CodeInstruction> instructions, int insertionIndex, IEnumerable<CodeInstruction> newInstructions,
@@ -176,6 +177,11 @@ namespace PawnShields
         {
             return new LocalVar(ilGenerator.DeclareLocal(localType));
         }
+
+        public LocalVar DeclareLocal<T>()
+        {
+            return new LocalVar(ilGenerator.DeclareLocal(typeof(T)));
+        }
     }
 
     public struct LocalVar : IEquatable<LocalVar>
@@ -196,22 +202,15 @@ namespace PawnShields
             if (local is LocalBuilder localBuilder)
                 return new CodeInstruction(OpCodes.Ldloc, localBuilder);
             var index = LocalIndex;
-            switch (index)
+            return index switch
             {
-                case 0:
-                    return new CodeInstruction(OpCodes.Ldloc_0);
-                case 1:
-                    return new CodeInstruction(OpCodes.Ldloc_1);
-                case 2:
-                    return new CodeInstruction(OpCodes.Ldloc_2);
-                case 3:
-                    return new CodeInstruction(OpCodes.Ldloc_3);
-                default:
-                    if (index <= byte.MaxValue)
-                        return new CodeInstruction(OpCodes.Ldloc_S, (byte)index);
-                    else
-                        return new CodeInstruction(OpCodes.Ldloc, (short)index);
-            }
+                0 => new CodeInstruction(OpCodes.Ldloc_0),
+                1 => new CodeInstruction(OpCodes.Ldloc_1),
+                2 => new CodeInstruction(OpCodes.Ldloc_2),
+                3 => new CodeInstruction(OpCodes.Ldloc_3),
+                _ when index <= byte.MaxValue => new CodeInstruction(OpCodes.Ldloc_S, (byte)index),
+                _ => new CodeInstruction(OpCodes.Ldloc, (short)index),
+            };
         }
 
         public CodeInstruction ToLdloca()
@@ -220,10 +219,9 @@ namespace PawnShields
             if (local is LocalBuilder localBuilder)
                 return new CodeInstruction(OpCodes.Ldloca, localBuilder);
             var index = LocalIndex;
-            if (index <= byte.MaxValue)
-                return new CodeInstruction(OpCodes.Ldloca_S, (byte)index);
-            else
-                return new CodeInstruction(OpCodes.Ldloca, (short)index);
+            return index <= byte.MaxValue
+                ? new CodeInstruction(OpCodes.Ldloca_S, (byte)index)
+                : new CodeInstruction(OpCodes.Ldloca, (short)index);
         }
 
         public CodeInstruction ToStloc()
@@ -232,22 +230,15 @@ namespace PawnShields
             if (local is LocalBuilder localBuilder)
                 return new CodeInstruction(OpCodes.Stloc, localBuilder);
             var index = LocalIndex;
-            switch (index)
+            return index switch
             {
-                case 0:
-                    return new CodeInstruction(OpCodes.Stloc_0);
-                case 1:
-                    return new CodeInstruction(OpCodes.Stloc_1);
-                case 2:
-                    return new CodeInstruction(OpCodes.Stloc_2);
-                case 3:
-                    return new CodeInstruction(OpCodes.Stloc_3);
-                default:
-                    if (index <= byte.MaxValue)
-                        return new CodeInstruction(OpCodes.Stloc_S, (byte)index);
-                    else
-                        return new CodeInstruction(OpCodes.Stloc, (short)index);
-            }
+                0 => new CodeInstruction(OpCodes.Stloc_0),
+                1 => new CodeInstruction(OpCodes.Stloc_1),
+                2 => new CodeInstruction(OpCodes.Stloc_2),
+                3 => new CodeInstruction(OpCodes.Stloc_3),
+                _ when index <= byte.MaxValue => new CodeInstruction(OpCodes.Stloc_S, (byte)index),
+                _ => new CodeInstruction(OpCodes.Stloc, (short)index),
+            };
         }
 
         public override bool Equals(object obj) => obj is LocalVar other && LocalIndex == other.LocalIndex;

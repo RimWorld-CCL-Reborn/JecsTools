@@ -6,8 +6,9 @@ namespace ThinkNodes
 {
     public class JobGiver_GoToClosestThingDef : ThinkNode_JobGiver
     {
-        Danger maxDanger = Verse.Danger.Some;
-        ThingDef thingDef = ThingDefOf.PartySpot;
+        // Set via reflection
+        private Danger maxDanger = Verse.Danger.Some;
+        private ThingDef thingDef = ThingDefOf.PartySpot;
 
         protected override Job TryGiveJob(Pawn pawn)
         {
@@ -16,10 +17,10 @@ namespace ThinkNodes
             if (thing != null)
             {
                 if (!thing.Position.IsValid)
-                    return (Job)null;
-                if (!pawn.CanReach((LocalTargetInfo)thing.Position, PathEndMode.ClosestTouch, maxDanger))
+                    return null;
+                if (!pawn.CanReach(thing.Position, PathEndMode.ClosestTouch, maxDanger))
                 {
-                    return (Job)null;
+                    return null;
                 }
 
                 if (IntVec3Utility.DistanceTo(thing.Position, pawn.Position) < 10f)
@@ -27,7 +28,7 @@ namespace ThinkNodes
                     return null;
                 }
 
-                var job = JobMaker.MakeJob(JobDefOf.Goto, (LocalTargetInfo)thing.Position);
+                var job = JobMaker.MakeJob(JobDefOf.Goto, thing.Position);
                 job.locomotionUrgency = LocomotionUrgency.Sprint;
                 return job;
             }
@@ -37,10 +38,10 @@ namespace ThinkNodes
 
         private Thing ThingToDo(Pawn pawn)
         {
-            ThingDef singleDef = WhatDef();
+            var singleDef = WhatDef();
 
             var thingRequest = ThingRequest.ForDef(singleDef);
-            Thing closestPosition = ClosestPosition(pawn, thingRequest);
+            var closestPosition = ClosestPosition(pawn, thingRequest);
             return closestPosition;
         }
 
