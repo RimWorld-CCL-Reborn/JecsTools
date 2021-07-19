@@ -6,9 +6,14 @@
     <Configuration Condition=" '$(Configuration)' == '' ">RW1.2</Configuration>
     <TargetFramework>net472</TargetFramework>
     <NoStdLib>true</NoStdLib>
-    <LangVersion>8.0</LangVersion>
+    <LangVersion>9.0</LangVersion>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <Version>1.1.2.3</Version>
+    <!--
+    For some reason, although SDK projects should default Deterministic to true, when importing this props build,
+    builds become non-deterministic unless Deterministic is explicitly set to true here.
+    -->
+    <Deterministic>true</Deterministic>
   </PropertyGroup>
   <PropertyGroup>
     <!-- Always using "Release" build -->
@@ -35,6 +40,6 @@
     </When>
   </Choose>
   <ItemGroup>
-    <PackageReference Include="Lib.Harmony" Version="2.0.2" ExcludeAssets="runtime" />
+    <PackageReference Include="Lib.Harmony" Version="2.1.0" ExcludeAssets="runtime" />
   </ItemGroup>
 </Project>
