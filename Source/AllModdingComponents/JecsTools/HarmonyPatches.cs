@@ -11,7 +11,6 @@ using HarmonyLib;
 using RimWorld;
 using UnityEngine;
 using Verse;
-using Verse.Sound;
 
 namespace JecsTools
 {
@@ -64,15 +63,6 @@ namespace JecsTools
             //Checks apparel that uses the ApparelExtension
             harmony.Patch(AccessTools.Method(typeof(ApparelUtility), nameof(ApparelUtility.CanWearTogether)),
                 postfix: new HarmonyMethod(type, nameof(Post_CanWearTogether)));
-
-            //Handles special cases of faction disturbances
-            harmony.Patch(AccessTools.Method(typeof(Faction), nameof(Faction.Notify_MemberDied)),
-                prefix: new HarmonyMethod(type, nameof(Notify_MemberDied)));
-
-            //Handles FactionSettings extension to allow for fun effects when factions arrive.
-            harmony.Patch(AccessTools.Method(typeof(PawnGroupKindWorker), nameof(PawnGroupKindWorker.GeneratePawns),
-                    new[] { typeof(PawnGroupMakerParms), typeof(PawnGroupMaker), typeof(bool) }),
-                postfix: new HarmonyMethod(type, nameof(GeneratePawns)));
 
             //Handles cases where gendered apparel swaps out for individual genders.
             harmony.Patch(AccessTools.Method(typeof(PawnApparelGenerator), nameof(PawnApparelGenerator.GenerateStartingApparelFor)),
@@ -251,39 +241,6 @@ namespace JecsTools
                     DebugMessage($"apparel generation for {pawn}: destroyed old {wornApparel}");
                 }
             }
-        }
-
-        public static Faction lastPhoneAideFaction = null;
-        public static int lastPhoneAideTick = 0;
-
-        //PawnGroupKindWorker
-        public static void GeneratePawns(PawnGroupMakerParms parms, List<Pawn> __result)
-        {
-            if (__result.Count > 0 && parms.faction.def.GetFactionSettings() is FactionSettings fs)
-            {
-                fs.entrySoundDef?.PlayOneShotOnCamera();
-            }
-        }
-
-        //Faction
-        public static bool Notify_MemberDied(Faction __instance, Pawn member, DamageInfo? dinfo)
-        {
-            if (member?.Faction == null)
-                return true;
-            if (!(dinfo.HasValue && dinfo.Value.Instigator is Pawn instigator))
-                return true;
-
-            var notLeader = __instance.leader != member;
-
-            var notPlayerKiller = instigator.Faction != Faction.OfPlayerSilentFail;
-
-            //var notAttackingPlayer = member.LastAttackedTarget.IsValid && member.LastAttackedTarget.Thing is Pawn p && p.Faction != Faction.OfPlayerSilentFail;
-
-            var inTime = lastPhoneAideTick < (Find.TickManager?.TicksGame + GenDate.HoursPerDay ?? 0);
-
-            var isPhoneFaction = __instance == lastPhoneAideFaction;
-
-            return !isPhoneFaction || !inTime || !notLeader || !notPlayerKiller; //|| !notAttackingPlayer
         }
 
         /// <summary>
