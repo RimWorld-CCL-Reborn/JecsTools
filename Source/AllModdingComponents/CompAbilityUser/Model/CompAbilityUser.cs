@@ -18,9 +18,6 @@ namespace AbilityUser
 
     public class CompAbilityUser : CompUseEffect
     {
-        // Temp note: This doesn't seem to be used. TODO: remove this comment
-        //protected static bool classRegisteredWithUtility = false;
-
         private AbilityData abilityData;
 
         [Obsolete("Use AbilityUser property instead")]

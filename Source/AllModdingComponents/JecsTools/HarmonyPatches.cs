@@ -2,11 +2,11 @@
 
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 using System.Reflection.Emit;
-using AbilityUser;
 using HarmonyLib;
 using RimWorld;
 using UnityEngine;
@@ -49,6 +49,12 @@ namespace JecsTools
             //Applies damage soak motes
             harmony.Patch(AccessTools.Method(typeof(ArmorUtility), nameof(ArmorUtility.GetPostArmorDamage)),
                 postfix: new HarmonyMethod(type, nameof(Post_GetPostArmorDamage)));
+
+            harmony.Patch(AccessTools.Method(typeof(Pawn), nameof(Pawn.PreApplyDamage)),
+                prefix: new HarmonyMethod(type, nameof(Pawn_PreApplyDamage_Prefix)) { priority = Priority.High },
+                postfix: new HarmonyMethod(type, nameof(Pawn_PreApplyDamage_Postfix)) { priority = Priority.Low });
+            harmony.Patch(AccessTools.Method(typeof(Scenario), nameof(Scenario.TickScenario)),
+                postfix: new HarmonyMethod(type, nameof(Scenario_TickScenario_Postfix)));
 
             //Allows for adding additional HediffSets when characters spawn using the StartWithHediff class.
             harmony.Patch(AccessTools.Method(typeof(PawnGenerator), nameof(PawnGenerator.GeneratePawn),
@@ -526,20 +532,6 @@ namespace JecsTools
                         absorbed = true;
                         return false;
                     }
-
-                    // Since this is a Pawn_HealthTracker.PreApplyDamage prefix patch, applying knockback
-                    // only happens if no ThingComp.PostPreApplyDamage's (or earlier run patches) set the absorbed flag,
-                    // and it happens before any Apparel.CheckPreAbsorbDamage could set the absorbed flag, so e.g.
-                    // knockback are applied regardless of a shield belt potentially setting absorbed flag.
-                    // TODO: Should knockback be applied before any possible absorbed flag (in a Pawn.PreApplyDamage prefix patch),
-                    // only after it's definitely not absorbed (in a Pawn_HealthTracker.PreApplyDamage postfix patch),
-                    // or retain the existing behavior (this Pawn_HealthTracker.PreApplyDamage prefix patch)?
-                    if (dinfo.Weapon is ThingDef weaponDef && !weaponDef.IsRangedWeapon &&
-                        dinfo.Instigator is Pawn instigator)
-                    {
-                        DebugMessage("c6c:: Pawn has non-ranged weapon.");
-                        PreApplyDamage_ApplyKnockback(instigator, ___pawn);
-                    }
                 }
             }
 
@@ -551,43 +543,45 @@ namespace JecsTools
             return true;
         }
 
-        private static void PreApplyDamage_ApplyKnockback(Pawn instigator, Pawn pawn)
+        // Stores original dinfo.Amount in __state, that below Pawn_PreApplyDamage_Postfix can access.
+        public static void Pawn_PreApplyDamage_Prefix(ref DamageInfo dinfo, ref float __state)
         {
-            var knockerProps = instigator.GetHediffComp<HediffComp_Knockback>()?.Props;
-            if (knockerProps != null)
-                if (knockerProps.knockbackChance >= Rand.Value)
-                {
-                    if (knockerProps.explosiveKnockback)
-                    {
-                        // TODO: Use GenExplosion.DoExplosion instead?
-                        var explosion = (Explosion)GenSpawn.Spawn(ThingDefOf.Explosion,
-                            instigator.PositionHeld, instigator.MapHeld);
-                        explosion.radius = knockerProps.explosionSize;
-                        explosion.damType = knockerProps.explosionDmg;
-                        explosion.instigator = instigator;
-                        explosion.damAmount = 0;
-                        explosion.weapon = null;
-                        explosion.projectile = null;
-                        explosion.preExplosionSpawnThingDef = null;
-                        explosion.preExplosionSpawnChance = 0f;
-                        explosion.preExplosionSpawnThingCount = 1;
-                        explosion.postExplosionSpawnThingDef = null;
-                        explosion.postExplosionSpawnChance = 0f;
-                        explosion.postExplosionSpawnThingCount = 1;
-                        explosion.applyDamageToExplosionCellsNeighbors = false;
-                        explosion.chanceToStartFire = 0f;
-                        explosion.damageFalloff = false;
-                        explosion.StartExplosion(knockerProps.knockbackSound, null);
-                    }
-
-                    if (pawn != instigator && !pawn.Dead && !pawn.Downed && pawn.Spawned)
-                    {
-                        if (knockerProps.stunChance > -1 && knockerProps.stunChance >= Rand.Value)
-                            pawn.stances.stunner.StunFor(knockerProps.stunTicks, instigator);
-                        PushEffect(instigator, pawn, knockerProps.knockDistance.RandomInRange, damageOnCollision: true);
-                    }
-                }
+            __state = dinfo.Amount;
         }
+
+        // This should happen after all modifications to dinfo and any possible setting of absorbed flag,
+        // i.e. after all ThingComp.PostPreApplyDamage and Apparel.CheckPreAbsorbDamage (shield belts).
+        public static void Pawn_PreApplyDamage_Postfix(Pawn __instance, ref DamageInfo dinfo, ref bool absorbed,
+            float __state)
+        {
+            if (dinfo.Weapon is ThingDef weaponDef && !weaponDef.IsRangedWeapon &&
+                dinfo.Instigator is Pawn instigator)
+            {
+                DebugMessage($"c6c:: Instigator using non-ranged weapon: {dinfo}");
+                var hediffCompKnockback = instigator.GetHediffComp<HediffComp_Knockback>();
+                if (hediffCompKnockback != null)
+                {
+                    // Hack to prevent multiple knockbacks occurring due to multiple damage infos (e.g. extra damage) for same instigator+target:
+                    // prevent knockback if tick hasn't passed since last knockback for instigator+target pair.
+                    // This requires a (instigator+target)=>tick cache, which is cleared after every tick via Scenario_TickScenario_Postfix.
+                    var pair = new Pair<Thing, Thing>(instigator, __instance);
+                    var ticks = Find.TickManager.TicksGame;
+                    if (knockbackLastTicks.TryGetValue(pair, out var lastTicks) && lastTicks == ticks)
+                        return;
+                    knockbackLastTicks[pair] = ticks;
+                    hediffCompKnockback.ApplyKnockback(__instance,
+                        damageAbsorbedPercent: absorbed ? 1f : 1f - Mathf.Clamp01(dinfo.Amount / __state));
+                }
+            }
+        }
+
+        public static void Scenario_TickScenario_Postfix()
+        {
+            knockbackLastTicks.Clear();
+        }
+
+        private static readonly ConcurrentDictionary<Pair<Thing, Thing>, int> knockbackLastTicks =
+            new ConcurrentDictionary<Pair<Thing, Thing>, int>();
 
         private static bool PreApplyDamage_ApplyDamageSoakers(ref DamageInfo dinfo, HediffSet hediffSet, Pawn pawn)
         {
@@ -723,63 +717,33 @@ namespace JecsTools
             }
         }
 
+        // Not sure if another mod is using this, so obsoleting it rather than deleting it.
+        [Obsolete]
         public static Vector3 PushResult(Thing Caster, Thing thingToPush, int pushDist, out bool collision)
         {
-            var origin = thingToPush.TrueCenter();
-            var result = origin;
-            var collisionResult = false;
-            for (var i = 1; i <= pushDist; i++)
-            {
-                var pushDistX = i;
-                var pushDistZ = i;
-                if (origin.x < Caster.TrueCenter().x)
-                    pushDistX = -pushDistX;
-                if (origin.z < Caster.TrueCenter().z)
-                    pushDistZ = -pushDistZ;
-                var tempNewLoc = new Vector3(origin.x + pushDistX, 0f, origin.z + pushDistZ);
-                if (tempNewLoc.ToIntVec3().Standable(Caster.Map))
-                {
-                    result = tempNewLoc;
-                }
-                else
-                {
-                    if (thingToPush is Pawn)
-                    {
-                        //target.TakeDamage(new DamageInfo(DamageDefOf.Blunt, Rand.Range(3, 6)));
-                        collisionResult = true;
-                        break;
-                    }
-                }
-            }
-
-            collision = collisionResult;
-            return result;
+            return HediffComp_Knockback.PushResult(Caster, thingToPush, pushDist, out var _, out collision);
         }
 
+        // Not sure if another mod is using this, so obsoleting it rather than deleting it.
+        [Obsolete]
         public static void PushEffect(Thing Caster, Thing target, int distance, bool damageOnCollision = false)
         {
-            LongEventHandler.QueueLongEvent(() =>
+            HediffComp_Knockback.PushEffect(Caster, target, damageAbsorbedPercent: 0f, new HediffCompProperties_Knockback
             {
-                if (target is Pawn p && p.Spawned && !p.Downed && !p.Dead && p.MapHeld != null)
-                {
-                    var loc = PushResult(Caster, target, distance, out var applyDamage);
-                    //if (p.RaceProps.Humanlike)
-                    //    p.needs.mood.thoughts.memories.TryGainMemory(MiscDefOf.PJ_ThoughtPush, null);
-                    var flyingObject = (FlyingObject)GenSpawn.Spawn(MiscDefOf.JT_FlyingObject, p.PositionHeld, p.MapHeld);
-                    if (applyDamage && damageOnCollision)
-                        flyingObject.Launch(Caster, new LocalTargetInfo(loc.ToIntVec3()), target,
-                            // TODO: Make this configurable.
-                            new DamageInfo(DamageDefOf.Blunt, Rand.Range(8, 10)));
-                    else
-                        flyingObject.Launch(Caster, new LocalTargetInfo(loc.ToIntVec3()), target);
-                }
-            }, "PushingCharacter", false, null);
+                knockDistance = new FloatRange(distance, distance),
+                knockDistanceAbsorbedPercentCurve = HediffComp_Knockback.AlwaysOneCurve,
+                knockDistanceMassCurve = HediffComp_Knockback.AlwaysOneCurve,
+                knockImpactDamage = damageOnCollision ? new FloatRange(8f, 10f) : default,
+                knockImpactDamageDistancePercentCurve = HediffComp_Knockback.AlwaysOneCurve,
+                KnockImpactDamageType = DamageDefOf.Blunt,
+            });
         }
 
         public static string DamageInfo_ToString_Postfix(string result, ref DamageInfo __instance)
         {
-            var instigatorIndex = result.IndexOf(", instigator=");
-            return result.Insert(instigatorIndex, ", armorPenetration=" + __instance.ArmorPenetrationInt);
+            var insertIndex = result.IndexOf(", angle=");
+            return result.Insert(insertIndex, $", hitPart={__instance.HitPart.ToStringSafe()}, " +
+                $"weapon={__instance.Weapon.ToStringSafe()}, armorPenetration={__instance.ArmorPenetrationInt}");
         }
 
         //added 2018/12/13 - Mehni.

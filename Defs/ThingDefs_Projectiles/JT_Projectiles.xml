@@ -21,14 +21,14 @@
    <thingClass>AbilityUser.FlyingObject</thingClass>
    <label>flying object</label>
    <graphicData>
-		<texPath>NullTex</texPath>
-		<graphicClass>Graphic_Single</graphicClass>
-	</graphicData>
+    <texPath>NullTex</texPath>
+    <graphicClass>Graphic_Single</graphicClass>
+  </graphicData>
    <projectile>
-		<flyOverhead>true</flyOverhead>
-		<damageDef>Stun</damageDef>
-		<damageAmountBase>0</damageAmountBase>
-		<speed>10</speed>
+    <flyOverhead>true</flyOverhead>
+    <damageDef>Stun</damageDef>
+    <damageAmountBase>0</damageAmountBase>
+    <speed>10</speed>
    </projectile>
  </ThingDef>
 

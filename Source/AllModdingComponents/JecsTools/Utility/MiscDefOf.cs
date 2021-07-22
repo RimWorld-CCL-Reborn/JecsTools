@@ -8,7 +8,6 @@ namespace JecsTools
     {
         public static WorldObjectDef WorldObject_ProgressBar;
         public static RulePackDef JT_GrappleSuccess;
-        //public static ThoughtDef PJ_ThoughtPush;
         public static ThingDef JT_FlyingObject;
 
         static MiscDefOf() => DefOfHelper.EnsureInitializedInCtor(typeof(MiscDefOf));
