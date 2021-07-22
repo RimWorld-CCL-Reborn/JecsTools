@@ -21,8 +21,8 @@ namespace JecsTools
         //For alternating fire on some weapons
         public static Dictionary<Thing, int> AlternatingFireTracker = new Dictionary<Thing, int>();
 
-        public static int? tempDamageAmount = null;
-        public static int? tempDamageAbsorbed = null;
+        public static float? tempDamageAmount = null;
+        public static float? tempDamageAbsorbed = null;
 
         static HarmonyPatches()
         {
@@ -363,11 +363,11 @@ namespace JecsTools
             var fieldof_Verb_tool = AccessTools.Field(typeof(Verb), nameof(Verb.tool));
             var fieldof_Tool_extraMeleeDamages = AccessTools.Field(typeof(Tool), nameof(Tool.extraMeleeDamages));
             var methodof_List_GetEnumerator =
-                AccessTools.Method(typeof(List<Verse.ExtraDamage>), nameof(IEnumerable.GetEnumerator));
+                AccessTools.Method(typeof(List<ExtraDamage>), nameof(IEnumerable.GetEnumerator));
             var instructionList = instructions.AsList();
             var locals = new Locals(method, ilGen);
 
-            var extraDamagesVar = locals.DeclareLocal<List<Verse.ExtraDamage>>();
+            var extraDamagesVar = locals.DeclareLocal<List<ExtraDamage>>();
 
             var verbToolFieldNullCheckIndex = instructionList.FindSequenceIndex(
                 locals.IsLdloc,
@@ -393,14 +393,14 @@ namespace JecsTools
             {
                 extraDamagesVar.ToLdloc(),
                 new CodeInstruction(OpCodes.Call,
-                    AccessTools.Method(typeof(List<Verse.ExtraDamage>), nameof(IEnumerable.GetEnumerator))),
+                    AccessTools.Method(typeof(List<ExtraDamage>), nameof(IEnumerable.GetEnumerator))),
             });
 
             return instructionList;
         }
 
         [ThreadStatic]
-        private static Dictionary<(Tool, Pawn), List<Verse.ExtraDamage>> extraDamageCache;
+        private static Dictionary<(Tool, Pawn), List<ExtraDamage>> extraDamageCache;
 
         // In the above transpiler, this replaces tool.extraMeleeDamages as the foreach loop enumeration target in
         // Verb_MeleeAttackDamage.DamageInfosToApply.
@@ -416,9 +416,9 @@ namespace JecsTools
         // return Enumerable.Concat of them both; we need to create a new list that contains both. Since list creation and
         // getting the hediff extra damages are both relatively expensive operations, we utilize a cache.
         // This cache is ThreadStatic to be optimized for single-threaded usage yet safe for multithreaded usage.
-        private static List<Verse.ExtraDamage> DamageInfosToApply_ExtraDamages(Verb_MeleeAttackDamage verb)
+        private static List<ExtraDamage> DamageInfosToApply_ExtraDamages(Verb_MeleeAttackDamage verb)
         {
-            extraDamageCache ??= new Dictionary<(Tool, Pawn), List<Verse.ExtraDamage>>();
+            extraDamageCache ??= new Dictionary<(Tool, Pawn), List<ExtraDamage>>();
             var key = (verb.tool, verb.CasterPawn);
             if (!extraDamageCache.TryGetValue(key, out var extraDamages))
             {
@@ -430,7 +430,7 @@ namespace JecsTools
                     extraDamages = toolExtraDamages;
                 else
                 {
-                    extraDamages = new List<Verse.ExtraDamage>(toolExtraDamages.Count + hediffExtraDamages.Count);
+                    extraDamages = new List<ExtraDamage>(toolExtraDamages.Count + hediffExtraDamages.Count);
                     extraDamages.AddRange(toolExtraDamages);
                     extraDamages.AddRange(hediffExtraDamages);
                 }
@@ -440,7 +440,7 @@ namespace JecsTools
             return extraDamages;
         }
 
-        private static string ToString(Verse.ExtraDamage ed)
+        private static string ToString(ExtraDamage ed)
         {
             return $"(def={ed.def}, amount={ed.amount}, armorPenetration={ed.armorPenetration}, chance={ed.chance})";
         }
@@ -486,14 +486,12 @@ namespace JecsTools
             if (tempDamageAmount != null && damAmount > 0f)
             {
                 var damageDiff = Mathf.Max(damAmount - tempDamageAmount.Value, 0f);
-                // TODO: tempDamageAmount is an integer - so RoundRandom has no effect (other than float conversion).
-                // Shouldn't tempDamageAmount be a float?
                 var newDamAmount = GenMath.RoundRandom(tempDamageAmount.Value);
                 DebugMessage($"c6c:: ApplyArmor prefix on {pawn}: tempDamageAmount {tempDamageAmount} => null, damAmount {damAmount} => {newDamAmount}");
                 damAmount = newDamAmount;
                 tempDamageAmount = null;
                 if (damageDiff > 0f)
-                    tempDamageAbsorbed = GenMath.RoundRandom(damageDiff);
+                    tempDamageAbsorbed = damageDiff;
             }
         }
 
@@ -536,7 +534,7 @@ namespace JecsTools
             }
 
             // TODO: tempDamageAmount shouldn't be set if there are no damage soaks.
-            tempDamageAmount = (int)dinfo.Amount;
+            tempDamageAmount = dinfo.Amount;
             DebugMessage($"c6c:: tempDamageAmount <= {tempDamageAmount}");
             absorbed = false;
             DebugMessage($"c6c:: === Exit Harmony Prefix --- PreApplyDamage_PrePatch for {___pawn} and {dinfo} ===");
@@ -588,7 +586,7 @@ namespace JecsTools
             // Multiple damage soak hediff comps stack.
             DebugMessage($"c6c:: --- Enter PreApplyDamage_ApplyDamageSoakers for {pawn} and {dinfo} ---");
             var damageDef = dinfo.Def;
-            var totalSoakedDamage = 0;
+            var totalSoakedDamage = 0f;
             foreach (var hediffComp in hediffSet.GetAllComps())
             {
                 if (!(hediffComp is HediffComp_DamageSoak damageSoakComp))
@@ -624,8 +622,7 @@ namespace JecsTools
                     DebugMessage($"c6c:: Soaked: Min({soakProps.damageToSoak}, {dinfo.Amount}) => {soakedDamage}");
                     dmgAmount -= soakedDamage;
                     DebugMessage($"c6c:: Damage amount: {dinfo.Amount} - {soakedDamage} => {dmgAmount}");
-                    // TODO: Don't int-truncate here, and instead Mathf.RoundToInt or GenMath.RoundRandom when displaying it.
-                    totalSoakedDamage += (int)soakedDamage;
+                    totalSoakedDamage += soakedDamage;
                     DebugMessage($"c6c:: Total soaked: {totalSoakedDamage}");
                     dinfo.SetAmount(dmgAmount);
 
@@ -679,8 +676,7 @@ namespace JecsTools
                         DebugMessage($"c6c:: Soaked: Min({soakSettings.damageToSoak}, {dinfo.Amount}) => {soakedDamage}");
                         dmgAmount -= soakedDamage;
                         DebugMessage($"c6c:: Damage amount: {dinfo.Amount} - {soakedDamage} => {dmgAmount}");
-                        // TODO: Don't int-truncate here, and instead Mathf.RoundToInt or GenMath.RoundRandom when displaying it.
-                        totalSoakedDamage += (int)soakedDamage;
+                        totalSoakedDamage += soakedDamage;
                         DebugMessage($"c6c:: Total soaked: {totalSoakedDamage}");
                         dinfo.SetAmount(dmgAmount);
 
@@ -707,13 +703,15 @@ namespace JecsTools
             return false;
         }
 
-        private static void DamageSoakedMote(Pawn pawn, int soakedDamage)
+        private static void DamageSoakedMote(Pawn pawn, float soakedDamage)
         {
-            if (soakedDamage > 0 && pawn != null && pawn.Spawned && pawn.MapHeld != null &&
+            if (soakedDamage > 0f && pawn != null && pawn.Spawned && pawn.MapHeld != null &&
                 pawn.DrawPos is Vector3 drawVecDos && drawVecDos.InBounds(pawn.MapHeld))
             {
-                DebugMessage($"c6c:: DamageSoakedMote for {pawn}: {soakedDamage}");
-                MoteMaker.ThrowText(drawVecDos, pawn.MapHeld, "JT_DamageSoaked".Translate(soakedDamage));
+                // To avoid any rounding bias, use RoundRandom for converting int to float.
+                var roundedSoakedDamage = GenMath.RoundRandom(soakedDamage);
+                DebugMessage($"c6c:: DamageSoakedMote for {pawn}: {soakedDamage} rounded to {roundedSoakedDamage}");
+                MoteMaker.ThrowText(drawVecDos, pawn.MapHeld, "JT_DamageSoaked".Translate(roundedSoakedDamage));
             }
         }
 
