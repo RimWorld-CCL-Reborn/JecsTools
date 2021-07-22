@@ -5,7 +5,7 @@ namespace CompAnimated
 {
     public class CompProperties_AnimatedOver : CompProperties_Animated
     {
-        public float yOffset = 0f, xOffset = 0f, xScale = 1f, yScale = 1f;
+        public float yOffset = 0f, xOffset = 0f, layerOffset = 0f, xScale = 1f, yScale = 1f;
 
         public CompProperties_AnimatedOver()
         {

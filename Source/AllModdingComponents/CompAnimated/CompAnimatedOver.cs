@@ -9,7 +9,7 @@ namespace CompAnimated
         /// <summary>
         /// Additional programatic movement hooks
         /// </summary>
-        public float yOffset = 0f, xOffset = 0f, xScale = 1f, yScale = 1f;
+        public float yOffset = 0f, xOffset = 0f, layerOffset = 0f, xScale = 1f, yScale = 1f;
 
         public CompProperties_AnimatedOver OverProps => (CompProperties_AnimatedOver)props;
 
@@ -20,6 +20,7 @@ namespace CompAnimated
             //apply offset
             drawPos.x += OverProps.xOffset + xOffset;
             drawPos.z += OverProps.yOffset + yOffset;
+            drawPos.y += OverProps.layerOffset + layerOffset;
 
             scaled.Draw(drawPos, Rot4.North, parent);
         }
