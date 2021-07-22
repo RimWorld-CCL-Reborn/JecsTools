@@ -1,3 +1,51 @@
+Note: Starting from this version, changes only apply to RimWorld 1.3+.
+Lots of performance improvments (too many to list - look at the individual commit descriptions since commit d0e37a8 for details)
+Updated:
+- CompAbilityUser:
+  - revamped CombatPower-based pawn generation balancing to actually work
+  - PawnAbility.TryCastAbility now checks for matching verbProps again (regression since RW 1.1)
+  - fix AbilityDecisionNode subclasses ignoring the invert field in certain cases
+  - fix various assumptions that there's only a single CompAbilityUser when multiple CompAbilityUsers are common
+- CompOversizedWeapon: improved thing-on-ground detection for graphics
+- CompSlotLoadable: avoid showing unavailable slot options, updated to latest vanilla logic, avoid bloating save file if slottableThingDefs is same between SlotLoadable and SlotLoadableDef
+- CompToggleDef:
+  - improved GUI to be more like vanilla
+  - add toggle GUI for colonists with toggleable weapons
+  - fix ranged weapon toggles not working properly
+  - changed thing is reselected and has graphics refreshed after toggle
+  - avoid toggling to the same def
+- CompSlotLoadable:
+  - configurable per-body-part amountRange in SlotBonusProps_DefensiveHealChance and SlotBonusProps_VampiricEffect
+  - configurable damageDef and armorPenetration in SlotBonusProps_VampiricEffect
+  - update body part healing to be consistent between DefensiveHealChance and VampiricEffect (randomized, skip already healed body parts)
+- CompAnimated: added layerOffset to CompProperties_AnimatedOver (thanks Aelanna!)
+- BuildingExtension: wipeCategories should now consistently work
+- HediffComp_ExtraMeleeDamages: updated to latest vanilla logic (damage now created just like those from Tool.extraMeleeDamages)
+- HediffComp_DamageSoak: damage soak amount no longer rounded to integer
+- HediffComp_Knockback:
+  - configurable knockbackSound (was broken), KnockImpactDamageType (instead of always Blunt), knockbackSpeed, and knockbackThought
+  - configurable explosiveProps (CompProperties_Explosive)
+  - knockDistance now accepts floating points
+  - add knockDistanceAbsorbedPercentCurve and knockDistanceMassCurve that controls how damage soak and mass affect knock distance
+  - improve push angle algorithm so that it's no longer always a diagonal
+  - FlyingObject: configurable props (ProjectileProperties) and accuracyRadius
+  - FlyingObject_Equipable allows equipping apparel along (not just weapons)
+- PawnShields: support generating biocoded shields when generating pawns
+- PlaceWorker_UnderCeiling: works again (regression since RW 1.1)
+- CaravanJob: fix placedThings type (old regression since RW 1.0)
+Deprecated:
+- ApparelExtension:
+  - swapCondition: use vanilla apparel.gender instead
+  - coverage: use vanilla apparel.layers and custom ApparelLayerDef instead
+- AbilityUser.GetCompAbilityUser/AbilityUtility.Abilities: use GetCompAbilityUsers (plural)
+- HediffComp_Knockback explosiveKnockback/explosionDmg/explosionSize: use explosiveProps fields instead
+- FlyingObject speed/impactDamage/explosion: use props.speed/extraDamages/explosionRadius
+- Some fields have been deprecated in favor of properties
+Deleted:
+- JecsTools' CompConsole and related Faction stuff (broken since RW B19)
+- CompVehicles (broken and commented out since RW 1.1)
+- Some public classes and methods have been moved or deleted (including ModCompatibilityUtility, HarmonyCompActivatableEffect/HarmonyCompSlotLoadable.GizmoGetter)
+
 1.1.2.3 (05-09-2021)
 ========================
 Update French translation (thanks qux!), rebuild to latest RW version
