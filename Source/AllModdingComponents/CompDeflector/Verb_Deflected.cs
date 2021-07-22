@@ -36,7 +36,7 @@ namespace CompDeflector
             if (lastShotReflected)
             {
                 ////Log.Message("lastShotReflected Called");
-                projectile.Launch(caster, currentTarget, currentTarget, ProjectileHitFlags.IntendedTarget, EquipmentSource); //TODO
+                projectile.Launch(caster, currentTarget, currentTarget, ProjectileHitFlags.IntendedTarget, preventFriendlyFire, EquipmentSource);
                 return true;
             }
 
@@ -44,13 +44,14 @@ namespace CompDeflector
             //
 
             //projectile.FreeIntercept = canFreeInterceptNow && !projectile.def.projectile.flyOverhead;
-            if (verbProps.forcedMissRadius > 0.5f)
+            var forcedMissRadius = verbProps.ForcedMissRadius;
+            if (forcedMissRadius > 0.5f)
             {
-                var num = VerbUtility.CalculateAdjustedForcedMiss(verbProps.forcedMissRadius,
+                var num = VerbUtility.CalculateAdjustedForcedMiss(forcedMissRadius,
                     currentTarget.Cell - caster.Position);
                 if (num > 0.5f)
                 {
-                    var max = GenRadial.NumCellsInRadius(verbProps.forcedMissRadius);
+                    var max = GenRadial.NumCellsInRadius(forcedMissRadius);
                     var num2 = Rand.Range(0, max);
                     if (num2 > 0)
                     {
@@ -70,7 +71,7 @@ namespace CompDeflector
                         {
                             projectileHitFlags &= ~ProjectileHitFlags.NonTargetPawns;
                         }
-                        projectile.Launch(caster, currentTarget, c, projectileHitFlags, EquipmentSource); //TODO
+                        projectile.Launch(caster, currentTarget, c, projectileHitFlags, preventFriendlyFire, EquipmentSource);
                         return true;
                     }
                 }
@@ -98,7 +99,8 @@ namespace CompDeflector
                         projectileHitFlags2 |= ProjectileHitFlags.NonTargetPawns;
                     }
                 }
-                projectile.Launch(caster, currentTarget, shootLine.Dest, projectileHitFlags2, EquipmentSource); //TODO
+                projectile.Launch(caster, currentTarget, shootLine.Dest, projectileHitFlags2,
+                    preventFriendlyFire, EquipmentSource);
                 return true;
             }
             if (currentTarget.Thing != null && currentTarget.Thing.def.category == ThingCategory.Pawn && !Rand.Chance(shotReport.PassCoverChance))
@@ -112,7 +114,8 @@ namespace CompDeflector
                     {
                         projectileHitFlags5 |= ProjectileHitFlags.NonTargetPawns;
                     }
-                    projectile.Launch(caster, currentTarget, randomCoverToMissInto, projectileHitFlags5, EquipmentSource);
+                    projectile.Launch(caster, currentTarget, randomCoverToMissInto, projectileHitFlags5,
+                        preventFriendlyFire, EquipmentSource);
                     return true;
                 }
             }
@@ -132,7 +135,7 @@ namespace CompDeflector
                             projectileHitFlags3 |= ProjectileHitFlags.NonTargetPawns;
                         }
                         projectile.Launch(caster, drawPos, randomCoverToMissInto, currentTarget,
-                            projectileHitFlags3, EquipmentSource, targetCoverDef);
+                            projectileHitFlags3, preventFriendlyFire, EquipmentSource, targetCoverDef);
                         return true;
                     }
                 }
@@ -152,12 +155,12 @@ namespace CompDeflector
                 if (currentTarget.Thing != null)
                 {
                     projectile.Launch(caster, drawPos, currentTarget, currentTarget, projectileHitFlags4,
-                        EquipmentSource, targetCoverDef);
+                        preventFriendlyFire, EquipmentSource, targetCoverDef);
                 }
                 else
                 {
                     projectile.Launch(caster, drawPos, shootLine.Dest, currentTarget, projectileHitFlags4,
-                        EquipmentSource, targetCoverDef);
+                        preventFriendlyFire, EquipmentSource, targetCoverDef);
                 }
                 return true;
             }

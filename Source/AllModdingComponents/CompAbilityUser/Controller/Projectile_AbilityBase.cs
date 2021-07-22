@@ -138,8 +138,8 @@ namespace AbilityUser
             ApplyHediffsAndMentalStates(Caster, Caster, localApplyMentalStates, localAbilityDef);
         }
 
-        public void Launch(Thing launcher, AbilityDef abilityDef, Vector3 origin, LocalTargetInfo targ,
-            ProjectileHitFlags hitFlags, Thing equipment = null, List<ApplyHediffs> applyHediffs = null,
+        public void Launch(Thing launcher, AbilityDef abilityDef, Vector3 origin, LocalTargetInfo targ, ProjectileHitFlags hitFlags,
+            bool preventFriendlyFire = false, Thing equipment = null, List<ApplyHediffs> applyHediffs = null,
             List<ApplyMentalStates> applyMentalStates = null, List<SpawnThings> spawnThings = null)
         {
             //Log.Message($"Projectile_AbilityBase.Launch({this}, ...)");
@@ -147,7 +147,7 @@ namespace AbilityUser
             localApplyMentalStates = applyMentalStates;
             localSpawnThings = spawnThings;
             localAbilityDef = abilityDef;
-            Launch(launcher, targ, targ, hitFlags, equipment); //TODO
+            Launch(launcher, targ, targ, hitFlags, preventFriendlyFire, equipment); //TODO
         }
 
         protected override void Impact(Thing hitThing)

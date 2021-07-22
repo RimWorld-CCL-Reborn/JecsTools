@@ -27,7 +27,7 @@ namespace AbilityUser
                 if (!pawn.Position.InHorDistOf(TargetA.Cell, pawn.CurJob.verbToUse.verbProps.range) ||
                     !Verb.UseAbilityProps.canCastInMelee)
                 {
-                    var getInRangeToil = Toils_Combat.GotoCastPosition(TargetIndex.A, false);
+                    var getInRangeToil = Toils_Combat.GotoCastPosition(TargetIndex.A, TargetIndex.B);
                     yield return getInRangeToil;
                 }
 
@@ -38,7 +38,7 @@ namespace AbilityUser
                 Find.Targeter.targetingSource = Verb;
             }
 
-            yield return Toils_Combat.CastVerb(TargetIndex.A, false);
+            yield return Toils_Combat.CastVerb(TargetIndex.A, TargetIndex.B, canHitNonTargetPawns: false);
             yield return new Toil
             {
                 initAction = () =>

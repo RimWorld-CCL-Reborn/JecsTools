@@ -135,7 +135,7 @@ namespace JecsTools
                 {
                     state = PushSearchState.OutOfBounds;
                 }
-                else if (map.pathGrid.WalkableFast(cell) && !cell.Impassable(map))
+                else if (map.pathing.Normal.pathGrid.WalkableFast(cell) && !cell.Impassable(map))
                 {
                     if (cell.GetEdifice(map) is Building_Door door && !door.Open)
                         state = PushSearchState.ClosedDoor;

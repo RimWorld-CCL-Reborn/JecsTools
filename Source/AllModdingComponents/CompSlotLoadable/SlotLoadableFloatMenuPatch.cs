@@ -59,8 +59,7 @@ namespace CompSlotLoadable
                                             {
                                                 loadableThing.SetForbidden(false, true);
                                                 pawn.jobs.TryTakeOrderedJob(JobMaker.MakeJob(CompSlotLoadableDefOf.GatherSlotItem, loadableThing));
-                                                MoteMaker.MakeStaticMote(loadableThing.DrawPos, loadableThing.Map,
-                                                    ThingDefOf.Mote_FeedbackEquip, 1f);
+                                                FleckMaker.Static(loadableThing.DrawPos, loadableThing.Map, FleckDefOf.FeedbackEquip);
                                                 //PlayerKnowledgeDatabase.KnowledgeDemonstrated(ConceptDefOf.EquippingWeapons, KnowledgeAmount.Total);
                                             }, MenuOptionPriority.High);
                                     }

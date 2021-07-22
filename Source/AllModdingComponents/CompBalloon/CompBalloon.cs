@@ -52,7 +52,7 @@ namespace CompBalloon
                     ? curKindLifeStage.bodyGraphicData.Graphic
                     : curKindLifeStage.femaleGraphicData.Graphic;
                 pawnGraphicSet.rottingGraphic = pawnGraphicSet.nakedGraphic.GetColoredVersion(ShaderDatabase.CutoutSkin,
-                    PawnGraphicSet.RottingColor, PawnGraphicSet.RottingColor);
+                    PawnGraphicSet.RottingColorDefault, PawnGraphicSet.RottingColorDefault);
                 if (Ballooner.RaceProps.packAnimal)
                 {
                     pawnGraphicSet.packGraphic = GraphicDatabase.Get<Graphic_Multi>(

@@ -20,7 +20,7 @@ namespace AbilityUser
 
             var verb = pawn.CurJob.verbToUse as Verb_UseAbility;
             Find.Targeter.targetingSource = verb;
-            yield return Toils_Combat.CastVerb(TargetIndex.A, false);
+            yield return Toils_Combat.CastVerb(TargetIndex.A, TargetIndex.B, canHitNonTargetPawns: false);
             yield return new Toil
             {
                 initAction = verb.Ability.PostAbilityAttempt,

@@ -71,7 +71,7 @@ namespace JecsTools
         // RimWorld.TrashUtility
         private static bool CanTrash(Pawn pawn, Thing t)
         {
-            return pawn.CanReach(t, PathEndMode.Touch, Danger.Some, false, TraverseMode.ByPawn) && !t.IsBurning();
+            return pawn.CanReach(t, PathEndMode.Touch, Danger.Some) && !t.IsBurning();
         }
     }
 }

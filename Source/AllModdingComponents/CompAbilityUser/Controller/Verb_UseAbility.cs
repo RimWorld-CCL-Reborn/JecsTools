@@ -12,7 +12,7 @@ namespace AbilityUser
     public class Verb_UseAbility : Verb_LaunchProjectile
     {
         public List<LocalTargetInfo> TargetsAoE = new List<LocalTargetInfo>();
-        public Action<Thing> timeSavingActionVariable = null;
+        public Action<LocalTargetInfo> timeSavingActionVariable = null;
         public PawnAbility Ability { get; set; } = null;
 
         public VerbProperties_Ability UseAbilityProps => (VerbProperties_Ability)verbProps;
@@ -137,7 +137,9 @@ namespace AbilityUser
             return true;
         }
 
-        public bool PreCastShotCheck(LocalTargetInfo castTarg, LocalTargetInfo destTarg, bool surpriseAttack, bool canHitNonTargetPawns)
+        // Based off Verb.TryStartCastOn.
+        public bool PreCastShotCheck(LocalTargetInfo castTarg, LocalTargetInfo destTarg, bool surpriseAttack = false,
+            bool canHitNonTargetPawns = true, bool preventFriendlyFire = false)
         {
             if (caster == null)
             {
@@ -159,6 +161,7 @@ namespace AbilityUser
 
             this.surpriseAttack = surpriseAttack;
             canHitNonTargetPawnsNow = canHitNonTargetPawns;
+            this.preventFriendlyFire = preventFriendlyFire;
             currentTarget = castTarg;
             currentDestination = destTarg;
             if (CasterIsPawn && verbProps.warmupTime > 0f)
@@ -183,18 +186,18 @@ namespace AbilityUser
             return true;
         }
 
-        public bool PreCastShot(LocalTargetInfo castTarg, LocalTargetInfo destTarg, bool surpriseAttack, bool canHitNonTargetPawns)
+        public bool PreCastShot(LocalTargetInfo castTarg, LocalTargetInfo destTarg, bool surpriseAttack = false,
+            bool canHitNonTargetPawns = true, bool preventFriendlyFire = false)
         {
-            if (PreCastShotCheck(castTarg, destTarg, surpriseAttack, canHitNonTargetPawns))
-            {
-                DebugMessage($"Verb_UseAbility.PreCastShotCheck({this}, castTarg={castTarg}, destTarg={destTarg}, " +
-                    $"surpriseAttack={surpriseAttack}, canHitNonTargetPawns={canHitNonTargetPawns}) => true");
-                return true;
-            }
+            var result = PreCastShotCheck(castTarg, destTarg, surpriseAttack, canHitNonTargetPawns, preventFriendlyFire);
             DebugMessage($"Verb_UseAbility.PreCastShotCheck({this}, castTarg={castTarg}, destTarg={destTarg}, " +
-                $"surpriseAttack={surpriseAttack}, canHitNonTargetPawns={canHitNonTargetPawns}) => false");
-            Ability.Notify_AbilityFailed(true);
-            return false;
+                $"surpriseAttack={surpriseAttack}, canHitNonTargetPawns={canHitNonTargetPawns}, " +
+                $"preventFriendlyFire={preventFriendlyFire}) => {result}");
+            if (result == false)
+            {
+                Ability.Notify_AbilityFailed(refund: true);
+            }
+            return result;
         }
 
         public virtual void PostCastShot(bool inResult, out bool outResult)
@@ -216,7 +219,7 @@ namespace AbilityUser
             if (props.mustHaveTarget && TargetsAoE.Count == 0)
             {
                 Messages.Message("AU_NoTargets".Translate(), MessageTypeDefOf.RejectInput);
-                Ability.Notify_AbilityFailed(true);
+                Ability.Notify_AbilityFailed(refund: true);
                 return false;
             }
             for (var i = 0; i < TargetsAoE.Count; i++)
@@ -259,6 +262,7 @@ namespace AbilityUser
             return result;
         }
 
+        // Loosely based off Verb_LaunchProjectile.TryCastShot.
         public bool TryLaunchProjectileCheck(ThingDef projectileDef, LocalTargetInfo launchTarget)
         {
             var flag = TryFindShootLineFromTo(caster.Position, launchTarget, out var shootLine);
@@ -285,7 +289,7 @@ namespace AbilityUser
             {
                 projectileHitFlags |= ProjectileHitFlags.NonTargetWorld;
             }
-            projectile.Launch(caster, Ability.Def, drawPos, launchTarget, projectileHitFlags, null,
+            projectile.Launch(caster, Ability.Def, drawPos, launchTarget, projectileHitFlags, preventFriendlyFire, equipment: null,
                 props.hediffsToApply, props.mentalStatesToApply, props.thingsToSpawn);
             return true;
         }

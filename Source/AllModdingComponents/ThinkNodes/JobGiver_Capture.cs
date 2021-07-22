@@ -27,8 +27,9 @@ namespace ThinkNodes
                 return null;
             }
 
-            var buildingBed = RestUtility.FindBedFor(victim, pawn, true, false) ??
-                                       RestUtility.FindBedFor(victim, pawn, true, false, true);
+            var buildingBed =
+                RestUtility.FindBedFor(victim, pawn, checkSocialProperness: false, ignoreOtherReservations: false, GuestStatus.Prisoner) ??
+                RestUtility.FindBedFor(victim, pawn, checkSocialProperness: false, ignoreOtherReservations: true, GuestStatus.Prisoner);
             if (buildingBed == null)
             {
                 return null;

@@ -268,7 +268,7 @@ namespace AbilityUser
                 targetingParams = powerDef.MainVerb.targetParams,
                 icon = powerDef.uiIcon,
                 action = target => TryCastAbility(AbilityContext.Player,
-                    GenUI.TargetsAt_NewTemp(UI.MouseMapPosition(), verbProps.targetParams).FirstOrFallback(target)),
+                    GenUI.TargetsAt(UI.MouseMapPosition(), verbProps.targetParams).FirstOrFallback(target)),
             };
 
             if (!CanCastPowerCheck(AbilityContext.Player, out var reason))

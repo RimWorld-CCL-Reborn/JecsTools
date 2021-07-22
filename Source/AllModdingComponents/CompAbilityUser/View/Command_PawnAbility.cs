@@ -72,28 +72,28 @@ namespace AbilityUser
         //    return other is Command_PawnAbility p && p.pawnAbility.Def.abilityClass == pawnAbility.Def.abilityClass;
         //}
 
-        public override GizmoResult GizmoOnGUI(Vector2 topLeft, float maxWidth)
+        protected override GizmoResult GizmoOnGUIInt(Rect butRect, GizmoRenderParms parms)
         {
-            var rect = new Rect(topLeft.x, topLeft.y, GetWidth(maxWidth), 75f);
+            // TODO: This is based off Command.GizmoOnGUI at version ~A17, so it's very outdated. Actually use parms and other modern features.
             var isMouseOver = false;
-            if (Mouse.IsOver(rect))
+            if (Mouse.IsOver(butRect))
             {
                 isMouseOver = true;
                 GUI.color = GenUI.MouseoverColor;
             }
             var badTex = icon ?? BaseContent.BadTex;
 
-            GUI.DrawTexture(rect, BGTex);
-            MouseoverSounds.DoRegion(rect, SoundDefOf.Mouseover_Command);
+            GUI.DrawTexture(butRect, BGTex);
+            MouseoverSounds.DoRegion(butRect, SoundDefOf.Mouseover_Command);
             GUI.color = IconDrawColor;
-            Widgets.DrawTextureFitted(new Rect(rect), badTex, iconDrawScale * 0.85f, iconProportions, iconTexCoords);
+            Widgets.DrawTextureFitted(new Rect(butRect), badTex, iconDrawScale * 0.85f, iconProportions, iconTexCoords);
             GUI.color = Color.white;
             var isUsed = false;
 
             var keyCode = hotKey != null ? hotKey.MainKey : KeyCode.None;
             if (keyCode != KeyCode.None && !GizmoGridDrawer.drawnHotKeys.Contains(keyCode))
             {
-                var hotkeyRect = new Rect(rect.x + 5f, rect.y + 5f, rect.width - 10f, 18f);
+                var hotkeyRect = new Rect(butRect.x + 5f, butRect.y + 5f, butRect.width - 10f, 18f);
                 Widgets.Label(hotkeyRect, keyCode.ToStringReadable());
                 GizmoGridDrawer.drawnHotKeys.Add(keyCode);
                 if (hotKey.KeyDownEvent)
@@ -102,13 +102,13 @@ namespace AbilityUser
                     Event.current.Use();
                 }
             }
-            if (Widgets.ButtonInvisible(rect, false))
+            if (Widgets.ButtonInvisible(butRect, false))
                 isUsed = true;
             var labelCap = LabelCap;
             if (!labelCap.NullOrEmpty())
             {
-                var labelHeight = Text.CalcHeight(labelCap, rect.width) - 2f;
-                var labelRect = new Rect(rect.x, rect.yMax - labelHeight + 12f, rect.width, labelHeight);
+                var labelHeight = Text.CalcHeight(labelCap, butRect.width) - 2f;
+                var labelRect = new Rect(butRect.x, butRect.yMax - labelHeight + 12f, butRect.width, labelHeight);
                 GUI.DrawTexture(labelRect, TexUI.GrayTextBG);
                 GUI.color = Color.white;
                 Text.Anchor = TextAnchor.UpperCenter;
@@ -122,16 +122,16 @@ namespace AbilityUser
                 TipSignal tip = Desc;
                 if (disabled && !disabledReason.NullOrEmpty())
                     tip.text += "\n" + StringsToTranslate.AU_DISABLED + ": " + disabledReason;
-                TooltipHandler.TipRegion(rect, tip);
+                TooltipHandler.TipRegion(butRect, tip);
             }
             if (pawnAbility.CooldownTicksLeft != -1 && pawnAbility.CooldownTicksLeft < pawnAbility.MaxCastingTicks)
             {
                 var math = curTicks / (float)pawnAbility.MaxCastingTicks;
-                Widgets.FillableBar(rect, math, AbilityButtons.FullTex, AbilityButtons.EmptyTex, false);
+                Widgets.FillableBar(butRect, math, AbilityButtons.FullTex, AbilityButtons.EmptyTex, false);
             }
             if (!HighlightTag.NullOrEmpty() && (Find.WindowStack.FloatMenu == null ||
-                                                !Find.WindowStack.FloatMenu.windowRect.Overlaps(rect)))
-                UIHighlighter.HighlightOpportunity(rect, HighlightTag);
+                                                !Find.WindowStack.FloatMenu.windowRect.Overlaps(butRect)))
+                UIHighlighter.HighlightOpportunity(butRect, HighlightTag);
             if (isUsed)
             {
                 if (disabled)

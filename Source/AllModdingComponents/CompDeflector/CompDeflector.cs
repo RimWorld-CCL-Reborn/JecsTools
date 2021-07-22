@@ -294,7 +294,7 @@ namespace CompDeflector
                         lastShotReflected = true;
                         break;
                     case AccuracyRoll.Failure:
-                        newVerbProps.forcedMissRadius = 50.0f;
+                        verbPropertiesForcedMissRadius(newVerbProps) = 50.0f;
                         newVerbProps.accuracyLong = 0.0f;
                         newVerbProps.accuracyMedium = 0.0f;
                         newVerbProps.accuracyShort = 0.0f;
@@ -323,6 +323,9 @@ namespace CompDeflector
             }
             return newVerb;
         }
+
+        private static readonly AccessTools.FieldRef<VerbProperties, float> verbPropertiesForcedMissRadius =
+            AccessTools.FieldRefAccess<VerbProperties, float>("forcedMissRadius");
 
         // TODO: This is never called - still needed?
         public virtual Verb CopyAndReturnNewVerb_PostFix(Verb newVerb)

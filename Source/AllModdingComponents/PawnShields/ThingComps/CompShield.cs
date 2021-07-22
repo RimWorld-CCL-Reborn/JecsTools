@@ -115,7 +115,7 @@ namespace PawnShields
         /// <param name="ranged">Is this attack ranged or melee?</param>
         public virtual void MakeBlockEffect(Pawn defender, DamageInfo dinfo, bool ranged)
         {
-            MoteMaker.ThrowMicroSparks(defender.Position.ToVector3(), defender.Map);
+            FleckMaker.ThrowMicroSparks(defender.Position.ToVector3(), defender.Map);
         }
 
         /// <summary>

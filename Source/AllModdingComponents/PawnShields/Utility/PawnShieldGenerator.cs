@@ -84,9 +84,9 @@ namespace PawnShields
             var comps = thingWithComps.AllComps;
             for (int i = 0, count = comps.Count; i < count; i++)
             {
-                if (comps[i] is CompBiocodableWeapon compBiocodableWeapon)
+                if (comps[i] is CompBiocodable compBiocodable)
                 {
-                    compBiocodableWeapon.CodeFor(pawn);
+                    compBiocodable.CodeFor(pawn);
                 }
             }
         }

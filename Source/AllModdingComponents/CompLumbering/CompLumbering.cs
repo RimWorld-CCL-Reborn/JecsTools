@@ -36,7 +36,7 @@ namespace CompLumbering
                     ? curKindLifeStage.bodyGraphicData.Graphic
                     : curKindLifeStage.femaleGraphicData.Graphic;
                 pawnGraphicSet.rottingGraphic = pawnGraphicSet.nakedGraphic.GetColoredVersion(ShaderDatabase.CutoutSkin,
-                    PawnGraphicSet.RottingColor, PawnGraphicSet.RottingColor);
+                    PawnGraphicSet.RottingColorDefault, PawnGraphicSet.RottingColorDefault);
                 if (Lumberer.RaceProps.packAnimal)
                     pawnGraphicSet.packGraphic = GraphicDatabase.Get<Graphic_Multi>(
                         pawnGraphicSet.nakedGraphic.path + "Pack", ShaderDatabase.Cutout,

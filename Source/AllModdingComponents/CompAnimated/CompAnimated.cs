@@ -168,7 +168,7 @@ namespace CompAnimated
                     pawnGraphicSet.nakedGraphic = result;
                 }
                 pawnGraphicSet.rottingGraphic = pawnGraphicSet.nakedGraphic.GetColoredVersion(ShaderDatabase.CutoutSkin,
-                    PawnGraphicSet.RottingColor, PawnGraphicSet.RottingColor);
+                    PawnGraphicSet.RottingColorDefault, PawnGraphicSet.RottingColorDefault);
                 if (pAnimatee.RaceProps.packAnimal)
                     pawnGraphicSet.packGraphic = GraphicDatabase.Get<Graphic_Multi>(
                         pawnGraphicSet.nakedGraphic.path + "Pack", ShaderDatabase.Cutout,

@@ -436,15 +436,15 @@ namespace JecsTools
                 if (hitThing is Pawn pawn)
                 {
                     PostImpactEffects(launcher as Pawn, pawn);
-                    MoteMaker.ThrowMicroSparks(destination, Map);
-                    MoteMaker.MakeStaticMote(destination, Map, ThingDefOf.Mote_ShotHit_Dirt, 1f);
+                    FleckMaker.ThrowMicroSparks(destination, Map);
+                    FleckMaker.Static(destination, Map, FleckDefOf.ShotHit_Dirt);
                 }
             }
             else
             {
                 SoundDefOf.BulletImpact_Ground.PlayOneShot(SoundInfo.InMap(new TargetInfo(Position, Map)));
-                MoteMaker.MakeStaticMote(ExactPosition, Map, ThingDefOf.Mote_ShotHit_Dirt, 1f);
-                MoteMaker.ThrowMicroSparks(ExactPosition, Map);
+                FleckMaker.Static(ExactPosition, Map, FleckDefOf.ShotHit_Dirt);
+                FleckMaker.ThrowMicroSparks(ExactPosition, Map);
             }
         }
 

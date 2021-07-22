@@ -74,13 +74,14 @@ namespace AbilityUser
         [Conditional("DEBUGLOG")]
         private static void DebugMessage(string s) => Log.Message(s);
 
-        public static bool TryStartCastOn_Prefix(Verb __instance, LocalTargetInfo castTarg, LocalTargetInfo destTarg, bool surpriseAttack, bool canHitNonTargetPawns, ref bool __result)
+        public static bool TryStartCastOn_Prefix(Verb __instance, LocalTargetInfo castTarg, LocalTargetInfo destTarg,
+            bool surpriseAttack, bool canHitNonTargetPawns, bool preventFriendlyFire, ref bool __result)
         {
             if (!(__instance is Verb_UseAbility vua))
                 return true;
             else
             {
-                var result = vua.PreCastShot(castTarg, destTarg, surpriseAttack, canHitNonTargetPawns);
+                var result = vua.PreCastShot(castTarg, destTarg, surpriseAttack, canHitNonTargetPawns, preventFriendlyFire);
                 __result = result;
                 return false;
             }
