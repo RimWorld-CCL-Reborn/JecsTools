@@ -1,7 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project Sdk="Microsoft.NET.Sdk">
-  <!-- See also ..\Directory.Build.props, which contains common contents between all the csproj files -->
-  <PropertyGroup>
-    <AssemblyName>CompVehicle</AssemblyName>
-  </PropertyGroup>
-</Project>
