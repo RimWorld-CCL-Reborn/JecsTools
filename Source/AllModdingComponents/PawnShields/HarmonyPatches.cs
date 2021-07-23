@@ -27,8 +27,7 @@ namespace PawnShields
             harmony.Patch(AccessTools.Method(typeof(PawnGenerator), "GenerateGearFor"),
                 postfix: new HarmonyMethod(type, nameof(Patch_PawnGenerator_GenerateGearFor)));
 
-            harmony.Patch(AccessTools.Method(typeof(PawnRenderer), nameof(PawnRenderer.RenderPawnAt),
-                    new[] { typeof(Vector3), typeof(RotDrawMode), typeof(bool), typeof(bool) }),
+            harmony.Patch(AccessTools.Method(typeof(PawnRenderer), nameof(PawnRenderer.RenderPawnAt)),
                 postfix: new HarmonyMethod(type, nameof(Patch_PawnRenderer_RenderPawnAt)));
 
             harmony.Patch(AccessTools.Method(typeof(Pawn), nameof(Pawn.DropAndForbidEverything)),

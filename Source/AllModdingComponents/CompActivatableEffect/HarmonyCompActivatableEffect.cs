@@ -23,7 +23,7 @@ namespace CompActivatableEffect
                 postfix: new HarmonyMethod(type, nameof(DrawEquipmentAimingPostFix)));
 
             harmony.Patch(AccessTools.Method(typeof(Verb), nameof(Verb.TryStartCastOn),
-                    new[] { typeof(LocalTargetInfo), typeof(LocalTargetInfo), typeof(bool), typeof(bool) }),
+                    new[] { typeof(LocalTargetInfo), typeof(LocalTargetInfo), typeof(bool), typeof(bool), typeof(bool) }),
                 prefix: new HarmonyMethod(type, nameof(TryStartCastOnPrefix)));
 
             harmony.Patch(AccessTools.PropertySetter(typeof(Pawn_DraftController), nameof(Pawn_DraftController.Drafted)),
