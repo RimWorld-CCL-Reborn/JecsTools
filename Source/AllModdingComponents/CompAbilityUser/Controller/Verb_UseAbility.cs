@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using HarmonyLib;
 using RimWorld;
 using Verse;
 using Verse.Sound;
@@ -111,32 +112,6 @@ namespace AbilityUser
             }
         }
 
-        private bool CausesTimeSlowdown(LocalTargetInfo castTarg)
-        {
-            if (!verbProps.CausesTimeSlowdown)
-            {
-                return false;
-            }
-            if (!castTarg.HasThing)
-            {
-                return false;
-            }
-            var thing = castTarg.Thing;
-            if (thing.def.category != ThingCategory.Pawn && (thing.def.building == null || !thing.def.building.IsTurret))
-            {
-                return false;
-            }
-            if (thing.Faction != Faction.OfPlayer || !caster.HostileTo(Faction.OfPlayer))
-            {
-                if (caster.Faction == Faction.OfPlayer && thing.HostileTo(Faction.OfPlayer))
-                {
-                    return !(thing is Pawn pawn && pawn.Downed);
-                }
-                return false;
-            }
-            return true;
-        }
-
         // Based off Verb.TryStartCastOn.
         public bool PreCastShotCheck(LocalTargetInfo castTarg, LocalTargetInfo destTarg, bool surpriseAttack = false,
             bool canHitNonTargetPawns = true, bool preventFriendlyFire = false)
@@ -154,7 +129,7 @@ namespace AbilityUser
             {
                 return false;
             }
-            if (CausesTimeSlowdown(castTarg))
+            if (causesTimeSlowdown(this, castTarg))
             {
                 Find.TickManager.slower.SignalForceNormalSpeed();
             }
@@ -186,6 +161,11 @@ namespace AbilityUser
             }
             return true;
         }
+
+        // Note: This is an open instance delegate where the first argument is the instance.
+        private static readonly Func<Verb, LocalTargetInfo, bool> causesTimeSlowdown =
+            (Func<Verb, LocalTargetInfo, bool>)AccessTools.Method(typeof(Verb), "CausesTimeSlowdown")
+            .CreateDelegate(typeof(Func<Verb, LocalTargetInfo, bool>));
 
         public bool PreCastShot(LocalTargetInfo castTarg, LocalTargetInfo destTarg, bool surpriseAttack = false,
             bool canHitNonTargetPawns = true, bool preventFriendlyFire = false)
