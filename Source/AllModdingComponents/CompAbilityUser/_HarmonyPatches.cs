@@ -30,20 +30,6 @@ namespace AbilityUser
             harmony.Patch(AccessTools.Method(typeof(ThingWithComps), nameof(ThingWithComps.InitializeComps)),
                 postfix: new HarmonyMethod(type, nameof(InitializeComps_PostFix)));
 
-            // when the Pawn_EquipmentTracker is notified of a new item, see if that has CompAbilityItem.
-            harmony.Patch(AccessTools.Method(typeof(Pawn_EquipmentTracker), nameof(Pawn_EquipmentTracker.Notify_EquipmentAdded)),
-                postfix: new HarmonyMethod(type, nameof(Notify_EquipmentAdded_PostFix)));
-            // when the Pawn_EquipmentTracker is notified of one less item, see if that has CompAbilityItem.
-            harmony.Patch(AccessTools.Method(typeof(Pawn_EquipmentTracker), nameof(Pawn_EquipmentTracker.Notify_EquipmentRemoved)),
-                postfix: new HarmonyMethod(type, nameof(Notify_EquipmentRemoved_PostFix)));
-
-            // when the Pawn_ApparelTracker is notified of a new item, see if that has CompAbilityItem.
-            harmony.Patch(AccessTools.Method(typeof(Pawn_ApparelTracker), nameof(Pawn_ApparelTracker.Notify_ApparelAdded)),
-                postfix: new HarmonyMethod(type, nameof(Notify_ApparelAdded_PostFix)));
-            // when the Pawn_ApparelTracker is notified of one less item, see if that has CompAbilityItem.
-            harmony.Patch(AccessTools.Method(typeof(Pawn_ApparelTracker), nameof(Pawn_ApparelTracker.Notify_ApparelRemoved)),
-                postfix: new HarmonyMethod(type, nameof(Notify_ApparelRemoved_PostFix)));
-
             harmony.Patch(AccessTools.Method(typeof(ShortHashGiver), "GiveShortHash"),
                 prefix: new HarmonyMethod(type, nameof(GiveShortHash_PrePatch)));
 
@@ -390,102 +376,6 @@ namespace AbilityUser
                 if (def is AbilityDef || typeof(AbilityDef).IsAssignableFrom(defType))
                     return false;
             return true;
-        }
-
-        public static void Notify_EquipmentAdded_PostFix(Pawn_EquipmentTracker __instance, ThingWithComps eq)
-        {
-            DebugMessage("Notify_EquipmentAdded_PostFix : " + eq);
-            var compAbilityUsers = __instance.pawn.GetCompAbilityUsers().ToArray();
-            if (compAbilityUsers.Length > 0)
-            {
-                foreach (var cai in eq.GetCompAbilityItems())
-                {
-                    DebugMessage("  Found CompAbilityItem, for CompAbilityUser of " + cai.Props.AbilityUserClass);
-                    foreach (var cau in compAbilityUsers)
-                    {
-                        DebugMessage("  Found CompAbilityUser, " + cau + " : " + cau.GetType() + ":" + cai.Props.AbilityUserClass);
-                        if (cau.GetType() == cai.Props.AbilityUserClass)
-                        {
-                            DebugMessage("  and they match types");
-                            cai.AbilityUserTarget = cau;
-                            foreach (var abdef in cai.Props.Abilities)
-                                cau.AddWeaponAbility(abdef);
-                        }
-                    }
-                }
-            }
-        }
-
-        public static void Notify_EquipmentRemoved_PostFix(Pawn_EquipmentTracker __instance, ThingWithComps eq)
-        {
-            DebugMessage("Notify_EquipmentRemoved_PostFix : " + eq);
-            var compAbilityUsers = __instance.pawn.GetCompAbilityUsers().ToArray();
-            if (compAbilityUsers.Length > 0)
-            {
-                foreach (var cai in eq.GetCompAbilityItems())
-                {
-                    DebugMessage("  Found CompAbilityItem, for CompAbilityUser of " + cai.Props.AbilityUserClass);
-                    foreach (var cau in compAbilityUsers)
-                    {
-                        DebugMessage("  Found CompAbilityUser, " + cau + " : " + cau.GetType() + ":" + cai.Props.AbilityUserClass);
-                        if (cau.GetType() == cai.Props.AbilityUserClass)
-                        {
-                            DebugMessage("  and they match types");
-                            foreach (var abdef in cai.Props.Abilities)
-                                cau.RemoveWeaponAbility(abdef);
-                        }
-                    }
-                }
-            }
-        }
-
-        // Compatibility note: as of 2020-10-20, a mod (A RimWorld of Magic) directly calls this method.
-        public static void Notify_ApparelAdded_PostFix(Pawn_ApparelTracker __instance, Apparel apparel)
-        {
-            DebugMessage("Notify_ApparelAdded_PostFix : " + apparel);
-            var compAbilityUsers = __instance.pawn.GetCompAbilityUsers().ToArray();
-            if (compAbilityUsers.Length > 0)
-            {
-                foreach (var cai in apparel.GetCompAbilityItems())
-                {
-                    DebugMessage("  Found CompAbilityItem, for CompAbilityUser of " + cai.Props.AbilityUserClass);
-                    foreach (var cau in compAbilityUsers)
-                    {
-                        DebugMessage("  Found CompAbilityUser, " + cau + " : " + cau.GetType() + ":" + cai.Props.AbilityUserClass);
-                        if (cau.GetType() == cai.Props.AbilityUserClass)
-                        {
-                            DebugMessage("  and they match types");
-                            cai.AbilityUserTarget = cau;
-                            foreach (var abdef in cai.Props.Abilities)
-                                cau.AddApparelAbility(abdef);
-                        }
-                    }
-                }
-            }
-        }
-
-        // Compatibility note: as of 2020-10-20, a mod (A RimWorld of Magic) directly calls this method.
-        public static void Notify_ApparelRemoved_PostFix(Pawn_ApparelTracker __instance, Apparel apparel)
-        {
-            DebugMessage("Notify_ApparelRemoved_PostFix : " + apparel);
-            var compAbilityUsers = __instance.pawn.GetCompAbilityUsers().ToArray();
-            if (compAbilityUsers.Length > 0)
-            {
-                foreach (var cai in apparel.GetCompAbilityItems())
-                {
-                    DebugMessage("  Found CompAbilityItem, for CompAbilityUser of " + cai.Props.AbilityUserClass);
-                    foreach (var cau in compAbilityUsers)
-                    {
-                        DebugMessage("  Found CompAbilityUser, " + cau + " : " + cau.GetType() + ":" + cai.Props.AbilityUserClass);
-                        if (cau.GetType() == cai.Props.AbilityUserClass)
-                        {
-                            DebugMessage("  and they match types");
-                            foreach (var abdef in cai.Props.Abilities)
-                                cau.RemoveApparelAbility(abdef);
-                        }
-                    }
-                }
-            }
         }
 
         // RimWorld.Targeter

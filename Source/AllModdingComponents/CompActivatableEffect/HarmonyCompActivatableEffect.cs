@@ -31,17 +31,6 @@ namespace CompActivatableEffect
 
             harmony.Patch(AccessTools.Method(typeof(Pawn), nameof(Pawn.ExitMap)),
                 prefix: new HarmonyMethod(type, nameof(ExitMap_PreFix)));
-
-            harmony.Patch(AccessTools.Method(typeof(Pawn_EquipmentTracker), nameof(Pawn_EquipmentTracker.Notify_EquipmentRemoved)),
-                postfix: new HarmonyMethod(type, nameof(Notify_EquipmentRemoved_PostFix)));
-        }
-
-        // Verse.Pawn_EquipmentTracker
-        public static void Notify_EquipmentRemoved_PostFix(ThingWithComps eq)
-        {
-            if (eq.GetCompActivatableEffect() is CompActivatableEffect compActivatableEffect &&
-                compActivatableEffect.CurrentState == CompActivatableEffect.State.Activated)
-                compActivatableEffect.TryDeactivate();
         }
 
         public static void ExitMap_PreFix(Pawn __instance)

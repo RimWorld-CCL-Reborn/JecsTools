@@ -223,6 +223,13 @@ namespace CompActivatableEffect
             }
         }
 
+        public override void Notify_Unequipped(Pawn pawn)
+        {
+            base.Notify_Unequipped(pawn);
+            if (CurrentState == State.Activated)
+                TryDeactivate();
+        }
+
         #region Graphics
 
         private Graphic graphicInt;

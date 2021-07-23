@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using RimWorld;
 using UnityEngine;
 using Verse;
 
@@ -52,6 +53,47 @@ namespace AbilityUser
                 Graphics.DrawMesh(MeshPool.plane10, matrix, Overlay.MatSingle, 0);
             }
         }
+
+        public override void Notify_Equipped(Pawn pawn)
+        {
+            base.Notify_Equipped(pawn);
+            var abilityUserClass = Props.AbilityUserClass;
+            var abilities = Props.Abilities;
+            //Log.Message("  Found CompAbilityItem, for CompAbilityUser of " + abilityUserClass);
+            foreach (var cau in pawn.GetCompAbilityUsers())
+            {
+                AddAbilityFunc addAbilityFunc = parent is Apparel ? cau.AddApparelAbility : cau.AddWeaponAbility;
+                //Log.Message("  Found CompAbilityUser, " + cau + " : " + cau.GetType() + ":" + abilityUserClass);
+                if (cau.GetType() == abilityUserClass)
+                {
+                    //Log.Message("  and they match types");
+                    AbilityUserTarget = cau;
+                    foreach (var abdef in abilities)
+                        addAbilityFunc(abdef);
+                }
+            }
+        }
+
+        private delegate void AddAbilityFunc(AbilityDef abilityDef, bool activenow = true, float savedTicks = -1);
+
+        public override void Notify_Unequipped(Pawn pawn)
+        {
+            base.Notify_Unequipped(pawn);
+            //Log.Message("  Found CompAbilityItem, for CompAbilityUser of " + Props.AbilityUserClass);
+            foreach (var cau in pawn.GetCompAbilityUsers())
+            {
+                RemoveAbilityFunc removeAbilityFunc = parent is Apparel ? cau.RemoveApparelAbility : cau.RemoveWeaponAbility;
+                //Log.Message("  Found CompAbilityUser, " + cau + " : " + cau.GetType() + ":" + Props.AbilityUserClass);
+                if (cau.GetType() == Props.AbilityUserClass)
+                {
+                    //Log.Message("  and they match types");
+                    foreach (var abdef in Props.Abilities)
+                        removeAbilityFunc(abdef);
+                }
+            }
+        }
+
+        private delegate void RemoveAbilityFunc(AbilityDef abilityDef);
 
         public override string GetDescriptionPart()
         {
