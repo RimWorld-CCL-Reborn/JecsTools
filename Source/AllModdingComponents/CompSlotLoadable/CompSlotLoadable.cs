@@ -227,6 +227,18 @@ namespace CompSlotLoadable
             }
         }
 
+        public override IEnumerable<Gizmo> CompGetGizmosExtra()
+        {
+            if (!GizmosOnEquip)
+            {
+                foreach (var current in base.CompGetGizmosExtra())
+                    yield return current;
+
+                foreach (var current in EquippedGizmos())
+                    yield return current;
+            }
+        }
+
         public virtual string SlotDesc(SlotLoadable slot)
         {
             var s = new StringBuilder();

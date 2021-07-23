@@ -16,7 +16,7 @@ namespace CompActivatableEffect
             var harmony = new Harmony("jecstools.jecrell.comps.activator");
             var type = typeof(HarmonyCompActivatableEffect);
 
-            harmony.Patch(AccessTools.Method(typeof(Pawn), nameof(Pawn.GetGizmos)),
+            harmony.Patch(AccessTools.Method(typeof(Pawn_EquipmentTracker), nameof(Pawn_EquipmentTracker.GetGizmos)),
                 postfix: new HarmonyMethod(type, nameof(GetGizmosPostfix)));
 
             harmony.Patch(AccessTools.Method(typeof(PawnRenderer), nameof(PawnRenderer.DrawEquipmentAiming)),
@@ -147,10 +147,10 @@ namespace CompActivatableEffect
             Graphics.DrawMesh(flip ? MeshPool.plane10Flip : MeshPool.plane10, matrix, matSingle, 0);
         }
 
-        public static void GetGizmosPostfix(Pawn __instance, ref IEnumerable<Gizmo> __result)
+        public static void GetGizmosPostfix(Pawn_EquipmentTracker __instance, ref IEnumerable<Gizmo> __result)
         {
-            if (__instance.equipment?.Primary?.GetCompActivatableEffect() is CompActivatableEffect compActivatableEffect)
-                if (__instance.Faction == Faction.OfPlayer)
+            if (__instance.Primary?.GetCompActivatableEffect() is CompActivatableEffect compActivatableEffect)
+                if (__instance.pawn.Faction == Faction.OfPlayer)
                 {
                     if (compActivatableEffect.GizmosOnEquip)
                         __result = __result.Concat(compActivatableEffect.EquippedGizmos());
