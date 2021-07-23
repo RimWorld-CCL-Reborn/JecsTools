@@ -80,7 +80,7 @@ namespace JecsTools
 
         public bool HandlingFacing => CurToil != null && CurToil.handlingFacing;
 
-        public CaravanJob CurJob => Find.World.GetComponent<CaravanJobGiver>().CurJob(caravan);
+        public CaravanJob CurJob => CaravanJobsUtility.GetCaravanJobGiver().CurJob(caravan);
 
         public GlobalTargetInfo TargetA => CurJob.targetA;
 
@@ -188,7 +188,7 @@ namespace JecsTools
             }
             catch (Exception ex)
             {
-                Find.World.GetComponent<CaravanJobGiver>().Tracker(caravan).StartErrorRecoverJob(
+                CaravanJobsUtility.GetCaravanJobGiver().Tracker(caravan).StartErrorRecoverJob(
                     $"Exception in SetupToils (pawn={caravan}, job={CurJob}): {ex}");
             }
         }
@@ -251,7 +251,7 @@ namespace JecsTools
             }
             catch (Exception ex)
             {
-                Find.World.GetComponent<CaravanJobGiver>().Tracker(caravan).StartErrorRecoverJob(
+                CaravanJobsUtility.GetCaravanJobGiver().Tracker(caravan).StartErrorRecoverJob(
                     $"Exception in Tick (pawn={caravan}, job={CurJob}, CurToil={curToilIndex}): {ex}");
             }
         }
@@ -297,7 +297,7 @@ namespace JecsTools
                         }
                         catch (Exception ex)
                         {
-                            Find.World.GetComponent<CaravanJobGiver>().Tracker(caravan)
+                            CaravanJobsUtility.GetCaravanJobGiver().Tracker(caravan)
                                 .StartErrorRecoverJob($"JobDriver threw exception in initAction. Pawn={caravan}, Job={CurJob}, Exception: {ex}");
                             return;
                         }
@@ -312,7 +312,7 @@ namespace JecsTools
             if (condition == JobCondition.Ongoing)
                 Log.Warning("Ending a job with Ongoing as the condition. This makes no sense.");
             if (caravan.Spawned)
-                Find.World.GetComponent<CaravanJobGiver>().Tracker(caravan).EndCurrentJob(condition, true);
+                CaravanJobsUtility.GetCaravanJobGiver().Tracker(caravan).EndCurrentJob(condition, true);
         }
 
         private bool CheckCurrentToilEndOrFail()

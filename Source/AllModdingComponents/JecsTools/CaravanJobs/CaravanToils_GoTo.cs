@@ -1,5 +1,4 @@
 ﻿using RimWorld.Planet;
-using Verse;
 using Verse.AI;
 
 namespace JecsTools
@@ -8,12 +7,12 @@ namespace JecsTools
     {
         private static Caravan_JobTracker CurTracker(Caravan c)
         {
-            return Find.World.GetComponent<CaravanJobGiver>().Tracker(c);
+            return CaravanJobsUtility.GetCaravanJobGiver().Tracker(c);
         }
 
         private static CaravanJob CurJob(Caravan c)
         {
-            return Find.World.GetComponent<CaravanJobGiver>().CurJob(c);
+            return CaravanJobsUtility.GetCaravanJobGiver().CurJob(c);
         }
 
         public static CaravanToil Goto(TargetIndex ind, CaravanArrivalAction arrivalAction = null)
@@ -51,7 +50,7 @@ namespace JecsTools
             toil.initAction = () =>
             {
                 var actor = toil.actor;
-                actor.pather.StartPath(Find.World.GetComponent<CaravanJobGiver>().CurJob(actor).GetTarget(ind).Tile,
+                actor.pather.StartPath(CaravanJobsUtility.GetCaravanJobGiver().CurJob(actor).GetTarget(ind).Tile,
                     arrivalAction);
             };
             toil.defaultCompleteMode = ToilCompleteMode.PatherArrival;

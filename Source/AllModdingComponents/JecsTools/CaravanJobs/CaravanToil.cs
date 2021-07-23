@@ -61,7 +61,7 @@ namespace JecsTools
                     }
                     catch (Exception ex)
                     {
-                        var curJob = Find.World.GetComponent<CaravanJobGiver>().CurJob(actor);
+                        var curJob = CaravanJobsUtility.GetCaravanJobGiver().CurJob(actor);
                         Log.Error($"Pawn {actor} threw exception while executing toil's finish action ({i}), curJob={curJob}: {ex}");
                     }
         }

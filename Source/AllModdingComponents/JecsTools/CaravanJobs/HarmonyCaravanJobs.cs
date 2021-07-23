@@ -15,13 +15,13 @@ namespace JecsTools
             var harmony = new Harmony("jecstools.jecrell.caravanjobs");
             var type = typeof(HarmonyCaravanPatches);
 
-            harmony.Patch(AccessTools.Method(typeof(Caravan), "GetInspectString"),
+            harmony.Patch(AccessTools.Method(typeof(Caravan), nameof(Caravan.GetInspectString)),
                 postfix: new HarmonyMethod(type, nameof(GetInspectString_Jobs)));
             harmony.Patch(AccessTools.Method(typeof(WorldSelector), "AutoOrderToTileNow"),
                 postfix: new HarmonyMethod(type, nameof(AutoOrderToTileNow_Jobs)));
-            harmony.Patch(AccessTools.Method(typeof(Caravan), "GetGizmos"),
+            harmony.Patch(AccessTools.Method(typeof(Caravan), nameof(Caravan.GetGizmos)),
                 postfix: new HarmonyMethod(type, nameof(GetGizmos_Jobs)));
-            harmony.Patch(AccessTools.Method(typeof(WorldSelector), "SelectableObjectsUnderMouse",
+            harmony.Patch(AccessTools.Method(typeof(WorldSelector), nameof(WorldSelector.SelectableObjectsUnderMouse),
                     new[] { typeof(bool).MakeByRefType(), typeof(bool).MakeByRefType() }),
                 postfix: new HarmonyMethod(type, nameof(SelectableObjectsUnderMouse_InvisHandler)));
         }
@@ -42,28 +42,29 @@ namespace JecsTools
             if (__instance.IsPlayerControlled)
             {
                 var curTile = Find.WorldGrid[__instance.Tile];
-                if (Find.World.GetComponent<CaravanJobGiver>().CurJob(__instance) != null)
+                var caravanJobGiver = CaravanJobsUtility.GetCaravanJobGiver();
+                if (caravanJobGiver.CurJob(__instance) != null)
                     __result = __result.Append(new Command_Action
                     {
                         defaultLabel = "CommandCancelConstructionLabel".Translate(),
                         defaultDesc = "CommandClearPrioritizedWorkDesc".Translate(),
                         icon = TexCommand.ClearPrioritizedWork,
-                        action = () => Find.World.GetComponent<CaravanJobGiver>().Tracker(__instance).StopAll(),
+                        action = () => caravanJobGiver.Tracker(__instance).StopAll(),
                     });
             }
         }
 
         // RimWorld.Planet.WorldSelector
-        public static void AutoOrderToTileNow_Jobs(Caravan c, int tile)
+        public static void AutoOrderToTileNow_Jobs(Caravan c)
         {
-            Find.World.GetComponent<CaravanJobGiver>().Tracker(c).StopAll();
+            CaravanJobsUtility.GetCaravanJobGiver().Tracker(c).StopAll();
         }
 
         // RimWorld.Planet.Caravan
 
         public static void GetInspectString_Jobs(Caravan __instance, ref string __result)
         {
-            if (Find.World.GetComponent<CaravanJobGiver>()?.Tracker(__instance)?.curDriver?.GetReport() is string s &&
+            if (CaravanJobsUtility.GetCaravanJobGiver().Tracker(__instance)?.curDriver?.GetReport() is string s &&
                 __result.Contains("CaravanWaiting".Translate()))
                 __result = __result.Replace("CaravanWaiting".Translate(), s.CapitalizeFirst());
         }

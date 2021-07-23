@@ -25,7 +25,7 @@ namespace JecsTools
                 {
                     progressBar =
                         (WorldObject_ProgressBar)WorldObjectMaker.MakeWorldObject(MiscDefOf.WorldObject_ProgressBar);
-                    progressBar.Tile = Find.World.GetComponent<CaravanJobGiver>().CurJob(CaravanToil.actor)
+                    progressBar.Tile = CaravanJobsUtility.GetCaravanJobGiver().CurJob(CaravanToil.actor)
                         .GetTarget(ind).Tile;
                     progressBar.offset = offsetZ;
                     Find.WorldObjects.Add(progressBar);
@@ -34,7 +34,7 @@ namespace JecsTools
                 {
                     progressBar.curProgress = Mathf.Clamp01(progressGetter());
                     if (CaravanToil.actor == null || !CaravanToil.actor.Spawned ||
-                        CaravanToil.actor.Tile != Find.World.GetComponent<CaravanJobGiver>().CurJob(CaravanToil.actor)
+                        CaravanToil.actor.Tile != CaravanJobsUtility.GetCaravanJobGiver().CurJob(CaravanToil.actor)
                             .GetTarget(ind).Tile)
                         if (progressBar.Spawned)
                             Find.WorldObjects.Remove(progressBar);

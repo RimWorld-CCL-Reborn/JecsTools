@@ -111,7 +111,7 @@ namespace JecsTools
                     yield return new FloatMenuOption(
                         "CreateNewZone".Translate(Recipe.FinishedThing.label), () =>
                         {
-                            var t = Find.World.GetComponent<CaravanJobGiver>().Tracker(caravan);
+                            var t = CaravanJobsUtility.GetCaravanJobGiver().Tracker(caravan);
                             var curBlueprint = this;
                             while (curBlueprint != null)
                             {
