@@ -166,18 +166,19 @@ namespace AbilityUser
             currentDestination = destTarg;
             if (CasterIsPawn && verbProps.warmupTime > 0f)
             {
+                var casterPawn = CasterPawn;
                 if (verbProps.requireLineOfSight)
                 {
-                    if (!TryFindShootLineFromTo(caster.Position, castTarg, out var resultingLine))
+                    if (!TryFindShootLineFromTo(casterPawn.Position, castTarg, out var resultingLine))
                     {
                         Messages.Message("AU_NoLineOfSight".Translate(), MessageTypeDefOf.RejectInput);
                         return false;
                     }
-                    CasterPawn.Drawer.Notify_WarmingCastAlongLine(resultingLine, caster.Position);
+                    casterPawn.Drawer.Notify_WarmingCastAlongLine(resultingLine, casterPawn.Position);
                 }
-                var statValue = CasterPawn.GetStatValue(StatDefOf.AimingDelayFactor);
+                var statValue = casterPawn.GetStatValue(StatDefOf.AimingDelayFactor);
                 var ticks = (verbProps.warmupTime * statValue).SecondsToTicks();
-                CasterPawn.stances.SetStance(new Stance_Warmup(ticks, castTarg, this));
+                casterPawn.stances.SetStance(new Stance_Warmup(ticks, castTarg, this));
             }
             else
             {
@@ -241,14 +242,16 @@ namespace AbilityUser
                     {
                         if (victim is Pawn pawnVictim)
                         {
-                            AbilityEffectUtility.ApplyMentalStates(pawnVictim, CasterPawn, props.mentalStatesToApply, props.abilityDef, null);
-                            AbilityEffectUtility.ApplyHediffs(pawnVictim, CasterPawn, props.hediffsToApply, null);
+                            var casterPawn = CasterPawn;
+                            AbilityEffectUtility.ApplyMentalStates(pawnVictim, casterPawn, props.mentalStatesToApply, props.abilityDef, null);
+                            AbilityEffectUtility.ApplyHediffs(pawnVictim, casterPawn, props.hediffsToApply, null);
                             AbilityEffectUtility.SpawnSpawnables(props.thingsToSpawn, pawnVictim, victim.MapHeld, victim.PositionHeld);
                         }
                     }
                     else
                     {
-                        AbilityEffectUtility.SpawnSpawnables(props.thingsToSpawn, CasterPawn, CasterPawn.MapHeld, CasterPawn.PositionHeld);
+                        var casterPawn = CasterPawn;
+                        AbilityEffectUtility.SpawnSpawnables(props.thingsToSpawn, casterPawn, casterPawn.MapHeld, casterPawn.PositionHeld);
                     }
                 }
                 //}

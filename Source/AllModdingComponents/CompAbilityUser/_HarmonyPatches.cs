@@ -77,14 +77,12 @@ namespace AbilityUser
         public static bool TryStartCastOn_Prefix(Verb __instance, LocalTargetInfo castTarg, LocalTargetInfo destTarg,
             bool surpriseAttack, bool canHitNonTargetPawns, bool preventFriendlyFire, ref bool __result)
         {
-            if (!(__instance is Verb_UseAbility vua))
-                return true;
-            else
+            if (__instance is Verb_UseAbility vua)
             {
-                var result = vua.PreCastShot(castTarg, destTarg, surpriseAttack, canHitNonTargetPawns, preventFriendlyFire);
-                __result = result;
+                __result = vua.PreCastShot(castTarg, destTarg, surpriseAttack, canHitNonTargetPawns, preventFriendlyFire);
                 return false;
             }
+            return true;
         }
 
         public static bool get_DirectOwner_Prefix(Verb __instance, ref IVerbOwner __result)
@@ -493,18 +491,19 @@ namespace AbilityUser
         // RimWorld.Targeter
         public static bool ConfirmStillValid(Targeter __instance, Pawn ___caster)
         {
-            if (__instance.targetingSource is Verb_UseAbility)
+            if (__instance.targetingSource is Verb_UseAbility v)
             {
                 if (___caster != null && (___caster.Map != Find.CurrentMap || ___caster.Destroyed ||
                                        !Find.Selector.IsSelected(___caster) ||
-                                       ___caster.Faction != Faction.OfPlayerSilentFail))
+                                       ___caster.Faction != Faction.OfPlayerSilentFail)) // TODO: is this last condition still needed?
                     __instance.StopTargeting();
-                if (__instance.targetingSource != null)
+                if (v != null)
                 {
                     var selector = Find.Selector;
-                    if (__instance.targetingSource.CasterPawn.Map != Find.CurrentMap ||
-                        __instance.targetingSource.CasterPawn.Destroyed ||
-                        !selector.IsSelected(__instance.targetingSource.CasterPawn))
+                    if (v.Caster.Map != Find.CurrentMap ||
+                        v.Caster.Destroyed ||
+                        !selector.IsSelected(v.Caster) ||
+                        (!v.GetVerb?.Available() ?? false))
                     {
                         __instance.StopTargeting();
                     }
@@ -525,31 +524,55 @@ namespace AbilityUser
         }
 
         // RimWorld.Targeter
-        public static bool ProcessInputEvents_PreFix(Targeter __instance)
+        public static bool ProcessInputEvents_PreFix(Targeter __instance, Func<LocalTargetInfo, bool> ___targetValidator,
+            bool ___playSoundOnAction, ref bool ___needsStopTargetingCall)
         {
             if (__instance.targetingSource is Verb_UseAbility v)
             {
                 if (v.UseAbilityProps.AbilityTargetCategory == AbilityTargetCategory.TargetSelf)
                 {
-                    var caster = __instance.targetingSource.CasterPawn;
+                    var caster = v.Caster;
                     v.Ability.TryCastAbility(AbilityContext.Player, caster);
-                    SoundDefOf.Tick_High.PlayOneShotOnCamera();
+                    if (___playSoundOnAction)
+                        SoundDefOf.Tick_High.PlayOneShotOnCamera();
                     __instance.StopTargeting();
                     Event.current.Use();
                     return false;
                 }
                 targeterConfirmStillValidMethod(__instance);
-                if (Event.current.type == EventType.MouseDown)
-                    if (Event.current.button == 0 && __instance.IsTargeting)
+                if (!__instance.IsTargeting)
+                    return false;
+                if (Event.current.type == EventType.MouseDown && Event.current.button == 0)
+                {
+                    var target = targeterCurrentTargetUnderMouseMethod(__instance, false);
+                    ___needsStopTargetingCall = true;
+                    if (!v.ValidateTarget(target))
                     {
-                        var obj = targeterCurrentTargetUnderMouseMethod(__instance, false);
-                        if (obj.IsValid)
-                            v.Ability.TryCastAbility(AbilityContext.Player, obj);
-                        SoundDefOf.Tick_High.PlayOneShotOnCamera(null);
-                        __instance.StopTargeting();
                         Event.current.Use();
                         return false;
                     }
+                    if (___targetValidator != null)
+                    {
+                        if (___targetValidator(target))
+                            v.Ability.TryCastAbility(AbilityContext.Player, target);
+                        else
+                            ___needsStopTargetingCall = false;
+                    }
+                    else if (target.IsValid)
+                        v.Ability.TryCastAbility(AbilityContext.Player, target);
+                    if (___playSoundOnAction)
+                        SoundDefOf.Tick_High.PlayOneShotOnCamera(null);
+                    if (v.DestinationSelector != null)
+                        __instance.BeginTargeting(v.DestinationSelector, v);
+                    else if (v.MultiSelect && Event.current.shift)
+                        __instance.BeginTargeting(v);
+                    else if (__instance.targetingSourceParent != null && __instance.targetingSourceParent.MultiSelect && Event.current.shift)
+                        __instance.BeginTargeting(__instance.targetingSourceParent);
+                    if (___needsStopTargetingCall)
+                        __instance.StopTargeting();
+                    Event.current.Use();
+                    return false;
+                }
             }
             return true;
         }
@@ -567,7 +590,7 @@ namespace AbilityUser
                 tVerb.verbProps is VerbProperties_Ability tVerbProps)
             {
                 if (tVerbProps.range > 0)
-                    GenDraw.DrawRadiusRing(tVerb.CasterPawn.PositionHeld, tVerbProps.range);
+                    GenDraw.DrawRadiusRing(tVerb.Caster.PositionHeld, tVerbProps.range);
                 if (tVerbProps.TargetAoEProperties?.range > 0 && Find.CurrentMap is Map map &&
                     UI.MouseCell().InBounds(map))
                     GenDraw.DrawRadiusRing(UI.MouseCell(), tVerbProps.TargetAoEProperties.range);
