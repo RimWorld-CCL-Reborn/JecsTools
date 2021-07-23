@@ -22,7 +22,7 @@ namespace CompDeflector
         public static void DrawEquipmentAimingPostFix(Pawn ___pawn, Thing eq, Vector3 drawLoc,
             float aimAngle)
         {
-            var pawn_EquipmentTracker = ___pawn?.equipment;
+            var pawn_EquipmentTracker = ___pawn.equipment;
             if (pawn_EquipmentTracker != null)
             {
                 foreach (var thingWithComps in pawn_EquipmentTracker.AllEquipmentListForReading)
@@ -32,32 +32,42 @@ namespace CompDeflector
                     {
                         if (compDeflector.IsAnimatingNow)
                         {
-                            var flip = false;
                             if (!Find.TickManager.Paused && compDeflector.IsAnimatingNow)
                                 compDeflector.AnimationDeflectionTicks -= 20;
-                            var offset = eq.def.equippedAngleOffset;
+
+                            // start copied vanilla code (with mesh = flip ? MeshPool.plane10Flip : MeshPool.plane10)
+                            var flip = false;
                             var num = aimAngle - 90f;
                             if (aimAngle > 20f && aimAngle < 160f)
                             {
-                                num += offset;
-                                if (compDeflector.IsAnimatingNow)
-                                    num += (compDeflector.AnimationDeflectionTicks + 1) / 2;
+                                num += eq.def.equippedAngleOffset;
                             }
                             else if (aimAngle > 200f && aimAngle < 340f)
                             {
                                 flip = true;
                                 num -= 180f;
-                                num -= offset;
-                                if (compDeflector.IsAnimatingNow)
-                                    num -= (compDeflector.AnimationDeflectionTicks + 1) / 2;
+                                num -= eq.def.equippedAngleOffset;
                             }
                             else
                             {
-                                num += offset;
-                                if (compDeflector.IsAnimatingNow)
-                                    num += (compDeflector.AnimationDeflectionTicks + 1) / 2;
+                                num += eq.def.equippedAngleOffset;
                             }
-                            num %= 360f;
+                            // end copied vanilla code
+
+                            if (compDeflector.IsAnimatingNow)
+                            {
+                                float animationTicks = compDeflector.AnimationDeflectionTicks;
+                                if (animationTicks > 0)
+                                {
+                                    if (flip)
+                                        num -= (animationTicks + 1) / 2;
+                                    else
+                                        num += (animationTicks + 1) / 2;
+                                }
+                            }
+
+                            num %= 360f; // copied vanilla code
+
                             var matSingle = eq.Graphic is Graphic_StackCount graphic_StackCount
                                 ? graphic_StackCount.SubGraphicForStackCount(1, eq.def).MatSingle
                                 : eq.Graphic.MatSingle;

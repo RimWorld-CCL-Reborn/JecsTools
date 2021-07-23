@@ -27,6 +27,7 @@ namespace CompInstalledPart
         {
             if (___pawn != null && eq.TryGetCompInstalledPart() is CompInstalledPart installedComp)
             {
+                // start copied vanilla code (with mesh = flip ? MeshPool.plane10Flip : MeshPool.plane10)
                 var flip = false;
                 var num = aimAngle - 90f;
                 if (aimAngle > 20f && aimAngle < 160f)
@@ -44,6 +45,8 @@ namespace CompInstalledPart
                     num += eq.def.equippedAngleOffset;
                 }
                 num %= 360f;
+                // end copied vanilla code
+
                 var installedWeaponGraphic = installedComp.Props?.installedWeaponGraphic;
                 var graphic_StackCount = installedWeaponGraphic?.Graphic as Graphic_StackCount ??
                                          eq.Graphic as Graphic_StackCount;

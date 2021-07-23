@@ -43,7 +43,7 @@ namespace PawnShields
         /// </summary>
         /// <param name="rot">Rotation to give for.</param>
         /// <returns>Appropiate offset.</returns>
-        public Vector3 Rot4ToVector3(Rot4 rot)
+        public Vector3 OffsetFromRotation(Rot4 rot)
         {
             if (rot == Rot4.North)
                 return northOffset;

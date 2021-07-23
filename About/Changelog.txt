@@ -44,6 +44,7 @@ Deprecated:
 Deleted:
 - JecsTools' CompConsole and related Faction stuff (broken since RW B19)
 - CompVehicles (broken and commented out since RW 1.1)
+- CompProperties_OversizedWeapon.offset (mostly broken since version 1.0.9.3)
 - Some public classes and methods have been moved or deleted (including ModCompatibilityUtility, HarmonyCompActivatableEffect/HarmonyCompSlotLoadable.GizmoGetter)
 
 1.1.2.3 (05-09-2021)

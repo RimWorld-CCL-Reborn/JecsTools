@@ -33,12 +33,13 @@ namespace CompOversizedWeapon
                 return false;
 
             var props = compOversizedWeapon.Props;
-            var isFighting = ___pawn.IsFighting();
+            var atPeace = !___pawn.IsFighting() && props != null;
+            var aimingSouth = false;
             var rotation = ___pawn.Rotation;
 
+            // start copied vanilla code (with mesh = flip ? MeshPool.plane10Flip : MeshPool.plane10)
             var flip = false;
             var num = aimAngle - 90f;
-
             if (aimAngle > 20f && aimAngle < 160f)
             {
                 num += eq.def.equippedAngleOffset;
@@ -51,80 +52,47 @@ namespace CompOversizedWeapon
             }
             else
             {
-                num += AngleOffsetAtPeace(eq, isFighting, props);
+                num += eq.def.equippedAngleOffset;
+                aimingSouth = true; // custom
+            }
+            // end copied vanilla code
+
+            if (atPeace)
+            {
+                if (aimingSouth && props.verticalFlipOutsideCombat)
+                    num += 180f;
+                if (props.verticalFlipNorth && rotation == Rot4.North)
+                    num += 180f;
+                num += props.NonCombatAngleAdjustment(rotation);
             }
 
-            if (!isFighting && props != null)
-            {
-                if (props.verticalFlipNorth && rotation == Rot4.North)
-                {
-                    num += 180f;
-                }
-                num += NonCombatAngleAdjustment(rotation, props);
-            }
-            num %= 360f;
+            num %= 360f; // copied vanilla code
 
             var matSingle = eq.Graphic is Graphic_StackCount graphic_StackCount
                 ? graphic_StackCount.SubGraphicForStackCount(1, eq.def).MatSingle
                 : eq.Graphic.MatSingle;
             var s = new Vector3(eq.def.graphicData.drawSize.x, 1f, eq.def.graphicData.drawSize.y);
-            var curOffset = props != null ? OffsetFromRotation(rotation, props) : Vector3.zero;
+            var curOffset = props != null ? props.OffsetFromRotation(rotation) : Vector3.zero;
             var matrix = Matrix4x4.TRS(drawLoc + curOffset, Quaternion.AngleAxis(num, Vector3.up), s);
-
             Graphics.DrawMesh(flip ? MeshPool.plane10Flip : MeshPool.plane10, matrix, matSingle, 0);
+
             if (props != null && props.isDualWeapon)
             {
                 curOffset = new Vector3(-1f * curOffset.x, curOffset.y, curOffset.z);
-                Mesh curPool;
                 if (rotation == Rot4.North || rotation == Rot4.South)
                 {
                     num += 135f;
                     num %= 360f;
-                    curPool = flip ? MeshPool.plane10 : MeshPool.plane10Flip;
                 }
                 else
                 {
                     curOffset = new Vector3(curOffset.x, curOffset.y - 0.1f, curOffset.z + 0.15f);
-                    curPool = flip ? MeshPool.plane10Flip : MeshPool.plane10;
+                    flip = !flip;
                 }
                 matrix.SetTRS(drawLoc + curOffset, Quaternion.AngleAxis(num, Vector3.up), s);
-                Graphics.DrawMesh(curPool, matrix, matSingle, 0);
+                Graphics.DrawMesh(flip ? MeshPool.plane10 : MeshPool.plane10Flip, matrix, matSingle, 0);
             }
             return false;
-        }
-
-        private static float AngleOffsetAtPeace(Thing eq, bool isFighting, CompProperties_OversizedWeapon props)
-        {
-            var offsetAtPeace = eq.def.equippedAngleOffset;
-            if (!isFighting && props != null && props.verticalFlipOutsideCombat)
-            {
-                offsetAtPeace += 180f;
-            }
-            return offsetAtPeace;
-        }
-
-        private static float NonCombatAngleAdjustment(Rot4 rotation, CompProperties_OversizedWeapon props)
-        {
-            if (rotation == Rot4.North)
-                return props.angleAdjustmentNorth;
-            else if (rotation == Rot4.East)
-                return props.angleAdjustmentEast;
-            else if (rotation == Rot4.West)
-                return props.angleAdjustmentWest;
-            else
-                return props.angleAdjustmentSouth;
-        }
-
-        private static Vector3 OffsetFromRotation(Rot4 rotation, CompProperties_OversizedWeapon props)
-        {
-            if (rotation == Rot4.North)
-                return props.northOffset;
-            else if (rotation == Rot4.East)
-                return props.eastOffset;
-            else if (rotation == Rot4.West)
-                return props.westOffset;
-            else
-                return props.southOffset;
         }
 
         public static void get_DefaultGraphic_PostFix(Thing __instance, Graphic ___graphicInt, ref Graphic __result)

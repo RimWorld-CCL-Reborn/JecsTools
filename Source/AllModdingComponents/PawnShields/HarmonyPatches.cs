@@ -176,12 +176,12 @@ namespace PawnShields
         public static void Patch_PawnRenderer_RenderPawnAt(Pawn ___pawn, ref Vector3 drawLoc)
         {
             //Render shield.
-            if (___pawn?.GetShield() is ThingWithComps shield)
+            if (___pawn.GetShield() is ThingWithComps shield)
             {
                 var bodyVector = drawLoc;
 
                 var shieldComp = shield.GetCompShield();
-                bodyVector += shieldComp.ShieldProps.renderProperties.Rot4ToVector3(___pawn.Rotation);
+                bodyVector += shieldComp.ShieldProps.renderProperties.OffsetFromRotation(___pawn.Rotation);
 
                 shieldComp.RenderShield(bodyVector, ___pawn.Rotation, ___pawn, shield);
             }

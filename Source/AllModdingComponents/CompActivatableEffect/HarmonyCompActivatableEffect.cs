@@ -57,7 +57,7 @@ namespace CompActivatableEffect
 
         public static bool TryStartCastOnPrefix(ref bool __result, Verb __instance)
         {
-            if (__instance.caster is Pawn pawn && pawn.equipment?.Primary is ThingWithComps thingWithComps &&
+            if (__instance.caster is Pawn pawn && pawn.Spawned && pawn.equipment?.Primary is ThingWithComps thingWithComps &&
                 thingWithComps.GetCompActivatableEffect() is CompActivatableEffect compActivatableEffect)
             {
                 // EquipmentSource throws errors when checked while casting abilities with a weapon equipped.
@@ -99,9 +99,9 @@ namespace CompActivatableEffect
                 compActivatableEffect.CurrentState != CompActivatableEffect.State.Activated)
                 return;
 
-            var num = aimAngle - 90f;
+            // start copied vanilla code (with mesh = flip ? MeshPool.plane10Flip : MeshPool.plane10)
             var flip = false;
-
+            var num = aimAngle - 90f;
             if (aimAngle > 20f && aimAngle < 160f)
             {
                 num += eq.def.equippedAngleOffset;
@@ -116,36 +116,29 @@ namespace CompActivatableEffect
             {
                 num += eq.def.equippedAngleOffset;
             }
+            // end copied vanilla code
 
             var offset = Vector3.zero;
 
             var weaponComp = compActivatableEffect.GetOversizedWeapon;
             if (weaponComp != null)
             {
-                if (___pawn.Rotation == Rot4.East)
-                    offset = weaponComp.Props.eastOffset;
-                else if (___pawn.Rotation == Rot4.West)
-                    offset = weaponComp.Props.westOffset;
-                else if (___pawn.Rotation == Rot4.North)
-                    offset = weaponComp.Props.northOffset;
-                else if (___pawn.Rotation == Rot4.South)
-                    offset = weaponComp.Props.southOffset;
-                offset += weaponComp.Props.offset;
+                offset = weaponComp.Props.OffsetFromRotation(___pawn.Rotation);
             }
 
             if (compActivatableEffect.CompDeflectorIsAnimatingNow)
             {
-                float numMod = compActivatableEffect.CompDeflectorAnimationDeflectionTicks;
-                if (numMod > 0)
+                float animationTicks = compActivatableEffect.CompDeflectorAnimationDeflectionTicks;
+                if (animationTicks > 0)
                 {
                     if (flip)
-                        num -= (numMod + 1) / 2;
+                        num -= (animationTicks + 1) / 2;
                     else
-                        num += (numMod + 1) / 2;
+                        num += (animationTicks + 1) / 2;
                 }
             }
 
-            num %= 360f;
+            num %= 360f; // copied vanilla code
 
             var matSingle = compActivatableEffect.Graphic.MatSingle;
 
