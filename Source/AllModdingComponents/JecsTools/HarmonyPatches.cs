@@ -690,7 +690,7 @@ namespace JecsTools
                 knockDistanceMassCurve = HediffComp_Knockback.AlwaysOneCurve,
                 knockImpactDamage = damageOnCollision ? new FloatRange(8f, 10f) : default,
                 knockImpactDamageDistancePercentCurve = HediffComp_Knockback.AlwaysOneCurve,
-                KnockImpactDamageType = DamageDefOf.Blunt,
+                knockImpactDamageType = DamageDefOf.Blunt,
             });
         }
 

@@ -22,7 +22,7 @@ namespace JecsTools
             {
                 var s = new StringBuilder();
                 s.Append("JT_HI_Knockback".Translate(Props.knockbackChance.ToStringPercent()));
-                var explosiveProps = Props.ExplosiveProps;
+                var explosiveProps = Props.explosiveProps;
                 if (explosiveProps != null)
                 {
                     s.AppendLine().Append("JT_HI_KnockbackExplosive".Translate());
@@ -40,7 +40,7 @@ namespace JecsTools
             var props = Props;
             if (props != null && Rand.Chance(props.knockbackChance))
             {
-                var explosiveProps = props.ExplosiveProps;
+                var explosiveProps = props.explosiveProps;
                 if (explosiveProps != null)
                 {
                     var map = target.Map;
@@ -214,7 +214,7 @@ namespace JecsTools
                         $"impactDamageFactor = distanceCurve({actualDistance}/{distance}={distancePercent}) = {impactDamageFactor}; " +
                         $"impactDamage = ({props.knockImpactDamage} => {origImpactDamage}) * {impactDamageFactor} = {impactDamage}");
                     if (impactDamage > 0f)
-                        impactDinfo = new DamageInfo(props.KnockImpactDamageType, impactDamage);
+                        impactDinfo = new DamageInfo(props.knockImpactDamageType, impactDamage);
                 }
 
                 if (actualDistance > 0f)

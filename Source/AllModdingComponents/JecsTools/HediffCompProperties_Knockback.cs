@@ -64,17 +64,7 @@ namespace JecsTools
             new CurvePoint(1f, 1f),
         };
 
-        // XXX: Ideally knockImpactDamageType would just be a public field that's defaulted to DamageDefOf.Blunt, but:
-        // a) DamageDefOf.Blunt isn't initialized yet when HediffCompProperties_Knockback are initialized.
-        // b) There's no HediffCompProperties.ResolveReferences ala CompProperties.ResolveReferences to put late initialization logic.
-        // c) HediffCompProperties.ConfigErrors is only called in dev mode, so late initialization cannot be put there.
-        // So we're forced to use a public property + private field here.
-        private DamageDef knockImpactDamageType;
-        public DamageDef KnockImpactDamageType
-        {
-            get => knockImpactDamageType ??= DamageDefOf.Blunt;
-            set => knockImpactDamageType = value;
-        }
+        public DamageDef knockImpactDamageType;
 
         public float stunChance = 0f;
         public int stunTicks = 60;
@@ -84,25 +74,22 @@ namespace JecsTools
             compClass = typeof(HediffComp_Knockback);
         }
 
-        public CompProperties_Explosive ExplosiveProps
+        public override void ResolveReferences(HediffDef parent)
         {
-            get
-            {
-                if (explosiveProps == null &&
+            knockImpactDamageType ??= DamageDefOf.Blunt;
+            if (explosiveProps == null &&
 #pragma warning disable CS0618 // Type or member is obsolete
                     explosiveKnockback)
 #pragma warning restore CS0618 // Type or member is obsolete
+            {
+                explosiveProps = new CompProperties_Explosive
                 {
-                    explosiveProps = new CompProperties_Explosive
-                    {
 #pragma warning disable CS0618 // Type or member is obsolete
-                        explosiveDamageType = explosionDmg,
-                        explosiveRadius = explosionSize,
+                    explosiveDamageType = explosionDmg,
+                    explosiveRadius = explosionSize,
 #pragma warning restore CS0618 // Type or member is obsolete
-                        damageAmountBase = 0,
-                    };
-                }
-                return explosiveProps;
+                    damageAmountBase = 0,
+                };
             }
         }
 
