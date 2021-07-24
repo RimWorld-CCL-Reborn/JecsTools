@@ -15,7 +15,7 @@
 </p>
 
 <p align="center">
- Adds modding components to RimWorld: <del>vehicles,</del> spell casting, weapon slots, oversized weapons, and more!
+ Adds modding components to RimWorld: spell casting, weapon slots, oversized weapons, and more!
 </p>
 
 <hr>
