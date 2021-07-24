@@ -18,7 +18,7 @@
       <downloadUrl>https://github.com/pardeike/HarmonyRimWorld/releases/latest</downloadUrl>
     </li>
   </modDependencies>
-  <description>1.2.0.0 (07-24-2021)
+  <description>1.2.0.1 (07-24-2021)
 
 Adds modding components to RimWorld: spell casting, weapon slots, oversized weapons, and more!
 
@@ -75,6 +75,10 @@ Cade Perkinson, Jay Sacane, John Pahl, Tankok1998 also known as the Shermanlover
 ========================
 Changelog
 ========================
+1.2.0.1 (07-24-2021)
+========================
+Fix regression in RW 1.1 &amp; 1.2 by using separate defs for 1.1+1.2 and 1.3
+
 1.2.0.0 (07-24-2021)
 ========================
 Note: Starting from this version, changes only apply to RimWorld 1.3+.

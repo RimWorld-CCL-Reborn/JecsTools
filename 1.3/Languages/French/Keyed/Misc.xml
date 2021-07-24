@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>
+<JT_PlaceWorker_UnderCeiling>Doit être placé sous un plafond.</JT_PlaceWorker_UnderCeiling>
+<JT_PlaceWorker_OnTopOfWalls>Doit être placé sur un mur.</JT_PlaceWorker_OnTopOfWalls>
+<JT_DamageSoaked>{0} absorbé</JT_DamageSoaked>
+<JT_HI_DamageSoaked>Quantité de trempage: {0}</JT_HI_DamageSoaked>
+<JT_HI_Knockback>Chance de recul: {0}</JT_HI_Knockback>
+<JT_HI_ExtraDamages>Dégâts supplémentaires: </JT_HI_ExtraDamages>
+<JT_HI_KnockbackExplosive>Explosif</JT_HI_KnockbackExplosive>
+</LanguageData>

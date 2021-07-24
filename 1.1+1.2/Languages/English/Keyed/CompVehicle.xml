@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>
+
+ <!-- Addition 7/28/17 -->
+ <CompVehicle_CannotSplitWhileInVehicles>Cannot split caravan while colonists are in vehicles.</CompVehicle_CannotSplitWhileInVehicles>
+
+ <!-- Addition 7/18/17 -->
+
+  <CompVehicle_CannotMove>{0} is currently incapable of movement.</CompVehicle_CannotMove>
+
+ <!-- Previous -->
+
+  <CompVehicle_LowFuel>Low Fuel</CompVehicle_LowFuel>
+  <MessageCaravanRunOutOfFuel>{0} has run out of fuel ({1}). {0} will now move at a quarter of normal speed.</MessageCaravanRunOutOfFuel>
+  <MessagePawnLeftVehicle>{0} has left the vehicle ({1}) due to {2} needs.</MessagePawnLeftVehicle>
+  <DaysWorthOfFuelInfo>Carrying {0} days worth of fuel</DaysWorthOfFuelInfo>
+<InfiniteDaysWorthOfFuelInfo>Will never run out of fuel</InfiniteDaysWorthOfFuelInfo>
+  <DaysWorthOfFuelTooltip>An approximate number of days before the caravan runs out of fuel.\n\nThis takes into account all vehicles in the caravan and shows the worst case scenario. This means that after this many days, at least one vehicle will be out of fuel.</DaysWorthOfFuelTooltip>
+    <DaysWorthOfFuelWarningDialog_NoFuel>Your caravan isn't carrying fuel and will be unable to travel at full speed.\n\nAre you sure you want to form this caravan?</DaysWorthOfFuelWarningDialog_NoFuel>
+      <DaysWorthOfFuelWarningDialog>Your caravan is only carrying {0} days worth of fuel and will run out of fuel very quickly.\n\nAre you sure you want to form this caravan?</DaysWorthOfFuelWarningDialog>
+        <CaravanOutOfFuel>Out of fuel</CaravanOutOfFuel>
+        <CaravanVehicleNoFuelWarningDialog>Vehicles in the caravan must be fueled.</CaravanVehicleNoFuelWarningDialog>
+
+<CompVehicle_VehicleSection>Vehicles</CompVehicle_VehicleSection>
+<CompVehicle_LoadUnload>Load/Unload {0}</CompVehicle_LoadUnload>
+<CompVehicle_Unload>Unload {0}</CompVehicle_Unload>
+<CompVehicle_Load>Load {0}</CompVehicle_Load>
+<CompVehicle_LoadUnloadDesc>Load or eject one {0}.</CompVehicle_LoadUnloadDesc>
+<CompVehicle_LoadDesc>Load one {0}</CompVehicle_LoadDesc>
+<CompVehicle_UnloadDesc>Unload one {0}</CompVehicle_UnloadDesc>
+<CompVehicle_DisabledDesc>The vehicle disabled, destroyed, or simply too damaged and cannot be loaded.</CompVehicle_DisabledDesc>
+
+</LanguageData>
