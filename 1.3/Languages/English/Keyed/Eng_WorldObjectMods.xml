@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>
+
+<JecsTools_WorldObjectConst_AbandonReason>because no caravan is available at this location</JecsTools_WorldObjectConst_AbandonReason>
+<JecsTools_WorldObjectConst_ResourcesNeeded>Resources: {0}</JecsTools_WorldObjectConst_ResourcesNeeded>
+<JecsTools_WorldObjectConst_NotEnoughThings>Missing Specific Items. Need {1}x {2}, have only {0}</JecsTools_WorldObjectConst_NotEnoughThings>
+<JecsTools_WorldObjectConst_NotEnoughStuff>Missing {2} Stuff. Need {1}x, have only {0}</JecsTools_WorldObjectConst_NotEnoughStuff>
+<JecsTools_WorldObjectConst_NotEnoughResources>Failed to build {0} due to lack of resources</JecsTools_WorldObjectConst_NotEnoughResources>
+</LanguageData>

@@ -18,8 +18,8 @@
     <exclude>Source\AllModdingComponents\CompOversizedWeapon\obj</exclude>
     <exclude>Source\AllModdingComponents\CompSlotLoadable\obj</exclude>
     <exclude>Source\AllModdingComponents\CompToggleDef\obj</exclude>
-    <exclude>Source\AllModdingComponents\CompVehicle\obj</exclude>
     <exclude>Source\AllModdingComponents\JecsTools\obj</exclude>
     <exclude>Source\AllModdingComponents\PawnShields\obj</exclude>
-    <exclude>Source\AllModdingComponents\ThinkNodes\obj</exclude>  </Excluded>
+    <exclude>Source\AllModdingComponents\ThinkNodes\obj</exclude>
+  </Excluded>
 </Configuration>

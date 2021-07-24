@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>
+
+  <NoDeflectorEquipped>No deflector equipped</NoDeflectorEquipped>
+  
+  <DeflectChance>Deflect chance</DeflectChance>
+  <DeflectChanceEx>Determines how often this weapon returns projectiles back at the attacker.</DeflectChanceEx>
+  
+  <MaxDeflectChance>Max deflect chance</MaxDeflectChance>
+  <MaxDeflectChanceEx>For each point in {0}, the user gains a {1} chance of deflecting the projectile back the target. {2} is the maximum possible deflection chance.
+  </MaxDeflectChanceEx>
+  
+  <DeflectChancePerLevel>Deflect % per {0} skill</DeflectChancePerLevel>
+  <DeflectChancePerLevelEx>For each level in {0}, the user gains this much % chance to deflect a projectile.</DeflectChancePerLevelEx>
+  
+  <StatsReport_DeflectionExplanation>Deflection chance = (Base deflect chance + (Skill Level * % per Skill Level)) * Manipulation</StatsReport_DeflectionExplanation>
+  <StatsReport_BaseDeflectChance>Base deflect chance</StatsReport_BaseDeflectChance>
+  <StatsReport_DeflectPerSkillLevel>Deflect % per skill level</StatsReport_DeflectPerSkillLevel>
+
+</LanguageData>

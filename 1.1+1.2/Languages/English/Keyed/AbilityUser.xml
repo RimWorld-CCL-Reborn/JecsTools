@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>
+
+<AU_NoLineOfSight>No line of sight</AU_NoLineOfSight>
+
+<AU_NoTargets>No targets available</AU_NoTargets>
+
+<AU_DISABLED>DISABLED</AU_DISABLED>
+
+<AU_Type>Type: </AU_Type>
+<AU_TargetAoE>Area of Effect</AU_TargetAoE>
+<AU_TargetSelf>Targets Self</AU_TargetSelf>
+<AU_TargetThing>Targets Other</AU_TargetThing>
+<AU_TargetLocation>Targets Location</AU_TargetLocation>
+<AU_Cooldown>Cooldown: </AU_Cooldown>
+<AU_Extra>Extra</AU_Extra>
+<AU_MentalStateChance>Mental State Chance</AU_MentalStateChance>
+<AU_EffectChance>Effect Chance</AU_EffectChance>
+<AU_PawnAbilityRecharging>{0} needs time to recharge</AU_PawnAbilityRecharging>
+
+
+<AU_AoEProperties>Area of Effect Properties</AU_AoEProperties>
+<AU_TargetClass>Targets: </AU_TargetClass>
+<AU_AoECharacters>Characters</AU_AoECharacters>
+<AU_AoEFriendlyFire>Friendly Fire: </AU_AoEFriendlyFire>
+<AU_AoEMaxTargets>Max Targets: </AU_AoEMaxTargets>
+<AU_AoEStartsFromCaster>Starts from caster: </AU_AoEStartsFromCaster>
+	
+</LanguageData>

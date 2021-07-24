@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <JT_PlaceWorker_OnTopOfWalls>Debe ser colocado en la pared.</JT_PlaceWorker_OnTopOfWalls>
+  <JT_DamageSoaked>{0} absorbido</JT_DamageSoaked>
+  <JT_HI_DamageSoaked>Monto absorbido: {0}</JT_HI_DamageSoaked>
+  <JT_HI_Knockback>Chance de Retroceso: {0}</JT_HI_Knockback>
+  <JT_HI_ExtraDamages>Daño extra: </JT_HI_ExtraDamages>
+  <JT_HI_KnockbackExplosive>Explosivo</JT_HI_KnockbackExplosive>
+
+</LanguageData>

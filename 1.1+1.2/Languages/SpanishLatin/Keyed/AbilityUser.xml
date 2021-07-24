@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+
+  <AU_DISABLED>DESABILITADO</AU_DISABLED>
+
+  <AU_Type>Tipo: </AU_Type>
+  <AU_TargetAoE>Área de efecto</AU_TargetAoE>
+  <AU_TargetSelf>Dirige así mismo</AU_TargetSelf>
+  <AU_TargetThing>Dirige a Otros</AU_TargetThing>
+  <AU_TargetLocation>Locación a donde se dirige</AU_TargetLocation>
+  <AU_Cooldown>Enfriamiento: </AU_Cooldown>
+  <AU_Extra>Extra</AU_Extra>
+  <AU_MentalStateChance>Chance del Estado Mental</AU_MentalStateChance>
+  <AU_EffectChance>Chance de efecto</AU_EffectChance>
+  <AU_PawnAbilityRecharging>{0} Necesita tiempo para recargar</AU_PawnAbilityRecharging>
+
+
+  <AU_AoEProperties>Propiedades del Área de Efecto</AU_AoEProperties>
+  <AU_TargetClass>Objetivo: </AU_TargetClass>
+  <AU_AoECharacters>Personajes</AU_AoECharacters>
+  <AU_AoEFriendlyFire>Fuego Amigo: </AU_AoEFriendlyFire>
+  <AU_AoEMaxTargets>Objetivos Máximos: </AU_AoEMaxTargets>
+  <AU_AoEStartsFromCaster>Comienza desde el emisor: </AU_AoEStartsFromCaster>
+
+</LanguageData>

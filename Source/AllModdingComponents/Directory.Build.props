@@ -8,7 +8,7 @@
     <NoStdLib>true</NoStdLib>
     <LangVersion>9.0</LangVersion>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-    <Version>1.2.0.0</Version>
+    <Version>1.2.0.1</Version>
     <!--
     For some reason, although SDK projects should default Deterministic to true, when importing this props build,
     builds become non-deterministic unless Deterministic is explicitly set to true here.
