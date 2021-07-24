@@ -49,6 +49,7 @@ namespace JecsTools
             harmony.Patch(AccessTools.Method(typeof(ArmorUtility), nameof(ArmorUtility.GetPostArmorDamage)),
                 postfix: new HarmonyMethod(type, nameof(Post_GetPostArmorDamage)));
 
+            //Applies knockback
             harmony.Patch(AccessTools.Method(typeof(Pawn), nameof(Pawn.PreApplyDamage)),
                 prefix: new HarmonyMethod(type, nameof(Pawn_PreApplyDamage_Prefix)) { priority = Priority.High },
                 postfix: new HarmonyMethod(type, nameof(Pawn_PreApplyDamage_Postfix)) { priority = Priority.Low });
@@ -102,7 +103,11 @@ namespace JecsTools
             if (__instance.EquipmentCompSource?.PrimaryVerb?.verbProps?.defaultProjectile?.GetProjectileExtension() is ProjectileExtension ext)
             {
                 if (ext.passesWalls)
+                {
+                    // TODO: While this does bypass the line-of-sight checks (and should it really bypass all LOS checks?),
+                    // this also bypasses non-LOS checks, which doesn't look right.
                     __result = true;
+                }
                 return false;
             }
             return true;
@@ -113,20 +118,22 @@ namespace JecsTools
         //Ignores all structures as part of objects that disallow being fired through.
         public static void CanHit_PostFix(Projectile __instance, Thing thing, ref bool __result)
         {
-            if (!__result && __instance.def?.GetProjectileExtension() is ProjectileExtension ext)
+            // TODO: This patch looks pointless since it can only change __result from false to ... false.
+            if (__result == false && __instance.def?.GetProjectileExtension() is ProjectileExtension ext)
             {
-                //Mods will often have their own walls, so we cannot do a def check for ThingDefOf.Wall
-                //Most "walls" should either be in the structure category or be able to hold walls.
-                if (thing?.def is ThingDef def)
-                    if (def.designationCategory == DesignationCategoryDefOf.Structure ||
-                        def.holdsRoof)
+                if (ext.passesWalls)
+                {
+                    //Mods will often have their own walls, so we cannot do a def check for ThingDefOf.Wall
+                    //Most "walls" should either be in the structure category or be able to hold walls.
+                    // TODO: In RW 1.3+, it seems like BuildingProperties.isPlaceOverableWall indicates whether something is a "wall",
+                    // but it may be better to just look at ThingDef.Fillage/fillPercent instead,
+                    // or maybe use PlaceWorker_OnTopOfWalls's heuristic of checking whether the defName contains "Wall"?
+                    if (thing?.def is ThingDef def && (def.designationCategory == DesignationCategoryDefOf.Structure || def.holdsRoof))
                     {
-                        if (ext.passesWalls)
-                        {
-                            __result = false;
-                            return;
-                        }
+                        __result = false;
+                        return;
                     }
+                }
             }
         }
 
