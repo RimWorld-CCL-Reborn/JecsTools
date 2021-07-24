@@ -101,20 +101,20 @@ namespace CompActivatableEffect
 
             // start copied vanilla code (with mesh = flip ? MeshPool.plane10Flip : MeshPool.plane10)
             var flip = false;
-            var num = aimAngle - 90f;
+            var angle = aimAngle - 90f;
             if (aimAngle > 20f && aimAngle < 160f)
             {
-                num += eq.def.equippedAngleOffset;
+                angle += eq.def.equippedAngleOffset;
             }
             else if (aimAngle > 200f && aimAngle < 340f)
             {
                 flip = true;
-                num -= 180f;
-                num -= eq.def.equippedAngleOffset;
+                angle -= 180f;
+                angle -= eq.def.equippedAngleOffset;
             }
             else
             {
-                num += eq.def.equippedAngleOffset;
+                angle += eq.def.equippedAngleOffset;
             }
             // end copied vanilla code
 
@@ -132,18 +132,18 @@ namespace CompActivatableEffect
                 if (animationTicks > 0)
                 {
                     if (flip)
-                        num -= (animationTicks + 1) / 2;
+                        angle -= (animationTicks + 1) / 2;
                     else
-                        num += (animationTicks + 1) / 2;
+                        angle += (animationTicks + 1) / 2;
                 }
             }
 
-            num %= 360f; // copied vanilla code
+            angle %= 360f; // copied vanilla code
 
             var matSingle = compActivatableEffect.Graphic.MatSingle;
 
             var s = new Vector3(eq.def.graphicData.drawSize.x, 1f, eq.def.graphicData.drawSize.y);
-            var matrix = Matrix4x4.TRS(drawLoc + offset, Quaternion.AngleAxis(num, Vector3.up), s);
+            var matrix = Matrix4x4.TRS(drawLoc + offset, Quaternion.AngleAxis(angle, Vector3.up), s);
             Graphics.DrawMesh(flip ? MeshPool.plane10Flip : MeshPool.plane10, matrix, matSingle, 0);
         }
 

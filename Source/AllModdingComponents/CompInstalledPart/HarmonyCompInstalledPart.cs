@@ -29,22 +29,22 @@ namespace CompInstalledPart
             {
                 // start copied vanilla code (with mesh = flip ? MeshPool.plane10Flip : MeshPool.plane10)
                 var flip = false;
-                var num = aimAngle - 90f;
+                var angle = aimAngle - 90f;
                 if (aimAngle > 20f && aimAngle < 160f)
                 {
-                    num += eq.def.equippedAngleOffset;
+                    angle += eq.def.equippedAngleOffset;
                 }
                 else if (aimAngle > 200f && aimAngle < 340f)
                 {
                     flip = true;
-                    num -= 180f;
-                    num -= eq.def.equippedAngleOffset;
+                    angle -= 180f;
+                    angle -= eq.def.equippedAngleOffset;
                 }
                 else
                 {
-                    num += eq.def.equippedAngleOffset;
+                    angle += eq.def.equippedAngleOffset;
                 }
-                num %= 360f;
+                angle %= 360f;
                 // end copied vanilla code
 
                 var installedWeaponGraphic = installedComp.Props?.installedWeaponGraphic;
@@ -56,7 +56,7 @@ namespace CompInstalledPart
                 var s = new Vector3(
                     installedWeaponGraphic?.drawSize.x ?? eq.def.graphicData.drawSize.x, 1f,
                     installedWeaponGraphic?.drawSize.y ?? eq.def.graphicData.drawSize.y);
-                var matrix = Matrix4x4.TRS(drawLoc, Quaternion.AngleAxis(num, Vector3.up), s);
+                var matrix = Matrix4x4.TRS(drawLoc, Quaternion.AngleAxis(angle, Vector3.up), s);
                 Graphics.DrawMesh(flip ? MeshPool.plane10Flip : MeshPool.plane10, matrix, matSingle, 0);
                 return false;
             }

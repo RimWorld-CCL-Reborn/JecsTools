@@ -1,4 +1,6 @@
-﻿using RimWorld;
+﻿using System;
+using HarmonyLib;
+using RimWorld;
 using UnityEngine;
 using Verse;
 
@@ -127,12 +129,7 @@ namespace PawnShields
         /// <param name="pawn">Shield bearer.</param>
         public virtual void RenderShield(Vector3 loc, Rot4 rot, Pawn pawn, Thing thing)
         {
-            var carryShieldOpenly =
-                (pawn.carryTracker == null || pawn.carryTracker.CarriedThing == null) &&
-                (pawn.Drafted || (pawn.CurJob != null && pawn.CurJob.def.alwaysShowWeapon) ||
-                (pawn.mindState.duty != null && pawn.mindState.duty.def.alwaysShowWeapon));
-
-            if (!ShieldProps.renderProperties.renderWhenPeaceful && !carryShieldOpenly)
+            if (!ShieldProps.renderProperties.renderWhenPeaceful && !pawnRendererCarryWeaponOpenly(pawn.Drawer.renderer))
                 return;
 
             if (ShieldProps.wieldedGraphic != null && ShieldProps.wieldedGraphic.Graphic.MatSingle != null)
@@ -173,5 +170,10 @@ namespace PawnShields
                 thing.Graphic.Draw(loc, rot, thing);
             }
         }
+
+        // Note: This is an open instance delegate where the first argument is the instance.
+        private static readonly Func<PawnRenderer, bool> pawnRendererCarryWeaponOpenly =
+            (Func<PawnRenderer, bool>)AccessTools.Method(typeof(PawnRenderer), "CarryWeaponOpenly")
+            .CreateDelegate(typeof(Func<PawnRenderer, bool>));
     }
 }

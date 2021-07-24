@@ -32,48 +32,48 @@ namespace CompOversizedWeapon
             if (compOversizedWeapon.CompDeflectorIsAnimatingNow)
                 return false;
 
-            var props = compOversizedWeapon.Props;
-            var atPeace = !___pawn.IsFighting() && props != null;
             var aimingSouth = false;
-            var rotation = ___pawn.Rotation;
 
             // start copied vanilla code (with mesh = flip ? MeshPool.plane10Flip : MeshPool.plane10)
             var flip = false;
-            var num = aimAngle - 90f;
+            var angle = aimAngle - 90f;
             if (aimAngle > 20f && aimAngle < 160f)
             {
-                num += eq.def.equippedAngleOffset;
+                angle += eq.def.equippedAngleOffset;
             }
             else if (aimAngle > 200f && aimAngle < 340f)
             {
                 flip = true;
-                num -= 180f;
-                num -= eq.def.equippedAngleOffset;
+                angle -= 180f;
+                angle -= eq.def.equippedAngleOffset;
             }
             else
             {
-                num += eq.def.equippedAngleOffset;
+                angle += eq.def.equippedAngleOffset;
                 aimingSouth = true; // custom
             }
             // end copied vanilla code
 
-            if (atPeace)
+            var props = compOversizedWeapon.Props;
+            var rotation = ___pawn.Rotation;
+
+            if (props != null && !___pawn.IsFighting()) // at peace
             {
                 if (aimingSouth && props.verticalFlipOutsideCombat)
-                    num += 180f;
+                    angle += 180f;
                 if (props.verticalFlipNorth && rotation == Rot4.North)
-                    num += 180f;
-                num += props.NonCombatAngleAdjustment(rotation);
+                    angle += 180f;
+                angle += props.NonCombatAngleAdjustment(rotation);
             }
 
-            num %= 360f; // copied vanilla code
+            angle %= 360f; // copied vanilla code
 
             var matSingle = eq.Graphic is Graphic_StackCount graphic_StackCount
                 ? graphic_StackCount.SubGraphicForStackCount(1, eq.def).MatSingle
                 : eq.Graphic.MatSingle;
             var s = new Vector3(eq.def.graphicData.drawSize.x, 1f, eq.def.graphicData.drawSize.y);
             var curOffset = props != null ? props.OffsetFromRotation(rotation) : Vector3.zero;
-            var matrix = Matrix4x4.TRS(drawLoc + curOffset, Quaternion.AngleAxis(num, Vector3.up), s);
+            var matrix = Matrix4x4.TRS(drawLoc + curOffset, Quaternion.AngleAxis(angle, Vector3.up), s);
             Graphics.DrawMesh(flip ? MeshPool.plane10Flip : MeshPool.plane10, matrix, matSingle, 0);
 
             if (props != null && props.isDualWeapon)
@@ -81,15 +81,15 @@ namespace CompOversizedWeapon
                 curOffset = new Vector3(-1f * curOffset.x, curOffset.y, curOffset.z);
                 if (rotation == Rot4.North || rotation == Rot4.South)
                 {
-                    num += 135f;
-                    num %= 360f;
+                    angle += 135f;
+                    angle %= 360f;
                 }
                 else
                 {
                     curOffset = new Vector3(curOffset.x, curOffset.y - 0.1f, curOffset.z + 0.15f);
                     flip = !flip;
                 }
-                matrix.SetTRS(drawLoc + curOffset, Quaternion.AngleAxis(num, Vector3.up), s);
+                matrix.SetTRS(drawLoc + curOffset, Quaternion.AngleAxis(angle, Vector3.up), s);
                 Graphics.DrawMesh(flip ? MeshPool.plane10 : MeshPool.plane10Flip, matrix, matSingle, 0);
             }
             return false;
