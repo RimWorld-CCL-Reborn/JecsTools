@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+
+  <!-- Addition 7/28/17 -->
+  <CompVehicle_CannotSplitWhileInVehicles>入植者が乗り物に乗車している間は、キャラバン隊を分割することはできません。</CompVehicle_CannotSplitWhileInVehicles>
+
+  <!-- Addition 7/18/17 -->
+
+  <CompVehicle_CannotMove>{0}は現在移動できません。</CompVehicle_CannotMove>
+
+  <!-- Previous -->
+
+  <CompVehicle_LowFuel>燃料が残り少ない</CompVehicle_LowFuel>
+  <MessageCaravanRunOutOfFuel>{0}の燃料が不足しています（{1}）。 {0}は現在、通常速度の4分の1で移動しています。</MessageCaravanRunOutOfFuel>
+  <MessagePawnLeftVehicle>{0}には{2}が必要なので、車両（{1}）を降りました。</MessagePawnLeftVehicle>
+  <DaysWorthOfFuelInfo>{0}日分の燃料を積んでいます</DaysWorthOfFuelInfo>
+  <InfiniteDaysWorthOfFuelInfo>燃料が足りなくなることは無いでしょう</InfiniteDaysWorthOfFuelInfo>
+  <DaysWorthOfFuelTooltip>このキャラバン隊の燃料がなくなるまでのおよその日数です。\n\nキャラバン隊に属するすべての車両を考慮して、最悪の場合のシナリオを示します。 これは、この日数が経過した後、少なくとも1台の車両が燃料切れになることを意味します。</DaysWorthOfFuelTooltip>
+  <DaysWorthOfFuelWarningDialog_NoFuel>このキャラバン隊は燃料を搭載しておらず、最高速度で移動することができません。\n\nこのキャラバン隊を編成してもよろしいですか？</DaysWorthOfFuelWarningDialog_NoFuel>
+  <DaysWorthOfFuelWarningDialog>このキャラバン隊は{0}日分の燃料しか運んでおらず、すぐに燃料が枯渇します。\n\nこのままキャラバン隊を編成しますか？</DaysWorthOfFuelWarningDialog>
+  <CaravanOutOfFuel>燃料切れ</CaravanOutOfFuel>
+  <CaravanVehicleNoFuelWarningDialog>キャラバン隊の乗り物に燃料を供給する必要があります。</CaravanVehicleNoFuelWarningDialog>
+
+  <CompVehicle_VehicleSection>乗り物</CompVehicle_VehicleSection>
+  <CompVehicle_LoadUnload>{0}を積み下ろす</CompVehicle_LoadUnload>
+  <CompVehicle_Unload>{0}を下ろす</CompVehicle_Unload>
+  <CompVehicle_Load>{0}を積む</CompVehicle_Load>
+  <CompVehicle_LoadUnloadDesc>{0}を載せるか1つ取り出します。</CompVehicle_LoadUnloadDesc>
+  <CompVehicle_LoadDesc>{0}を1つ積み込む</CompVehicle_LoadDesc>
+  <CompVehicle_UnloadDesc>{0}を1つ取り出す</CompVehicle_UnloadDesc>
+  <CompVehicle_DisabledDesc>乗り物が無効になっているか、破壊されているか、または単に損傷しており、荷物を搭載できません。</CompVehicle_DisabledDesc>
+
+</LanguageData>

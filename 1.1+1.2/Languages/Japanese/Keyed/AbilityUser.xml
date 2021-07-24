@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+
+  <AU_NoTargets>指定可能な目標がありません。</AU_NoTargets>
+
+  <AU_DISABLED>機能停止</AU_DISABLED>
+
+  <AU_Type>タイプ：</AU_Type>
+  <AU_TargetAoE>目標(範囲)</AU_TargetAoE>
+  <AU_TargetSelf>目標(自分)</AU_TargetSelf>
+  <AU_TargetThing>目標(他者)</AU_TargetThing>
+  <AU_TargetLocation>目標(場所)</AU_TargetLocation>
+  <AU_Cooldown>クールダウン：</AU_Cooldown>
+  <AU_Extra>特殊</AU_Extra>
+  <AU_MentalStateChance>精神状態変化率</AU_MentalStateChance>
+  <AU_EffectChance>影響確率</AU_EffectChance>
+  <AU_PawnAbilityRecharging>{0}は回復する時間が必要</AU_PawnAbilityRecharging>
+
+
+  <AU_AoEProperties>影響範囲の詳細</AU_AoEProperties>
+  <AU_TargetClass>目標：</AU_TargetClass>
+  <AU_AoECharacters>キャラクター</AU_AoECharacters>
+  <AU_AoEFriendlyFire>味方への誤射：</AU_AoEFriendlyFire>
+  <AU_AoEMaxTargets>最大目標数：</AU_AoEMaxTargets>
+  <AU_AoEStartsFromCaster>使用者から開始：</AU_AoEStartsFromCaster>
+
+</LanguageData>

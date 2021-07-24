@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+
+  <JT_GrappleSuccess.rulePack.rulesStrings.0>r_logentry->[INITIATOR_nameDef]は、[SUBJECT_definite][grappled]。</JT_GrappleSuccess.rulePack.rulesStrings.0>
+  <JT_GrappleSuccess.rulePack.rulesStrings.1>grappled->と取っ組み合った</JT_GrappleSuccess.rulePack.rulesStrings.1>
+  <JT_GrappleSuccess.rulePack.rulesStrings.2>grappled->を抑えつけた</JT_GrappleSuccess.rulePack.rulesStrings.2>
+  <JT_GrappleSuccess.rulePack.rulesStrings.3>grappled->を手で掴みました</JT_GrappleSuccess.rulePack.rulesStrings.3>
+
+  <JT_GrappleFailed.rulePack.rulesStrings.0>r_logentry->[INITIATOR_nameDef]は、[SUBJECT_definite]を[triedtograpple]、[but][failedmeta]。</JT_GrappleFailed.rulePack.rulesStrings.0>
+  <JT_GrappleFailed.rulePack.rulesStrings.1>tried->試みた</JT_GrappleFailed.rulePack.rulesStrings.1>
+  <JT_GrappleFailed.rulePack.rulesStrings.2>tried->attempted</JT_GrappleFailed.rulePack.rulesStrings.2>
+  <JT_GrappleFailed.rulePack.rulesStrings.3>grappleinf->捕まえようと</JT_GrappleFailed.rulePack.rulesStrings.3>
+  <JT_GrappleFailed.rulePack.rulesStrings.4>grappleinf->捕らえようと</JT_GrappleFailed.rulePack.rulesStrings.4>
+  <JT_GrappleFailed.rulePack.rulesStrings.5>grappleinf->抑えつけようと</JT_GrappleFailed.rulePack.rulesStrings.5>
+  <JT_GrappleFailed.rulePack.rulesStrings.6>triedtograpple->[grappleinf][tried]が</JT_GrappleFailed.rulePack.rulesStrings.6>
+  <JT_GrappleFailed.rulePack.rulesStrings.7>but->しかし</JT_GrappleFailed.rulePack.rulesStrings.7>
+  <JT_GrappleFailed.rulePack.rulesStrings.8>but->またしても</JT_GrappleFailed.rulePack.rulesStrings.8>
+  <JT_GrappleFailed.rulePack.rulesStrings.9>but->それでも</JT_GrappleFailed.rulePack.rulesStrings.9>
+  <JT_GrappleFailed.rulePack.rulesStrings.10>but->すでに</JT_GrappleFailed.rulePack.rulesStrings.10>
+  <JT_GrappleFailed.rulePack.rulesStrings.11>failed->失敗しました</JT_GrappleFailed.rulePack.rulesStrings.11>
+  <JT_GrappleFailed.rulePack.rulesStrings.12>failed->逃げられました</JT_GrappleFailed.rulePack.rulesStrings.12>
+  <JT_GrappleFailed.rulePack.rulesStrings.13>dodged->避けました</JT_GrappleFailed.rulePack.rulesStrings.13>
+  <JT_GrappleFailed.rulePack.rulesStrings.14>dodged->外しました</JT_GrappleFailed.rulePack.rulesStrings.14>
+  <JT_GrappleFailed.rulePack.rulesStrings.15>spectacularly->見事に</JT_GrappleFailed.rulePack.rulesStrings.15>
+  <JT_GrappleFailed.rulePack.rulesStrings.16>spectacularly->無様に</JT_GrappleFailed.rulePack.rulesStrings.16>
+  <JT_GrappleFailed.rulePack.rulesStrings.17>spectacularly->完全に</JT_GrappleFailed.rulePack.rulesStrings.17>
+  <JT_GrappleFailed.rulePack.rulesStrings.18>spectacularly->ことごとく</JT_GrappleFailed.rulePack.rulesStrings.18>
+  <JT_GrappleFailed.rulePack.rulesStrings.19>failedmeta->[INITIATOR_pronoun]は[failed]</JT_GrappleFailed.rulePack.rulesStrings.19>
+  <JT_GrappleFailed.rulePack.rulesStrings.20>failedmeta->[INITIATOR_pronoun]は[spectacularly][failed]</JT_GrappleFailed.rulePack.rulesStrings.20>
+  <JT_GrappleFailed.rulePack.rulesStrings.21>failedmeta->[SUBJECT_definite]は[dodged]</JT_GrappleFailed.rulePack.rulesStrings.21>
+
+</LanguageData>

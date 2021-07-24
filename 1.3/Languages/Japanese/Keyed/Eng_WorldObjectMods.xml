@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+
+  <JecsTools_WorldObjectConst_AbandonReason>この場所にキャラバン隊がありません</JecsTools_WorldObjectConst_AbandonReason>
+  <JecsTools_WorldObjectConst_ResourcesNeeded>必要な資源：{0}</JecsTools_WorldObjectConst_ResourcesNeeded>
+  <JecsTools_WorldObjectConst_NotEnoughThings>特定のアイテムが足りません。{2}が{1}が必要ですが、{0}しかありません</JecsTools_WorldObjectConst_NotEnoughThings>
+  <JecsTools_WorldObjectConst_NotEnoughStuff>{2}が不足しています。{1}が{1}が必要ですが、{0}しかありません</JecsTools_WorldObjectConst_NotEnoughStuff>
+  <JecsTools_WorldObjectConst_NotEnoughResources>資源不足のために、{0}の建設に失敗しました</JecsTools_WorldObjectConst_NotEnoughResources>
+
+</LanguageData>

@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+
+  <!-- Hediffs -->
+
+  <ShieldFatigue.label>シールド損耗</ShieldFatigue.label>
+  <ShieldFatigue.stages.minor.label>少し</ShieldFatigue.stages.minor.label>
+  <ShieldFatigue.stages.major.label>かなり</ShieldFatigue.stages.major.label>
+  <ShieldFatigue.stages.severe.label>厳しい</ShieldFatigue.stages.severe.label>
+  <ShieldFatigue.stages.extreme.label>枯渇</ShieldFatigue.stages.extreme.label>
+
+</LanguageData>

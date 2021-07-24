@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>
+
+<AU_DISABLED>DISABLED</AU_DISABLED>
+
+<AU_Type>Type: </AU_Type>
+<AU_TargetAoE>Area de efecto</AU_TargetAoE>
+<AU_TargetSelf>Concentar en ti mismo</AU_TargetSelf>
+<AU_TargetThing>Concentar en otro</AU_TargetThing>
+<AU_TargetLocation>Localizacion del objetivo</AU_TargetLocation>
+<AU_Cooldown>Cooldown: </AU_Cooldown>
+<AU_Extra>Extra</AU_Extra>
+<AU_MentalStateChance>Chance de Estado Mental</AU_MentalStateChance>
+<AU_EffectChance>Chance de efecto</AU_EffectChance>
+<AU_PawnAbilityRecharging>{0} Necesita tiempo para recargar</AU_PawnAbilityRecharging>
+
+
+<AU_AoEProperties>Propiedades del Area de Efecto</AU_AoEProperties>
+<AU_TargetClass>Objetivos: </AU_TargetClass>
+<AU_AoECharacters>Personajes</AU_AoECharacters>
+<AU_AoEFriendlyFire>Fuego Amigo: </AU_AoEFriendlyFire>
+<AU_AoEMaxTargets>Max Targets: </AU_AoEMaxTargets>
+<AU_AoEStartsFromCaster>Empieza desde el caster: </AU_AoEStartsFromCaster>
+	
+</LanguageData>

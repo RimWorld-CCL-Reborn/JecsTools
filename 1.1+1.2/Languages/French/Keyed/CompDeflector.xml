@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>
+
+  <NoDeflectorEquipped>Aucun déflecteur équipé</NoDeflectorEquipped>
+  
+  <DeflectChance>probabilité de renvoyer</DeflectChance>
+  <DeflectChanceEx>Détermine à quelle fréquence cette arme renvoie des projectiles à l'agresseur.</DeflectChanceEx>
+  
+  <MaxDeflectChance>Probabilité maximale de renvoi</MaxDeflectChance>
+  <MaxDeflectChanceEx>Pour chaque point {0}, l'utilisateur a une probabilité de détourner le tir de {1}. La probabilité maximale de renvoi est de {2}.
+  </MaxDeflectChanceEx>
+  
+  <DeflectChancePerLevel>Détournement % par {0} compétence</DeflectChancePerLevel>
+  <DeflectChancePerLevelEx>Pour chaque niveau en {0}, l'utilisateur gagne tel % de probabilité de renvoyer un projectile.</DeflectChancePerLevelEx>
+  
+  <StatsReport_DeflectionExplanation>Probabilité de détournement = (probabilité de détournement + (Niveau * % par Niveau)) * Manipulation</StatsReport_DeflectionExplanation>
+  <StatsReport_BaseDeflectChance>Probabilité de renvoi de base</StatsReport_BaseDeflectChance>
+  <StatsReport_DeflectPerSkillLevel>Renvoit % par Niveau</StatsReport_DeflectPerSkillLevel>
+
+</LanguageData>

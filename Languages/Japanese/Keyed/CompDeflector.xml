@@ -1,8 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <LanguageData>
 
-  <NoDeflectorEquipped>デフレクターなし</NoDeflectorEquipped>
-  
   <DeflectChance>反射率</DeflectChance>
   <DeflectChanceEx>この武器が発射体を攻撃者に跳ね返す頻度を決定します。</DeflectChanceEx>
 
@@ -12,8 +10,19 @@
   <DeflectChancePerLevel>{0}スキルLv毎の反射率(%)</DeflectChancePerLevel>
   <DeflectChancePerLevelEx>使用者は{0}の各レベルごとに、この反射率（％）を加算して発射体を跳ね返すことができます。</DeflectChancePerLevelEx>
 
-  <StatsReport_DeflectionExplanation>反射率＝（基本反射率＋（スキルレベル×スキルLvごとの反射率(％)））×指の機能</StatsReport_DeflectionExplanation>
+  <BaseDeflectChance>基本反射率</BaseDeflectChance>
+
+  <StatsReport_DeflectionExplanation>ステータスは次の計算式で表示されます。\n反射率＝（基本反射率＋（スキルレベル×スキルLvごとの反射率(％)）\n\n</StatsReport_DeflectionExplanation>
+
+  <StatsReport_DeflectChance>反射率</StatsReport_DeflectChance>
+
   <StatsReport_BaseDeflectChance>基本反射率</StatsReport_BaseDeflectChance>
+
+  <StatsReport_SkillLevel>スキルLv</StatsReport_SkillLevel>
+
+
   <StatsReport_DeflectPerSkillLevel>スキルLvごとの反射率(％)</StatsReport_DeflectPerSkillLevel>
+
+  <StatsReport_ManipulationModifier>念動操作率</StatsReport_ManipulationModifier>
 
 </LanguageData>

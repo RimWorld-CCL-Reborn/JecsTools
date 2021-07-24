@@ -1,8 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <LanguageData>
 
-  <NoDeflectorEquipped>没有配备导流板</NoDeflectorEquipped>
-  
   <DeflectChance>偏转几率</DeflectChance>
   <DeflectChanceEx>决定该武器反射袭击者的抛射物或子弹的偏转几率。</DeflectChanceEx>
 
@@ -12,8 +10,19 @@
   <DeflectChancePerLevel>每点{0}技能增加的偏转百分比</DeflectChancePerLevel>
   <DeflectChancePerLevelEx>每点{0}技能提供角的偏转抛射物的几率。</DeflectChancePerLevelEx>
 
-  <StatsReport_DeflectionExplanation>偏转几率＝（基础偏转几率+（原力等级*每级加成））×操作能力</StatsReport_DeflectionExplanation>
+  <BaseDeflectChance>基础偏转几率</BaseDeflectChance>
+
+  <StatsReport_DeflectionExplanation>实际概率将以下面的公式来显示：\n偏转几率（基础偏转几率+（原力等级*每级加成）/操控效率\n\n</StatsReport_DeflectionExplanation>
+
+  <StatsReport_DeflectChance>偏转几率</StatsReport_DeflectChance>
+
   <StatsReport_BaseDeflectChance>基础偏转几率</StatsReport_BaseDeflectChance>
+
+  <StatsReport_SkillLevel>技能等级</StatsReport_SkillLevel>
+
+
   <StatsReport_DeflectPerSkillLevel>每点技能增加的偏转百分比</StatsReport_DeflectPerSkillLevel>
+
+  <StatsReport_ManipulationModifier>技巧修正</StatsReport_ManipulationModifier>
 
 </LanguageData>

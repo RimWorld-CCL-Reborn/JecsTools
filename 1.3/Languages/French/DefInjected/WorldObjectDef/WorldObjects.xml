@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+
+  <WorldObject_ProgressBar.label>barre de progression</WorldObject_ProgressBar.label>
+  <WorldObject_ProgressBar.description>Cela ne devrait pas être visible pour les joueurs.</WorldObject_ProgressBar.description>
+
+
+</LanguageData>

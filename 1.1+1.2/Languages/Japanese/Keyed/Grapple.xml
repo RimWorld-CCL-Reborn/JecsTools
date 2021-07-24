@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+
+  <JTGrapple_Success>捕縛に成功</JTGrapple_Success>
+  <JTGrapple_Failed>捕縛に失敗</JTGrapple_Failed>
+  <JTGrapple_DownedGrapple>倒れている相手：捕縛に成功</JTGrapple_DownedGrapple>
+  <JTGrapple_SneakGrapple>奇襲攻撃の相手：捕縛に成功</JTGrapple_SneakGrapple>
+  <JTGrapple_PrisonerGrapple>拘束中の相手：捕縛に成功</JTGrapple_PrisonerGrapple>
+  <JTGrapple_SleepingGrapple>睡眠中の相手：捕縛に成功</JTGrapple_SleepingGrapple>
+
+</LanguageData>
