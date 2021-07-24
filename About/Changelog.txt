@@ -7,7 +7,12 @@ Updated:
   - fix AbilityDecisionNode subclasses ignoring the invert field in certain cases
   - fix various assumptions that there's only a single CompAbilityUser when multiple CompAbilityUsers are common
 - CompOversizedWeapon: improved thing-on-ground detection for graphics
-- CompSlotLoadable: avoid showing unavailable slot options, updated to latest vanilla logic, avoid bloating save file if slottableThingDefs is same between SlotLoadable and SlotLoadableDef
+- CompSlotLoadable:
+  - avoid showing unavailable slot options
+  - improve stats display
+  - fix doesChangeStats only affecting stats display (and not the actual stats value)
+  - updated to latest vanilla logic (exceptions noted in TODOs), centralize most stats logic
+  - avoid bloating save file if slottableThingDefs is same between SlotLoadable and SlotLoadableDef
 - CompToggleDef:
   - improved GUI to be more like vanilla
   - add toggle GUI for colonists with toggleable weapons

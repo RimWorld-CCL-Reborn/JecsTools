@@ -239,10 +239,11 @@ namespace CompSlotLoadable
             }
         }
 
+        // TODO: Define SpecialDisplayStats to show stat entries in stats window? including hyperlinks to the slottables?
         public virtual string SlotDesc(SlotLoadable slot)
         {
             var s = new StringBuilder();
-            s.AppendLine(slot.def.description); //TODO
+            s.AppendLine(slot.DescriptionFlavor);
             var slotOccupant = slot.SlotOccupant;
             if (slotOccupant != null)
             {
@@ -256,55 +257,19 @@ namespace CompSlotLoadable
                 }
                 if (slot.Def?.doesChangeStats ?? false)
                 {
-                    var slotBonusProps = slotOccupant.TryGetCompSlottedBonus()?.Props;
-                    if (slotBonusProps != null)
+                    var slotBonus = slotOccupant.TryGetCompSlottedBonus();
+                    if (slotBonus != null)
                     {
-                        if (!slotBonusProps.statModifiers.NullOrEmpty())
+                        var first = true;
+                        foreach (var statEntry in slotBonus.SpecialDisplayStats())
                         {
-                            s.AppendLine();
-                            s.AppendLine(StringOf.StatModifiers);
-
-                            foreach (var mod in slotBonusProps.statModifiers)
-                            {
-                                var v = SlotLoadableUtility.DetermineSlottableStatAugment(slotOccupant, mod.stat);
-                                var modstring = mod.stat.ValueToString(v, ToStringNumberSense.Offset);
-                                //Log.Message("Determined slot stat augment "+v+" and made string "+modstring);
-                                s.AppendLine("  " + mod.stat.LabelCap + " " + modstring);
-                                //s.AppendLine("\t" + mod.stat.LabelCap + " " + mod.ToStringAsOffset);
-                            }
-                            /*
-                            // TODO: Fix this to display statModifiers
-                            var statMods = slotOccupant.def.statBases.FindAll(
-                                z => z.stat.category == StatCategoryDefOf.Weapon ||
-                                     z.stat.category == StatCategoryDefOf.EquippedStatOffsets);
-                            if (statMods.Count > 0)
+                            if (first)
                             {
                                 s.AppendLine();
-                                s.AppendLine("StatModifiers".Translate() + ":");
-                                foreach (StatModifier mod in statMods)
-                                {
-                                    s.AppendLine("\t" + mod.stat.LabelCap + " " + mod.ToStringAsOffset);
-                                }
+                                s.AppendLine(StringOf.StatModifiers);
+                                first = false;
                             }
-                            */
-                        }
-                        var damageDef = slotBonusProps.damageDef;
-                        if (damageDef != null)
-                        {
-                            s.AppendLine();
-                            s.AppendLine(string.Format(StringOf.DamageType, damageDef.LabelCap));
-                        }
-                        var defHealChance = slotBonusProps.defensiveHealChance;
-                        if (defHealChance != null)
-                        {
-                            var healText = defHealChance.woundLimit == int.MaxValue ? StringOf.all : defHealChance.woundLimit.ToString();
-                            s.AppendLine("  " + string.Format(StringOf.DefensiveHealChance, healText, defHealChance.chance.ToStringPercent()));
-                        }
-                        var vampChance = slotBonusProps.vampiricHealChance;
-                        if (vampChance != null)
-                        {
-                            var vampText = vampChance.woundLimit == int.MaxValue ? StringOf.all : vampChance.woundLimit.ToString();
-                            s.AppendLine("  " + string.Format(StringOf.VampiricChance, vampText, vampChance.chance.ToStringPercent()));
+                            s.AppendLine("  " + statEntry.LabelCap + " " + statEntry.ValueString);
                         }
                     }
                 }

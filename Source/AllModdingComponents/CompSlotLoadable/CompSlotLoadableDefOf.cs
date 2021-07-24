@@ -8,6 +8,8 @@ namespace CompSlotLoadable
     {
         public static JobDef GatherSlotItem;
 
+        public static StatCategoryDef SlotLoadable;
+
         static CompSlotLoadableDefOf() => DefOfHelper.EnsureInitializedInCtor(typeof(CompSlotLoadableDefOf));
     }
 }

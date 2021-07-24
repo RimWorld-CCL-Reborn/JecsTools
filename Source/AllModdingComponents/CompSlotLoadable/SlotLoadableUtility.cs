@@ -57,42 +57,21 @@ namespace CompSlotLoadable
         // Get the thing's modification to stat from its slots.
         public static float CheckThingSlotsForStatAugment(Thing slottedThing, StatDef stat)
         {
-            var retval = 0.0f;
+            var statOffset = 0.0f;
             var slots = slottedThing.GetSlots();
             if (slots != null)
+            {
                 foreach (var slot in slots)
                 {
-                    var slotOccupant = slot.SlotOccupant;
-                    if (slotOccupant != null)
-                        retval += DetermineSlottableStatAugment(slotOccupant, stat);
-                }
-            return retval;
-        }
-
-        public static float DetermineSlottableStatAugment(Thing slottable, StatDef stat)
-        {
-            var retval = 0.0f;
-            var slotBonus = slottable.TryGetCompSlottedBonus();
-            if (slotBonus?.Props?.statModifiers is List<StatModifier> statModifiers)
-                foreach (var thisStat in statModifiers)
-                    //Log.Message("Check for modding "+stat+"  against "+thisStat.stat);
-                    if (thisStat.stat == stat)
+                    if (slot.Def?.doesChangeStats ?? false)
                     {
-                        //Log.Message("adding in stat "+thisStat.stat+":"+thisStat.value+" to result "+retval);
-                        retval += thisStat.value;
-
-                        // apply stats parts from Slottable
-                        if (!stat.parts.NullOrEmpty())
-                        {
-                            var req = StatRequest.For(slottable);
-                            for (var i = 0; i < stat.parts.Count; i++)
-                                //Log.Message("adding in parts "+stat.parts[i]);
-                                stat.parts[i].TransformValue(req, ref retval);
-                            //Log.Message("added in parts of a stat for result "+retval);
-                        }
+                        var slotBonus = slot.SlotOccupant?.TryGetCompSlottedBonus();
+                        if (slotBonus != null)
+                            statOffset += slotBonus.GetStatOffset(stat);
                     }
-
-            return retval;
+                }
+            }
+            return statOffset;
         }
     }
 }

@@ -28,6 +28,7 @@ namespace CompSlotLoadable
                 postfix: new HarmonyMethod(type, nameof(DrawThingRow_PostFix)));
             harmony.Patch(AccessTools.Method(typeof(Pawn), nameof(Pawn.PostApplyDamage)),
                 postfix: new HarmonyMethod(type, nameof(PostApplyDamage_PostFix)));
+            // TODO: Patch StatWorker.GetExplanationUnfinalized to include stat augment explanation?
             harmony.Patch(AccessTools.Method(typeof(StatWorker), nameof(StatWorker.GetValue), new[] { typeof(Thing), typeof(bool) }),
                 postfix: new HarmonyMethod(type, nameof(StatWorker_GetValue_PostFix)));
             harmony.Patch(AccessTools.Method(typeof(StatWorker), nameof(StatWorker.StatOffsetFromGear)),
@@ -59,11 +60,10 @@ namespace CompSlotLoadable
                     if (defensiveHealChance != null)
                     {
                         var randValue = Rand.Value;
-                        //Log.Message("defensiveHealingCalled: randValue = " + randValue.ToString());
+                        //Log.Message("defensiveHealingCalled: randValue = " + randValue);
                         if (randValue <= defensiveHealChance.chance)
                         {
-                            MoteMaker.ThrowText(__instance.DrawPos, __instance.Map,
-                                "Heal Chance: Success", 6f); // TODO: Translate()?
+                            MoteMaker.ThrowText(__instance.DrawPos, __instance.Map, "Heal Chance: Success", 6f); // TODO: Translate()?
                             ApplyHealing(__instance, defensiveHealChance.woundLimit, defensiveHealChance.amountRange);
                         }
                     }
@@ -165,6 +165,12 @@ namespace CompSlotLoadable
                     }
         }
 
+        // XXX: If any slot has a CompSlottedBonus with damageDef, all existing melee attacks are replaced with a custom melee attack
+        // that uses that damageDef & custom armorPenetration & damage = orig damage * 0.8~1.2. The logic is based off Verb_MeleeAttackDamage's,
+        // but is missing extra damages, surprise attack, and potentially other logic.
+        // It also results in a melee attack per CompSlottedBonus with damageDef, which sounds broken.
+        // TODO: Consider revamping this such that it keeps reuses existing melee attacks, overriding their damage type, armor penetration,
+        // and damage, randomly selected from available CompSlottedBonus with damageDef.
         // RimWorld.Verb_MeleeAttackDamage
         private const float MeleeDamageRandomFactorMin = 0.8f;
         private const float MeleeDamageRandomFactorMax = 1.2f;
@@ -217,6 +223,7 @@ namespace CompSlotLoadable
                             }
 
                             damageAngle ??= (target.Thing.Position - casterPawn.Position).ToVector3();
+                            // TODO: armorPenetration should somehow be calculated via VerbProperties.AdjustedArmorPenetration.
                             var damageInfo = new DamageInfo(damageDef, damageAmount, slotBonusProps.armorPenetration,
                                 -1f, casterPawn, weapon: equipmentSource.def);
                             damageInfo.SetBodyRegion(BodyPartHeight.Undefined, BodyPartDepth.Outside);
@@ -235,11 +242,10 @@ namespace CompSlotLoadable
                         if (vampiricEffect != null)
                         {
                             var randValue = Rand.Value;
-                            //Log.Message("vampiricHealingCalled: randValue = " + randValue.ToString());
+                            //Log.Message("vampiricHealingCalled: randValue = " + randValue);
                             if (randValue <= vampiricEffect.chance)
                             {
                                 MoteMaker.ThrowText(casterPawn.DrawPos, casterPawn.Map, "Vampiric Effect: Success", 6f); // TODO: Translate()?
-                                //MoteMaker.ThrowText(casterPawn.DrawPos, casterPawn.Map, "Success".Translate(), 6f);
                                 damageAngle ??= (target.Thing.Position - casterPawn.Position).ToVector3();
                                 ApplyHealing(casterPawn, vampiricEffect.woundLimit, vampiricEffect.amountRange, target.Pawn,
                                     vampiricEffect.damageDef, vampiricEffect.armorPenetration, damageAngle);

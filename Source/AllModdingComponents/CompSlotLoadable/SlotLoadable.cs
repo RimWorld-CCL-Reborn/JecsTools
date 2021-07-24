@@ -6,6 +6,7 @@ using Verse;
 
 namespace CompSlotLoadable
 {
+    // Based off ActiveDropPodInfo.
     public class SlotLoadable : Thing, IThingHolder
     {
         //Spawn methods
@@ -105,7 +106,7 @@ namespace CompSlotLoadable
                 if (slot.Count == 0)
                     return null;
                 if (slot.Count > 1)
-                    Log.Error("ContainedThing used on a DropPodInfo holding > 1 thing.");
+                    Log.Error("ContainedThing used on a SlotLoadable holding > 1 thing.");
                 return slot[0];
             }
             set
