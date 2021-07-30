@@ -1,3 +1,7 @@
+1.3.0.3 (07-30-2021)
+========================
+Due to comptability issues, the patch for Enable Oversized Weapons will require additional work. Reverting back to the previous version.
+
 1.3.0.2 (07-29-2021)
 ========================
 Carny Senpai's Enable Oversized Weapons is now supported and JecsTools CompOversizedWeapon will yield for it.
