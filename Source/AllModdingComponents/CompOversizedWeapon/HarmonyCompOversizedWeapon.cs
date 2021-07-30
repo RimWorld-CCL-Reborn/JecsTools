@@ -6,12 +6,21 @@ using Verse;
 namespace CompOversizedWeapon
 {
     [StaticConstructorOnStartup]
+
     internal static class HarmonyCompOversizedWeapon
     {
         static HarmonyCompOversizedWeapon()
         {
             var harmony = new Harmony("jecstools.jecrell.comps.oversized");
             var type = typeof(HarmonyCompOversizedWeapon);
+            var CarnySenpaiEnableOversizedWeaponsModLoaded = ModsConfig.IsActive("CarnySenpai.EnableOversizedWeapons");
+
+            if (CarnySenpaiEnableOversizedWeaponsModLoaded)
+            {
+                Log.Message("JecsTools:: Using Carny Senpai's Enable Oversized Weapons instead of CompOversizedWeapon");
+                return;
+            }
+            Log.Warning("JecsTools CompOversizedWeapon Loaded:: This component is no longer recommended for performance. Please see Carny Senpai's Enable Oversized Weapons mod. Once the Carny Senpai's mod is loaded, it will be used instead of CompOversizedWeapon");
 
             harmony.Patch(AccessTools.Method(typeof(PawnRenderer), nameof(PawnRenderer.DrawEquipmentAiming)),
                 prefix: new HarmonyMethod(type, nameof(DrawEquipmentAimingPreFix)));
