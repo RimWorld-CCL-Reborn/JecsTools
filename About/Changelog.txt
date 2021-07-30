@@ -54,6 +54,7 @@ New features and fixes:
   - knockDistance now accepts floating points
   - add knockDistanceAbsorbedPercentCurve and knockDistanceMassCurve that controls how damage soak and mass affect knock distance
   - improve push angle algorithm so that it's no longer always a diagonal
+  - prevent multiple knockbacks occurring due to multiple damage infos (e.g. extra damage) for same instigator+target
   - FlyingObject: configurable props (ProjectileProperties) and accuracyRadius
   - FlyingObject_Equipable allows equipping apparel along (not just weapons)
 - PawnShields: support generating biocoded shields when generating pawns

@@ -11,7 +11,7 @@ namespace AbilityUser
             if (flyingThing != null)
             {
                 GenSpawn.Spawn(flyingThing, Position, Map);
-                if (launcher is Pawn equipper && equipper.equipment != null && flyingThing is ThingWithComps flyingThingWithComps)
+                if (launcher is Pawn {equipment: not null} equipper && flyingThing is ThingWithComps flyingThingWithComps)
                     Equip(equipper, flyingThingWithComps);
             }
             Destroy();
@@ -21,7 +21,7 @@ namespace AbilityUser
         {
             if (thingWithComps.def.IsApparel)
             {
-                Apparel apparel = (Apparel)thingWithComps;
+                var apparel = (Apparel)thingWithComps;
                 equipper.apparel.Wear(apparel);
                 equipper.outfits?.forcedHandler.SetForced(apparel, true);
             }
