@@ -123,7 +123,7 @@ namespace CompActivatableEffect
             var weaponComp = compActivatableEffect.GetOversizedWeapon;
             if (weaponComp != null)
             {
-                offset = weaponComp.Props.OffsetFromRotation(___pawn.Rotation);
+                offset = OffsetFromRotation(weaponComp.Props, ___pawn.Rotation);
             }
 
             if (compActivatableEffect.CompDeflectorIsAnimatingNow)
@@ -145,6 +145,20 @@ namespace CompActivatableEffect
             var s = new Vector3(eq.def.graphicData.drawSize.x, 1f, eq.def.graphicData.drawSize.y);
             var matrix = Matrix4x4.TRS(drawLoc + offset, Quaternion.AngleAxis(angle, Vector3.up), s);
             Graphics.DrawMesh(flip ? MeshPool.plane10Flip : MeshPool.plane10, matrix, matSingle, 0);
+        }
+
+        // Workaround for mod lists that contain other mods with an outdated copy of CompOversizedWeapon that's loaded before ours:
+        // avoid calling new code that's in our version.
+        private static Vector3 OffsetFromRotation(CompOversizedWeapon.CompProperties_OversizedWeapon weaponComp, Rot4 rotation)
+        {
+            if (rotation == Rot4.North)
+                return weaponComp.northOffset;
+            else if (rotation == Rot4.East)
+                return weaponComp.eastOffset;
+            else if (rotation == Rot4.West)
+                return weaponComp.westOffset;
+            else
+                return weaponComp.southOffset;
         }
 
         public static void GetGizmosPostfix(Pawn_EquipmentTracker __instance, ref IEnumerable<Gizmo> __result)
