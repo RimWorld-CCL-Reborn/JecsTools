@@ -1,6 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <LanguageData>
 
+  <AU_NoLineOfSight>視線が通らない</AU_NoLineOfSight>
+
   <AU_NoTargets>指定可能な目標がありません。</AU_NoTargets>
 
   <AU_DISABLED>機能停止</AU_DISABLED>

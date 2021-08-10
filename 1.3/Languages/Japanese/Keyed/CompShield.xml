@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>
+
+  <ShieldNotEquipped>シールドを未装備</ShieldNotEquipped>
+
+  <ShieldBlockMeleeNever>シールドは近接攻撃をブロックしない</ShieldBlockMeleeNever>
+  <ShieldBlockRangedNever>シールドは遠距離攻撃をブロックしない</ShieldBlockRangedNever>
+  <ShieldAbsorbDamageNever>シールドはブロックした攻撃ダメージを吸収しない</ShieldAbsorbDamageNever>
+
+  <ShieldHitPointAutoDiscardThreshold>しきい値を破棄</ShieldHitPointAutoDiscardThreshold>
+  <ShieldHitPointAutoDiscardThresholdEx>シールドが装備者によって自動的に破棄されたときのヒットポイントのしきい値(パーセンテージ)</ShieldHitPointAutoDiscardThresholdEx>
+  <ShieldHitPointAutoDiscardThresholdNever>シールドが装備者によって自動的に破棄されることはありません</ShieldHitPointAutoDiscardThresholdNever>
+
+  <ShieldDamageToFatigueFactor>ダメージによる疲労係数</ShieldDamageToFatigueFactor>
+  <ShieldDamageToFatigueFactorEx>攻撃をブロックした再に、ダメージがどの程度割合で疲労ダメージに変換されるかです。</ShieldDamageToFatigueFactorEx>
+  <ShieldDamageToFatigueFactorNever>シールドの使用者はブロックした攻撃では決して疲労しない</ShieldDamageToFatigueFactorNever>
+
+</LanguageData>
