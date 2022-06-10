@@ -93,25 +93,23 @@ namespace AbilityUserAI
         }
 
         /// <summary>
-        ///     Convenience function for checking whether the pawns are allies.
+        ///     Convenience function for checking whether the pawns are allies. Handles null Factions.
         /// </summary>
         /// <param name="first">Initiator pawn that is checking.</param>
         /// <param name="second">Second pawn to check with.</param>
         /// <returns>True if they are allies. False if not.</returns>
         public static bool AreAllies(Thing first, Thing second)
         {
-            //If you are yourself, then you are definitely allies.
-            if (first == second)
+            //You are allies with yourself and others in your factions. Treat null as a faction
+            if (first.Faction == second.Faction)
                 return true;
 
-            //Null factions are allies.
-            if (first.Faction == null && second.Faction == null)
-                return true;
+            //Otherwise, null Factions are not allies with non-null Factions
+            if (first.Faction == null || second.Faction == null)
+                return false;
 
-            //Be allies if in the same Faction or if the goodwill with the other Faction is abouve 50%.
-            if (second.Faction == null)
-                return first.Faction == second.Faction;
-            return first.Faction == second.Faction || first.Faction.GoodwillWith(second.Faction) >= 0.5f;
+            //Be allies if the goodwill with the other Faction is above 50%.
+            return first.Faction.GoodwillWith(second.Faction) >= 0.5f;
         }
 
         /// <summary>
