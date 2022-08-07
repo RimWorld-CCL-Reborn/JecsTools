@@ -621,6 +621,9 @@ namespace JecsTools
                             continue;
                         }
 
+                        // This variable tracks whether the damage should be excluded by a damageTypesToExclude
+                        // rule for breaking out of a nested for loop without using goto
+                        bool damageExcluded = false;
                         if (!soakSettings.damageTypesToExclude.NullOrEmpty())
                         {
                             DebugMessage($"c6c:: Damage Soak Exlusions: ");
@@ -630,9 +633,12 @@ namespace JecsTools
                                 if (exclusion == damageDef)
                                 {
                                     DebugMessage($"c6c:: Exclusion match. Damage soak aborted.");
-                                    continue;
+                                    damageExcluded = true;
+                                    break;
                                 }
                             }
+                            if (damageExcluded)
+                                continue;
                         }
 
                         var dmgAmount = dinfo.Amount;
