@@ -6,6 +6,7 @@
 <JTGrapple_DownedGrapple>Attaque abattue: succès du grappin</JTGrapple_DownedGrapple>
 <JTGrapple_SneakGrapple>Attaque furtive: succès du grappin</JTGrapple_SneakGrapple>
 <JTGrapple_PrisonerGrapple>Victime retenue: succès du grappin</JTGrapple_PrisonerGrapple>	
-<JTGrapple_SleepingGrapple>Victime endormie: succès du grappin</JTGrapple_SleepingGrapple>	
+<JTGrapple_SleepingGrapple>Victime endormie: succès du grappin</JTGrapple_SleepingGrapple>
+<JTGrapple_PetGrapple>Victime animal de compagnie: succès du grappin</JTGrapple_PetGrapple>
 	
 </LanguageData>

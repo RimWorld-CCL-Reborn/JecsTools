@@ -150,6 +150,15 @@ namespace JecsTools
                     MoteMaker.ThrowText(grappler.DrawPos, grappler.Map, "JTGrapple_PrisonerGrapple".Translate());
                 return true;
             }
+
+            // If grappler attempts to grapple an animal from the same faction as him, grapple always succeeds
+            if (victim.Faction != null && victim.Faction == grappler.Faction && victim.RaceProps.Animal)
+            {
+                if (throwText)
+                    MoteMaker.ThrowText(grappler.DrawPos, grappler.Map, "JTGrapple_PetGrapple".Translate());
+                return true;
+            }
+
             return false;
         }
 

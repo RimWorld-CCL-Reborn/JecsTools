@@ -5,7 +5,8 @@
 <JTGrapple_Failed>Grapple Failed</JTGrapple_Failed>
 <JTGrapple_DownedGrapple>Downed Attack: Grapple Success</JTGrapple_DownedGrapple>
 <JTGrapple_SneakGrapple>Sneak Attack: Grapple Success</JTGrapple_SneakGrapple>
-<JTGrapple_PrisonerGrapple>Restrained Victim: Grapple Success</JTGrapple_PrisonerGrapple>	
-<JTGrapple_SleepingGrapple>Sleeping Victim: Grapple Success</JTGrapple_SleepingGrapple>	
-	
+<JTGrapple_PrisonerGrapple>Restrained Victim: Grapple Success</JTGrapple_PrisonerGrapple>
+<JTGrapple_SleepingGrapple>Sleeping Victim: Grapple Success</JTGrapple_SleepingGrapple>
+<JTGrapple_PetGrapple>Pet Victim: Grapple Success</JTGrapple_PetGrapple>
+
 </LanguageData>
