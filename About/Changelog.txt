@@ -1,3 +1,7 @@
+1.3.0.4 (08-08-2022)
+========================
+damageTypesToExclude was not working correctly and has been fixed. Grappling a pet will always succeed which should prevent some fustration. Credit for this update goes to Gefallener from our RoM Discord.
+
 1.3.0.3 (07-30-2021)
 ========================
 Due to comptability issues, the patch for Enable Oversized Weapons will require additional work. Reverting back to the previous version.
