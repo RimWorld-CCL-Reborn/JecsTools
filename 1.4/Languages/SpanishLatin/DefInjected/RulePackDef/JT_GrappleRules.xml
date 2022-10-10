@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+
+  <JT_GrappleSuccess.rulePack.rulesStrings.0>r_logentry->[INITIATOR_nameDef] [grappled] [SUBJECT_definite] with [SUBJECT_possessive] [culpritHediff_originaltarget_label].</JT_GrappleSuccess.rulePack.rulesStrings.0>
+  <JT_GrappleSuccess.rulePack.rulesStrings.1>grappled->grappled</JT_GrappleSuccess.rulePack.rulesStrings.1>
+  <JT_GrappleSuccess.rulePack.rulesStrings.2>grappled->seized</JT_GrappleSuccess.rulePack.rulesStrings.2>
+  <JT_GrappleSuccess.rulePack.rulesStrings.3>grappled->took hold of</JT_GrappleSuccess.rulePack.rulesStrings.3>
+
+  <JT_GrappleFailed.rulePack.rulesStrings.0>r_logentry->[INITIATOR_nameDef] [triedtograpple] [SUBJECT_definite] with [SUBJECT_possessive] [culpritHediff_originaltarget_label], [but] [failedmeta].</JT_GrappleFailed.rulePack.rulesStrings.0>
+  <JT_GrappleFailed.rulePack.rulesStrings.1>tried->tried</JT_GrappleFailed.rulePack.rulesStrings.1>
+  <JT_GrappleFailed.rulePack.rulesStrings.2>tried->attempted</JT_GrappleFailed.rulePack.rulesStrings.2>
+  <JT_GrappleFailed.rulePack.rulesStrings.3>grappleinf->to grapple</JT_GrappleFailed.rulePack.rulesStrings.3>
+  <JT_GrappleFailed.rulePack.rulesStrings.4>grappleinf->to seize</JT_GrappleFailed.rulePack.rulesStrings.4>
+  <JT_GrappleFailed.rulePack.rulesStrings.5>grappleinf->to hold onto</JT_GrappleFailed.rulePack.rulesStrings.5>
+  <JT_GrappleFailed.rulePack.rulesStrings.6>triedtograpple->[tried] [grappleinf]</JT_GrappleFailed.rulePack.rulesStrings.6>
+  <JT_GrappleFailed.rulePack.rulesStrings.7>but->but</JT_GrappleFailed.rulePack.rulesStrings.7>
+  <JT_GrappleFailed.rulePack.rulesStrings.8>but->however</JT_GrappleFailed.rulePack.rulesStrings.8>
+  <JT_GrappleFailed.rulePack.rulesStrings.9>but->even so</JT_GrappleFailed.rulePack.rulesStrings.9>
+  <JT_GrappleFailed.rulePack.rulesStrings.10>but->yet</JT_GrappleFailed.rulePack.rulesStrings.10>
+  <JT_GrappleFailed.rulePack.rulesStrings.11>failed->failed</JT_GrappleFailed.rulePack.rulesStrings.11>
+  <JT_GrappleFailed.rulePack.rulesStrings.12>failed->missed</JT_GrappleFailed.rulePack.rulesStrings.12>
+  <JT_GrappleFailed.rulePack.rulesStrings.13>dodged->dodged</JT_GrappleFailed.rulePack.rulesStrings.13>
+  <JT_GrappleFailed.rulePack.rulesStrings.14>dodged->slipped away</JT_GrappleFailed.rulePack.rulesStrings.14>
+  <JT_GrappleFailed.rulePack.rulesStrings.15>spectacularly->spectacularly</JT_GrappleFailed.rulePack.rulesStrings.15>
+  <JT_GrappleFailed.rulePack.rulesStrings.16>spectacularly->miserably</JT_GrappleFailed.rulePack.rulesStrings.16>
+  <JT_GrappleFailed.rulePack.rulesStrings.17>spectacularly->completely</JT_GrappleFailed.rulePack.rulesStrings.17>
+  <JT_GrappleFailed.rulePack.rulesStrings.18>spectacularly->utterly</JT_GrappleFailed.rulePack.rulesStrings.18>
+  <JT_GrappleFailed.rulePack.rulesStrings.19>failedmeta->[INITIATOR_pronoun] [failed]</JT_GrappleFailed.rulePack.rulesStrings.19>
+  <JT_GrappleFailed.rulePack.rulesStrings.20>failedmeta->[INITIATOR_pronoun] [failed] [spectacularly]</JT_GrappleFailed.rulePack.rulesStrings.20>
+  <JT_GrappleFailed.rulePack.rulesStrings.21>failedmeta->[SUBJECT_definite] [dodged]</JT_GrappleFailed.rulePack.rulesStrings.21>
+
+
+</LanguageData>

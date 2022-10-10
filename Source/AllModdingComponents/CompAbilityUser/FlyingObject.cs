@@ -163,12 +163,76 @@ namespace AbilityUser
             if (impactDamage != null)
             {
                 for (var i = 0; i < timesToDamage; i++)
+<<<<<<< Updated upstream
                     if (damageLaunched)
                         flyingThing.TakeDamage(impactDamage.Value);
                     else
                         hitThing.TakeDamage(impactDamage.Value);
                 if (explosion)
                     GenExplosion.DoExplosion(Position, Map, 0.9f, DamageDefOf.Stun, this);
+=======
+                {
+                    foreach (var extraDamage in props.extraDamages)
+                    {
+                        var impactDamage = new DamageInfo(extraDamage.def, extraDamage.amount, extraDamage.AdjustedArmorPenetration(),
+                            ExactRotation.eulerAngles.y, instigator: this, weapon: equipmentDef, intendedTarget: usedTarget);
+                        hitThing.TakeDamage(impactDamage);
+                    }
+                }
+            }
+
+            if (props.explosionRadius > 0f)
+            {
+                // Based off Projectile_Explosive.
+                var explosionEffect = props.explosionEffect;
+                if (explosionEffect != null)
+                {
+                    Effecter effecter = explosionEffect.Spawn();
+                    var target = new TargetInfo(pos, map);
+                    effecter.Trigger(target, target);
+                    effecter.Cleanup();
+                }
+                GenExplosion.DoExplosion(
+                    center: pos, 
+                    map,
+                    props.explosionRadius,
+                    props.damageDef,
+                    instigator: this, 
+                    props.GetDamageAmount(1f),
+                    props.GetArmorPenetration(1f),
+                    props.soundExplode, 
+                    weapon: null, 
+                    projectile: null, 
+                    intendedTarget: null,
+                    props.postExplosionSpawnThingDef,
+                    props.postExplosionSpawnChance,
+                    props.postExplosionSpawnThingCount,
+                    props.postExplosionGasType,
+                    props.applyDamageToExplosionCellsNeighbors,
+                    props.preExplosionSpawnThingDef, 
+                    props.preExplosionSpawnChance,
+                    props.preExplosionSpawnThingCount, 
+                    props.explosionChanceToStartFire,
+                    props.explosionDamageFalloff, 
+                    direction: null, 
+                    ignoredThings: null);
+            }
+
+            GenSpawn.Spawn(flyingThing, pos, map);
+            Destroy();
+        }
+
+        public override string ToString()
+        {
+            var props = Props;
+            var propsStr = Gen.GetNonNullFieldsDebugInfo(props);
+            if (props.extraDamages != null)
+            {
+                var impactDamageStrs = new List<string>();
+                foreach (var extraDamage in props.extraDamages)
+                    impactDamageStrs.Add($"({Gen.GetNonNullFieldsDebugInfo(extraDamage)})");
+                propsStr = propsStr.Replace(props.extraDamages.ToStringSafe(), "{" + impactDamageStrs.ToStringSafeEnumerable() + "}");
+>>>>>>> Stashed changes
             }
             GenSpawn.Spawn(flyingThing, Position, Map);
             Destroy(DestroyMode.Vanish);

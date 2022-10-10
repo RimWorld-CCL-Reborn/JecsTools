@@ -9,9 +9,13 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>AbilityUserAI</RootNamespace>
     <AssemblyName>AbilityUserAI</AssemblyName>
+<<<<<<< Updated upstream
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
+=======
+    <Configurations>RW1.3;RW1.3Unstable;RW1.4;RW1.4Unstable</Configurations>
+>>>>>>> Stashed changes
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>false</DebugSymbols>

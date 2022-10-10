@@ -29,9 +29,15 @@ namespace CompActivatableEffect
             harmony.Patch(typeof(Pawn_DraftController).GetMethod("set_Drafted"), null,
                 new HarmonyMethod(typeof(HarmonyCompActivatableEffect).GetMethod("set_DraftedPostFix")));
 
+<<<<<<< Updated upstream
             
             harmony.Patch(typeof(Pawn).GetMethod("ExitMap"),
                 new HarmonyMethod(typeof(HarmonyCompActivatableEffect).GetMethod("ExitMap_PreFix")), null);
+=======
+            harmony.Patch(AccessTools.Method(typeof(Verb), nameof(Verb.TryStartCastOn),
+                    new[] { typeof(LocalTargetInfo), typeof(LocalTargetInfo), typeof(bool), typeof(bool), typeof(bool), typeof(bool) }),
+                prefix: new HarmonyMethod(type, nameof(TryStartCastOnPrefix)));
+>>>>>>> Stashed changes
 
             
             harmony.Patch(typeof(Pawn_EquipmentTracker).GetMethod("TryDropEquipment"),
@@ -42,6 +48,7 @@ namespace CompActivatableEffect
                 new HarmonyMethod(typeof(HarmonyCompActivatableEffect).GetMethod("set_DraftedPostFix")));
         }
 
+<<<<<<< Updated upstream
         //=================================== COMPACTIVATABLE
 
         // Verse.Pawn_EquipmentTracker
@@ -71,13 +78,20 @@ namespace CompActivatableEffect
                 eq.Primary is ThingWithComps t &&
                 t.GetComp<CompActivatableEffect>() is CompActivatableEffect compActivatableEffect)
                 if (value == false)
+=======
+        public static void GetGizmosPostfix(Pawn_EquipmentTracker __instance, ref IEnumerable<Gizmo> __result)
+        {
+            if (__instance.Primary?.GetCompActivatableEffect() is CompActivatableEffect compActivatableEffect)
+                if (__instance.pawn.Faction == Faction.OfPlayer)
+>>>>>>> Stashed changes
                 {
-                    if (compActivatableEffect.CurrentState == CompActivatableEffect.State.Activated)
-                        compActivatableEffect.TryDeactivate();
+                    if (compActivatableEffect.GizmosOnEquip)
+                        __result = __result.Concat(compActivatableEffect.EquippedGizmos());
                 }
                 else
                 {
                     if (compActivatableEffect.CurrentState == CompActivatableEffect.State.Deactivated)
+<<<<<<< Updated upstream
                         compActivatableEffect.TryActivate();
                 }
         }
@@ -117,6 +131,10 @@ namespace CompActivatableEffect
                 return false;
             }
             return true;
+=======
+                        compActivatableEffect.Activate();
+                }
+>>>>>>> Stashed changes
         }
 
         ///// <summary>
@@ -256,7 +274,70 @@ namespace CompActivatableEffect
             //Graphics.DrawMesh(mesh, drawLoc, Quaternion.AngleAxis(num, Vector3.up), matSingle, 0);
         }
 
+<<<<<<< Updated upstream
         public static IEnumerable<Gizmo> GizmoGetter(CompActivatableEffect compActivatableEffect)
+=======
+
+        public static bool TryStartCastOnPrefix(ref bool __result, Verb __instance)
+        {
+            if (__instance.caster is Pawn pawn && pawn.Spawned && pawn.equipment?.Primary is ThingWithComps thingWithComps &&
+                thingWithComps.GetCompActivatableEffect() is CompActivatableEffect compActivatableEffect)
+            {
+                // EquipmentSource throws errors when checked while casting abilities with a weapon equipped.
+                // to avoid this error preventing our code from executing, we do a try/catch.
+                // TODO: Is this still the case?
+                try
+                {
+                    if (__instance.EquipmentSource != thingWithComps)
+                        return true;
+                }
+                catch (Exception ex)
+                {
+                    Log.ErrorOnce("Verb.TryStartCastOn EquipmentSource threw exception: " + ex,
+                        __instance.GetUniqueLoadID().GetHashCode());
+                }
+
+                if (compActivatableEffect.CurrentState == CompActivatableEffect.State.Activated)
+                    return true;
+                else if (compActivatableEffect.TryActivate())
+                    return true;
+                if (Find.TickManager.TicksGame % GenTicks.TickRareInterval == 0)
+                    Messages.Message("DeactivatedWarning".Translate(pawn.Label),
+                        MessageTypeDefOf.RejectInput);
+                __result = false;
+                return false;
+            }
+            return true;
+        }
+
+
+        public static void ExitMap_PreFix(Pawn __instance)
+        {
+            if (__instance.equipment?.Primary?.GetCompActivatableEffect() is CompActivatableEffect compActivatableEffect &&
+                compActivatableEffect.CurrentState == CompActivatableEffect.State.Activated)
+                compActivatableEffect.TryDeactivate();
+        }
+
+        public static void set_DraftedPostFix(Pawn_DraftController __instance, bool value)
+        {
+            if (__instance.pawn?.equipment?.Primary?.GetCompActivatableEffect() is CompActivatableEffect compActivatableEffect)
+                if (value == false)
+                {
+                    if (compActivatableEffect.CurrentState == CompActivatableEffect.State.Activated)
+                        compActivatableEffect.TryDeactivate();
+                }
+                else
+                {
+                    if (compActivatableEffect.CurrentState == CompActivatableEffect.State.Deactivated)
+                        compActivatableEffect.TryActivate();
+                }
+        }
+
+
+        // Workaround for mod lists that contain other mods with an outdated copy of CompOversizedWeapon that's loaded before ours:
+        // avoid calling new code that's in our version.
+        private static Vector3 OffsetFromRotation(CompOversizedWeapon.CompProperties_OversizedWeapon weaponComp, Rot4 rotation)
+>>>>>>> Stashed changes
         {
             //Log.Message("5");
             if (compActivatableEffect.GizmosOnEquip)
@@ -273,6 +354,7 @@ namespace CompActivatableEffect
             }
         }
 
+<<<<<<< Updated upstream
         public static void GetGizmosPrefix(Pawn __instance, ref IEnumerable<Gizmo> __result)
         {
             //Log.Message("1");
@@ -301,5 +383,7 @@ namespace CompActivatableEffect
                 }
             }
         }
+=======
+>>>>>>> Stashed changes
     }
 }

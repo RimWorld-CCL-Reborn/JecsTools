@@ -56,6 +56,7 @@ namespace JecsTools
                     new TargetInfo(targetPosition, map, false));
                 effecter.Cleanup();
             }
+<<<<<<< Updated upstream
             IntVec3 position = targetPosition;
             Map map2 = map;
             float explosionRadius = this.def.projectile.explosionRadius;
@@ -75,6 +76,31 @@ namespace JecsTools
                 preExplosionSpawnThingDef, this.def.projectile.preExplosionSpawnChance,
                 this.def.projectile.preExplosionSpawnThingCount, this.def.projectile.explosionChanceToStartFire,
                 this.def.projectile.explosionDamageFalloff);
+=======
+            GenExplosion.DoExplosion(
+                targetPosition, 
+                map, 
+                def.projectile.explosionRadius, 
+                def.projectile.damageDef,
+                launcher, 
+                def.projectile.GetDamageAmount(1f), 
+                0f, 
+                def.projectile.soundExplode, 
+                equipmentDef, 
+                def, 
+                null,
+                def.projectile.postExplosionSpawnThingDef,
+                def.projectile.postExplosionSpawnChance,
+                def.projectile.postExplosionSpawnThingCount,
+                def.projectile.postExplosionGasType,
+                def.projectile.applyDamageToExplosionCellsNeighbors,
+                def.projectile.preExplosionSpawnThingDef, 
+                def.projectile.preExplosionSpawnChance,
+                def.projectile.preExplosionSpawnThingCount, 
+                def.projectile.explosionChanceToStartFire,
+                def.projectile.explosionDamageFalloff
+           );
+>>>>>>> Stashed changes
         }
 
         private int ticksToDetonation;
@@ -435,7 +461,7 @@ namespace JecsTools
         /// <summary>
         /// Impacts a pawn/object or the ground.
         /// </summary>
-        protected override void Impact(Thing hitThing)
+        protected override void Impact(Thing hitThing, bool blockedByShield = false)
         {
             if (this.Def.createsExplosion)
             {

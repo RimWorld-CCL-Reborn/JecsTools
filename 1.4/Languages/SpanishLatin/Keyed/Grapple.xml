@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+
+  <JTGrapple_Success>Se aferro exitosamente</JTGrapple_Success>
+  <JTGrapple_Failed>Fallo en aferrarse</JTGrapple_Failed>
+  <JTGrapple_DownedGrapple>Ataque a un caído: Se aferro exitosamente</JTGrapple_DownedGrapple>
+  <JTGrapple_SneakGrapple>Ataque sigiloso: Se aferro exitosamente</JTGrapple_SneakGrapple>
+  <JTGrapple_PrisonerGrapple>Victima Contenida: Se aferro exitosamente</JTGrapple_PrisonerGrapple>
+  <JTGrapple_SleepingGrapple>Victima Durmiendo: Se aferro exitosamente</JTGrapple_SleepingGrapple>
+
+</LanguageData>

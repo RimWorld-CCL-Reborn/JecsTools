@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+
+  <Laser.label>火傷</Laser.label>
+  <Laser.deathMessage>{0}はレーザーに焼かれて死んだ。</Laser.deathMessage>
+
+</LanguageData>

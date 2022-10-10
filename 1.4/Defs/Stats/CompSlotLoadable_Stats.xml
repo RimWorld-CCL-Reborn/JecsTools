@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+  <StatCategoryDef>
+    <defName>SlotLoadable</defName>
+    <label>Loaded slot</label>
+    <displayOrder>106</displayOrder>
+  </StatCategoryDef>
+</Defs>

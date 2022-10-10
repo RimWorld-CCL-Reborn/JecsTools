@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+
+  <Laser.label>灼伤（光剑）</Laser.label>
+  <Laser.deathMessage>{0}被击毙了。</Laser.deathMessage>
+
+
+</LanguageData>

@@ -58,6 +58,7 @@ namespace AbilityUser
         }
 
         //from the JobDriver_Wait in Vanilla RimWorld
+        //Updated 10/9/2022
         public static void CheckForAutoAttack(Pawn searcher)
         {
             if (searcher.Downed)
@@ -68,9 +69,20 @@ namespace AbilityUser
             {
                 return;
             }
+<<<<<<< Updated upstream
             bool flag = searcher.story == null || !searcher.WorkTagIsDisabled(WorkTags.Violent);
             bool flag2 = searcher.RaceProps.ToolUser && searcher.Faction == Faction.OfPlayer &&
                          !searcher.WorkTagIsDisabled(WorkTags.Firefighting);
+=======
+            if (searcher.IsCarryingPawn(null))
+            {
+                return;
+            }
+            //this.collideWithPawns = false;
+            var flag = searcher.story == null || !searcher.WorkTagIsDisabled(WorkTags.Violent);
+            var flag2 = searcher.RaceProps.ToolUser && searcher.Faction == Faction.OfPlayer &&
+                !searcher.WorkTagIsDisabled(WorkTags.Firefighting);
+>>>>>>> Stashed changes
             if (flag || flag2)
             {
                 Fire fire = null;
@@ -84,19 +96,36 @@ namespace AbilityUser
                         {
                             if (flag)
                             {
+<<<<<<< Updated upstream
                                 Pawn pawn = thingList[j] as Pawn;
                                 if (pawn != null && !pawn.Downed && searcher.HostileTo(pawn))
+=======
+                                if (thingList[j] is Pawn pawn &&
+                                    !pawn.Downed && 
+                                    searcher.HostileTo(pawn) &&
+                                    !searcher.ThreatDisabledBecauseNonAggressiveRoamer(pawn) &&
+                                    GenHostility.IsActiveThreatTo(pawn,searcher.Faction))
+>>>>>>> Stashed changes
                                 {
                                     searcher.meleeVerbs.TryMeleeAttack(pawn, null, false);
+                                    //this.collideWithPawns = true;
                                     return;
                                 }
                             }
                             if (flag2)
                             {
+<<<<<<< Updated upstream
                                 Fire fire2 = thingList[j] as Fire;
                                 if (fire2 != null && (fire == null || fire2.fireSize < fire.fireSize || i == 8) &&
                                     (fire2.parent == null || fire2.parent != searcher))
                                 {
+=======
+                                if (thingList[j] is Fire fire2 &&
+                                fire2 != null && 
+                                (fire == null || fire2.fireSize < fire.fireSize || i == 8) 
+                                && (fire2.parent == null || fire2.parent != searcher))
+                                    {
+>>>>>>> Stashed changes
                                     fire = fire2;
                                 }
                             }
@@ -115,9 +144,15 @@ namespace AbilityUser
                     Verb verb = searcher.TryGetAttackVerb(null, allowManualCastWeapons);
                     if (verb != null && !verb.verbProps.IsMeleeAttack)
                     {
+<<<<<<< Updated upstream
                         TargetScanFlags targetScanFlags = TargetScanFlags.NeedLOSToPawns | TargetScanFlags.NeedLOSToNonPawns |
                                                           TargetScanFlags.NeedThreat;
                         if (verb.IsIncendiary())
+=======
+                        var targetScanFlags = TargetScanFlags.NeedLOSToPawns | TargetScanFlags.NeedLOSToNonPawns |
+                                              TargetScanFlags.NeedThreat;
+                        if (verb.IsIncendiary_Ranged())
+>>>>>>> Stashed changes
                         {
                             targetScanFlags |= TargetScanFlags.NeedNonBurning;
                         }
@@ -126,7 +161,11 @@ namespace AbilityUser
                         if (thing != null)
                         {
                             searcher.TryStartAttack(thing);
+<<<<<<< Updated upstream
                             return;
+=======
+                            //this.collideWithPawns = true;
+>>>>>>> Stashed changes
                         }
                     }
                 }

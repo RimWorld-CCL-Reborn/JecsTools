@@ -50,6 +50,7 @@ namespace AbilityUser
                 new HarmonyMethod(typeof(AbilityUserMod), nameof(GiveShortHash_PrePatch)), null);
 
             harmony.Patch(AccessTools.Method(typeof(PawnGroupKindWorker), nameof(PawnGroupKindWorker.GeneratePawns),
+<<<<<<< Updated upstream
                     new Type[] {typeof(PawnGroupMakerParms), typeof(PawnGroupMaker), typeof(bool)}), null,
                 new HarmonyMethod(typeof(AbilityUserMod), nameof(GeneratePawns_PostFix)));
 
@@ -71,6 +72,23 @@ namespace AbilityUser
                 AccessTools.Method(typeof(Verb), nameof(Verb.TryStartCastOn), new Type[] { typeof(LocalTargetInfo), typeof(LocalTargetInfo), typeof(bool), typeof(bool) })
                 ,
                 new HarmonyMethod(typeof(AbilityUserMod), nameof(TryStartCastOn_Prefix), null));
+=======
+                    new[] { typeof(PawnGroupMakerParms), typeof(PawnGroupMaker), typeof(bool) }),
+                postfix: new HarmonyMethod(type, nameof(GeneratePawns_PostFix)));
+
+            harmony.Patch(AccessTools.PropertyGetter(typeof(Verb), nameof(Verb.UIIcon)),
+                prefix: new HarmonyMethod(type, nameof(get_UIIcon)));
+
+            harmony.Patch(AccessTools.PropertyGetter(typeof(Verb_LaunchProjectile), nameof(Verb_LaunchProjectile.Projectile)),
+                prefix: new HarmonyMethod(type, nameof(get_Projectile_Prefix)));
+
+            harmony.Patch(AccessTools.PropertyGetter(typeof(Verb), nameof(Verb.DirectOwner)),
+                prefix: new HarmonyMethod(type, nameof(get_DirectOwner_Prefix)));
+
+            harmony.Patch(AccessTools.Method(typeof(Verb), nameof(Verb.TryStartCastOn),
+                    new[] { typeof(LocalTargetInfo), typeof(LocalTargetInfo), typeof(bool), typeof(bool), typeof(bool), typeof(bool) }),
+                prefix: new HarmonyMethod(type, nameof(TryStartCastOn_Prefix)));
+>>>>>>> Stashed changes
         }
 
 

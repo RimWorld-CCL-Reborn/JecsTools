@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+
+  <CompInstalledPart_Install>Instalar en algo</CompInstalledPart_Install>
+  <CompInstalledPart_Uninstall>Desinstalar {0}</CompInstalledPart_Uninstall>
+  <CompInstalledPart_Installed>{0} Instalo el/la {1} en el/la {2}</CompInstalledPart_Installed>
+  <CompInstalledPart_Uninstalled>{0} Desinstalo el/la {1} desde {2}</CompInstalledPart_Uninstalled>
+
+</LanguageData>

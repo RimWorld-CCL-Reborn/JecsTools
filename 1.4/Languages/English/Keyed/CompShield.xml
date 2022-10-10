@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>
+
+	<ShieldNotEquipped>no shield equipped</ShieldNotEquipped>
+
+	<ShieldBlockMeleeNever>shield never blocks melee attacks</ShieldBlockMeleeNever>
+	<ShieldBlockRangedNever>shield never blocks ranged attacks</ShieldBlockRangedNever>
+	<ShieldAbsorbDamageNever>shield never absorbs damage from a blocked attack</ShieldAbsorbDamageNever>
+
+	<ShieldHitPointAutoDiscardThreshold>Discard threshold</ShieldHitPointAutoDiscardThreshold>
+	<ShieldHitPointAutoDiscardThresholdEx>The hit points percentage threshold when the shield is automatically discarded by the wielder</ShieldHitPointAutoDiscardThresholdEx>
+	<ShieldHitPointAutoDiscardThresholdNever>shield is never automatically discarded by the wielder</ShieldHitPointAutoDiscardThresholdNever>
+
+	<ShieldDamageToFatigueFactor>Damage to fatigue factor</ShieldDamageToFatigueFactor>
+	<ShieldDamageToFatigueFactorEx>How much percent of the damage is converted to fatigue damage on a blocked attack.</ShieldDamageToFatigueFactorEx>
+	<ShieldDamageToFatigueFactorNever>shield wielder never gets fatigued from a blocked attack</ShieldDamageToFatigueFactorNever>
+
+</LanguageData>
