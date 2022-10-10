@@ -5,10 +5,22 @@ namespace JecsTools
 {
     public class HediffCompProperties_ExtraMeleeDamages : HediffCompProperties
     {
-        public List<Verse.ExtraDamage> ExtraDamages = new List<Verse.ExtraDamage>();
+        public List<ExtraDamage> ExtraDamages = new List<ExtraDamage>();
+
         public HediffCompProperties_ExtraMeleeDamages()
         {
             compClass = typeof(HediffComp_ExtraMeleeDamages);
+        }
+
+        public override IEnumerable<string> ConfigErrors(HediffDef parentDef)
+        {
+            foreach (var error in base.ConfigErrors(parentDef))
+                yield return error;
+            for (var i = 0; i < ExtraDamages.Count; i++)
+            {
+                if (ExtraDamages[i]?.def == null)
+                    yield return $"{nameof(ExtraDamages)}[{i}] is null or has null def";
+            }
         }
     }
 }

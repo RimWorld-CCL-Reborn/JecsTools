@@ -13,11 +13,12 @@ namespace JecsTools
         public float maleCommonality = 100.0f;
         public float femaleCommonality = 100.0f;
         public HediffExpandedDef expandedDef;
-        
+
         public void GiveHediff(Pawn pawn)
         {
             //If the random number is not within the chance range, exit.
-            if (!(chance >= Rand.Range(0.0f, 100.0f))) return;
+            if (!(chance >= Rand.Range(0.0f, 100.0f)))
+                return;
             //If the gender is male, check the male commonality chance, and if it fails, exit.
             if (pawn.gender == Gender.Male && !(maleCommonality >= Rand.Range(0.0f, 100.0f)))
                 return;
@@ -28,8 +29,8 @@ namespace JecsTools
             if (expandedDef != null)
                 HealthUtility.AdjustSeverity(pawn, expandedDef, 1f);
             else
-                HealthUtility.AdjustSeverity(pawn, this.hediff, 1f);
-            
+                HealthUtility.AdjustSeverity(pawn, hediff, 1f);
+
         }
     }
 }

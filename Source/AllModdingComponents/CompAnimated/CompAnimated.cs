@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using UnityEngine;
 using Verse;
 using Verse.Sound;
@@ -13,22 +12,14 @@ namespace CompAnimated
 
         public bool dirty;
         public int ticksToCycle = -1;
-        public int MaxFrameIndexMoving => Props.movingFrames.Count();
-        public int MaxFrameIndexStill => Props.stillFrames.Count();
+        public int MaxFrameIndexMoving => Props.movingFrames.Count;
+        public int MaxFrameIndexStill => Props.stillFrames.Count;
 
-        private static bool AsPawn(ThingWithComps pAnimatee, out Pawn pawn)
-        {
-            bool asPawn = pAnimatee is Pawn;
-            pawn = asPawn? (Pawn) pAnimatee : null;
-            return asPawn;
-        }
-        
-        /**
-        * render over thing when not a pawn; rather than use as base layer like the PawnGraphicSet does for the pawns graphics managment
-        */
+        // render over thing when not a pawn; rather than use as base layer like the PawnGraphicSet does for the pawns graphics managment
         public override void PostDraw()
         {
-            if (parent is Pawn) return;
+            if (parent is Pawn)
+                return;
             base.PostDraw();
             if (curGraphic != null)
                 Render();
@@ -36,11 +27,11 @@ namespace CompAnimated
 
         public virtual void Render()
         {
-            Vector3 drawPos = this.parent.DrawPos;
-            curGraphic.Draw(drawPos, Rot4.North, this.parent, 0f);
+            var drawPos = parent.DrawPos;
+            curGraphic.Draw(drawPos, Rot4.North, parent, 0f);
         }
 
-        public CompProperties_Animated Props => (CompProperties_Animated) props;
+        public CompProperties_Animated Props => (CompProperties_Animated)props;
 
         public Graphic CurGraphic
         {
@@ -73,10 +64,10 @@ namespace CompAnimated
             {
                 pTicksToCycle = Find.TickManager.TicksGame + pProps.secondsBetweenFrames.SecondsToTicks();
 
-                bool asPawn = AsPawn(pThingWithComps, out var pAnimatee);
-                if (asPawn && (pAnimatee?.pather?.MovingNow ?? false))
+                var pAnimatee = pThingWithComps as Pawn;
+                if (pAnimatee?.pather?.MovingNow ?? false)
                 {
-                    pCurIndex = (pCurIndex + 1) % pProps.movingFrames.Count();
+                    pCurIndex = (pCurIndex + 1) % pProps.movingFrames.Count;
                     pProps.sound?.PlayOneShot(SoundInfo.InMap(pAnimatee));
                     result = ResolveCycledGraphic(pThingWithComps, pProps, pCurIndex);
                 }
@@ -85,12 +76,10 @@ namespace CompAnimated
                     if (!pProps.stillFrames.NullOrEmpty())
                     {
                         //Log.Message("ticked still");
-                        pCurIndex = (pCurIndex + 1) % pProps.stillFrames.Count();
+                        pCurIndex = (pCurIndex + 1) % pProps.stillFrames.Count;
                         result = ResolveCycledGraphic(pThingWithComps, pProps, pCurIndex);
-                        pDirty = false;
-                        return result;
                     }
-                    if (pAnimatee!=null && useBaseGraphic)
+                    else if (pAnimatee != null && useBaseGraphic)
                         result = ResolveBaseGraphic(pAnimatee);
                     else
                         result = ResolveCycledGraphic(pThingWithComps, pProps, pCurIndex);
@@ -100,7 +89,7 @@ namespace CompAnimated
             return result;
         }
 
-        /** Primary call to above */
+        // Primary call to above
         private Graphic DefaultGraphic()
         {
             Graphic proxyGraphic = null;
@@ -110,7 +99,7 @@ namespace CompAnimated
                 curGraphic = proxyGraphic;
                 NotifyGraphicsChange();
             }
-           
+
             return resolveCurGraphic ?? curGraphic;
         }
 
@@ -123,15 +112,15 @@ namespace CompAnimated
         public static Graphic ResolveCycledGraphic(ThingWithComps pAnimatee, CompProperties_Animated pProps, int pCurIndex)
         {
             Graphic result = null;
-            bool haveMovingFrames = !pProps.movingFrames.NullOrEmpty();
-            if (!pProps.movingFrames.NullOrEmpty() &&
-                AsPawn(pAnimatee, out var pPawn) &&
+            var haveMovingFrames = !pProps.movingFrames.NullOrEmpty();
+            if (haveMovingFrames &&
+                pAnimatee is Pawn pPawn &&
                 pPawn.Drawer?.renderer?.graphics is PawnGraphicSet pawnGraphicSet)
             {
-                /*Start Pawn*/
+                // Start Pawn
                 pawnGraphicSet.ClearCache();
-                
-                if (haveMovingFrames && AsPawn(pAnimatee, out var p) && (p?.pather?.MovingNow ?? false))
+
+                if (pPawn.pather?.MovingNow ?? false)
                 {
                     result = pProps.movingFrames[pCurIndex].Graphic;
                     pawnGraphicSet.nakedGraphic = result;
@@ -141,15 +130,17 @@ namespace CompAnimated
                     result = pProps.stillFrames[pCurIndex].Graphic;
                     pawnGraphicSet.nakedGraphic = result;
                 }
-                else if(haveMovingFrames)
+                else
                 {
                     result = pProps.movingFrames[pCurIndex].Graphic;
                 }
-            } /*Start Non Pawn*/ else if (!pProps.stillFrames.NullOrEmpty())
+            }
+            // Start Non Pawn
+            else if (!pProps.stillFrames.NullOrEmpty())
             {
                 result = pProps.stillFrames[pCurIndex].Graphic;
             }
-            else if(haveMovingFrames)
+            else if (haveMovingFrames)
             {
                 result = pProps.movingFrames[pCurIndex].Graphic;
             }
@@ -177,7 +168,7 @@ namespace CompAnimated
                     pawnGraphicSet.nakedGraphic = result;
                 }
                 pawnGraphicSet.rottingGraphic = pawnGraphicSet.nakedGraphic.GetColoredVersion(ShaderDatabase.CutoutSkin,
-                    PawnGraphicSet.RottingColor, PawnGraphicSet.RottingColor);
+                    PawnGraphicSet.RottingColorDefault, PawnGraphicSet.RottingColorDefault);
                 if (pAnimatee.RaceProps.packAnimal)
                     pawnGraphicSet.packGraphic = GraphicDatabase.Get<Graphic_Multi>(
                         pawnGraphicSet.nakedGraphic.path + "Pack", ShaderDatabase.Cutout,
@@ -197,8 +188,8 @@ namespace CompAnimated
         public override void PostExposeData()
         {
             base.PostExposeData();
-            Scribe_Values.Look(ref curIndex, "curIndex", 0);
-            Scribe_Values.Look(ref ticksToCycle, "ticksToCycle", -1);
+            Scribe_Values.Look(ref curIndex, nameof(curIndex));
+            Scribe_Values.Look(ref ticksToCycle, nameof(ticksToCycle), -1);
         }
 
         public virtual void NotifyGraphicsChange()

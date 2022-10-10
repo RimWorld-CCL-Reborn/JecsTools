@@ -13,7 +13,7 @@ namespace AbilityUser
             {
                 if (selectedTarget != null)
                     return selectedTarget.DrawPos;
-                if (targetVec != null)
+                if (targetVec != default)
                     return targetVec;
                 return ExactPosition;
             }
@@ -21,18 +21,13 @@ namespace AbilityUser
 
         public override void Draw()
         {
-            if (selectedTarget != null || targetVec != null)
+            if (selectedTarget != null || targetVec != default)
             {
-                var vector = ProjectileDrawPos;
-                var distance = destination - origin;
-                var curpos = destination - Position.ToVector3();
-                var angle = 0f;
-                var mat = Graphic.MatSingle;
+                var drawPos = ProjectileDrawPos;
+                drawPos.y = 3;
                 var s = new Vector3(2.5f, 1f, 2.5f);
-                var matrix = default(Matrix4x4);
-                vector.y = 3;
-                matrix.SetTRS(vector, Quaternion.AngleAxis(angle, Vector3.up), s);
-                Graphics.DrawMesh(MeshPool.plane10, matrix, mat, 0);
+                var matrix = Matrix4x4.TRS(drawPos, Quaternion.AngleAxis(0f, Vector3.up), s);
+                Graphics.DrawMesh(MeshPool.plane10, matrix, Graphic.MatSingle, 0);
             }
             else
             {
@@ -46,10 +41,10 @@ namespace AbilityUser
             base.Impact_Override(hitThing);
             if (hitThing != null)
             {
-                var damageAmountBase = def.projectile.GetDamageAmount(1f);
-                var equipmentDef = this.equipmentDef;
-                var dinfo = new DamageInfo(def.projectile.damageDef, damageAmountBase, this.def.projectile.GetArmorPenetration(1f), ExactRotation.eulerAngles.y,
-                    launcher,  null, equipmentDef);
+                var dinfo = new DamageInfo(def.projectile.damageDef, def.projectile.GetDamageAmount(1f),
+                    def.projectile.GetArmorPenetration(1f), ExactRotation.eulerAngles.y,
+                    launcher, weapon: equipmentDef);
+                //Log.Message($"Projectile_Ability.Impact_Override({this}, {hitThing}) dinfo={dinfo}");
                 hitThing.TakeDamage(dinfo);
                 PostImpactEffects(hitThing);
             }
@@ -64,13 +59,13 @@ namespace AbilityUser
             if (hediff != null)
                 if (hediff.def != null)
                 {
-                    var compAbility = Caster.TryGetComp<CompAbilityUser>();
-                    if (compAbility != null)
-                        if (compAbility.IgnoredHediffs() != null)
-                            if (compAbility.IgnoredHediffs().Contains(hediff.def))
+                    foreach (var abilityUser in Caster.GetCompAbilityUsers())
+                    {
+                        if (abilityUser.IgnoredHediffs() != null)
+                            if (abilityUser.IgnoredHediffs().Contains(hediff.def))
                                 return true;
+                    }
                 }
-
             return false;
         }
     }

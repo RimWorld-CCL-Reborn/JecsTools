@@ -21,8 +21,7 @@ namespace JecsTools
 
         public DamageInfo GetDamageInfo()
         {
-            return new DamageInfo(Props.cycleDamage, Props.cycleDamageAmt, Props.armorPenetration, -1, parent.pawn, parent.Part, null,
-                DamageInfo.SourceCategory.ThingOrUnknown);
+            return new DamageInfo(Props.cycleDamage, Props.cycleDamageAmt, Props.armorPenetration, -1, parent.pawn, parent.Part);
         }
 
         public virtual void MakeDamage()
@@ -41,7 +40,7 @@ namespace JecsTools
         public override void CompExposeData()
         {
             base.CompExposeData();
-            Scribe_Values.Look(ref ticksUntilDamage, "ticksUntilDamage", -1);
+            Scribe_Values.Look(ref ticksUntilDamage, nameof(ticksUntilDamage), -1);
         }
     }
 }

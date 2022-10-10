@@ -6,17 +6,15 @@ namespace ThinkNodes
 {
     public class ThinkNodeConditionalWorkTypes : ThinkNode_Conditional
     {
-        private List<WorkTypeDef> workTypeDefs = new List<WorkTypeDef>();
+        private List<WorkTypeDef> workTypeDefs = new List<WorkTypeDef>(); // set via reflection
 
         protected override bool Satisfied(Pawn pawn)
         {
             foreach (var _def in workTypeDefs)
             {
-                if (pawn.IsColonist && (pawn?.workSettings?.WorkIsActive(_def) ?? false))
+                if (pawn.IsColonist && (pawn.workSettings?.WorkIsActive(_def) ?? false))
                     return true;
             }
-
-
             return false;
         }
     }

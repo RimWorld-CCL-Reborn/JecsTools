@@ -8,5 +8,7 @@ namespace AbilityUser
     {
         public static JobDef CastAbilitySelf;
         public static JobDef CastAbilityVerb;
+
+        static AbilityDefOf() => DefOfHelper.EnsureInitializedInCtor(typeof(AbilityDefOf));
     }
 }

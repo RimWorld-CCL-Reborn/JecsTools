@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+
+  <NoDeflectorEquipped>Sin deflector equipado</NoDeflectorEquipped>
+  
+  <DeflectChance>Chance de desvío</DeflectChance>
+  <DeflectChanceEx>Determina que tan seguido esta arma devuelve los proyectiles a los atacantes.</DeflectChanceEx>
+  
+  <MaxDeflectChance>Chance de desvío máximo</MaxDeflectChance>
+  <MaxDeflectChanceEx>Por cada punto en {0}, el usuario recibe un {1} de chance de desviar el proyectil devuelta al objetivo. {2} es la chance máxima posible de desviar.
+  </MaxDeflectChanceEx>
+
+  <DeflectChancePerLevel>Desvío en % por {0} de habilidad</DeflectChancePerLevel>
+  <DeflectChancePerLevelEx>Por cada nivel en {0}, el usuario recibe esta cantidad en % de chance para desviar un proyectil.</DeflectChancePerLevelEx>
+
+  <StatsReport_DeflectionExplanation>Chance de Desvío = (Chance base para desviar + (Nivel de Habilidad * % por Nivel de Habilidad)) * Manipulación</StatsReport_DeflectionExplanation>
+  <StatsReport_BaseDeflectChance>Chance base para desviar</StatsReport_BaseDeflectChance>
+  <StatsReport_DeflectPerSkillLevel>Desvío en % por nivel de habilidad</StatsReport_DeflectPerSkillLevel>
+
+</LanguageData>

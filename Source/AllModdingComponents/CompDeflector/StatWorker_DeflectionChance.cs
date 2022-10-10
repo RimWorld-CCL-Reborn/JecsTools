@@ -1,118 +1,95 @@
-﻿using System.Text;
+﻿using System.Collections.Generic;
+using System.Text;
 using RimWorld;
 using Verse;
 
 namespace CompDeflector
 {
+    // TODO: Should also have a StatWorker_ReflectionAccuracy.
     public class StatWorker_DeflectionChance : StatWorker
     {
         public override float GetValueUnfinalized(StatRequest req, bool applyPostProcess = true)
         {
-            return GetBaseDeflectionChance(req, applyPostProcess) + GetSkillLevel(req, applyPostProcess) *
-                   GetDeflectPerSkillLevel(req, applyPostProcess) * GetManipulationModifier(req, applyPostProcess);
+            if (GetDeflector(req) is CompDeflector compDeflector)
+                return new CompDeflector.DeflectionChanceCalculator(compDeflector, fixedRandSeed: true).Calculate();
+            return 0f;
         }
 
-        private Pawn GetPawn(StatRequest req)
+        private static CompDeflector GetDeflector(StatRequest req)
         {
-            return req.Thing as Pawn;
+            return req.Thing is Pawn pawn ? GetDeflector(pawn) : null;
         }
 
-        private CompDeflector GetDeflector(StatRequest req)
+        private static CompDeflector GetDeflector(Pawn pawn)
         {
-            if (req.Thing is Pawn pawn)
+            if (pawn.equipment is Pawn_EquipmentTracker equipmentTracker)
             {
-                var pawn_EquipmentTracker = pawn.equipment;
-                if (pawn_EquipmentTracker != null)
-                    foreach (var thingWithComps in pawn_EquipmentTracker.AllEquipmentListForReading)
-                        if (thingWithComps != null)
-                        {
-                            ////Log.Message("3");
-                            var compDeflector = thingWithComps.GetComp<CompDeflector>();
-                            if (compDeflector != null)
-                                return compDeflector;
-                        }
+                foreach (var equipment in equipmentTracker.AllEquipmentListForReading)
+                {
+                    if (equipment?.GetCompDeflector() is CompDeflector compDeflector)
+                        return compDeflector;
+                }
             }
             return null;
         }
 
-        private float GetBaseDeflectionChance(StatRequest req, bool applyPostProcess = true)
-        {
-            var compDeflector = GetDeflector(req);
-            if (compDeflector != null)
-                return compDeflector.Props.baseDeflectChance;
-            return 0f;
-        }
-
-        private float GetSkillLevel(StatRequest req, bool applyPostProcess = true)
-        {
-            var compDeflector = GetDeflector(req);
-            if (compDeflector != null)
-                if (compDeflector.Props.useSkillInCalc)
-                {
-                    var skillDef = compDeflector.Props.deflectSkill;
-                    if (GetPawn(req).skills != null)
-                        if (GetPawn(req).skills.GetSkill(skillDef) != null)
-                            return GetPawn(req).skills.GetSkill(skillDef).Level;
-                }
-            return 0f;
-        }
-
-        private float GetDeflectPerSkillLevel(StatRequest req, bool applyPostProcess = true)
-        {
-            var compDeflector = GetDeflector(req);
-            if (compDeflector != null)
-                if (compDeflector.Props.useSkillInCalc)
-                    return compDeflector.Props.deflectRatePerSkillPoint;
-            return 0f;
-        }
-
-        private float GetManipulationModifier(StatRequest req, bool applyPostProcess = true)
-        {
-            var pawn = GetPawn(req);
-            if (pawn != null)
-                if (pawn.health != null)
-                    if (pawn.health.capacities != null)
-                        return pawn.health.capacities.GetLevel(PawnCapacityDefOf.Manipulation);
-            return 1.0f;
-        }
-
         public override string GetExplanationUnfinalized(StatRequest req, ToStringNumberSense numberSense)
         {
+            // Based off StatWorker_MeleeDPS.
             var stringBuilder = new StringBuilder();
-            stringBuilder.AppendLine(
-                "Stat is displayed in the following format:\nDeflection chance equals ( Base chance + ( Skill Level * % per Skill Level) / Manipulation Efficiency\n\n");
-            //stringBuilder.AppendLine("StatsReport_DeflectionExplanation".Translate());
+            stringBuilder.AppendLine("StatsReport_DeflectionExplanation".Translate());
             stringBuilder.AppendLine();
-            stringBuilder.AppendLine("Base deflect chance");
-            //stringBuilder.AppendLine("StatsReport_BaseDeflectChance".Translate());
-            stringBuilder.AppendLine("  " + GetBaseDeflectionChance(req, true).ToStringPercent());
-            stringBuilder.AppendLine();
-            stringBuilder.AppendLine("Skill level");
-            //stringBuilder.AppendLine("StatsReport_SkillLevel".Translate());
-            stringBuilder.AppendLine("  " + GetSkillLevel(req, true).ToString("0"));
-            stringBuilder.AppendLine();
-            stringBuilder.AppendLine("Deflect % per skill level");
-            //stringBuilder.AppendLine("StatsReport_DeflectPerSkillLevel".Translate());
-            stringBuilder.AppendLine("  " + GetDeflectPerSkillLevel(req, true).ToStringPercent("0.##"));
-            stringBuilder.AppendLine();
-            stringBuilder.AppendLine("Manipulation modifier");
-            //stringBuilder.AppendLine("StatsReport_ManipulationModifier".Translate());
-            stringBuilder.AppendLine("  " + GetManipulationModifier(req, true).ToStringPercent());
-            stringBuilder.AppendLine();
+            var compDeflector = GetDeflector(req);
+            if (compDeflector == null)
+            {
+                stringBuilder.AppendLine("NoDeflectorEquipped".Translate() + ": " + ValueToString(0f, finalized: false));
+            }
+            else
+            {
+                var props = compDeflector.Props;
+                var calculator = compDeflector.GetDeflectionChanceCalculator(fixedRandSeed: true);
+                stringBuilder.AppendLine("StatsReport_BaseDeflectChance".Translate() + ": " + ValueToString(props.baseDeflectChance, finalized: false));
+                if (calculator.UseSkill(out var skill))
+                {
+                    stringBuilder.AppendLine("StatsReport_DeflectPerSkillLevel".Translate() + ": x" + props.deflectRatePerSkillPoint.ToStringPercent());
+                    stringBuilder.AppendLine("StatsReport_Skills".Translate());
+                    var skillLevel = skill.Level;
+                    stringBuilder.AppendLine($"  {compDeflector.Props.deflectSkill.LabelCap} ({skillLevel}): +" +
+                        ValueToString(skillLevel * props.deflectRatePerSkillPoint, finalized: false));
+                }
+                var calc = calculator.Calculate();
+                if (calculator.BeforeInfixValue != calculator.InfixValue)
+                {
+                    var infixDeclaredType = compDeflector.GetType().GetMethod(nameof(CompDeflector.DeflectionChance_InFix)).DeclaringType;
+                    stringBuilder.AppendLine(infixDeclaredType.Name);
+                    stringBuilder.AppendLine("  " + ValueToString(calculator.BeforeInfixValue, finalized: false) + " => " +
+                        ValueToString(calculator.InfixValue, finalized: false));
+                }
+                if (calculator.UseManipulation(out var capable))
+                {
+                    var pawn = compDeflector.GetPawn;
+                    stringBuilder.AppendLine("StatsReport_Health".Translate());
+                    stringBuilder.Append($"  {PawnCapacityDefOf.Manipulation.GetLabelFor(pawn).CapitalizeFirst()}: x");
+                    if (capable)
+                        stringBuilder.AppendLine(pawn.health.capacities.GetLevel(PawnCapacityDefOf.Manipulation).ToStringPercent());
+                    else
+                        stringBuilder.AppendLine($"{0f.ToStringPercent()} ({"Incapable".Translate()})");
+                }
+            }
             return stringBuilder.ToString();
         }
 
-        // Tad changed missing additional final parameter on the end, the "finalized" bool.
-        public override string GetStatDrawEntryLabel(StatDef stat, float value, ToStringNumberSense numberSense, StatRequest optionalReq, bool finalized = true)
+        public override bool IsDisabledFor(Thing thing)
         {
-            return string.Format("{0} (({1} + ( {2} * {3} )) / {4} )",
-                value.ToStringByStyle(stat.toStringStyle, numberSense),
-                GetBaseDeflectionChance(optionalReq, true).ToStringPercent(),
-                GetSkillLevel(optionalReq, true).ToString("0"),
-                GetDeflectPerSkillLevel(optionalReq, true).ToStringPercent("0.##"),
-                GetManipulationModifier(optionalReq, true).ToStringPercent(),
-                finalized);
+            return thing is Pawn pawn && GetDeflector(pawn) is CompDeflector compDeflector &&
+                compDeflector.GetDeflectionChanceCalculator(fixedRandSeed: true).UseSkill(out var skill) && skill.TotallyDisabled;
         }
-       
+
+        public override IEnumerable<Dialog_InfoCard.Hyperlink> GetInfoCardHyperlinks(StatRequest statRequest)
+        {
+            var compDeflector = GetDeflector(statRequest);
+            if (compDeflector != null)
+                yield return new Dialog_InfoCard.Hyperlink(compDeflector.parent);
+        }
     }
 }

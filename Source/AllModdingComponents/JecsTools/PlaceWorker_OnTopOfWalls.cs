@@ -1,18 +1,26 @@
-﻿using System.Linq;
-using RimWorld;
-using Verse;
+﻿using Verse;
 
 namespace JecsTools
 {
     public class PlaceWorker_OnTopOfWalls : PlaceWorker
     {
-        // Changed by Tad : Missing two on the overrides
-        public override AcceptanceReport AllowsPlacing(BuildableDef checkingDef, IntVec3 loc, Rot4 rot, Map map, Thing thingToIgnore = null, Thing thing = null)
+        public override AcceptanceReport AllowsPlacing(BuildableDef checkingDef, IntVec3 loc, Rot4 rot, Map map,
+            Thing thingToIgnore = null, Thing thing = null)
         {
-            if (loc.GetThingList(map).FirstOrDefault(x =>
-                    x.def.defName.Contains("Wall")) != null)
+            if (loc.GetThingList(map).Exists(IsWall))
                 return true;
             return new AcceptanceReport("JT_PlaceWorker_OnTopOfWalls".Translate());
+        }
+
+        static bool IsWall(Thing thing)
+        {
+            // In RW 1.3+, it seems like BuildingProperties.isPlaceOverableWall indicates whether something is a "wall".
+            if (thing.def.building?.isPlaceOverableWall ?? false)
+                return true;
+            // Legacy heuristic for mods that don't use isPlaceOverableWall.
+            if (thing.def.defName.Contains("Wall"))
+                return true;
+            return false;
         }
     }
 }

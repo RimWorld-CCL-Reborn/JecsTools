@@ -3,14 +3,14 @@
 ==============================
 
 JecsTools Update
-v1.1.1.0 (03-15-2020)
+v1.3.0.4 (07-31-2021)
 ====================
 
-AbilityUser should now report when line of sight failure takes place for abilities. Extra damages no longer gives errors in combat logs.
+Workaround for mod lists that contain other mods with an outdated copy of CompOversizedWeapon that's loaded before ours -lbmaian
 --------------------
 
 Download now on...
-- Patreon: https://www.patreon.com/posts/34452021
+- Patreon: https://www.patreon.com/posts/54071148
 - GitHub: https://github.com/jecrell/JecsTools
 - Steam: https://steamcommunity.com/sharedfiles/filedetails/?id=932008009
 Discuss the mod on...
@@ -25,12 +25,12 @@ Discuss the mod on...
 [img width=260]https://raw.githubusercontent.com/jecrell/JecsTools/master/About/Preview.png[/img]
 [hr]
 [b]JecsTools
-Version: 1.1.1.0
-Updated: 03-15-2020
-Description: [color=orange]AbilityUser should now report when line of sight failure takes place for abilities. Extra damages no longer gives errors in combat logs.[/color]
+Version: 1.3.0.4
+Updated: 07-31-2021
+Description: [color=orange]Workaround for mod lists that contain other mods with an outdated copy of CompOversizedWeapon that's loaded before ours -lbmaian[/color]
 [hr]
 [b]Download now on...[/b]
-[url=https://www.patreon.com/posts/34452021]Patreon[/url]
+[url=https://www.patreon.com/posts/54071148]Patreon[/url]
 [url=https://github.com/jecrell/JecsTools]GitHub[/url]
 [url=https://steamcommunity.com/sharedfiles/filedetails/?id=932008009]Steam[/url]
 [b]Discuss the mod on...[/b]

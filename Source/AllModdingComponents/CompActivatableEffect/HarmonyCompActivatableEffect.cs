@@ -14,76 +14,29 @@ namespace CompActivatableEffect
         static HarmonyCompActivatableEffect()
         {
             var harmony = new Harmony("jecstools.jecrell.comps.activator");
-            
-            harmony.Patch(typeof(Pawn).GetMethod("GetGizmos"), null,
-                new HarmonyMethod(typeof(HarmonyCompActivatableEffect).GetMethod("GetGizmosPrefix")));
-            
-            harmony.Patch(typeof(PawnRenderer).GetMethod("DrawEquipmentAiming"), null,
-                new HarmonyMethod(typeof(HarmonyCompActivatableEffect), nameof(DrawEquipmentAimingPostFix)));
-            
+            var type = typeof(HarmonyCompActivatableEffect);
 
-            harmony.Patch(AccessTools.Method(typeof(Verb), "TryStartCastOn", new[] { typeof(LocalTargetInfo), typeof(LocalTargetInfo), typeof(bool), typeof(bool)}),
-                new HarmonyMethod(typeof(HarmonyCompActivatableEffect), nameof(TryStartCastOnPrefix)), null);
+            harmony.Patch(AccessTools.Method(typeof(Pawn_EquipmentTracker), nameof(Pawn_EquipmentTracker.GetGizmos)),
+                postfix: new HarmonyMethod(type, nameof(GetGizmosPostfix)));
 
-            
-            harmony.Patch(typeof(Pawn_DraftController).GetMethod("set_Drafted"), null,
-                new HarmonyMethod(typeof(HarmonyCompActivatableEffect).GetMethod("set_DraftedPostFix")));
+            harmony.Patch(AccessTools.Method(typeof(PawnRenderer), nameof(PawnRenderer.DrawEquipmentAiming)),
+                postfix: new HarmonyMethod(type, nameof(DrawEquipmentAimingPostFix)));
 
-<<<<<<< Updated upstream
-            
-            harmony.Patch(typeof(Pawn).GetMethod("ExitMap"),
-                new HarmonyMethod(typeof(HarmonyCompActivatableEffect).GetMethod("ExitMap_PreFix")), null);
-=======
             harmony.Patch(AccessTools.Method(typeof(Verb), nameof(Verb.TryStartCastOn),
                     new[] { typeof(LocalTargetInfo), typeof(LocalTargetInfo), typeof(bool), typeof(bool), typeof(bool), typeof(bool) }),
                 prefix: new HarmonyMethod(type, nameof(TryStartCastOnPrefix)));
->>>>>>> Stashed changes
 
-            
-            harmony.Patch(typeof(Pawn_EquipmentTracker).GetMethod("TryDropEquipment"),
-                new HarmonyMethod(typeof(HarmonyCompActivatableEffect).GetMethod("TryDropEquipment_PreFix")), null);
+            harmony.Patch(AccessTools.PropertySetter(typeof(Pawn_DraftController), nameof(Pawn_DraftController.Drafted)),
+                postfix: new HarmonyMethod(type, nameof(set_DraftedPostFix)));
 
-            
-            harmony.Patch(typeof(Pawn_DraftController).GetMethod("set_Drafted"), null,
-                new HarmonyMethod(typeof(HarmonyCompActivatableEffect).GetMethod("set_DraftedPostFix")));
+            harmony.Patch(AccessTools.Method(typeof(Pawn), nameof(Pawn.ExitMap)),
+                prefix: new HarmonyMethod(type, nameof(ExitMap_PreFix)));
         }
 
-<<<<<<< Updated upstream
-        //=================================== COMPACTIVATABLE
-
-        // Verse.Pawn_EquipmentTracker
-        public static void TryDropEquipment_PreFix(Pawn_EquipmentTracker __instance, ThingWithComps eq)
-        {
-            if (__instance is Pawn_EquipmentTracker eqq &&
-                eqq.Primary is ThingWithComps t &&
-                t.GetComp<CompActivatableEffect>() is CompActivatableEffect compActivatableEffect &&
-                compActivatableEffect.CurrentState == CompActivatableEffect.State.Activated)
-                compActivatableEffect.TryDeactivate();
-        }
-
-        public static void ExitMap_PreFix(Pawn __instance, bool allowedToJoinOrCreateCaravan)
-        {
-            if (__instance is Pawn p && p.equipment is Pawn_EquipmentTracker eq &&
-                eq.Primary is ThingWithComps t &&
-                t.GetComp<CompActivatableEffect>() is CompActivatableEffect compActivatableEffect &&
-                compActivatableEffect.CurrentState == CompActivatableEffect.State.Activated)
-                compActivatableEffect.TryDeactivate();
-        }
-
-#pragma warning disable IDE1006 // Naming Styles
-        public static void set_DraftedPostFix(Pawn_DraftController __instance, bool value)
-#pragma warning restore IDE1006 // Naming Styles
-        {
-            if (__instance.pawn is Pawn p && p.equipment is Pawn_EquipmentTracker eq &&
-                eq.Primary is ThingWithComps t &&
-                t.GetComp<CompActivatableEffect>() is CompActivatableEffect compActivatableEffect)
-                if (value == false)
-=======
         public static void GetGizmosPostfix(Pawn_EquipmentTracker __instance, ref IEnumerable<Gizmo> __result)
         {
             if (__instance.Primary?.GetCompActivatableEffect() is CompActivatableEffect compActivatableEffect)
                 if (__instance.pawn.Faction == Faction.OfPlayer)
->>>>>>> Stashed changes
                 {
                     if (compActivatableEffect.GizmosOnEquip)
                         __result = __result.Concat(compActivatableEffect.EquippedGizmos());
@@ -91,192 +44,70 @@ namespace CompActivatableEffect
                 else
                 {
                     if (compActivatableEffect.CurrentState == CompActivatableEffect.State.Deactivated)
-<<<<<<< Updated upstream
-                        compActivatableEffect.TryActivate();
-                }
-        }
-
-        public static bool TryStartCastOnPrefix(ref bool __result, Verb __instance)
-        {
-            if (__instance.caster is Pawn pawn)
-            {
-                var pawn_EquipmentTracker = pawn?.equipment;
-                if (pawn_EquipmentTracker == null) return true;
-
-                var thingWithComps =
-                    pawn_EquipmentTracker?.Primary; //(ThingWithComps)AccessTools.Field(typeof(Pawn_EquipmentTracker), "primaryInt").GetValue(pawn_EquipmentTracker);
-
-                var compActivatableEffect = thingWithComps?.GetComp<CompActivatableEffect>();
-                if (compActivatableEffect == null) return true;
-
-                //Equipment source throws errors when checked while casting abilities with a weapon equipped.
-                // to avoid this error preventing our code from executing, we do a try/catch.
-                try
-                {
-                    if (__instance?.EquipmentSource != thingWithComps)
-                        return true;
-                }
-                catch (Exception e)
-                {
-                }
-
-                if (compActivatableEffect.CurrentState == CompActivatableEffect.State.Activated)
-                    return true;
-                else if (compActivatableEffect.TryActivate())
-                    return true;
-                if (Find.TickManager.TicksGame % 250 == 0)
-                    Messages.Message("DeactivatedWarning".Translate(pawn.Label),
-                        MessageTypeDefOf.RejectInput);
-                __result = false;
-                return false;
-            }
-            return true;
-=======
                         compActivatableEffect.Activate();
                 }
->>>>>>> Stashed changes
         }
-
-        ///// <summary>
-        ///// Prevents the user from having damage with the verb.
-        ///// </summary>
-        ///// <param name="__instance"></param>
-        ///// <param name="__result"></param>
-        ///// <param name="pawn"></param>
-        //public static void GetDamageFactorForPostFix(Verb __instance, ref float __result, Pawn pawn)
-        //{
-        //    Pawn_EquipmentTracker pawn_EquipmentTracker = pawn.equipment;
-        //    if (pawn_EquipmentTracker != null)
-        //    {
-        //        //Log.Message("2");
-        //        ThingWithComps thingWithComps = (ThingWithComps)AccessTools.Field(typeof(Pawn_EquipmentTracker), "primaryInt").GetValue(pawn_EquipmentTracker);
-
-        //        if (thingWithComps != null)
-        //        {
-        //            //Log.Message("3");
-        //            CompActivatableEffect compActivatableEffect = thingWithComps.GetComp<CompActivatableEffect>();
-        //            if (compActivatableEffect != null)
-        //            {
-        //                if (compActivatableEffect.CurrentState != CompActivatableEffect.State.Activated)
-        //                {
-        //                    //Messages.Message("DeactivatedWarning".Translate(), MessageSound.RejectInput);
-        //                    __result = 0f;
-        //                }
-        //            }
-        //        }
-        //    }
-        //}
-
 
         /// <summary>
         ///     Adds another "layer" to the equipment aiming if they have a
         ///     weapon with a CompActivatableEffect.
         /// </summary>
-        /// <param name="__instance"></param>
-        /// <param name="eq"></param>
-        /// <param name="drawLoc"></param>
-        /// <param name="aimAngle"></param>
-        public static void DrawEquipmentAimingPostFix(PawnRenderer __instance, Thing eq, Vector3 drawLoc,
+        public static void DrawEquipmentAimingPostFix(Pawn ___pawn, Thing eq, Vector3 drawLoc,
             float aimAngle)
         {
-            var pawn = (Pawn) AccessTools.Field(typeof(PawnRenderer), "pawn").GetValue(__instance);
+            var compActivatableEffect = ___pawn.equipment?.Primary?.GetCompActivatableEffect();
+            if (compActivatableEffect?.Graphic == null ||
+                compActivatableEffect.CurrentState != CompActivatableEffect.State.Activated)
+                return;
 
-            var pawn_EquipmentTracker = pawn.equipment;
-            var thingWithComps =
-                pawn_EquipmentTracker?.Primary; //(ThingWithComps)AccessTools.Field(typeof(Pawn_EquipmentTracker), "primaryInt").GetValue(pawn_EquipmentTracker);
-
-            var compActivatableEffect = thingWithComps?.GetComp<CompActivatableEffect>();
-            if (compActivatableEffect?.Graphic == null) return;
-            if (compActivatableEffect.CurrentState != CompActivatableEffect.State.Activated) return;
-            var num = aimAngle - 90f;
+            // start copied vanilla code (with mesh = flip ? MeshPool.plane10Flip : MeshPool.plane10)
             var flip = false;
-
+            var angle = aimAngle - 90f;
             if (aimAngle > 20f && aimAngle < 160f)
             {
-                //mesh = MeshPool.GridPlaneFlip(thingWithComps.def.graphicData.drawSize);
-                num += eq.def.equippedAngleOffset;
+                angle += eq.def.equippedAngleOffset;
             }
             else if (aimAngle > 200f && aimAngle < 340f)
             {
-                //mesh = MeshPool.GridPlane(thingWithComps.def.graphicData.drawSize);
                 flip = true;
-                num -= 180f;
-                num -= eq.def.equippedAngleOffset;
+                angle -= 180f;
+                angle -= eq.def.equippedAngleOffset;
             }
             else
             {
-                //mesh = MeshPool.GridPlaneFlip(thingWithComps.def.graphicData.drawSize);
-                num += eq.def.equippedAngleOffset;
+                angle += eq.def.equippedAngleOffset;
             }
+            // end copied vanilla code
 
-            Vector3 offset = Vector3.zero;
+            var offset = Vector3.zero;
 
-            if (eq is ThingWithComps eqComps)
+            var weaponComp = compActivatableEffect.GetOversizedWeapon;
+            if (weaponComp != null)
             {
-                if (eqComps.AllComps.FirstOrDefault(z => z is CompOversizedWeapon.CompOversizedWeapon) is
-                    CompOversizedWeapon.CompOversizedWeapon weaponComp)
+                offset = OffsetFromRotation(weaponComp.Props, ___pawn.Rotation);
+            }
+
+            if (compActivatableEffect.CompDeflectorIsAnimatingNow)
+            {
+                float animationTicks = compActivatableEffect.CompDeflectorAnimationDeflectionTicks;
+                if (animationTicks > 0)
                 {
-                    if (pawn.Rotation == Rot4.East)
-                        offset = weaponComp.Props.eastOffset;
-                    else if (pawn.Rotation == Rot4.West)
-                        offset = weaponComp.Props.westOffset;
-                    else if (pawn.Rotation == Rot4.North)
-                        offset = weaponComp.Props.northOffset;
-                    else if (pawn.Rotation == Rot4.South)
-                        offset = weaponComp.Props.southOffset;
-                    offset += weaponComp.Props.offset;
-                }
-                                
-                                    
-                var deflector = eqComps.AllComps.FirstOrDefault(y =>
-                    y.GetType().ToString().Contains("Deflect"));
-                if (deflector != null)
-                {
-                    var isActive = (bool) AccessTools
-                        .Property(deflector.GetType(), "IsAnimatingNow").GetValue(deflector, null);
-                    if (isActive)
-                    {
-                        float numMod = (int) AccessTools
-                            .Property(deflector.GetType(), "AnimationDeflectionTicks")
-                            .GetValue(deflector, null);
-                        //float numMod2 = new float();
-                        //numMod2 = numMod;
-                        if (numMod > 0)
-                            if (!flip) num += (numMod + 1) / 2;
-                            else num -= (numMod + 1) / 2;
-                    }
+                    if (flip)
+                        angle -= (animationTicks + 1) / 2;
+                    else
+                        angle += (animationTicks + 1) / 2;
                 }
             }
-            num %= 360f;
 
-            //ThingWithComps eqComps = eq as ThingWithComps;
-            //if (eqComps != null)
-            //{
-            //    ThingComp deflector = eqComps.AllComps.FirstOrDefault<ThingComp>((ThingComp y) => y.GetType().ToString() == "CompDeflector.CompDeflector");
-            //    if (deflector != null)
-            //    {
-            //        float numMod = (float)((int)AccessTools.Property(deflector.GetType(), "AnimationDeflectionTicks").GetValue(deflector, null));
-            //        //Log.ErrorOnce("NumMod " + numMod.ToString(), 1239);
-            //numMod = (numMod + 1) / 2;
-            //if (subtract) num -= numMod;
-            //else num += numMod;
-            //    }
-            //}
+            angle %= 360f; // copied vanilla code
 
             var matSingle = compActivatableEffect.Graphic.MatSingle;
-            //if (mesh == null) mesh = MeshPool.GridPlane(thingWithComps.def.graphicData.drawSize);
 
             var s = new Vector3(eq.def.graphicData.drawSize.x, 1f, eq.def.graphicData.drawSize.y);
-            var matrix = default(Matrix4x4);
-            matrix.SetTRS(drawLoc + offset, Quaternion.AngleAxis(num, Vector3.up), s);
-            if (!flip) Graphics.DrawMesh(MeshPool.plane10, matrix, matSingle, 0);
-            else Graphics.DrawMesh(MeshPool.plane10Flip, matrix, matSingle, 0);
-            //Graphics.DrawMesh(mesh, drawLoc, Quaternion.AngleAxis(num, Vector3.up), matSingle, 0);
+            var matrix = Matrix4x4.TRS(drawLoc + offset, Quaternion.AngleAxis(angle, Vector3.up), s);
+            Graphics.DrawMesh(flip ? MeshPool.plane10Flip : MeshPool.plane10, matrix, matSingle, 0);
         }
 
-<<<<<<< Updated upstream
-        public static IEnumerable<Gizmo> GizmoGetter(CompActivatableEffect compActivatableEffect)
-=======
 
         public static bool TryStartCastOnPrefix(ref bool __result, Verb __instance)
         {
@@ -337,53 +168,16 @@ namespace CompActivatableEffect
         // Workaround for mod lists that contain other mods with an outdated copy of CompOversizedWeapon that's loaded before ours:
         // avoid calling new code that's in our version.
         private static Vector3 OffsetFromRotation(CompOversizedWeapon.CompProperties_OversizedWeapon weaponComp, Rot4 rotation)
->>>>>>> Stashed changes
         {
-            //Log.Message("5");
-            if (compActivatableEffect.GizmosOnEquip)
-            {
-                //Log.Message("6");
-                //Iterate EquippedGizmos
-                var enumerator = compActivatableEffect.EquippedGizmos().GetEnumerator();
-                while (enumerator.MoveNext())
-                {
-                    //Log.Message("7");
-                    var current = enumerator.Current;
-                    yield return current;
-                }
-            }
+            if (rotation == Rot4.North)
+                return weaponComp.northOffset;
+            else if (rotation == Rot4.East)
+                return weaponComp.eastOffset;
+            else if (rotation == Rot4.West)
+                return weaponComp.westOffset;
+            else
+                return weaponComp.southOffset;
         }
 
-<<<<<<< Updated upstream
-        public static void GetGizmosPrefix(Pawn __instance, ref IEnumerable<Gizmo> __result)
-        {
-            //Log.Message("1");
-            var pawn_EquipmentTracker = __instance.equipment;
-            if (pawn_EquipmentTracker != null)
-            {
-                //Log.Message("2");
-                //ThingWithComps thingWithComps = (ThingWithComps)AccessTools.Field(typeof(Pawn_EquipmentTracker), "primaryInt").GetValue(pawn_EquipmentTracker);
-                var thingWithComps = pawn_EquipmentTracker.Primary;
-
-                if (thingWithComps != null)
-                {
-                    //Log.Message("3");
-                    var compActivatableEffect = thingWithComps.GetComp<CompActivatableEffect>();
-                    if (compActivatableEffect != null)
-                        if (__instance != null)
-                            if (__instance.Faction == Faction.OfPlayer)
-                            {
-                                __result = __result.Concat(GizmoGetter(compActivatableEffect));
-                            }
-                            else
-                            {
-                                if (compActivatableEffect.CurrentState == CompActivatableEffect.State.Deactivated)
-                                    compActivatableEffect.Activate();
-                            }
-                }
-            }
-        }
-=======
->>>>>>> Stashed changes
     }
 }

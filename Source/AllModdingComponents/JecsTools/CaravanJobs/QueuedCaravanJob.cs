@@ -21,8 +21,8 @@ namespace JecsTools
 
         public void ExposeData()
         {
-            Scribe_Deep.Look(ref job, "job");
-            Scribe_Values.Look(ref tag, "tag", null, false);
+            Scribe_Deep.Look(ref job, nameof(job));
+            Scribe_Values.Look(ref tag, nameof(tag));
         }
     }
 }

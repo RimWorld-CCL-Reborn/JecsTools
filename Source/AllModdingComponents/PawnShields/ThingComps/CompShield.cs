@@ -1,5 +1,6 @@
-﻿using RimWorld;
-using System.Linq;
+﻿using System;
+using HarmonyLib;
+using RimWorld;
 using UnityEngine;
 using Verse;
 
@@ -13,13 +14,7 @@ namespace PawnShields
         /// <summary>
         /// Shield properties.
         /// </summary>
-        public CompProperties_Shield ShieldProps
-        {
-            get
-            {
-                return props as CompProperties_Shield;
-            }
-        }
+        public CompProperties_Shield ShieldProps => props as CompProperties_Shield;
 
         /// <summary>
         /// Determines whether the shield is broken or not.
@@ -30,8 +25,7 @@ namespace PawnShields
             {
                 if (!ShieldProps.canBeAutoDiscarded)
                     return false;
-
-                return ((float)parent.HitPoints / (float)parent.MaxHitPoints) <= ShieldProps.healthAutoDiscardThreshold;
+                return (parent.HitPoints / (float)parent.MaxHitPoints) <= ShieldProps.healthAutoDiscardThreshold;
             }
         }
 
@@ -42,11 +36,15 @@ namespace PawnShields
         {
             get
             {
-                if (ShieldProps?.stuffedSounds != null && ShieldProps?.stuffedSounds?.Count > 0 && parent.Stuff?.stuffProps?.categories != null && ShieldProps.stuffedSounds.Count > 0 &&
-                    ShieldProps.stuffedSounds.ContainsKey(parent.Stuff?.stuffProps?.categories.FirstOrDefault()))
+                var categories = parent.Stuff?.stuffProps?.categories;
+                if (!categories.NullOrEmpty())
                 {
-                    if (ShieldProps.stuffedSounds[parent.Stuff.stuffProps.categories.First()] is SoundDef def)
-                        return def;
+                    var stuffedSounds = ShieldProps?.stuffedSounds;
+                    if (stuffedSounds != null)
+                    {
+                        if (stuffedSounds.TryGetValue(categories[0], out var soundDef))
+                            return soundDef;
+                    }
                 }
 
                 //Default sound
@@ -63,24 +61,19 @@ namespace PawnShields
         /// <returns>True if it absorbed damage successfully.</returns>
         public virtual bool AbsorbDamage(Pawn defender, DamageInfo dinfo, bool ranged)
         {
-            bool absorbedDamage = false;
+            var absorbedDamage = false;
 
             //Check if we blocked the attack at all.
-            if(ShieldProps.canBlockMelee && !ranged)
+            if (ShieldProps.canBlockMelee && !ranged)
             {
-                //Melee
-                float baseStat = defender.GetStatValue(ShieldStatsDefOf.MeleeShieldBlockChance, true);
-                float chance = baseStat * parent.GetStatValue(ShieldStatsDefOf.Shield_BaseMeleeBlockChance);
-
+                var chance = defender.GetStatValue(ShieldStatsDefOf.MeleeShieldBlockChance, true);
                 //Log.Message("Melee block chance: " + chance.ToStringPercent());
                 if (Rand.Chance(chance))
                     absorbedDamage = true;
-            } else if (ShieldProps.canBlockRanged && ranged)
+            }
+            else if (ShieldProps.canBlockRanged && ranged)
             {
-                //Ranged
-                float baseStat = defender.GetStatValue(ShieldStatsDefOf.RangedShieldBlockChance, true);
-                float chance = baseStat * parent.GetStatValue(ShieldStatsDefOf.Shield_BaseRangedBlockChance);
-
+                var chance = defender.GetStatValue(ShieldStatsDefOf.RangedShieldBlockChance, true);
                 //Log.Message("Ranged block chance: " + chance.ToStringPercent());
                 if (Rand.Chance(chance))
                     absorbedDamage = true;
@@ -90,24 +83,24 @@ namespace PawnShields
                 return false;
 
             //Fatigue damage.
-            if(absorbedDamage && ShieldProps.useFatigue)
+            if (absorbedDamage && ShieldProps.useFatigue)
             {
-                float finalDamage = (float)dinfo.Amount * ShieldProps.damageToFatigueFactor;
+                var finalDamage = (float)dinfo.Amount * ShieldProps.damageToFatigueFactor;
                 HealthUtility.AdjustSeverity(defender, ShieldHediffDefOf.ShieldFatigue, finalDamage);
             }
 
             //Take damage from attack.
             if (ShieldProps.shieldTakeDamage)
             {
-                int finalDamage = Mathf.CeilToInt((float)dinfo.Amount * parent.GetStatValue(ShieldStatsDefOf.Shield_DamageAbsorbed));
-                DamageInfo shieldDamage = new DamageInfo(dinfo);
+                var finalDamage = Mathf.CeilToInt((float)dinfo.Amount * parent.GetStatValue(ShieldStatsDefOf.Shield_DamageAbsorbed));
+                var shieldDamage = new DamageInfo(dinfo);
                 shieldDamage.SetAmount(finalDamage);
 
                 parent.TakeDamage(shieldDamage);
             }
 
             //Absorb damage if shield is still intact.
-            if(parent.HitPoints > 0)
+            if (parent.HitPoints > 0)
             {
                 MakeBlockEffect(defender, dinfo, ranged);
                 return true;
@@ -124,7 +117,7 @@ namespace PawnShields
         /// <param name="ranged">Is this attack ranged or melee?</param>
         public virtual void MakeBlockEffect(Pawn defender, DamageInfo dinfo, bool ranged)
         {
-            MoteMaker.ThrowMicroSparks(defender.Position.ToVector3(), defender.Map);
+            FleckMaker.ThrowMicroSparks(defender.Position.ToVector3(), defender.Map);
         }
 
         /// <summary>
@@ -136,30 +129,25 @@ namespace PawnShields
         /// <param name="pawn">Shield bearer.</param>
         public virtual void RenderShield(Vector3 loc, Rot4 rot, Pawn pawn, Thing thing)
         {
-            bool carryShieldOpenly = 
-                (pawn.carryTracker == null || pawn.carryTracker.CarriedThing == null) && 
-                (pawn.Drafted || (pawn.CurJob != null && pawn.CurJob.def.alwaysShowWeapon) || 
-                (pawn.mindState.duty != null && pawn.mindState.duty.def.alwaysShowWeapon));
-
-            if (!ShieldProps.renderProperties.renderWhenPeaceful && !carryShieldOpenly)
+            if (!ShieldProps.renderProperties.renderWhenPeaceful && !pawnRendererCarryWeaponOpenly(pawn.Drawer.renderer))
                 return;
 
             if (ShieldProps.wieldedGraphic != null && ShieldProps.wieldedGraphic.Graphic.MatSingle != null)
             {
-                if(rot == Rot4.North)
+                if (rot == Rot4.North)
                 {
-                    float angle = -thing.def.equippedAngleOffset;
+                    var angle = -thing.def.equippedAngleOffset;
                     if (ShieldProps.renderProperties.flipRotation)
                         angle = -angle;
 
-                    if(ShieldProps.useColoredVersion)
+                    if (ShieldProps.useColoredVersion)
                         ShieldProps.wieldedGraphic.GraphicColoredFor(thing).Draw(loc, rot, thing, angle);
                     else
                         ShieldProps.wieldedGraphic.Graphic.Draw(loc, rot, thing, angle);
                 }
                 else if (rot == Rot4.South)
                 {
-                    float angle = thing.def.equippedAngleOffset;
+                    var angle = thing.def.equippedAngleOffset;
                     if (ShieldProps.renderProperties.flipRotation)
                         angle = -angle;
 
@@ -183,11 +171,9 @@ namespace PawnShields
             }
         }
 
-        /*public override void CompTick()
-        {
-            base.CompTick();
-
-            Log.Message("Shield tick!");
-        }*/
+        // Note: This is an open instance delegate where the first argument is the instance.
+        private static readonly Func<PawnRenderer, bool> pawnRendererCarryWeaponOpenly =
+            (Func<PawnRenderer, bool>)AccessTools.Method(typeof(PawnRenderer), "CarryWeaponOpenly")
+            .CreateDelegate(typeof(Func<PawnRenderer, bool>));
     }
 }

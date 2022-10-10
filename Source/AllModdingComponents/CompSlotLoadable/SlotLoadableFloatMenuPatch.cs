@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using JecsTools;
 using RimWorld;
 using UnityEngine;
@@ -14,82 +13,67 @@ namespace CompSlotLoadable
         public override IEnumerable<KeyValuePair<_Condition, Func<Vector3, Pawn, Thing, List<FloatMenuOption>>>>
             GetFloatMenus()
         {
-            var FloatMenus = new List<KeyValuePair<_Condition, Func<Vector3, Pawn, Thing, List<FloatMenuOption>>>>();
-
             var curCondition = new _Condition(_ConditionType.ThingHasComp, typeof(CompSlottedBonus));
 
-            List<FloatMenuOption> CurFunc(Vector3 clickPos, Pawn pawn, Thing curThing)
+            static List<FloatMenuOption> CurFunc(Vector3 clickPos, Pawn pawn, Thing curThing)
             {
                 //Log.Message("Patch is loaded");
                 var opts = new List<FloatMenuOption>();
-                List<IThingHolder> holders = new List<IThingHolder>();
+                var holders = new List<IThingHolder>();
                 pawn.GetChildHolders(holders);
-                var allThings = new List<Thing>();
-                holders.ForEach(x => allThings.AddRange(x.GetDirectlyHeldThings().ToList()));
-                foreach (var item in allThings)
+                foreach (var holder in holders)
                 {
-                    if (item is ThingWithComps slotLoadable &&
-                        slotLoadable.AllComps.FirstOrDefault(x => x is CompSlotLoadable) is CompSlotLoadable
-                            compSlotLoadable)
+                    foreach (var item in holder.GetDirectlyHeldThings())
                     {
-                        var c = clickPos.ToIntVec3();
-                        //var thingList = c.GetThingList(pawn.Map);
-
-                        foreach (var slot in compSlotLoadable.Slots)
+                        var slots = item.GetSlots();
+                        if (slots != null)
                         {
-                            var loadableThing = (slot.CanLoad(curThing.def)) ? curThing : null ;
-                            if (loadableThing != null)
+                            foreach (var slot in slots)
                             {
-                                FloatMenuOption itemSlotLoadable;
-                                var labelShort = loadableThing.Label;
-                                if (!pawn.health.capacities.CapableOf(PawnCapacityDefOf.Manipulation))
+                                var loadableThing = slot.CanLoad(curThing.def) ? curThing : null;
+                                if (loadableThing != null)
                                 {
-                                    itemSlotLoadable = new FloatMenuOption(
-                                        "CannotEquip".Translate(labelShort) + " (" + "Incapable".Translate() + ")",
-                                        null,
-                                        MenuOptionPriority.Default, null, null, 0f, null, null);
-                                }
-                                else if (!pawn.CanReach(loadableThing, PathEndMode.ClosestTouch, Danger.Deadly))
-                                {
-                                    itemSlotLoadable = new FloatMenuOption(
-                                        "CannotEquip".Translate(labelShort) + " (" + "NoPath".Translate() + ")", null,
-                                        MenuOptionPriority.Default, null, null, 0f, null, null);
-                                }
-                                else if (!pawn.CanReserve(loadableThing, 1))
-                                {
-                                    itemSlotLoadable = new FloatMenuOption(
-                                        "CannotEquip".Translate(labelShort) + " (" +
-                                        "ReservedBy".Translate(pawn.Map.physicalInteractionReservationManager
-                                            .FirstReserverOf(loadableThing).LabelShort) + ")", null,
-                                        MenuOptionPriority.Default, null, null, 0f, null, null);
-                                }
-                                else
-                                {
-                                    var text2 = "Equip".Translate(labelShort);
-                                    itemSlotLoadable = new FloatMenuOption(text2, delegate
+                                    FloatMenuOption itemSlotLoadable;
+                                    var labelShort = loadableThing.Label;
+                                    if (!pawn.health.capacities.CapableOf(PawnCapacityDefOf.Manipulation))
                                     {
-                                        loadableThing.SetForbidden(false, true);
-                                        pawn.jobs.TryTakeOrderedJob(new Job(
-                                            DefDatabase<JobDef>.GetNamed("GatherSlotItem"),
-                                            loadableThing));
-                                        MoteMaker.MakeStaticMote(loadableThing.DrawPos, loadableThing.Map,
-                                            ThingDefOf.Mote_FeedbackEquip, 1f);
-                                        //PlayerKnowledgeDatabase.KnowledgeDemonstrated(ConceptDefOf.EquippingWeapons, KnowledgeAmount.Total);
-                                    }, MenuOptionPriority.High, null, null, 0f, null, null);
+                                        itemSlotLoadable = new FloatMenuOption(
+                                            "CannotEquip".Translate(labelShort) + " (" + "Incapable".Translate() + ")", null);
+                                    }
+                                    else if (!pawn.CanReach(loadableThing, PathEndMode.ClosestTouch, Danger.Deadly))
+                                    {
+                                        itemSlotLoadable = new FloatMenuOption(
+                                            "CannotEquip".Translate(labelShort) + " (" + "NoPath".Translate() + ")", null);
+                                    }
+                                    else if (!pawn.CanReserve(loadableThing, 1))
+                                    {
+                                        itemSlotLoadable = new FloatMenuOption(
+                                            "CannotEquip".Translate(labelShort) + " (" +
+                                            "ReservedBy".Translate(pawn.Map.physicalInteractionReservationManager
+                                                .FirstReserverOf(loadableThing).LabelShort) + ")", null);
+                                    }
+                                    else
+                                    {
+                                        itemSlotLoadable = new FloatMenuOption(
+                                            "Equip".Translate(labelShort), () =>
+                                            {
+                                                loadableThing.SetForbidden(false, true);
+                                                pawn.jobs.TryTakeOrderedJob(JobMaker.MakeJob(CompSlotLoadableDefOf.GatherSlotItem, loadableThing));
+                                                FleckMaker.Static(loadableThing.DrawPos, loadableThing.Map, FleckDefOf.FeedbackEquip);
+                                                //PlayerKnowledgeDatabase.KnowledgeDemonstrated(ConceptDefOf.EquippingWeapons, KnowledgeAmount.Total);
+                                            }, MenuOptionPriority.High);
+                                    }
+                                    opts.Add(itemSlotLoadable);
                                 }
-                                opts.Add(itemSlotLoadable);
                             }
+                            return opts;
                         }
-                        return opts;
                     }
                 }
                 return opts;
             }
 
-            KeyValuePair<_Condition, Func<Vector3, Pawn, Thing, List<FloatMenuOption>>> curSec =
-                new KeyValuePair<_Condition, Func<Vector3, Pawn, Thing, List<FloatMenuOption>>>(curCondition, CurFunc);
-            FloatMenus.Add(curSec);
-            return FloatMenus;
+            yield return new KeyValuePair<_Condition, Func<Vector3, Pawn, Thing, List<FloatMenuOption>>>(curCondition, CurFunc);
         }
     }
 }

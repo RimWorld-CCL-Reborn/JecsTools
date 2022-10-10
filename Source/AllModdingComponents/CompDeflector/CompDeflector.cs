@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using HarmonyLib;
 using RimWorld;
 using UnityEngine;
@@ -9,6 +7,7 @@ using Verse.AI;
 
 namespace CompDeflector
 {
+
     public class CompDeflector : ThingComp
     {
         public enum AccuracyRoll
@@ -19,8 +18,9 @@ namespace CompDeflector
             CriticalSuccess
         }
 
-        private int animationDeflectionTicks;
+        public CompProperties_Deflector Props => (CompProperties_Deflector)props;
 
+        private int animationDeflectionTicks;
 
         public Verb_Deflected deflectVerb;
         public AccuracyRoll lastAccuracyRoll = AccuracyRoll.Failure;
@@ -32,123 +32,220 @@ namespace CompDeflector
             get => animationDeflectionTicks;
         }
 
-        public bool IsAnimatingNow
+        public bool IsAnimatingNow => animationDeflectionTicks >= 0;
+
+        private CompEquippable compEquippable;
+        private ThingComp compActivatableEffect;
+        private Func<bool> compActivatableEffectIsActive;
+
+        private static readonly Type compActivatableEffectType = GenTypes.GetTypeInAnyAssembly("CompActivatableEffect.CompActivatableEffect");
+
+        public CompEquippable GetEquippable => compEquippable;
+
+        public Pawn GetPawn => GetEquippable?.verbTracker.PrimaryVerb.CasterPawn;
+
+        public ThingComp GetActivatableEffect => compActivatableEffect;
+
+        public bool HasCompActivatableEffect => GetActivatableEffect != null;
+
+        public bool CompActivatableEffectiveIsActive => compActivatableEffectIsActive?.Invoke() ?? false;
+
+        // Caching comps needs to happen after all comps are created. Ideally, this would be done right after
+        // ThingWithComps.InitializeComps(). This requires overriding two hooks: PostPostMake and PostExposeData.
+
+        public override void PostPostMake()
         {
-            get
-            {
-                if (animationDeflectionTicks >= 0) return true;
-                return false;
-            }
+            base.PostPostMake();
+            CacheComps();
         }
 
-        public CompEquippable GetEquippable => parent.GetComp<CompEquippable>();
-
-        public Pawn GetPawn => GetEquippable.verbTracker.PrimaryVerb.CasterPawn;
-
-        public ThingComp GetActivatableEffect =>
-            parent.AllComps.FirstOrDefault(y => y.GetType().ToString().Contains("ActivatableEffect"));
-
-        public bool HasCompActivatableEffect
+        public override void PostExposeData()
         {
-            get
-            {
-                if (parent is ThingWithComps x)
-                    if (GetActivatableEffect != null)
-                        return true;
-                return false;
-            }
+            base.PostExposeData();
+            Scribe_Values.Look(ref animationDeflectionTicks, nameof(animationDeflectionTicks));
+            if (Scribe.mode == LoadSaveMode.LoadingVars)
+                CacheComps();
         }
 
-        public float DeflectionChance
+        private void CacheComps()
         {
-            get
+            // Avoiding ThingWithComps.GetComp<T> and implementing a specific non-generic version of it here.
+            // That method is slow because the `isinst` instruction with generic type arg operands is very slow,
+            // while `isinst` instruction against non-generic type operand like used below is fast.
+            // For the optional CompActivatableEffect, we have to use the slower IsAssignableFrom reflection check.
+            var comps = parent.AllComps;
+            for (int i = 0, count = comps.Count; i < count; i++)
             {
-                var calc = Props.baseDeflectChance;
-
-                if (GetEquippable != null)
-                    if (GetPawn != null)
+                var comp = comps[i];
+                if (comp is CompEquippable compEquippable)
+                    this.compEquippable = compEquippable;
+                else if (compActivatableEffectType != null)
+                {
+                    var compType = comp.GetType();
+                    if (compActivatableEffectType.IsAssignableFrom(compType))
                     {
-                        var pawn = GetPawn;
-
-                        //This handles if a deflection skill is defined.
-                        //Example, melee skill of 20.
-                        if (Props.useSkillInCalc)
-                        {
-                            var skillToCheck = Props.deflectSkill;
-                            if (skillToCheck != null)
-                            {
-                                var skillRecord = pawn.skills?.GetSkill(skillToCheck);
-                                if (skillRecord != null)
-                                {
-                                    var param = Props.deflectRatePerSkillPoint;
-                                    if (param != 0)
-                                        calc += skillRecord.Level * param; //Makes the skill into float percent
-                                    else
-                                        Log.Error(
-                                            "CompDeflector :: deflectRatePerSkillPoint is set to 0, but useSkillInCalc is set to true.");
-                                }
-                            }
-                        }
-
-                        calc = DeflectionChance_InFix(calc);
-
-                        //This handles if manipulation needs to be checked.
-                        if (!Props.useManipulationInCalc) return Mathf.Clamp(calc, 0, 1.0f);
-                        if (pawn.health.capacities.CapableOf(PawnCapacityDefOf.Manipulation))
-                            calc *= pawn.health.capacities.GetLevel(PawnCapacityDefOf.Manipulation);
-                        else
-                            calc = 0f;
+                        compActivatableEffect = comp;
+                        compActivatableEffectIsActive =
+                            (Func<bool>)AccessTools.Method(compType, "IsActive").CreateDelegate(typeof(Func<bool>), comp);
                     }
-                return Mathf.Clamp(calc, 0, 1.0f);
+                }
             }
         }
+
+        internal class DeflectionChanceCalculator
+        {
+            private readonly CompDeflector compDeflector;
+            private readonly Pawn pawn;
+            private readonly CompProperties_Deflector props;
+            private readonly bool fixedRandSeed;
+
+            public DeflectionChanceCalculator(CompDeflector compDeflector, bool fixedRandSeed)
+            {
+                this.compDeflector = compDeflector;
+                this.fixedRandSeed = fixedRandSeed;
+                pawn = compDeflector.GetPawn;
+                props = compDeflector.Props;
+            }
+
+            public float BeforeInfixValue { get; private set; }
+            public float InfixValue { get; private set; }
+
+            public float Calculate()
+            {
+                var calc = props.baseDeflectChance;
+                if (pawn != null)
+                {
+                    if (UseSkill(out var deflectSkill))
+                        calc += deflectSkill.Level * props.deflectRatePerSkillPoint;
+                    BeforeInfixValue = calc;
+                    // Due to possibility of DeflectionChance_InFix implementation using Rand, option to use a fixed Random seed.
+                    if (fixedRandSeed)
+                    {
+                        Rand.PushState(0);
+                        try
+                        {
+                            calc = compDeflector.DeflectionChance_InFix(calc);
+                        }
+                        finally
+                        {
+                            Rand.PopState();
+                        }
+                    }
+                    else
+                        calc = compDeflector.DeflectionChance_InFix(calc);
+                    InfixValue = calc;
+                    if (UseManipulation(out var capable) && capable)
+                        calc *= pawn.health.capacities.GetLevel(PawnCapacityDefOf.Manipulation);
+                }
+                return Mathf.Clamp01(calc);
+            }
+
+            public bool UseSkill(out SkillRecord skill)
+            {
+                skill = null;
+                if (props.useSkillInCalc && props.deflectSkill != null)
+                    skill = pawn.skills?.GetSkill(props.deflectSkill);
+                return skill != null;
+            }
+
+            public bool UseManipulation(out bool capable)
+            {
+                capable = props.useManipulationInCalc && pawn.health.capacities.CapableOf(PawnCapacityDefOf.Manipulation);
+                return props.useManipulationInCalc;
+            }
+        }
+
+        internal DeflectionChanceCalculator GetDeflectionChanceCalculator(bool fixedRandSeed) => new DeflectionChanceCalculator(this, fixedRandSeed);
+
+        public float DeflectionChance => GetDeflectionChanceCalculator(fixedRandSeed: false).Calculate();
 
         public string ChanceToString => DeflectionChance.ToStringPercent();
 
-
-        public CompProperties_Deflector Props => (CompProperties_Deflector) props;
-
+        // TODO: This is never called (and Props.deflectSkillLearnRate is never used) - should it be called upon deflection success?
+        // or whenever deflection is rolled ala reflection skill (though this would mean every received hit would result in skill gain)?
         public void DeflectionSkillGain(SkillRecord skill)
         {
             GetPawn.skills?.Learn(Props.deflectSkill, Props.deflectSkillLearnRate, false);
         }
 
-
         public void ReflectionSkillGain(SkillRecord skill)
         {
+            // TODO: GetPawn should be passed in, though doing so would break binary compatibility
             GetPawn.skills?.Learn(Props.reflectSkill, Props.reflectSkillLearnRate, false);
         }
 
-        //Accuracy Roll Calculator
+        // TODO: Use this in a StatWorker_ReflectionAccuracy.
+        internal class ReflectionAccuracyCalculator
+        {
+            private readonly CompDeflector compDeflector;
+            private readonly Pawn pawn;
+            private readonly CompProperties_Deflector props;
+            private readonly bool fixedRandSeed;
+
+            public ReflectionAccuracyCalculator(CompDeflector compDeflector, bool fixedRandSeed)
+            {
+                this.compDeflector = compDeflector;
+                this.fixedRandSeed = fixedRandSeed;
+                pawn = compDeflector.GetPawn;
+                props = compDeflector.Props;
+            }
+
+            public void Calculate(out int modifier, out int difficulty, out SkillRecord skill)
+            {
+                modifier = 0;
+                difficulty = 80;
+                if (UseSkill(out skill))
+                {
+                    modifier += (int)(props.reflectRatePerSkillPoint * skill.Level);
+                    //Log.Message("Deflection mod: " + modifier.ToString());
+                }
+                // Due to possibility of ReflectionAccuracy_InFix implementation using Rand, option to use a fixed Random seed.
+                if (fixedRandSeed)
+                {
+                    Rand.PushState(0);
+                    try
+                    {
+                        compDeflector.ReflectionAccuracy_InFix(ref modifier, ref difficulty);
+                    }
+                    finally
+                    {
+                        Rand.PopState();
+                    }
+                }
+                else
+                    compDeflector.ReflectionAccuracy_InFix(ref modifier, ref difficulty);
+            }
+
+            public bool UseSkill(out SkillRecord skill)
+            {
+                skill = null;
+                if (props.reflectSkill != null)
+                    skill = pawn.skills?.GetSkill(props.reflectSkill);
+                return skill != null;
+            }
+        }
+
+        internal ReflectionAccuracyCalculator GetReflectionAccuracyCalculator(bool fixedRandSeed) => new ReflectionAccuracyCalculator(this, fixedRandSeed);
+
         public AccuracyRoll ReflectionAccuracy()
         {
             var d100 = Rand.Range(1, 100);
-            var modifier = 0;
-            var difficulty = 80;
-            var thisPawn = GetPawn;
-            if (thisPawn?.skills != null)
+            GetReflectionAccuracyCalculator(fixedRandSeed: false).Calculate(out var modifier, out var difficulty, out var skill);
+            if (skill != null)
             {
-                if (Props?.reflectSkill != null)
-                {
-                    var skill = thisPawn.skills.GetSkill(Props.reflectSkill);
-                    if (skill?.Level > 0)
-                    {
-                        modifier += (int) (Props.deflectRatePerSkillPoint * skill.Level);
-                        //Log.Message("Deflection mod: " + modifier.ToString());
-                        ReflectionSkillGain(skill);
-                    }
-                }
+                // TODO: This means the skill is leveled regardless of reflection success - is this correct?
+                ReflectionSkillGain(skill);
             }
-            ReflectionAccuracy_InFix(ref modifier, ref difficulty);
 
             var subtotal = d100 + modifier;
             if (subtotal >= 90)
                 return AccuracyRoll.CriticalSuccess;
-            if (subtotal > difficulty)
+            else if (subtotal > difficulty)
                 return AccuracyRoll.Success;
-            if (subtotal <= 30)
+            else if (subtotal <= 30)
                 return AccuracyRoll.CritialFailure;
-            return AccuracyRoll.Failure;
+            else
+                return AccuracyRoll.Failure;
         }
 
         public virtual void ReflectionAccuracy_InFix(ref int modifier, ref int difficulty)
@@ -165,22 +262,6 @@ namespace CompDeflector
         {
             return calc;
         }
-
-        public override IEnumerable<StatDrawEntry> SpecialDisplayStats()
-        {
-            //yield return new StatDrawEntry(StatCategoryDefOf.Basics, "DeflectChance".Translate(), ChanceToString, 0);
-            yield return new StatDrawEntry(StatCategoryDefOf.Basics, StatDef.Named("Deflect chance"), float.Parse(ChanceToString), StatRequest.ForEmpty());
-        }
-
-        //        	if (this.ingestible != null)
-        //	{
-        //		IEnumerator<StatDrawEntry> enumerator2 = this.ingestible.SpecialDisplayStats(this).GetEnumerator();
-        //		while (enumerator2.MoveNext())
-        //		{
-        //			StatDrawEntry current2 = enumerator2.Current;
-        //        yield return current2;
-        //		}
-        //}
 
         public virtual Verb ReflectionHandler(Verb newVerb)
         {
@@ -199,13 +280,13 @@ namespace CompDeflector
                     muzzleFlashScale = newVerb.verbProps.muzzleFlashScale,
                     warmupTime = 0,
                     defaultCooldownTime = 0,
-                    soundCast = Props.deflectSound
+                    soundCast = Props.deflectSound,
                 };
                 switch (lastAccuracyRoll)
                 {
                     case AccuracyRoll.CriticalSuccess:
-                        if (GetPawn != null)
-                            MoteMaker.ThrowText(GetPawn.DrawPos, GetPawn.Map,
+                        if (GetPawn is Pawn pawn) // TODO: GetPawn should be passed in, though doing so would break binary compatibility
+                            MoteMaker.ThrowText(pawn.DrawPos, pawn.Map,
                                 "SWSaber_TextMote_CriticalSuccess".Translate(), 6f);
                         newVerbProps.accuracyLong = 999.0f;
                         newVerbProps.accuracyMedium = 999.0f;
@@ -213,7 +294,7 @@ namespace CompDeflector
                         lastShotReflected = true;
                         break;
                     case AccuracyRoll.Failure:
-                        newVerbProps.forcedMissRadius = 50.0f;
+                        verbPropertiesForcedMissRadius(newVerbProps) = 50.0f;
                         newVerbProps.accuracyLong = 0.0f;
                         newVerbProps.accuracyMedium = 0.0f;
                         newVerbProps.accuracyShort = 0.0f;
@@ -221,8 +302,8 @@ namespace CompDeflector
                         break;
 
                     case AccuracyRoll.CritialFailure:
-                        if (GetPawn != null)
-                            MoteMaker.ThrowText(GetPawn.DrawPos, GetPawn.Map,
+                        if (GetPawn is Pawn pawn2)
+                            MoteMaker.ThrowText(pawn2.DrawPos, pawn2.Map,
                                 "SWSaber_TextMote_CriticalFailure".Translate(), 6f);
                         newVerbProps.accuracyLong = 999.0f;
                         newVerbProps.accuracyMedium = 999.0f;
@@ -243,6 +324,10 @@ namespace CompDeflector
             return newVerb;
         }
 
+        private static readonly AccessTools.FieldRef<VerbProperties, float> verbPropertiesForcedMissRadius =
+            AccessTools.FieldRefAccess<VerbProperties, float>("forcedMissRadius");
+
+        // TODO: This is never called - still needed?
         public virtual Verb CopyAndReturnNewVerb_PostFix(Verb newVerb)
         {
             return newVerb;
@@ -252,9 +337,8 @@ namespace CompDeflector
         {
             if (newVerb != null)
             {
-                deflectVerb = null;
-                deflectVerb = (Verb_Deflected) Activator.CreateInstance(typeof(Verb_Deflected));
-                deflectVerb.caster = GetPawn;
+                deflectVerb = (Verb_Deflected)Activator.CreateInstance(typeof(Verb_Deflected));
+                deflectVerb.caster = GetPawn; // TODO: GetPawn should be passed in, though doing so would break binary compatibility
 
                 //Initialize VerbProperties
                 var newVerbProps = new VerbProperties
@@ -266,7 +350,7 @@ namespace CompDeflector
                     muzzleFlashScale = newVerb.verbProps.muzzleFlashScale,
                     warmupTime = 0,
                     defaultCooldownTime = 0,
-                    soundCast = Props.deflectSound
+                    soundCast = Props.deflectSound,
                 };
 
                 //Apply values
@@ -274,8 +358,9 @@ namespace CompDeflector
             }
             else
             {
-                if (deflectVerb != null) return deflectVerb;
-                deflectVerb = (Verb_Deflected) Activator.CreateInstance(typeof(Verb_Deflected));
+                if (deflectVerb != null)
+                    return deflectVerb;
+                deflectVerb = (Verb_Deflected)Activator.CreateInstance(typeof(Verb_Deflected));
                 deflectVerb.caster = GetPawn;
                 deflectVerb.verbProps = Props.DeflectVerb;
             }
@@ -289,64 +374,60 @@ namespace CompDeflector
 
         public virtual Pawn ResolveDeflectionTarget(Pawn defaultTarget = null)
         {
-            if (lastAccuracyRoll != AccuracyRoll.CritialFailure) return defaultTarget;
-            var thisPawn = GetPawn;
-            if (thisPawn == null || thisPawn.Dead) return defaultTarget;
-
-            bool Validator(Thing t)
-            {
-                return t is Pawn pawn3 && pawn3 != thisPawn;
-            }
-
-            var closestPawn = (Pawn) GenClosest.ClosestThingReachable(thisPawn.Position, thisPawn.Map,
+            if (lastAccuracyRoll != AccuracyRoll.CritialFailure)
+                return defaultTarget;
+            var thisPawn = GetPawn; // TODO: GetPawn should be passed in, though doing so would break binary compatibility
+            var closestPawn = (Pawn)GenClosest.ClosestThingReachable(thisPawn.Position, thisPawn.Map,
                 ThingRequest.ForGroup(ThingRequestGroup.Pawn), PathEndMode.InteractionCell,
-                TraverseParms.For(thisPawn, Danger.Deadly, TraverseMode.ByPawn, false), 9999f, Validator, null,
+                TraverseParms.For(thisPawn, Danger.Deadly, TraverseMode.ByPawn, false), 9999f, t => t is Pawn && t != thisPawn, null,
                 0, -1, false, RegionType.Set_Passable, false);
-            if (closestPawn == null) return defaultTarget;
-            return closestPawn == defaultTarget ? thisPawn : closestPawn;
+            if (closestPawn == null)
+                return defaultTarget;
+            else if (closestPawn == defaultTarget)
+                return thisPawn;
+            else
+                return closestPawn;
         }
 
         public virtual void CriticalFailureHandler(DamageInfo dinfo, Pawn newTarget, out bool shouldContinue)
         {
             shouldContinue = true;
-            if (lastAccuracyRoll != AccuracyRoll.CritialFailure) return;
-            var thisPawn = GetPawn;
-            if (thisPawn == null || thisPawn.Dead) return;
+            if (lastAccuracyRoll != AccuracyRoll.CritialFailure)
+                return;
+            var thisPawn = GetPawn; // TODO: GetPawn should be passed in, though doing so would break binary compatibility
             //If the target isn't the old target, then get out of this
             if (newTarget != dinfo.Instigator as Pawn)
                 return;
             shouldContinue = false;
-            GetPawn.TakeDamage(new DamageInfo(dinfo.Def, dinfo.Amount));
+            thisPawn.TakeDamage(new DamageInfo(dinfo.Def, dinfo.Amount));
         }
 
         public virtual void GiveDeflectJob(DamageInfo dinfo)
         {
-            try
-            {
-                if (!(dinfo.Instigator is Pawn pawn2)) return;
-                var job = new Job(CompDeflectorDefOf.CastDeflectVerb)
-                {
-                    playerForced = true,
-                    locomotionUrgency = LocomotionUrgency.Sprint
-                };
-                var compEquip = pawn2.equipment?.PrimaryEq;
-                if (compEquip?.PrimaryVerb == null) return;
-                var verbToUse = (Verb_Deflected) CopyAndReturnNewVerb(compEquip.PrimaryVerb);
-                verbToUse = (Verb_Deflected) ReflectionHandler(deflectVerb);
-                verbToUse.lastShotReflected = lastShotReflected;
-                verbToUse.verbTracker = GetPawn.VerbTracker;
-                pawn2 = ResolveDeflectionTarget(pawn2);
-                CriticalFailureHandler(dinfo, pawn2, out var shouldContinue);
-                if (!shouldContinue) return;
-                job.targetA = pawn2;
-                job.verbToUse = verbToUse;
-                job.killIncappedTarget = pawn2.Downed;
-                GetPawn.jobs.TryTakeOrderedJob(job);
-            }
-            catch (NullReferenceException)
-            {
-            }
-            ////Log.Message("TryToTakeOrderedJob Called");
+            if (!(dinfo.Instigator is Pawn pawn))
+                return;
+            var job = JobMaker.MakeJob(CompDeflectorDefOf.CastDeflectVerb);
+            job.playerForced = true;
+            job.locomotionUrgency = LocomotionUrgency.Sprint;
+            var compEquipVerb = pawn.equipment?.PrimaryEq?.PrimaryVerb;
+            if (compEquipVerb == null)
+                return;
+            var thisPawn = GetPawn;
+            if (thisPawn == null || thisPawn.Dead)
+                return;
+            var deflectVerb = (Verb_Deflected)CopyAndReturnNewVerb(compEquipVerb);
+            var verbToUse = (Verb_Deflected)ReflectionHandler(deflectVerb);
+            verbToUse.lastShotReflected = lastShotReflected;
+            verbToUse.verbTracker = thisPawn.VerbTracker;
+            pawn = ResolveDeflectionTarget(pawn);
+            CriticalFailureHandler(dinfo, pawn, out var shouldContinue);
+            if (!shouldContinue)
+                return;
+            job.targetA = pawn;
+            job.verbToUse = verbToUse;
+            job.killIncappedTarget = pawn.Downed;
+            thisPawn.jobs.TryTakeOrderedJob(job);
+            //Log.Message("TryToTakeOrderedJob Called");
         }
 
         /// <summary>
@@ -361,17 +442,15 @@ namespace CompDeflector
                 {
                     if (HasCompActivatableEffect)
                     {
-                        bool? isActive = (bool) AccessTools.Method(GetActivatableEffect.GetType(), "IsActive")
-                            .Invoke(GetActivatableEffect, null);
-                        if (isActive == false)
+                        if (CompActivatableEffectiveIsActive == false)
                         {
-                            ////Log.Message("Inactivate Weapon");
+                            //Log.Message("Inactivate Weapon");
                             absorbed = false;
                             return;
                         }
                     }
                     var calc = DeflectionChance;
-                    var deflectThreshold = (int) (calc * 100); // 0.3f => 30
+                    var deflectThreshold = (int)(calc * 100); // 0.3f => 30
                     if (Rand.Range(1, 100) > deflectThreshold)
                     {
                         absorbed = false;
@@ -385,12 +464,6 @@ namespace CompDeflector
                     return;
                 }
             absorbed = false;
-        }
-
-        public override void PostExposeData()
-        {
-            Scribe_Values.Look(ref animationDeflectionTicks, "animationDeflectionTicks", 0);
-            base.PostExposeData();
         }
     }
 }

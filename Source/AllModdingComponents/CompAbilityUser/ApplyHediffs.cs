@@ -10,8 +10,8 @@ namespace AbilityUser
 
         public void ExposeData()
         {
-            Scribe_Values.Look(ref applyChance, "applyChance", -1.0f);
-            Scribe_Values.Look(ref severity, "severity", 1.0f);
+            Scribe_Values.Look(ref applyChance, nameof(applyChance), -1.0f);
+            Scribe_Values.Look(ref severity, nameof(severity), 1.0f);
         }
     }
 }

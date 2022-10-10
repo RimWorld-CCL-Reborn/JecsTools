@@ -1,7 +1,7 @@
 ﻿using System.Xml;
 using Verse;
 
-/* 
+/*
  * Author: ChJees
  * Created: 2017-09-23
  */
@@ -44,17 +44,11 @@ namespace AbilityUserAI
             }
 
             tag = xmlRoot.Name;
-            weight = (float) ParseHelper.FromString(xmlRoot.FirstChild.Value, typeof(float));
+            weight = (float)ParseHelper.FromString(xmlRoot.FirstChild.Value, typeof(float));
         }
 
-        public override string ToString()
-        {
-            return string.Concat("(", weight, "x ", tag == null ? "null" : tag, ")");
-        }
+        public override string ToString() => $"({weight}x {tag ?? "null"})";
 
-        public override int GetHashCode()
-        {
-            return (tag.GetHashCode() + (int) weight) << 16;
-        }
+        public override int GetHashCode() => (tag.GetHashCode() + (int)weight) << 16;
     }
 }

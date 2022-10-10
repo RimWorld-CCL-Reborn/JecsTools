@@ -31,8 +31,8 @@ namespace JecsTools
 
         public bool playerInterruptible = true;
 
-        [MustTranslate] public string reportString = "Doing something.";
-
+        [MustTranslate]
+        public string reportString = "Doing something.";
 
         //public bool alwaysShowWeapon;
 
@@ -50,10 +50,10 @@ namespace JecsTools
         [DebuggerHidden]
         public override IEnumerable<string> ConfigErrors()
         {
-            foreach (var e in base.ConfigErrors())
-                yield return e;
+            foreach (var error in base.ConfigErrors())
+                yield return error;
             if (joySkill != null && joyXpPerTick == 0f)
-                yield return "funSkill is not null but funXpPerTick is zero";
+                yield return $"{nameof(joySkill)} is not null, but {nameof(joyXpPerTick)} is zero";
         }
     }
 }

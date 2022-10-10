@@ -14,9 +14,10 @@ namespace JecsTools
 
         public virtual bool CanMake()
         {
-            if (!researchPrerequisites.NullOrEmpty())
+            if (researchPrerequisites != null)
                 foreach (var r in researchPrerequisites)
-                    if (!r.IsFinished) return false;
+                    if (!r.IsFinished)
+                        return false;
             return true;
         }
     }

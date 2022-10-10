@@ -23,16 +23,15 @@ namespace JecsTools
         //{
         //    get
         //    {
-        //        float d = 0.15f * Find.WorldGrid.averageTileSize;
+        //        var d = 0.15f * Find.WorldGrid.averageTileSize;
         //        Rand.PushState();
-        //        Rand.Seed = this.ID;
-        //        float f = Rand.Range(0f, 360f);
+        //        Rand.Seed = ID;
+        //        var f = Rand.Range(0f, 360f);
         //        Rand.PopState();
         //        Vector2 point = new Vector2(Mathf.Cos(f), Mathf.Sin(f)) * d;
-        //        return WorldRendererUtility.ProjectOnQuadTangentialToPlanet(Find.WorldGrid.GetTileCenter(this.Tile), point);
+        //        return WorldRendererUtility.ProjectOnQuadTangentialToPlanet(Find.WorldGrid.GetTileCenter(Tile), point);
         //    }
         //}
-
 
         public override void Draw()
         {
@@ -67,18 +66,13 @@ namespace JecsTools
                 return;
             }
             var normalized = pos.normalized;
-            Vector3 vector;
-            if (counterClockwise)
-                vector = -normalized;
-            else
-                vector = normalized;
+            var vector = counterClockwise ? -normalized : normalized;
             var q = Quaternion.LookRotation(Vector3.Cross(vector, Vector3.up), vector);
             var leftDrawStart = (curSize - totalSize) / 2;
             pos += new Vector3(leftDrawStart, 0, 0);
             var s = new Vector3(totalSize * scaleHeight, 1f, curSize * scaleWidth);
-            var matrix = default(Matrix4x4);
-            matrix.SetTRS(pos + normalized * altOffset, q, s);
-            var layer = !useSkyboxLayer ? WorldCameraManager.WorldLayer : WorldCameraManager.WorldSkyboxLayer;
+            var matrix = Matrix4x4.TRS(pos + normalized * altOffset, q, s);
+            var layer = useSkyboxLayer ? WorldCameraManager.WorldSkyboxLayer : WorldCameraManager.WorldLayer;
             if (propertyBlock != null)
                 Graphics.DrawMesh(MeshPool.plane10, matrix, material, layer, null, 0, propertyBlock);
             else

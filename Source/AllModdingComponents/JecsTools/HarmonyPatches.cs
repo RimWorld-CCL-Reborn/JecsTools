@@ -1,132 +1,114 @@
-﻿using System;
+﻿//#define DEBUGLOG
+
+using System;
+using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
-using AbilityUser;
+using System.Diagnostics;
+using System.Reflection;
+using System.Reflection.Emit;
 using HarmonyLib;
 using RimWorld;
 using UnityEngine;
 using Verse;
-using Verse.AI;
-using Verse.Sound;
 
 namespace JecsTools
 {
     [StaticConstructorOnStartup]
     public static partial class HarmonyPatches
     {
-        public static bool DEBUGMODE = false;
-
         //For alternating fire on some weapons
         public static Dictionary<Thing, int> AlternatingFireTracker = new Dictionary<Thing, int>();
 
-        // Verse.Pawn_HealthTracker
-        public static bool StopPreApplyDamageCheck;
-
-        public static int? tempDamageAmount = null;
-        public static int? tempDamageAbsorbed = null;
+        public static float? tempDamageAmount = null;
+        public static float? tempDamageAbsorbed = null;
 
         static HarmonyPatches()
         {
-            // Changed by Tad : New Harmony Instance creation required
-            var instance = new Harmony("jecstools.jecrell.main");
-            //Allow fortitude to soak damage
+            var harmony = new Harmony("jecstools.jecrell.main");
             var type = typeof(HarmonyPatches);
 
             //Debug Line
             //------------
-//            instance.Patch(
-//                AccessTools.Method(typeof(PawnGroupKindWorker_Normal),
-//                    nameof(PawnGroupKindWorker_Normal.MinPointsToGenerateAnything)),
-//                new HarmonyMethod(type, nameof(MinPointsTest)), null);
+            //harmony.Patch(AccessTools.Method(typeof(PawnGroupKindWorker_Normal), nameof(PawnGroupKindWorker_Normal.MinPointsToGenerateAnything)),
+            //    prefix: new HarmonyMethod(type, nameof(MinPointsTest)));
             //------------
 
+            //Applies hediff-based extra damage to melee attacks.
+            harmony.Patch(typeof(Verb_MeleeAttackDamage).FindIteratorMethod("DamageInfosToApply"),
+                transpiler: new HarmonyMethod(type, nameof(Verb_MeleeAttackDamage_DamageInfosToApply_Transpiler)));
+
+            //Allow fortitude (HediffComp_DamageSoak) to soak damage
             //Adds HediffCompProperties_DamageSoak checks to damage
-            instance.Patch(AccessTools.Method(typeof(Pawn_HealthTracker), nameof(Pawn_HealthTracker.PreApplyDamage)),
-                new HarmonyMethod(type, nameof(PreApplyDamage_PrePatch)), null);
-
+            harmony.Patch(AccessTools.Method(typeof(Pawn_HealthTracker), nameof(Pawn_HealthTracker.PreApplyDamage)),
+                prefix: new HarmonyMethod(type, nameof(PreApplyDamage_PrePatch)));
             //Applies cached armor damage and absorption
-            instance.Patch(AccessTools.Method(typeof(ArmorUtility), "ApplyArmor"),
-                new HarmonyMethod(type, nameof(ApplyProperDamage)), null);
-
+            harmony.Patch(AccessTools.Method(typeof(ArmorUtility), "ApplyArmor"),
+                prefix: new HarmonyMethod(type, nameof(Pre_ApplyArmor)));
             //Applies damage soak motes
-            instance.Patch(AccessTools.Method(typeof(ArmorUtility), nameof(ArmorUtility.GetPostArmorDamage)), null,
-                new HarmonyMethod(type, nameof(Post_GetPostArmorDamage)));
+            harmony.Patch(AccessTools.Method(typeof(ArmorUtility), nameof(ArmorUtility.GetPostArmorDamage)),
+                postfix: new HarmonyMethod(type, nameof(Post_GetPostArmorDamage)));
 
-            //Allows for adding additional HediffSets when characters spawn using the StartWithHediff class. 
-            instance.Patch(
-                AccessTools.Method(typeof(PawnGenerator), "GeneratePawn", new[] {typeof(PawnGenerationRequest)}), null,
-                new HarmonyMethod(type, nameof(Post_GeneratePawn)));
+            //Applies knockback
+            harmony.Patch(AccessTools.Method(typeof(Pawn), nameof(Pawn.PreApplyDamage)),
+                prefix: new HarmonyMethod(type, nameof(Pawn_PreApplyDamage_Prefix)) { priority = Priority.High },
+                postfix: new HarmonyMethod(type, nameof(Pawn_PreApplyDamage_Postfix)) { priority = Priority.Low });
+            harmony.Patch(AccessTools.Method(typeof(Scenario), nameof(Scenario.TickScenario)),
+                postfix: new HarmonyMethod(type, nameof(Scenario_TickScenario_Postfix)));
+
+            //Allows for adding additional HediffSets when characters spawn using the StartWithHediff class.
+            harmony.Patch(AccessTools.Method(typeof(PawnGenerator), nameof(PawnGenerator.GeneratePawn),
+                    new[] { typeof(PawnGenerationRequest) }),
+                postfix: new HarmonyMethod(type, nameof(Post_GeneratePawn)));
 
             //Checks apparel that uses the ApparelExtension
-            instance.Patch(AccessTools.Method(typeof(ApparelUtility), nameof(ApparelUtility.CanWearTogether)), null,
-                new HarmonyMethod(type, nameof(Post_CanWearTogether)));
-
-            //Handles special cases of faction disturbances
-            instance.Patch(AccessTools.Method(typeof(Faction), nameof(Faction.Notify_MemberDied)),
-                new HarmonyMethod(type, nameof(Notify_MemberDied)), null);
-
-            //Handles FactionSettings extension to allow for fun effects when factions arrive.
-            instance.Patch(
-                AccessTools.Method(typeof(PawnGroupMakerUtility), nameof(PawnGroupMakerUtility.GeneratePawns)), null,
-                new HarmonyMethod(type, nameof(GeneratePawns)), null);
+            harmony.Patch(AccessTools.Method(typeof(ApparelUtility), nameof(ApparelUtility.CanWearTogether)),
+                postfix: new HarmonyMethod(type, nameof(Post_CanWearTogether)));
 
             //Handles cases where gendered apparel swaps out for individual genders.
-            instance.Patch(
-                AccessTools.Method(typeof(PawnApparelGenerator),
-                    nameof(PawnApparelGenerator.GenerateStartingApparelFor)), null,
-                new HarmonyMethod(type, nameof(GenerateStartingApparelFor_PostFix)), null);
+            harmony.Patch(AccessTools.Method(typeof(PawnApparelGenerator), nameof(PawnApparelGenerator.GenerateStartingApparelFor)),
+                postfix: new HarmonyMethod(type, nameof(GenerateStartingApparelFor_PostFix)));
 
-            //BuildingExtension prevents some things from wiping other things when spawned.
-            instance.Patch(
-                AccessTools.Method(typeof(GenSpawn),
-                    nameof(GenSpawn.SpawningWipes)), null,
-                new HarmonyMethod(type, nameof(SpawningWipes_PostFix)), null);
-            //BuildingExtension is also checked here to make sure things do not block construction.
-            instance.Patch(
-                AccessTools.Method(typeof(GenConstruct),
-                    nameof(GenConstruct.BlocksConstruction)), null,
-                new HarmonyMethod(type, nameof(BlocksConstruction_PostFix)), null);
-            //
-            instance.Patch(
-                AccessTools.Method(typeof(Projectile),
-                    "CanHit"), null,
-                new HarmonyMethod(type, nameof(CanHit_PostFix)), null);
-            instance.Patch(
-                AccessTools.Method(typeof(Verb),
-                    "CanHitCellFromCellIgnoringRange"),
-                new HarmonyMethod(type, nameof(CanHitCellFromCellIgnoringRange_Prefix)), null);
+            //BuildingExtension prevents some things from wiping other things when spawned/constructing/blueprinted.
+            harmony.Patch(AccessTools.Method(typeof(GenSpawn), nameof(GenSpawn.SpawningWipes)),
+                postfix: new HarmonyMethod(type, nameof(SpawningWipes_PostFix)));
+            harmony.Patch(AccessTools.Method(typeof(GenConstruct), nameof(GenConstruct.CanPlaceBlueprintOver)),
+                postfix: new HarmonyMethod(type, nameof(CanPlaceBlueprintOver_PostFix)));
+
+            harmony.Patch(AccessTools.Method(typeof(Projectile), "CanHit"),
+                postfix: new HarmonyMethod(type, nameof(CanHit_PostFix)));
+            harmony.Patch(AccessTools.Method(typeof(Verb), "CanHitCellFromCellIgnoringRange"),
+                prefix: new HarmonyMethod(type, nameof(CanHitCellFromCellIgnoringRange_Prefix)));
+
+            //Improve DamageInfo.ToString for debugging purposes.
+            harmony.Patch(AccessTools.Method(typeof(DamageInfo), nameof(DamageInfo.ToString)),
+                postfix: new HarmonyMethod(type, nameof(DamageInfo_ToString_Postfix)));
 
             //optionally use "CutoutComplex" shader for apparel that wants it
-            //instance.Patch(AccessTools.Method(typeof(ApparelGraphicRecordGetter), nameof(ApparelGraphicRecordGetter.TryGetGraphicApparel)), null, null, new HarmonyMethod(type, nameof(CutOutComplexApparel_Transpiler)));
+            //harmony.Patch(AccessTools.Method(typeof(ApparelGraphicRecordGetter), nameof(ApparelGraphicRecordGetter.TryGetGraphicApparel)),
+            //    transpiler: new HarmonyMethod(type, nameof(CutOutComplexApparel_Transpiler)));
         }
 
-        public static void DebugMessage(string s)
+        [Conditional("DEBUGLOG")]
+        private static void DebugMessage(string s)
         {
-            if (DEBUGMODE)
-                Log.Message(s);
+            Log.Message(s);
         }
 
         //Added B19, Oct 2019
         //ProjectileExtension check
         //Allows a bullet to pass through walls when fired.
-        public static bool CanHitCellFromCellIgnoringRange_Prefix(Verb __instance, IntVec3 sourceSq, IntVec3 targetLoc, bool includeCorners, ref bool __result)
+        public static bool CanHitCellFromCellIgnoringRange_Prefix(Verb __instance, ref bool __result)
         {
-            try
+            if (__instance.EquipmentCompSource?.PrimaryVerb?.verbProps?.defaultProjectile?.GetProjectileExtension() is ProjectileExtension ext)
             {
-
-                if (__instance?.EquipmentCompSource?.PrimaryVerb?.verbProps?.defaultProjectile is ThingDef proj &&
-                    proj?.HasModExtension<ProjectileExtension>() == true &&
-                    proj?.GetModExtension<ProjectileExtension>() is ProjectileExtension ext)
+                if (ext.passesWalls)
                 {
-                    if (ext.passesWalls)
-                        __result = true;
-                    return false;
+                    // TODO: While this does bypass the line-of-sight checks (and should it really bypass all LOS checks?),
+                    // this also bypasses non-LOS checks, which doesn't look right.
+                    __result = true;
                 }
-
-            }
-            catch (Exception e)
-            {
-
+                return false;
             }
             return true;
         }
@@ -136,313 +118,357 @@ namespace JecsTools
         //Ignores all structures as part of objects that disallow being fired through.
         public static void CanHit_PostFix(Projectile __instance, Thing thing, ref bool __result)
         {
-            if (!__result && __instance?.def?.HasModExtension<ProjectileExtension>() == true &&
-                __instance.def.GetModExtension<ProjectileExtension>() is ProjectileExtension ext)
+            // TODO: This patch looks pointless since it can only change __result from false to ... false.
+            if (__result == false && __instance.def?.GetProjectileExtension() is ProjectileExtension ext)
             {
-                //Mods will often have their own walls, so we cannot do a def check for 
-                //ThingDefOf.Wall
-                //Most "walls" should either be in the structure category or be able to hold walls.
-                if (thing?.def?.designationCategory == DesignationCategoryDefOf.Structure ||
-                    thing?.def?.holdsRoof == true)
+                if (ext.passesWalls)
                 {
-                    if (ext.passesWalls)
+                    //Mods will often have their own walls, so we cannot do a def check for ThingDefOf.Wall
+                    //Most "walls" should either be in the structure category or be able to hold walls.
+                    // TODO: In RW 1.3+, it seems like BuildingProperties.isPlaceOverableWall indicates whether something is a "wall",
+                    // but it may be better to just look at ThingDef.Fillage/fillPercent instead,
+                    // or maybe use PlaceWorker_OnTopOfWalls's heuristic of checking whether the defName contains "Wall"?
+                    if (thing?.def is ThingDef def && (def.designationCategory == DesignationCategoryDefOf.Structure || def.holdsRoof))
                     {
                         __result = false;
                         return;
                     }
                 }
-                
-            }
-        }
-
-        public static void BlocksConstruction_PostFix(Thing constructible, Thing t, ref bool __result)
-        {
-            ThingDef thingDef = constructible.def;
-            ThingDef thingDef2 = t.def;
-            if (thingDef == null || thingDef2 == null)
-                return;
-            if (thingDef.HasModExtension<BuildingExtension>() || thingDef2.HasModExtension<BuildingExtension>())
-            {
-                BuildableDef buildableDef = GenConstruct.BuiltDefOf(thingDef);
-                BuildableDef buildableDef2 = GenConstruct.BuiltDefOf(thingDef2);
-                __result = ShouldWipe(buildableDef, buildableDef2, t.PositionHeld, t.MapHeld);
             }
         }
 
         public static void SpawningWipes_PostFix(BuildableDef newEntDef, BuildableDef oldEntDef, ref bool __result)
         {
-            ThingDef thingDef = newEntDef as ThingDef;
-            ThingDef thingDef2 = oldEntDef as ThingDef;
-            if (thingDef == null || thingDef2 == null)
-                return;
-            if (thingDef.HasModExtension<BuildingExtension>() || thingDef2.HasModExtension<BuildingExtension>())
+            // If SpawningWipes is already returning true, don't need to do anything.
+            if (__result == false && newEntDef is ThingDef newDef && oldEntDef is ThingDef oldDef)
             {
-                BuildableDef buildableDef = GenConstruct.BuiltDefOf(thingDef);
-                BuildableDef buildableDef2 = GenConstruct.BuiltDefOf(thingDef2);
-                __result = ShouldWipe(buildableDef, buildableDef2, IntVec3.Invalid, null);
+                if (HasSharedWipeCategory(newDef, oldDef))
+                    __result = true;
             }
         }
 
-        private static bool ShouldWipe(BuildableDef newEntDef, BuildableDef oldEntDef, IntVec3 loc, Map map)
+        public static void CanPlaceBlueprintOver_PostFix(BuildableDef newDef, ThingDef oldDef, ref bool __result)
         {
-            if (map == null || loc == null || !loc.IsValid)
+            // If CanPlaceBlueprintOver is already returning false, don't need to do anything.
+            if (__result == true && newDef is ThingDef thingDef)
             {
-                var buildingExtensionA = newEntDef?.GetModExtension<BuildingExtension>();
-                var buildingExtensionB = oldEntDef?.GetModExtension<BuildingExtension>();
-                if (buildingExtensionB == null && buildingExtensionA == null)
+                if (HasSharedWipeCategory(thingDef, oldDef))
+                    __result = false;
+            }
+        }
+
+        private static bool HasSharedWipeCategory(ThingDef newDef, ThingDef oldDef)
+        {
+            static HashSet<string> GetWipeCategories(ThingDef thingDef)
+            {
+                var buildingExtension = GenConstruct.BuiltDefOf(thingDef)?.GetBuildingExtension();
+                if (buildingExtension == null)
+                    return null;
+                var wipeCategorySet = buildingExtension.WipeCategories;
+                return wipeCategorySet == null || wipeCategorySet.Count == 0 ? null : wipeCategorySet;
+            }
+
+            var wipeCategoriesA = GetWipeCategories(newDef);
+            DebugMessage($"{newDef} wipeCategoriesA: {wipeCategoriesA.ToStringSafeEnumerable()}");
+            var wipeCategoriesB = GetWipeCategories(oldDef);
+            DebugMessage($"{oldDef} wipeCategoriesB: {wipeCategoriesB.ToStringSafeEnumerable()}");
+            if (wipeCategoriesB == null && wipeCategoriesA == null)
+            {
+                DebugMessage("both wipeCategories null => false");
+                return false;
+            }
+            else if (wipeCategoriesA != null && wipeCategoriesB == null)
+            {
+                DebugMessage("wipeCategoriesB null => false");
+                return false;
+            }
+            else if (wipeCategoriesB != null && wipeCategoriesA == null)
+            {
+                DebugMessage("wipeCategoriesA null => false");
+                return false;
+            }
+            else
+            {
+                foreach (var strB in wipeCategoriesB)
                 {
-                    //Log.Message("Both null");
-                    return true;
-                }
-
-                //Log.Message("A: " + newEntDef.label);
-                //Log.Message("B: " + oldEntDef.label);
-                if (buildingExtensionA != null && buildingExtensionB == null &&
-                    buildingExtensionA.wipeCategories?.Count > 0)
-                {
-                    //Log.Message("B null");
-
-                    return false;
-                }
-
-                if (buildingExtensionB != null && buildingExtensionA == null &&
-                    buildingExtensionB.wipeCategories?.Count > 0)
-                {
-                    //Log.Message("A null");
-
-                    return false;
-                }
-
-                if (buildingExtensionA != null && buildingExtensionB != null &&
-                    buildingExtensionA.wipeCategories?.Count > 0 &&
-                    buildingExtensionB.wipeCategories?.Count > 0)
-                {
-                    var hashes = new HashSet<string>();
-                    foreach (var str in buildingExtensionA.wipeCategories)
-                        hashes.Add(str);
-                    foreach (var strB in buildingExtensionB.wipeCategories)
+                    if (wipeCategoriesA.Contains(strB))
                     {
-                        if (!hashes.Contains(strB)) continue;
-                        //Log.Message("ShouldWipe");
+                        DebugMessage($"found shared wipeCategories ({strB}) => true");
                         return true;
                     }
                 }
-
-                return true;
-            }
-
-            var locThings = loc.GetThingList(map);
-            for (var index = 0; index < locThings.Count; index++)
-            {
-                var thing = locThings[index];
-                if (thing.def is ThingDef thingDef &&
-                    ShouldWipe(newEntDef, GenConstruct.BuiltDefOf(thingDef), IntVec3.Invalid, null))
-                    return true;
-            }
-
-            return true;
-        }
-
-        public static void MinPointsTest(PawnGroupKindWorker_Normal __instance, PawnGroupMaker groupMaker)
-        {
-//            if (groupMaker?.options?.Count == null ||
-//                groupMaker.options.Count <= 0)
-//            {
-//                Log.Message("No options available.");
-//            }
-//            foreach (var x in groupMaker.options)
-//            {
-//                Log.Message(x.kind.defName + " " + x.kind.isFighter.ToString() +  " " + x.Cost);
-//            }
-        }
-
-
-        //PawnApparelGenerator
-        public static void GenerateStartingApparelFor_PostFix(Pawn pawn, PawnGenerationRequest request)
-        {
-            var swappables = pawn?.apparel?.WornApparel?.FindAll(x => x.def.HasModExtension<ApparelExtension>());
-            if (swappables == null || swappables?.Count <= 0) return;
-            var destroyables = new HashSet<Apparel>();
-            foreach (var swap in swappables)
-            {
-                if (swap.def?.GetModExtension<ApparelExtension>()?.swapCondition is SwapCondition sc &&
-                    sc?.swapWhenGender is Gender gen &&
-                    gen != Gender.None && gen == pawn.gender)
-                {
-                    Apparel apparel = (Apparel) ThingMaker.MakeThing(sc.swapTo, swap.Stuff);
-                    PawnGenerator.PostProcessGeneratedGear(apparel, pawn);
-                    if (ApparelUtility.HasPartsToWear(pawn, apparel.def))
-                    {
-                        pawn.apparel.Wear(apparel, false);
-                    }
-
-                    destroyables.Add(swap);
-                }
-            }
-
-            if (destroyables == null || destroyables?.Count <= 0) return;
-            while (destroyables?.Count > 0)
-            {
-                var first = destroyables.First();
-                first.Destroy();
-                destroyables.Remove(first);
-            }
-        }
-
-//
-//        //PawnApparelGenerator
-//        public static void IsNaked(Gender gender, ref bool __result)
-//        {
-//            if (!__result) return;
-//            var aps = Traverse.Create(AccessTools.TypeByName("PossibleApparelSet")).Field("aps").GetValue<List<ThingStuffPair>>();
-//            if (aps == null || aps?.Count <= 0) return;
-//            for (int i = 0; i < aps.Count; i++)
-//            {
-//                if (!aps[i].thing.HasModExtension<ApparelExtension>())
-//                    continue;
-//                var aExt = aps[i].thing.GetModExtension<ApparelExtension>();
-//                if (aExt.forcedGender == Gender.None)
-//                    continue;
-//                if (aExt.forcedGender == gender) continue;
-//                __result = false;
-//                return;
-//            }
-//        }
-
-        public static Faction lastPhoneAideFaction = null;
-        public static int lastPhoneAideTick = 0;
-
-        //public class PawnGroupMakerUtility
-        //{
-        public static void GeneratePawns(PawnGroupMakerParms parms,
-            bool warnOnZeroResults, ref IEnumerable<Pawn> __result)
-        {
-            if (__result?.Count() > 0 &&
-                parms.faction.def.GetModExtension<FactionSettings>() is FactionSettings settings)
-            {
-                settings.entrySoundDef?.PlayOneShotOnCamera();
-            }
-        }
-
-        //Faction
-        public static bool Notify_MemberDied(Faction __instance, Pawn member, DamageInfo? dinfo, bool wasWorldPawn,
-            Map map)
-        {
-            //Log.Message("1");
-            if (member?.Faction == null) return true;
-            if (!dinfo.HasValue) return true;
-            if (!(dinfo.Value.Instigator is Pawn instigator)) return true;
-            //Log.Message("2");
-
-
-            var notLeader = __instance?.leader != member;
-            //Log.Message("3");
-
-            var notPlayerKiller = instigator?.Faction != Faction.OfPlayerSilentFail;
-            //Log.Message("4");
-
-            //var notAttackingPlayer = member.LastAttackedTarget.IsValid && member?.LastAttackedTarget.Thing is Pawn p && p?.Faction != Faction.OfPlayerSilentFail;
-            //Log.Message("5");
-
-            var inTime = lastPhoneAideTick < (Find.TickManager?.TicksGame + GenDate.HoursPerDay ?? 0);
-            //Log.Message("6");
-
-
-            var isPhoneFaction = __instance == lastPhoneAideFaction;
-            //Log.Message("7");
-
-
-            if (isPhoneFaction &&
-                inTime &&
-                notLeader &&
-                notPlayerKiller) // && 
-                //notAttackingPlayer)
-            {
+                DebugMessage("no shared wipeCategories => false");
                 return false;
             }
+        }
 
-            return true;
+        //public static void MinPointsTest(PawnGroupMaker groupMaker)
+        //{
+        //    if (!(groupMaker?.options?.Count > 0))
+        //    {
+        //        Log.Message("No options available.");
+        //        return;
+        //    }
+        //    foreach (var x in groupMaker.options)
+        //    {
+        //        Log.Message(x.kind.defName + " " + x.kind.isFighter.ToString() + " " + x.Cost);
+        //    }
+        //}
+
+        //PawnApparelGenerator
+        public static void GenerateStartingApparelFor_PostFix(Pawn pawn)
+        {
+            var allWornApparel = pawn.apparel?.WornApparel;
+            if (allWornApparel.NullOrEmpty())
+                return;
+            List<(Apparel, Apparel)> swapEntries = null;
+            foreach (var wornApparel in allWornApparel)
+            {
+                if (wornApparel.def?.GetApparelExtension()?.swapCondition is SwapCondition sc &&
+                    sc.swapWhenGender is Gender gen &&
+                    gen != Gender.None && gen == pawn.gender)
+                {
+                    var swapApparel = (Apparel)ThingMaker.MakeThing(sc.swapTo, wornApparel.Stuff);
+                    // Avoid modifying WornApparel during its enumeration by doing the swaps afterwards.
+                    swapEntries ??= new List<(Apparel worn, Apparel swap)>();
+                    swapEntries.Add((wornApparel, swapApparel));
+                }
+            }
+            if (swapEntries != null)
+            {
+                foreach (var (wornApparel, swapApparel) in swapEntries)
+                {
+                    PawnGenerator.PostProcessGeneratedGear(swapApparel, pawn);
+                    if (ApparelUtility.HasPartsToWear(pawn, swapApparel.def))
+                    {
+                        pawn.apparel.Wear(swapApparel, false);
+                        DebugMessage($"apparel generation for {pawn}: swapped from {wornApparel} to {swapApparel}");
+                    }
+                    wornApparel.Destroy();
+                    DebugMessage($"apparel generation for {pawn}: destroyed old {wornApparel}");
+                }
+            }
         }
 
         /// <summary>
         /// Using the new ApparelExtension, we can have a string based apparel check.
         /// </summary>
-        /// <param name="A"></param>
-        /// <param name="B"></param>
-        /// <param name="body"></param>
-        /// <param name="__result"></param>
         public static void Post_CanWearTogether(ThingDef A, ThingDef B, BodyDef body, ref bool __result)
         {
-            try
+            static HashSet<string> GetCoverage(ThingDef thingDef)
             {
-                if (A == null || B == null || body == null || __result == true) return;
-                var aHasExt = A.HasModExtension<ApparelExtension>();
-                var bHasExt = B.HasModExtension<ApparelExtension>();
-                if (aHasExt && bHasExt)
-                {
-                    var aExt = A.GetModExtension<ApparelExtension>();
-                    var bExt = B.GetModExtension<ApparelExtension>();
-                    var check = new HashSet<string>();
-                    if (aExt.coverage?.Count > 0)
-                        for (int i = 0; i < aExt.coverage.Count; i++)
-                        {
-                            var coverageItem = aExt.coverage[i].ToLowerInvariant();
-                            if (!check.Contains(coverageItem))
-                                check.Add(coverageItem);
-                            else
-                            {
-                                Log.Warning("JecsTools :: ApparelExtension :: Warning:: " + A.label +
-                                            " has multiple of the same tags.");
-                                return;
-                            }
-                        }
+                var coverage = thingDef.GetApparelExtension()?.Coverage;
+                return coverage == null || coverage.Count == 0 ? null : coverage;
+            }
 
-                    if (bExt.coverage?.Count > 0)
-                        for (int j = 0; j < bExt.coverage.Count; j++)
-                        {
-                            var coverageItem = bExt.coverage[j].ToLowerInvariant();
-                            if (!check.Contains(coverageItem))
-                                check.Add(coverageItem);
-                            else
-                            {
-                                __result = false;
-                                break;
-                            }
-                        }
-                }
-                else if ((aHasExt && !bHasExt) || (!aHasExt && bHasExt))
+            if (A == null || B == null || body == null || __result == true)
+                return;
+            var coverageA = GetCoverage(A);
+            var coverageB = GetCoverage(B);
+            if (coverageA != null && coverageB != null)
+            {
+                foreach (var coverageItem in coverageB)
                 {
-                    __result = true;
+                    if (coverageA.Contains(coverageItem))
+                    {
+                        __result = false;
+                        break;
+                    }
                 }
             }
-            catch (Exception e)
+            else if ((coverageA != null && coverageB == null) || (coverageA == null && coverageB != null))
             {
-                Log.Message(e.ToString());
+                __result = true;
             }
         }
 
-        public static void Post_GeneratePawn(PawnGenerationRequest request, ref Pawn __result)
+        public static void Post_GeneratePawn(Pawn __result)
         {
-            var hediffGiverSet = __result?.def?.race?.hediffGiverSets?.FirstOrDefault(
-                x => x.hediffGivers.Any(y => y is HediffGiver_StartWithHediff));
-            if (hediffGiverSet == null) return;
-
-            if (hediffGiverSet.hediffGivers.FirstOrDefault(x => x is HediffGiver_StartWithHediff) is
-                HediffGiver_StartWithHediff hediffGiver)
+            var hediffGiverSets = __result?.def?.race?.hediffGiverSets;
+            if (hediffGiverSets != null)
             {
-                hediffGiver.GiveHediff(__result);
+                foreach (var hediffGiverSet in hediffGiverSets)
+                {
+                    foreach (var hediffGiver in hediffGiverSet.hediffGivers)
+                    {
+                        if (hediffGiver is HediffGiver_StartWithHediff hediffGiverStartWithHediff)
+                        {
+                            hediffGiverStartWithHediff.GiveHediff(__result);
+                            // TODO: Should this really only use the first found HediffGiver_StartWithHediff?
+                            return;
+                        }
+                    }
+                }
             }
         }
 
-        //ArmorUtility
-        public static void Post_GetPostArmorDamage(Pawn pawn, float amount, BodyPartRecord part, DamageDef damageDef,
-            ref float __result)
+        public static IEnumerable<CodeInstruction> Verb_MeleeAttackDamage_DamageInfosToApply_Transpiler(
+            IEnumerable<CodeInstruction> instructions, MethodBase method, ILGenerator ilGen)
+        {
+            // Transforms following:
+            //  if (tool != null && tool.extraMeleeDamages != null)
+            //  {
+            //      foreach (ExtraDamage extraMeleeDamage in tool.extraMeleeDamages)
+            //          ...
+            //  }
+            // into:
+            //  var extraDamages = DamageInfosToApply_ExtraDamages(this);
+            //  if (extraDamages != null)
+            //  {
+            //      foreach (ExtraDamage extraMeleeDamage in extraDamages)
+            //          ...
+            //  }
+            // Note: We're actually modifying an iterator method, which delegates all of its logic to a compiler-generated
+            // IEnumerator class with a convoluted FSM with the primary logic in the MoveNext method.
+            // The logic surrounding yields within loops is especially complex, so it's best to just modify what's being
+            // looped over; in this case, that's replacing the tool.extraMeleeDamages with our own enumerable
+            // (along with adjusting the null check conditionals).
+
+            var fieldof_Verb_tool = AccessTools.Field(typeof(Verb), nameof(Verb.tool));
+            var fieldof_Tool_extraMeleeDamages = AccessTools.Field(typeof(Tool), nameof(Tool.extraMeleeDamages));
+            var methodof_List_GetEnumerator =
+                AccessTools.Method(typeof(List<ExtraDamage>), nameof(IEnumerable.GetEnumerator));
+            var instructionList = instructions.AsList();
+            var locals = new Locals(method, ilGen);
+
+            var extraDamagesVar = locals.DeclareLocal<List<ExtraDamage>>();
+
+            var verbToolFieldNullCheckIndex = instructionList.FindSequenceIndex(
+                locals.IsLdloc,
+                instr => instr.Is(OpCodes.Ldfld, fieldof_Verb_tool),
+                instr => instr.IsBrfalse());
+            var toolExtraDamagesIndex = instructionList.FindIndex(verbToolFieldNullCheckIndex + 3, // after above 3 predicates
+                instr => instr.Is(OpCodes.Ldfld, fieldof_Tool_extraMeleeDamages));
+            var verbToolFieldIndex = verbToolFieldNullCheckIndex + 1;
+            instructionList.SafeReplaceRange(verbToolFieldIndex, toolExtraDamagesIndex + 1 - verbToolFieldIndex, new[]
+            {
+                new CodeInstruction(OpCodes.Call,
+                    AccessTools.Method(typeof(HarmonyPatches), nameof(DamageInfosToApply_ExtraDamages))),
+                extraDamagesVar.ToStloc(),
+                extraDamagesVar.ToLdloc(),
+            });
+
+            var verbToolExtraDamagesEnumeratorIndex = instructionList.FindSequenceIndex(verbToolFieldIndex,
+                locals.IsLdloc,
+                instr => instr.Is(OpCodes.Ldfld, fieldof_Verb_tool),
+                instr => instr.Is(OpCodes.Ldfld, fieldof_Tool_extraMeleeDamages),
+                instr => instr.Calls(methodof_List_GetEnumerator));
+            instructionList.SafeReplaceRange(verbToolExtraDamagesEnumeratorIndex, 4, new[] // after above 4 predicates
+            {
+                extraDamagesVar.ToLdloc(),
+                new CodeInstruction(OpCodes.Call,
+                    AccessTools.Method(typeof(List<ExtraDamage>), nameof(IEnumerable.GetEnumerator))),
+            });
+
+            return instructionList;
+        }
+
+        [ThreadStatic]
+        private static Dictionary<(Tool, Pawn), List<ExtraDamage>> extraDamageCache;
+
+        // In the above transpiler, this replaces tool.extraMeleeDamages as the foreach loop enumeration target in
+        // Verb_MeleeAttackDamage.DamageInfosToApply.
+        // This must return a List<ExtraDamage> rather than IEnumerator<ExtraDamage> since Tool.extraMeleeDamages is a list.
+        // Specifically, the compiler-generated code calls List<ExtraDamage>.GetEnumerator(), stores it in a
+        // List<ExtraDamage>.Enumerator field in the internal iterator class (necessary for the FSM to work), then explicitly
+        // calls List<ExtraDamage>.Enumerator methods/properties in multiple iterator class methods along with an initobj
+        // rather than ldnull for clearing it (since List<ExtraDamage>.Enumerator is a struct). Essentially, it would be
+        // difficult to replace all this with IEnumerator<ExtraDamage> versions in the above transpiler, we just have this
+        // method return the same type as Tool.extraMeleeDamages: List<ExtraDamage>.
+        // If either tool.extraMeleeDamages and CasterPawn.GetHediffComp<HediffComp_ExtraMeleeDamages>().Props.ExtraDamages
+        // are null, we can simply return the other, since both are lists. However, if both are non-null, we cannot simply
+        // return Enumerable.Concat of them both; we need to create a new list that contains both. Since list creation and
+        // getting the hediff extra damages are both relatively expensive operations, we utilize a cache.
+        // This cache is ThreadStatic to be optimized for single-threaded usage yet safe for multithreaded usage.
+        private static List<ExtraDamage> DamageInfosToApply_ExtraDamages(Verb_MeleeAttackDamage verb)
+        {
+            extraDamageCache ??= new Dictionary<(Tool, Pawn), List<ExtraDamage>>();
+            var key = (verb.tool, verb.CasterPawn);
+            if (!extraDamageCache.TryGetValue(key, out var extraDamages))
+            {
+                var toolExtraDamages = key.tool?.extraMeleeDamages;
+                var hediffExtraDamages = key.CasterPawn.GetHediffComp<HediffComp_ExtraMeleeDamages>()?.Props?.ExtraDamages;
+                if (toolExtraDamages == null)
+                    extraDamages = hediffExtraDamages;
+                else if (hediffExtraDamages == null)
+                    extraDamages = toolExtraDamages;
+                else
+                {
+                    extraDamages = new List<ExtraDamage>(toolExtraDamages.Count + hediffExtraDamages.Count);
+                    extraDamages.AddRange(toolExtraDamages);
+                    extraDamages.AddRange(hediffExtraDamages);
+                }
+                DebugMessage($"DamageInfosToApply_ExtraDamages({verb}) => caching for {key}: {extraDamages.Join(ToString)}");
+                extraDamageCache[key] = extraDamages;
+            }
+            return extraDamages;
+        }
+
+        private static string ToString(ExtraDamage ed)
+        {
+            return $"(def={ed.def}, amount={ed.amount}, armorPenetration={ed.armorPenetration}, chance={ed.chance})";
+        }
+
+        // ArmorUtility patches:
+        // These are a workaround for PreApplyDamage_PrePatch changes to the dinfo struct not being saved, due to
+        // Pawn_HealthTracker.PreApplyDamage dinfo parameter being passed by value (PreApplyDamage_PrePatch has it passed
+        // by reference, but this only affects the patch; Pawn_HealthTracker.PreApplyDamage still has it passed by value).
+        // Incidentally, these patches have another purpose: it allows other Pawn_HealthTracker.PreApplyDamage code like
+        // Apparel.CheckPreAbsorbDamage (like shield belts), various pawn-specific notifications affecting pawn behavior,
+        // and other mod's patches on the method to run, some of which could affect dinfo.Amount and absorbed flag.
+        // Indeed, the choice of prefix patching Pawn_HealthTracker.PreApplyDamage rather than a Pawn.PreApplyDamage prefix
+        // or a Pawn_HealthTracker.PreApplyDamage postfix is likely a compromise to allow as much change to dinfo as
+        // possible yet still apply damage soaks before shield belt absorption.
+        // Pawn_HealthTracker.PreApplyDamage notification specifics: if it runs (no ThingComp.PostPreApplyDamage sets
+        // absorbed flag), prisoner guilt, AI updates, and current danger are triggered. If no Apparel.CheckPreAbsorbDamage
+        // sets the absorbed flag, stun effects, pawn thought/memory, and tale recording are triggered.
+        // XXX: I do not think this patch is reliable because:
+        // 1) It's not guaranteed to run under certain conditions (e.g. if dinfo.IgnoreArmor) when it should.
+        // 2) dinfo.Amount can be divided into multiple DamageInfos under certain conditions (bomb/flame damage),
+        //    which this doesn't take into account.
+        // 3) It assumes that all new damage amount since our PreApplyDamage_PrePatch ran should be damage soaked
+        //    (as long as this patch runs, e.g. not absorbed, etc.), by setting the damage amount back to tempDamageAmount,
+        //    the final damage amount recorded in PreApplyDamage_PrePatch, even if no damage soaks exist
+        //    (see TODO in PreApplyDamage_PrePatch).
+        // 4) If damage amount decreased yet still non-zero since our PreApplyDamage_PrePatch ran, this patch will
+        //    increase the damage amount back to tempDamageAmount, which is the total opposite of damage soaking.
+        // 5) The relationship of PreApplyDamage_PrePatch and this patch with respect to tempDamageAmount is fragile,
+        //    especially since (1) and tempDamageAmount not always being set in PreApplyDamage_PrePatch.
+        //    If another mod happens to use ArmorUtility without going through PreApplyDamage, this scheme will break.
+        // TODO:
+        // If we want to retain damage soaking before shield belt absorption:
+        //    Instead of this patch, postfix patch (highest patch priority) Pawn.PreApplyDamage to update the original
+        //    dinfo struct with any changes from PreApplyDamage_PrePatch. Make PreApplyDamage_PrePatch patch with lowest
+        //    patch priority so that it runs right before Pawn_HealthTracker.PreApplyDamage. This should ensure that there
+        //    no other changes to dinfo in between PreApplyDamage_PrePatch and the new Pawn.PreApplyDamage postfix patch
+        //    that should've been tracked. tempDamageAmount is still needed to to transfer the damage amount info between
+        //    these patches.
+        // If we're fine with damage soaks applying after shield belt absorption:
+        //    Simplify into a single Pawn.PreApplyDamage postfix patch.
+        public static void Pre_ApplyArmor(ref float damAmount, Pawn pawn)
+        {
+            if (tempDamageAmount != null && damAmount > 0f)
+            {
+                var damageDiff = Mathf.Max(damAmount - tempDamageAmount.Value, 0f);
+                var newDamAmount = GenMath.RoundRandom(tempDamageAmount.Value);
+                DebugMessage($"c6c:: ApplyArmor prefix on {pawn}: tempDamageAmount {tempDamageAmount} => null, damAmount {damAmount} => {newDamAmount}");
+                damAmount = newDamAmount;
+                tempDamageAmount = null;
+                if (damageDiff > 0f)
+                    tempDamageAbsorbed = damageDiff;
+            }
+        }
+
+        // XXX: Damage soak mote is already emitted in PreApplyDamage_ApplyDamageSoakers, so this leads to a misleading
+        // redundant soak mote. Worse, if the damage amount actually changes between PreApplyDamage_ApplyDamageSoakers
+        // and Pre_ApplyArmor, leading to a tempDamageAbsorbed that's different from PreApplyDamage_ApplyDamageSoakers's
+        // totalSoakedDamage, this is even more misleading.
+        public static void Post_GetPostArmorDamage(Pawn pawn)
         {
             if (tempDamageAbsorbed != null)
             {
-                var hasFortitudeHediffs =
-                    pawn?.health?.hediffSet?.hediffs?.Any(x => x.TryGetComp<HediffComp_DamageSoak>() != null);
-                if (hasFortitudeHediffs ?? false)
+                DebugMessage($"c6c:: GetPostArmorDamage postfix on {pawn}: tempDamageAbsorbed {tempDamageAbsorbed}");
+                if (pawn.GetHediffComp<HediffComp_DamageSoak>() != null)
                 {
                     DamageSoakedMote(pawn, tempDamageAbsorbed.Value);
                 }
@@ -451,385 +477,268 @@ namespace JecsTools
             }
         }
 
-        public static void ApplyProperDamage(ref float damAmount, float armorRating, Thing armorThing,
-            DamageDef damageDef, Pawn pawn, ref bool metalArmor)
+        public static bool PreApplyDamage_PrePatch(Pawn ___pawn, ref DamageInfo dinfo, out bool absorbed)
         {
-            if (tempDamageAmount != null && damAmount > 0)
+            DebugMessage($"c6c:: === Enter Harmony Prefix --- PreApplyDamage_PrePatch for {___pawn} and {dinfo} ===");
+            if (___pawn != null)
             {
-                float damageDiff = Mathf.Clamp(damAmount - tempDamageAmount.Value, 0, damAmount);
-
-                //Log.Message("Apply amount original: " + damAmount);
-                //Log.Message("Apply amount modified: " + tempDamageAmount.Value);
-                damAmount = GenMath.RoundRandom(tempDamageAmount.Value);
-                tempDamageAmount = null;
-                if (damageDiff > 0)
-                    tempDamageAbsorbed = GenMath.RoundRandom(damageDiff);
-            }
-        }
-
-        public static bool PreApplyDamage_PrePatch(Pawn_HealthTracker __instance, ref DamageInfo dinfo,
-            out bool absorbed)
-        {
-
-            DebugMessage($"c6c:: === Enter Harmony Prefix --- PreApplyDamage_ApplyExtraDamages ===");
-
-            var pawn = (Pawn) AccessTools.Field(typeof(Pawn_HealthTracker), "pawn").GetValue(__instance);
-            if (pawn != null && !StopPreApplyDamageCheck)
-            {
-                DebugMessage("c6c:: Pawn exists. StopPreApplyDamageCheck: False");
-                if (pawn?.health?.hediffSet?.hediffs != null && pawn?.health?.hediffSet?.hediffs?.Count > 0)
+                DebugMessage("c6c:: Pawn exists.");
+                var hediffSet = ___pawn.health.hediffSet;
+                if (hediffSet.hediffs.Count > 0)
                 {
-                    DebugMessage("c6c:: Pawn has health.");
-                    //A list will stack.
-                    var fortitudeHediffs =
-                        pawn?.health?.hediffSet?.hediffs?.FindAll(x => x.TryGetComp<HediffComp_DamageSoak>() != null);
-                    if (!fortitudeHediffs.NullOrEmpty())
+                    DebugMessage("c6c:: Pawn has hediffs.");
+                    // See above ArmorUtility comments.
+                    if (PreApplyDamage_ApplyDamageSoakers(ref dinfo, hediffSet, ___pawn))
                     {
-                        DebugMessage("c6c:: Pawn has Damage Soak hediff.");
-                        try
-                        {
-                            if (PreApplyDamage_ApplyDamageSoakers(ref dinfo, out absorbed, fortitudeHediffs, pawn))
-                            {
-                                DebugMessage($"c6c:: === Exit Harmony Prefix --- PreApplyDamage_ApplyExtraDamages ===");
-                                return false;
-                            }
-                        }
-                        catch (NullReferenceException e)
-                        {
-                            DebugMessage($"c6c:: Soak failure:: {e.Message}");
-                        }
+                        DebugMessage($"c6c:: === Exit Harmony Prefix --- PreApplyDamage_PrePatch for {___pawn} and {dinfo} ===");
+                        absorbed = true;
+                        return false;
                     }
-
-                    if (dinfo.Weapon is ThingDef weaponDef && !weaponDef.IsRangedWeapon)
-                        if (dinfo.Instigator is Pawn instigator)
-                        {
-                            DebugMessage("c6c:: Pawn has non-ranged weapon.");
-                            try
-                            {
-                                if (PreApplyDamage_ApplyExtraDamages(dinfo, out absorbed, instigator, pawn)) return false;
-                            }
-                            catch (NullReferenceException e)
-                            {
-                                DebugMessage($"c6c:: Extra damages failure:: {e.Message}");
-                            }
-
-                            try
-                            {
-                                PreApplyDamage_ApplyKnockback(instigator, pawn);
-                            }
-                            catch (NullReferenceException e)
-                            {
-                                DebugMessage($"c6c:: Apply knockback failure:: {e.Message}");
-                            }
-                        }
                 }
             }
 
-            tempDamageAmount = (int) dinfo.Amount;
+            // TODO: tempDamageAmount shouldn't be set if there are no damage soaks.
+            tempDamageAmount = dinfo.Amount;
+            DebugMessage($"c6c:: tempDamageAmount <= {tempDamageAmount}");
             absorbed = false;
-            DebugMessage($"c6c:: === Exit Harmony Prefix --- PreApplyDamage_ApplyExtraDamages ===");
+            DebugMessage($"c6c:: === Exit Harmony Prefix --- PreApplyDamage_PrePatch for {___pawn} and {dinfo} ===");
             return true;
         }
 
-        private static void PreApplyDamage_ApplyKnockback(Pawn instigator, Pawn pawn)
+        // Stores original dinfo.Amount in __state, that below Pawn_PreApplyDamage_Postfix can access.
+        public static void Pawn_PreApplyDamage_Prefix(ref DamageInfo dinfo, ref float __state)
         {
-            var knockbackHediff =
-                instigator?.health?.hediffSet?.hediffs.FirstOrDefault(y =>
-                    y.TryGetComp<HediffComp_Knockback>() != null);
-            var knocker = knockbackHediff?.TryGetComp<HediffComp_Knockback>();
-            if (knocker != null)
-                if (knocker?.Props?.knockbackChance >= Rand.Value)
-                {
-                    if (knocker.Props.explosiveKnockback)
-                    {
-                        var explosion = (Explosion) GenSpawn.Spawn(ThingDefOf.Explosion,
-                            instigator.PositionHeld, instigator.MapHeld);
-                        explosion.radius = knocker.Props.explosionSize;
-                        explosion.damType = knocker.Props.explosionDmg;
-                        explosion.instigator = instigator;
-                        explosion.damAmount = 0;
-                        explosion.weapon = null;
-                        explosion.projectile = null;
-                        explosion.preExplosionSpawnThingDef = null;
-                        explosion.preExplosionSpawnChance = 0f;
-                        explosion.preExplosionSpawnThingCount = 1;
-                        explosion.postExplosionSpawnThingDef = null;
-                        explosion.postExplosionSpawnChance = 0f;
-                        explosion.postExplosionSpawnThingCount = 1;
-                        explosion.applyDamageToExplosionCellsNeighbors = false;
-                        explosion.chanceToStartFire = 0f;
-                        explosion.damageFalloff = false; // dealMoreDamageAtCenter = false;
-                        explosion.StartExplosion(null,null);
-                    }
-
-                    if (pawn != instigator && !pawn.Dead && !pawn.Downed && pawn.Spawned)
-                    {
-                        if (knocker.Props.stunChance > -1 && knocker.Props.stunChance >= Rand.Value)
-                            pawn.stances.stunner.StunFor(knocker.Props.stunTicks, instigator);
-                        PushEffect(instigator, pawn, knocker.Props.knockDistance.RandomInRange,
-                            true);
-                    }
-                }
+            __state = dinfo.Amount;
         }
 
-        private static bool PreApplyDamage_ApplyExtraDamages(DamageInfo dinfo, out bool absorbed, Pawn instigator, Pawn pawn)
+        // This should happen after all modifications to dinfo and any possible setting of absorbed flag,
+        // i.e. after all ThingComp.PostPreApplyDamage and Apparel.CheckPreAbsorbDamage (shield belts).
+        public static void Pawn_PreApplyDamage_Postfix(Pawn __instance, ref DamageInfo dinfo, ref bool absorbed,
+            float __state)
         {
-
-            DebugMessage($"c6c:: --- Enter PreApplyDamage_ApplyExtraDamages ---");
-            var extraDamagesHediff =
-                instigator.health.hediffSet.hediffs.FirstOrDefault(y =>
-                    y.TryGetComp<HediffComp_ExtraMeleeDamages>() != null);
-            DebugMessage("c6c:: ExtraDamagesHediff variable assigned.");
-            var damages = extraDamagesHediff?.TryGetComp<HediffComp_ExtraMeleeDamages>();
-            DebugMessage("c6c:: Damages variable assigned.");
-            if (damages?.Props != null && damages.Props.ExtraDamages is List<Verse.ExtraDamage> extraDamages)
+            if (dinfo.Weapon is ThingDef weaponDef && !weaponDef.IsRangedWeapon &&
+                dinfo.Instigator is Pawn instigator)
             {
-                DebugMessage("c6c:: Extra damages list exists.");
-                StopPreApplyDamageCheck = true;
-                foreach (var dmg in extraDamages)
+                DebugMessage($"c6c:: Instigator using non-ranged weapon: {dinfo}");
+                var hediffCompKnockback = instigator.GetHediffComp<HediffComp_Knockback>();
+                if (hediffCompKnockback != null)
                 {
-                    DebugMessage($"c6c:: Extra Damage: {dmg.def.defName}");
-                    if (pawn == null || !pawn.Spawned || pawn.Dead)
-                    {
-                        DebugMessage($"c6c:: Pawn is null, unspawned, or dead. Aborting.");
-                        absorbed = false;
-                        StopPreApplyDamageCheck = false;
-                        return true;
-                    }
-
-                    //BattleLogEntry_MeleeCombat battleLogEntry_MeleeCombat = new BattleLogEntry_MeleeCombat(dinfo.Def.combatLogRules, true,
-                    //    instigator, pawn, ImplementOwnerTypeDefOf.Bodypart, (dinfo.Weapon != null) ? dinfo.Weapon.label : dinfo.Def.label );
-                    //DebugMessage($"c6c:: MeleeCombat Log generated.");
-                    //DamageWorker.DamageResult damageResult = new DamageWorker.DamageResult();
-                    //DebugMessage($"c6c:: MeleeCombat Damage Result generated.");
-                    //damageResult = pawn.TakeDamage(new DamageInfo(dmg.def, dmg.amount, dmg.armorPenetration, -1, instigator));
-                    pawn.TakeDamage(new DamageInfo(dmg.def, dmg.amount, dmg.armorPenetration, -1, instigator));
-                    DebugMessage($"c6c:: MeleeCombat TakeDamage set to -- Def:{dmg.def.defName} Amt:{dmg.amount} ArmorPen:{dmg.armorPenetration}.");
-                    //try
-                    //{
-                    //    damageResult.AssociateWithLog(battleLogEntry_MeleeCombat);
-                    //    DebugMessage($"c6c:: MeleeCombat Damage associated with log.");
-                    //}
-                    //catch (Exception e)
-                    //{
-                    //    DebugMessage($"c6c:: Failed to associate log: {e.Message}");
-                    //}
-                    //battleLogEntry_MeleeCombat.def = LogEntryDefOf.MeleeAttack;
-                    //DebugMessage($"c6c:: MeleeCombat Log def set as MeleeAttack.");
-                    //Find.BattleLog.Add(battleLogEntry_MeleeCombat);
-                    //DebugMessage($"c6c:: MeleeCombat Log added to battle log.");
-
+                    // Hack to prevent multiple knockbacks occurring due to multiple damage infos (e.g. extra damage) for same instigator+target:
+                    // prevent knockback if tick hasn't passed since last knockback for instigator+target pair.
+                    // This requires a (instigator+target)=>tick cache, which is cleared after every tick via Scenario_TickScenario_Postfix.
+                    var pair = new Pair<Thing, Thing>(instigator, __instance);
+                    var ticks = Find.TickManager.TicksGame;
+                    if (knockbackLastTicks.TryGetValue(pair, out var lastTicks) && lastTicks == ticks)
+                        return;
+                    knockbackLastTicks[pair] = ticks;
+                    hediffCompKnockback.ApplyKnockback(__instance,
+                        damageAbsorbedPercent: absorbed ? 1f : 1f - Mathf.Clamp01(dinfo.Amount / __state));
                 }
-
-                StopPreApplyDamageCheck = false;
             }
-            DebugMessage($"c6c:: --- Exit PreApplyDamage_ApplyExtraDamages ---");
-            absorbed = false;
-            return false;
         }
 
-        private static bool PreApplyDamage_ApplyDamageSoakers(ref DamageInfo dinfo, out bool absorbed,
-            List<Hediff> fortitudeHediffs,
-            Pawn pawn)
+        public static void Scenario_TickScenario_Postfix()
         {
+            knockbackLastTicks.Clear();
+        }
 
-            DebugMessage($"c6c:: --- Enter PreApplyDamage_ApplyDamageSoakers ---");
-            var soakedDamage = 0;
-            foreach (var fortitudeHediff in fortitudeHediffs)
+        private static readonly ConcurrentDictionary<Pair<Thing, Thing>, int> knockbackLastTicks =
+            new ConcurrentDictionary<Pair<Thing, Thing>, int>();
+
+        private static bool PreApplyDamage_ApplyDamageSoakers(ref DamageInfo dinfo, HediffSet hediffSet, Pawn pawn)
+        {
+            // Multiple damage soak hediff comps stack.
+            DebugMessage($"c6c:: --- Enter PreApplyDamage_ApplyDamageSoakers for {pawn} and {dinfo} ---");
+            var damageDef = dinfo.Def;
+            var totalSoakedDamage = 0f;
+            foreach (var hediffComp in hediffSet.GetAllComps())
             {
+                if (!(hediffComp is HediffComp_DamageSoak damageSoakComp))
+                    continue;
                 DebugMessage("c6c:: Soak Damage Hediff checked.");
 
-                var soaker = fortitudeHediff.TryGetComp<HediffComp_DamageSoak>();
-                var soakSetting = soaker?.Props;
-                if (soakSetting == null) {
+                var soakProps = damageSoakComp.Props;
+                if (soakProps == null)
+                {
                     DebugMessage("c6c:: Soak Damage Hediff has no damage soak XML properties.");
-                    continue; }
-                if (soakSetting.settings.NullOrEmpty())
+                    continue;
+                }
+                if (soakProps.settings.NullOrEmpty())
                 {
                     DebugMessage("c6c:: Soak Damage Hediff has no damage soak settings.");
 
-                    //Null, here, means "all damage types"
-                    //So Null should pass this check.
-                    if (soakSetting.damageType != null && soakSetting.damageType != dinfo.Def) 
+                    // Null, here, means "all damage types", so null should pass this check.
+                    if (soakProps.damageType != null && soakProps.damageType != damageDef)
                     {
-                        DebugMessage($"c6c:: {dinfo.Def.label.CapitalizeFirst()} is not in soak settings.");
-                        continue; 
-                    }
-
-                    
-                    if (!soakSetting.damageTypesToExclude.NullOrEmpty() &&
-                        soakSetting.damageTypesToExclude.Contains(dinfo.Def))
-                    {
-                        DebugMessage($"c6c:: {dinfo.Def.label.CapitalizeFirst()} is to be excluded from damage soak.");
+                        DebugMessage($"c6c:: {damageDef.label.CapitalizeFirst()} is not in soak settings.");
                         continue;
                     }
-                    var dmgAmount = Mathf.Clamp(dinfo.Amount - soakSetting.damageToSoak, 0, dinfo.Amount);
-                    DebugMessage($"c6c:: Min: 0, Max: {dinfo.Amount}. Calc: {dinfo.Amount} - {soakSetting.damageToSoak}.");
-                    soakedDamage += (int)Mathf.Min(dinfo.Amount, soakSetting.damageToSoak);
-                    DebugMessage($"c6c:: Soaked Running Total: {soakedDamage}");
+
+                    if (soakProps.damageTypesToExclude != null &&
+                        soakProps.damageTypesToExclude.Contains(damageDef))
+                    {
+                        DebugMessage($"c6c:: {damageDef.label.CapitalizeFirst()} is to be excluded from damage soak.");
+                        continue;
+                    }
+
+                    var dmgAmount = dinfo.Amount;
+                    var soakedDamage = Mathf.Min(soakProps.damageToSoak, dmgAmount);
+                    DebugMessage($"c6c:: Soaked: Min({soakProps.damageToSoak}, {dinfo.Amount}) => {soakedDamage}");
+                    dmgAmount -= soakedDamage;
+                    DebugMessage($"c6c:: Damage amount: {dinfo.Amount} - {soakedDamage} => {dmgAmount}");
+                    totalSoakedDamage += soakedDamage;
+                    DebugMessage($"c6c:: Total soaked: {totalSoakedDamage}");
                     dinfo.SetAmount(dmgAmount);
-                    DebugMessage($"c6c:: Result: {dinfo.Amount}");
+
                     if (dinfo.Amount > 0)
                     {
                         DebugMessage($"c6c:: More damage exists. Continuing check for soakers.");
                         continue;
                     }
-                    DamageSoakedMote(pawn, soakedDamage);
+
+                    DamageSoakedMote(pawn, totalSoakedDamage);
                     DebugMessage($"c6c:: Damage absorbed.");
-                    DebugMessage($"c6c::   FINAL RESULT -- Soak: {soakedDamage} Damage: {dinfo.Amount}.");
-                    DebugMessage($"c6c:: --- Exit PreApplyDamage_ApplyDamageSoakers ---");
-                    absorbed = true;
+                    DebugMessage($"c6c::   FINAL RESULT -- Total soaked: {totalSoakedDamage}, damage amount: {dinfo.Amount}.");
+                    DebugMessage($"c6c:: --- Exit PreApplyDamage_ApplyDamageSoakers for {pawn} and {dinfo} ---");
                     return true;
                 }
                 else
                 {
                     DebugMessage("c6c:: Soak Damage Hediff has damage soak settings.");
-                    foreach (var soakSettings in soaker.Props.settings)
+                    foreach (var soakSettings in soakProps.settings)
                     {
-                        DamageInfo info = dinfo;
-
-                        DebugMessage($"c6c:: Hediff Damage: {info.Def.defName}");
+                        DebugMessage($"c6c:: Hediff Damage: {damageDef}");
                         if (soakSettings.damageType != null)
-                            DebugMessage($"c6c:: Soak Type: {soakSettings.damageType.defName}");
+                            DebugMessage($"c6c:: Soak Type: {soakSettings.damageType}");
                         else
                             DebugMessage($"c6c:: Soak Type: All");
 
                         //Null, here, means "all damage types"
                         //So Null should pass this check.
-                        if (soakSettings.damageType != null && soakSettings.damageType != info.Def)
+                        if (soakSettings.damageType != null && soakSettings.damageType != damageDef)
                         {
                             DebugMessage($"c6c:: No match. No soak.");
                             continue;
                         }
 
-                        // ReSharper disable once PossibleNullReferenceException
+                        // This variable tracks whether the damage should be excluded by a damageTypesToExclude
+                        // rule for breaking out of a nested for loop without using goto
+                        bool damageExcluded = false;
                         if (!soakSettings.damageTypesToExclude.NullOrEmpty())
                         {
                             DebugMessage($"c6c:: Damage Soak Exlusions: ");
                             foreach (var exclusion in soakSettings.damageTypesToExclude)
                             {
-                                DebugMessage($"c6c::    {exclusion.defName}");
-                                if (exclusion == info.Def)
+                                DebugMessage($"c6c::    {exclusion}");
+                                if (exclusion == damageDef)
                                 {
                                     DebugMessage($"c6c:: Exclusion match. Damage soak aborted.");
-                                    continue;
+                                    damageExcluded = true;
+                                    break;
                                 }
                             }
+                            if (damageExcluded)
+                                continue;
                         }
 
-                        var dmgAmount = Mathf.Clamp(dinfo.Amount - soakSettings.damageToSoak, 0, dinfo.Amount);
-                        DebugMessage($"c6c:: Min: 0, Max: {dinfo.Amount}. Calc: {dinfo.Amount} - {soakSettings.damageToSoak}.");
-                        soakedDamage += (int)Mathf.Min(soakSettings.damageToSoak, dinfo.Amount);
+                        var dmgAmount = dinfo.Amount;
+                        var soakedDamage = Mathf.Min(soakSettings.damageToSoak, dmgAmount);
+                        DebugMessage($"c6c:: Soaked: Min({soakSettings.damageToSoak}, {dinfo.Amount}) => {soakedDamage}");
+                        dmgAmount -= soakedDamage;
+                        DebugMessage($"c6c:: Damage amount: {dinfo.Amount} - {soakedDamage} => {dmgAmount}");
+                        totalSoakedDamage += soakedDamage;
+                        DebugMessage($"c6c:: Total soaked: {totalSoakedDamage}");
                         dinfo.SetAmount(dmgAmount);
-                        DebugMessage($"c6c:: Result: {dinfo.Amount}");
-                        DebugMessage($"c6c:: Total soaked: {soakedDamage}");
+
                         if (dinfo.Amount > 0)
                         {
                             DebugMessage($"c6c:: Unsoaked damage remains. Checking for more soakers.");
                             continue;
                         }
-                        DamageSoakedMote(pawn, soakedDamage);
+
+                        DamageSoakedMote(pawn, totalSoakedDamage);
                         DebugMessage($"c6c:: Damage absorbed.");
-                        DebugMessage($"c6c::  FINAL RESULT -- Soak: {soakedDamage} Damage: {dinfo.Amount}.");
-                        DebugMessage($"c6c:: --- Exit PreApplyDamage_ApplyDamageSoakers ---");
-                        absorbed = true;
+                        DebugMessage($"c6c::  FINAL RESULT -- Total soaked: {totalSoakedDamage}, damage amount: {dinfo.Amount}.");
+                        DebugMessage($"c6c:: --- Exit PreApplyDamage_ApplyDamageSoakers for {pawn} and {dinfo} ---");
                         return true;
                     }
                 }
             }
-            if (soakedDamage > 0)
+            if (totalSoakedDamage > 0)
             {
-                DamageSoakedMote(pawn, soakedDamage);
-                DebugMessage($"c6c::   FINAL RESULT -- Soak: {soakedDamage} Damage: {dinfo.Amount}.");
+                DamageSoakedMote(pawn, totalSoakedDamage);
+                DebugMessage($"c6c::   FINAL RESULT -- Total soaked: {totalSoakedDamage}, damage amount: {dinfo.Amount}.");
             }
-            DebugMessage($"c6c:: --- Exit PreApplyDamage_ApplyDamageSoakers ---");
-            absorbed = false;
+            DebugMessage($"c6c:: --- Exit PreApplyDamage_ApplyDamageSoakers for {pawn} and {dinfo} ---");
             return false;
         }
 
-        private static void DamageSoakedMote(Pawn pawn, int soakedDamage)
+        private static void DamageSoakedMote(Pawn pawn, float soakedDamage)
         {
-            if (soakedDamage > 0 && pawn != null && pawn.Spawned && pawn.MapHeld != null &&
+            if (soakedDamage > 0f && pawn != null && pawn.Spawned && pawn.MapHeld != null &&
                 pawn.DrawPos is Vector3 drawVecDos && drawVecDos.InBounds(pawn.MapHeld))
-                MoteMaker.ThrowText(drawVecDos, pawn.MapHeld,
-                    "JT_DamageSoaked".Translate(soakedDamage), -1f);
+            {
+                // To avoid any rounding bias, use RoundRandom for converting int to float.
+                var roundedSoakedDamage = GenMath.RoundRandom(soakedDamage);
+                DebugMessage($"c6c:: DamageSoakedMote for {pawn}: {soakedDamage} rounded to {roundedSoakedDamage}");
+                MoteMaker.ThrowText(drawVecDos, pawn.MapHeld, "JT_DamageSoaked".Translate(roundedSoakedDamage));
+            }
         }
 
+        // Not sure if another mod is using this, so obsoleting it rather than deleting it.
+        [Obsolete]
         public static Vector3 PushResult(Thing Caster, Thing thingToPush, int pushDist, out bool collision)
         {
-            var origin = thingToPush.TrueCenter();
-            var result = origin;
-            var collisionResult = false;
-            for (var i = 1; i <= pushDist; i++)
-            {
-                var pushDistX = i;
-                var pushDistZ = i;
-                if (origin.x < Caster.TrueCenter().x) pushDistX = -pushDistX;
-                if (origin.z < Caster.TrueCenter().z) pushDistZ = -pushDistZ;
-                var tempNewLoc = new Vector3(origin.x + pushDistX, 0f, origin.z + pushDistZ);
-                if (tempNewLoc.ToIntVec3().Standable(Caster.Map))
-                {
-                    result = tempNewLoc;
-                }
-                else
-                {
-                    if (thingToPush is Pawn)
-                    {
-                        //target.TakeDamage(new DamageInfo(DamageDefOf.Blunt, Rand.Range(3, 6), -1, null, null, null));
-                        collisionResult = true;
-                        break;
-                    }
-                }
-            }
-
-            collision = collisionResult;
-            return result;
+            return HediffComp_Knockback.PushResult(Caster, thingToPush, pushDist, out var _, out collision);
         }
 
+        // Not sure if another mod is using this, so obsoleting it rather than deleting it.
+        [Obsolete]
         public static void PushEffect(Thing Caster, Thing target, int distance, bool damageOnCollision = false)
         {
-            LongEventHandler.QueueLongEvent(delegate
+            HediffComp_Knockback.PushEffect(Caster, target, damageAbsorbedPercent: 0f, new HediffCompProperties_Knockback
             {
-                if (target != null && target is Pawn p && p.Spawned && !p.Downed && !p.Dead && p?.MapHeld != null)
-                {
-                    bool applyDamage;
-                    var loc = PushResult(Caster, target, distance, out applyDamage);
-                    //if (((Pawn)target).RaceProps.Humanlike) ((Pawn)target).needs.mood.thoughts.memories.TryGainMemory(ThoughtDef.Named("PJ_ThoughtPush"), null);
-                    var flyingObject = (FlyingObject) GenSpawn.Spawn(ThingDef.Named("JT_FlyingObject"), p.PositionHeld,
-                        p.MapHeld);
-                    if (applyDamage && damageOnCollision)
-                        flyingObject.Launch(Caster, new LocalTargetInfo(loc.ToIntVec3()), target,
-                            new DamageInfo(DamageDefOf.Blunt, Rand.Range(8, 10)));
-                    else flyingObject.Launch(Caster, new LocalTargetInfo(loc.ToIntVec3()), target);
-                }
-            }, "PushingCharacter", false, null);
+                knockDistance = new FloatRange(distance, distance),
+                knockDistanceAbsorbedPercentCurve = HediffComp_Knockback.AlwaysOneCurve,
+                knockDistanceMassCurve = HediffComp_Knockback.AlwaysOneCurve,
+                knockImpactDamage = damageOnCollision ? new FloatRange(8f, 10f) : default,
+                knockImpactDamageDistancePercentCurve = HediffComp_Knockback.AlwaysOneCurve,
+                knockImpactDamageType = DamageDefOf.Blunt,
+            });
+        }
+
+        public static string DamageInfo_ToString_Postfix(string result, ref DamageInfo __instance)
+        {
+            var insertIndex = result.IndexOf(", angle=");
+            return result.Insert(insertIndex, $", hitPart={__instance.HitPart.ToStringSafe()}, " +
+                $"weapon={__instance.Weapon.ToStringSafe()}, armorPenetration={__instance.ArmorPenetrationInt}");
         }
 
         //added 2018/12/13 - Mehni.
         //Uses CutoutComplex shader for apparel that wants it.
-     // private static IEnumerable<CodeInstruction> CutOutComplexApparel_Transpiler(IEnumerable<CodeInstruction> instructions)
-     // {
-     //    MethodInfo shader = AccessTools.Method(typeof(HarmonyPatches), nameof(HarmonyPatches.Shader));
-     //       FieldInfo cutOut = AccessTools.Field(typeof(ShaderDatabase), nameof(ShaderDatabase.Cutout));
-     //
-     //      foreach (CodeInstruction codeInstruction in instructions)
-     //      {
-     //          if (codeInstruction.opcode == OpCodes.Ldsfld && codeInstruction.operand == cutOut)
-     //          {
-     //              yield return new CodeInstruction(OpCodes.Ldarg_0); //apparel
-     //              yield return new CodeInstruction(OpCodes.Call, shader); //return shader type
-       //             continue; //skip instruction.
-       //         }
-       //         yield return codeInstruction;
-       //     }
-       // }
+        //private static IEnumerable<CodeInstruction> CutOutComplexApparel_Transpiler(IEnumerable<CodeInstruction> instructions)
+        //{
+        //    MethodInfo shader = AccessTools.Method(typeof(HarmonyPatches), nameof(HarmonyPatches.Shader));
+        //    FieldInfo cutOut = AccessTools.Field(typeof(ShaderDatabase), nameof(ShaderDatabase.Cutout));
 
-      //  private static Shader Shader (Apparel apparel)
-      //  {
-      //      if (apparel.def.graphicData.shaderType.Shader == ShaderDatabase.CutoutComplex)
-      //          return ShaderDatabase.CutoutComplex;
-      //
-      //      return ShaderDatabase.Cutout;
-      //  }
+        //    foreach (CodeInstruction codeInstruction in instructions)
+        //    {
+        //        if (codeInstruction.opcode == OpCodes.Ldsfld && codeInstruction.operand == cutOut)
+        //        {
+        //            yield return new CodeInstruction(OpCodes.Ldarg_0); //apparel
+        //            yield return new CodeInstruction(OpCodes.Call, shader); //return shader type
+        //            continue; //skip instruction.
+        //        }
+        //        yield return codeInstruction;
+        //    }
+        //}
+
+        //private static Shader Shader(Apparel apparel)
+        //{
+        //    if (apparel.def.graphicData.shaderType.Shader == ShaderDatabase.CutoutComplex)
+        //        return ShaderDatabase.CutoutComplex;
+
+        //    return ShaderDatabase.Cutout;
+        //}
     }
 }

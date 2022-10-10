@@ -34,65 +34,67 @@ namespace AbilityUser
             Texture2D mouseAttachment = null)
         {
             verbToAdd.timeSavingActionVariable = this.action;
-            // Tad changed
-            // Find.Targeter.targetingVerb = verbToAdd;
-            // Find.Targeter.targetingVerbAdditionalPawns = null;
-            Find.Targeter.targetingSource = verbToAdd;
-            Find.Targeter.targetingSourceAdditionalPawns = null;
-            AccessTools.Field(typeof(Targeter), "action").SetValue(Find.Targeter, action);
-            AccessTools.Field(typeof(Targeter), "targetParams").SetValue(Find.Targeter, targetParams);
-            AccessTools.Field(typeof(Targeter), "caster").SetValue(Find.Targeter, caster);
-            AccessTools.Field(typeof(Targeter), "actionWhenFinished").SetValue(Find.Targeter, actionWhenFinished);
-            AccessTools.Field(typeof(Targeter), "mouseAttachment").SetValue(Find.Targeter, mouseAttachment);
+            var targeter = Find.Targeter;
+            targeter.targetingSource = verbToAdd;
+            targeter.targetingSourceAdditionalPawns = null;
+            targeterActionField(targeter) = action;
+            targeterCasterField(targeter) = caster;
+            targeterTargetParamsField(targeter) = targetParams;
+            targeterActionWhenFinishedField(targeter) = actionWhenFinished;
+            targeterMouseAttachmentField(targeter) = mouseAttachment;
         }
 
+        private static readonly AccessTools.FieldRef<Targeter, Action<LocalTargetInfo>> targeterActionField =
+            AccessTools.FieldRefAccess<Targeter, Action<LocalTargetInfo>>("action");
+        private static readonly AccessTools.FieldRef<Targeter, Pawn> targeterCasterField =
+            AccessTools.FieldRefAccess<Targeter, Pawn>("caster");
+        private static readonly AccessTools.FieldRef<Targeter, TargetingParameters> targeterTargetParamsField =
+            AccessTools.FieldRefAccess<Targeter, TargetingParameters>("targetParams");
+        private static readonly AccessTools.FieldRef<Targeter, Action> targeterActionWhenFinishedField =
+            AccessTools.FieldRefAccess<Targeter, Action>("actionWhenFinished");
+        private static readonly AccessTools.FieldRef<Targeter, Texture2D> targeterMouseAttachmentField =
+            AccessTools.FieldRefAccess<Targeter, Texture2D>("mouseAttachment");
 
         public override void ProcessInput(Event ev)
         {
             SoundDefOf.Tick_Tiny.PlayOneShotOnCamera();
 
             Find.Targeter.StopTargeting();
-            BeginTargetingWithVerb(verb, verb.verbProps.targetParams, delegate(LocalTargetInfo info)
+            BeginTargetingWithVerb(verb, verb.verbProps.targetParams, info =>
             {
                 action.Invoke(info.Thing);
-                if (CurActivateSound != null)
-                    CurActivateSound.PlayOneShotOnCamera();
-            }, compAbilityUser.AbilityUser, null, null);
-            //(info.Thing ?? null);
+                CurActivateSound?.PlayOneShotOnCamera();
+            }, compAbilityUser.Pawn);
         }
 
         //public override bool GroupsWith(Gizmo other)
         //{
-        //    if (other is Command_PawnAbility p && p.pawnAbility.Def.abilityClass == this.pawnAbility.Def.abilityClass)
-        //        return true;
-        //    return false;
+        //    return other is Command_PawnAbility p && p.pawnAbility.Def.abilityClass == pawnAbility.Def.abilityClass;
         //}
 
-        public override GizmoResult GizmoOnGUI(Vector2 topLeft, float maxWidth)
+        protected override GizmoResult GizmoOnGUIInt(Rect butRect, GizmoRenderParms parms)
         {
-            var rect = new Rect(topLeft.x, topLeft.y, this.GetWidth(maxWidth), 75f);
+            // TODO: This is based off Command.GizmoOnGUI at version ~A17, so it's very outdated. Actually use parms and other modern features.
             var isMouseOver = false;
-            if (Mouse.IsOver(rect))
+            if (Mouse.IsOver(butRect))
             {
                 isMouseOver = true;
                 GUI.color = GenUI.MouseoverColor;
             }
-            var badTex = icon;
-            if (badTex == null) badTex = BaseContent.BadTex;
+            var badTex = icon ?? BaseContent.BadTex;
 
-            GUI.DrawTexture(rect, BGTex);
-            MouseoverSounds.DoRegion(rect, SoundDefOf.Mouseover_Command);
+            GUI.DrawTexture(butRect, BGTex);
+            MouseoverSounds.DoRegion(butRect, SoundDefOf.Mouseover_Command);
             GUI.color = IconDrawColor;
-            Widgets.DrawTextureFitted(new Rect(rect), badTex, iconDrawScale * 0.85f, iconProportions, iconTexCoords);
+            Widgets.DrawTextureFitted(new Rect(butRect), badTex, iconDrawScale * 0.85f, iconProportions, iconTexCoords);
             GUI.color = Color.white;
             var isUsed = false;
-            //Rect rectFil = new Rect(topLeft.x, topLeft.y, this.Width, this.Width);
 
             var keyCode = hotKey != null ? hotKey.MainKey : KeyCode.None;
             if (keyCode != KeyCode.None && !GizmoGridDrawer.drawnHotKeys.Contains(keyCode))
             {
-                var rect2 = new Rect(rect.x + 5f, rect.y + 5f, rect.width - 10f, 18f);
-                Widgets.Label(rect2, keyCode.ToStringReadable());
+                var hotkeyRect = new Rect(butRect.x + 5f, butRect.y + 5f, butRect.width - 10f, 18f);
+                Widgets.Label(hotkeyRect, keyCode.ToStringReadable());
                 GizmoGridDrawer.drawnHotKeys.Add(keyCode);
                 if (hotKey.KeyDownEvent)
                 {
@@ -100,17 +102,17 @@ namespace AbilityUser
                     Event.current.Use();
                 }
             }
-            if (Widgets.ButtonInvisible(rect, false)) isUsed = true;
+            if (Widgets.ButtonInvisible(butRect, false))
+                isUsed = true;
             var labelCap = LabelCap;
             if (!labelCap.NullOrEmpty())
             {
-                var num = Text.CalcHeight(labelCap, rect.width);
-                num -= 2f;
-                var rect3 = new Rect(rect.x, rect.yMax - num + 12f, rect.width, num);
-                GUI.DrawTexture(rect3, TexUI.GrayTextBG);
+                var labelHeight = Text.CalcHeight(labelCap, butRect.width) - 2f;
+                var labelRect = new Rect(butRect.x, butRect.yMax - labelHeight + 12f, butRect.width, labelHeight);
+                GUI.DrawTexture(labelRect, TexUI.GrayTextBG);
                 GUI.color = Color.white;
                 Text.Anchor = TextAnchor.UpperCenter;
-                Widgets.Label(rect3, labelCap);
+                Widgets.Label(labelRect, labelCap);
                 Text.Anchor = TextAnchor.UpperLeft;
                 GUI.color = Color.white;
             }
@@ -119,17 +121,17 @@ namespace AbilityUser
             {
                 TipSignal tip = Desc;
                 if (disabled && !disabledReason.NullOrEmpty())
-                    tip.text = tip.text + "\n" + StringsToTranslate.AU_DISABLED + ": " + disabledReason;
-                TooltipHandler.TipRegion(rect, tip);
+                    tip.text += "\n" + StringsToTranslate.AU_DISABLED + ": " + disabledReason;
+                TooltipHandler.TipRegion(butRect, tip);
             }
             if (pawnAbility.CooldownTicksLeft != -1 && pawnAbility.CooldownTicksLeft < pawnAbility.MaxCastingTicks)
             {
-                var math = curTicks / (float) pawnAbility.MaxCastingTicks;
-                Widgets.FillableBar(rect, math, AbilityButtons.FullTex, AbilityButtons.EmptyTex, false);
+                var math = curTicks / (float)pawnAbility.MaxCastingTicks;
+                Widgets.FillableBar(butRect, math, AbilityButtons.FullTex, AbilityButtons.EmptyTex, false);
             }
             if (!HighlightTag.NullOrEmpty() && (Find.WindowStack.FloatMenu == null ||
-                                                !Find.WindowStack.FloatMenu.windowRect.Overlaps(rect)))
-                UIHighlighter.HighlightOpportunity(rect, HighlightTag);
+                                                !Find.WindowStack.FloatMenu.windowRect.Overlaps(butRect)))
+                UIHighlighter.HighlightOpportunity(butRect, HighlightTag);
             if (isUsed)
             {
                 if (disabled)
@@ -144,8 +146,7 @@ namespace AbilityUser
                 TutorSystem.Notify_Event(TutorTagSelect);
                 return result;
             }
-            if (isMouseOver) return new GizmoResult(GizmoState.Mouseover, null);
-            return new GizmoResult(GizmoState.Clear, null);
+            return new GizmoResult(isMouseOver ? GizmoState.Mouseover : GizmoState.Clear, null);
         }
 
         public void FillableBarBottom(Rect rect, float fillPercent, Texture2D fillTex, Texture2D bgTex, bool doBorder)

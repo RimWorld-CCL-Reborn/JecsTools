@@ -4,7 +4,7 @@ using RimWorld;
 using Verse;
 using Verse.AI;
 
-/* 
+/*
  * Author: ChJees
  * Created: 2017-11-04
  */
@@ -107,30 +107,25 @@ namespace AbilityUserAI
         {
             //Make a list of candidates.
             var potentionalTargets = new List<Thing>();
-            Predicate<Thing> pawnPredicate = null;
 
+            Predicate<Thing> pawnPredicate;
             if (customPredicate != null)
                 pawnPredicate = customPredicate;
             else if (abilityDef.canTargetAlly)
-                pawnPredicate = delegate(Thing thing)
+                pawnPredicate = thing =>
                 {
                     //Count own faction and faction whose goodwill they got above 50% as allies.
-                    if (AbilityUtility.AreAllies(pawn, thing))
-                        return true;
-                    return false;
+                    return AbilityUtility.AreAllies(pawn, thing);
                 };
             else
-                pawnPredicate = delegate(Thing thing)
+                pawnPredicate = thing =>
                 {
-                    var thingPawn = thing as Pawn;
-
                     //Count anything hostile as a target.
-                    if (thingPawn != null)
+                    if (thing is Pawn thingPawn)
                         if (!thingPawn.Downed && thing.HostileTo(pawn))
                             return true;
                         else if (thing.HostileTo(pawn))
                             return true;
-
                     return false;
                 };
 

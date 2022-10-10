@@ -1,6 +1,6 @@
 ﻿using Verse;
 
-/* 
+/*
  * Author: ChJees
  * Created: 2017-09-24
  */
@@ -24,18 +24,12 @@ namespace AbilityUserAI
 
         public override bool CanContinueTraversing(Pawn caster)
         {
-            if (caster.mindState.enemyTarget == null)
-                return false;
+            var enemyTarget = caster.mindState.enemyTarget;
+            if (enemyTarget == null)
+                return invert;
 
-            var cover = CoverUtility.CalculateOverallBlockChance(caster.mindState.enemyTarget.Position, caster.Position,
-                caster.Map);
-
-            var result = cover >= minCover && cover < maxCover;
-
-            if (invert)
-                return !result;
-
-            return result;
+            var cover = CoverUtility.CalculateOverallBlockChance(enemyTarget.Position, caster.Position, caster.Map);
+            return (cover >= minCover && cover < maxCover) ^ invert;
         }
     }
 }

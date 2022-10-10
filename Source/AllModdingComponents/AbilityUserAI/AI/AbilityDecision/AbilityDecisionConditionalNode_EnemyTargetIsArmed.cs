@@ -1,6 +1,6 @@
 ﻿using Verse;
 
-/* 
+/*
  * Author: ChJees
  * Created: 2017-11-05
  */
@@ -14,24 +14,13 @@ namespace AbilityUserAI
     {
         public override bool CanContinueTraversing(Pawn caster)
         {
-            if (caster.mindState.enemyTarget == null)
-                return false;
+            if (!(caster.mindState.enemyTarget is Pawn enemyPawn))
+                return invert;
 
-            var enemyPawn = caster.mindState.enemyTarget as Pawn;
-
-            if (enemyPawn == null)
-                return false;
-
-            var result = false;
             if (enemyPawn.AnimalOrWildMan())
-                result = false;
-            else
-                result = enemyPawn?.equipment.Primary != null;
+                return invert;
 
-            if (invert)
-                return !result;
-
-            return result;
+            return (enemyPawn.equipment.Primary != null) ^ invert;
         }
     }
 }

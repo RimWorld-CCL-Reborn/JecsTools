@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Configuration>
+  <Excluded>
+    <exclude>.git</exclude>
+    <exclude>Source\.vs</exclude>
+    <exclude>Source\AllModdingComponents\AbilityUserAI\obj</exclude>
+    <exclude>Source\AllModdingComponents\CompAbilityUser\obj</exclude>
+    <exclude>Source\AllModdingComponents\CompActivatableEffect\obj</exclude>
+    <exclude>Source\AllModdingComponents\CompAnimated\obj</exclude>
+    <exclude>Source\AllModdingComponents\CompBalloon\obj</exclude>
+    <exclude>Source\AllModdingComponents\CompBigBox\obj</exclude>
+    <exclude>Source\AllModdingComponents\CompDeflector\obj</exclude>
+    <exclude>Source\AllModdingComponents\CompDelayedSpawner\obj</exclude>
+    <exclude>Source\AllModdingComponents\CompExtraSounds\obj</exclude>
+    <exclude>Source\AllModdingComponents\CompInstalledPart\obj</exclude>
+    <exclude>Source\AllModdingComponents\CompLumbering\obj</exclude>
+    <exclude>Source\AllModdingComponents\CompOverlays\obj</exclude>
+    <exclude>Source\AllModdingComponents\CompOversizedWeapon\obj</exclude>
+    <exclude>Source\AllModdingComponents\CompSlotLoadable\obj</exclude>
+    <exclude>Source\AllModdingComponents\CompToggleDef\obj</exclude>
+    <exclude>Source\AllModdingComponents\JecsTools\obj</exclude>
+    <exclude>Source\AllModdingComponents\PawnShields\obj</exclude>
+    <exclude>Source\AllModdingComponents\ThinkNodes\obj</exclude>
+  </Excluded>
+</Configuration>

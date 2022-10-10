@@ -16,66 +16,44 @@ namespace AbilityUser
 
         public string uiIconPath;
 
-        public override int GetHashCode()
-        {
-            return Gen.HashCombineInt(defName.GetHashCode(), "AbilityDef".GetHashCode());
-        }
-
         public override void PostLoad()
         {
             base.PostLoad();
-            LongEventHandler.ExecuteWhenFinished(delegate
+            LongEventHandler.ExecuteWhenFinished(() =>
             {
                 if (!uiIconPath.NullOrEmpty())
-                    uiIcon = ContentFinder<Texture2D>.Get(uiIconPath, true);
-                //else if (this.DrawMatSingle != null && this.DrawMatSingle != BaseContent.BadMat)
-                //{
-                //    this.uiIcon = (Texture2D)this.DrawMatSingle.mainTexture;
-                //}
+                    uiIcon = ContentFinder<Texture2D>.Get(uiIconPath);
+                //else if (DrawMatSingle != null && DrawMatSingle != BaseContent.BadMat)
+                //    uiIcon = (Texture2D)DrawMatSingle.mainTexture;
             });
         }
 
         public Job GetJob(AbilityTargetCategory cat, LocalTargetInfo target)
         {
-            switch (cat)
+            return JobMaker.MakeJob(cat switch
             {
-                case AbilityTargetCategory.TargetSelf:
-                {
-                    return new Job(AbilityDefOf.CastAbilitySelf, target);
-                }
-                case AbilityTargetCategory.TargetAoE:
-                {
-                    return new Job(AbilityDefOf.CastAbilityVerb, target);
-                }
-                case AbilityTargetCategory.TargetThing:
-                {
-                    return new Job(AbilityDefOf.CastAbilityVerb, target);
-                }
-                default:
-                {
-                    return new Job(AbilityDefOf.CastAbilityVerb, target);
-                }
-            }
+                AbilityTargetCategory.TargetSelf => AbilityDefOf.CastAbilitySelf,
+                _ => AbilityDefOf.CastAbilityVerb,
+            }, target);
         }
 
         public virtual string GetDescription()
         {
-            var result = "";
             var coolDesc = GetBasics();
             var AoEDesc = GetAoEDesc();
-            //string postDesc = PostAbilityVerbDesc();
+            //var postDesc = PostAbilityVerbDesc();
             var desc = new StringBuilder();
             desc.AppendLine(description);
-            if (coolDesc != "") desc.AppendLine(coolDesc);
-            if (AoEDesc != "") desc.AppendLine(AoEDesc);
-            //if (postDesc != "") desc.AppendLine(postDesc);
-            result = desc.ToString();
-            return result;
+            if (coolDesc.Length != 0)
+                desc.AppendLine(coolDesc);
+            if (AoEDesc.Length != 0)
+                desc.AppendLine(AoEDesc);
+            //if (postDesc.Length != 0) desc.AppendLine(postDesc);
+            return desc.ToString();
         }
 
         public virtual string GetAoEDesc()
         {
-            var result = "";
             var def = MainVerb;
             if (def != null)
                 if (def.TargetAoEProperties != null)
@@ -92,35 +70,27 @@ namespace AbilityUser
                     s.AppendLine("\t" + StringsToTranslate.AU_AoEMaxTargets + def.TargetAoEProperties.maxTargets);
                     if (def.TargetAoEProperties.startsFromCaster)
                         s.AppendLine("\t" + StringsToTranslate.AU_AoEStartsFromCaster);
-                    result = s.ToString();
+                    return s.ToString();
                 }
-            return result;
+            return "";
         }
 
         public string GetBasics()
         {
-            var result = "";
             var def = MainVerb;
             if (def != null)
             {
                 var s = new StringBuilder();
                 s.AppendLine(StringsToTranslate.AU_Cooldown + def.SecondsToRecharge.ToString("N0") + " " +
                              "SecondsLower".Translate());
-                switch (def.AbilityTargetCategory)
+                s.AppendLine(StringsToTranslate.AU_Type + def.AbilityTargetCategory switch
                 {
-                    case AbilityTargetCategory.TargetAoE:
-                        s.AppendLine(StringsToTranslate.AU_Type + StringsToTranslate.AU_TargetAoE);
-                        break;
-                    case AbilityTargetCategory.TargetSelf:
-                        s.AppendLine(StringsToTranslate.AU_Type + StringsToTranslate.AU_TargetSelf);
-                        break;
-                    case AbilityTargetCategory.TargetThing:
-                        s.AppendLine(StringsToTranslate.AU_Type + StringsToTranslate.AU_TargetThing);
-                        break;
-                    case AbilityTargetCategory.TargetLocation:
-                        s.AppendLine(StringsToTranslate.AU_Type + StringsToTranslate.AU_TargetLocation);
-                        break;
-                }
+                    AbilityTargetCategory.TargetAoE => StringsToTranslate.AU_TargetAoE,
+                    AbilityTargetCategory.TargetSelf => StringsToTranslate.AU_TargetSelf,
+                    AbilityTargetCategory.TargetThing => StringsToTranslate.AU_TargetThing,
+                    AbilityTargetCategory.TargetLocation => StringsToTranslate.AU_TargetLocation,
+                    _ => throw new NotImplementedException(),
+                });
                 if (def.tooltipShowProjectileDamage)
                     if (def.defaultProjectile != null)
                         if (def.defaultProjectile.projectile != null)
@@ -132,7 +102,7 @@ namespace AbilityUser
                                              def.defaultProjectile.projectile.damageDef.LabelCap);
                             }
                 if (def.tooltipShowExtraDamages)
-                    if (def.extraDamages != null && def.extraDamages.Count > 0)
+                    if (def.extraDamages != null)
                         if (def.extraDamages.Count == 1)
                         {
                             s.AppendLine(StringsToTranslate.AU_Extra + " " + "Damage".Translate() + ": " +
@@ -140,7 +110,7 @@ namespace AbilityUser
                             s.AppendLine(StringsToTranslate.AU_Extra + " " + "Damage".Translate() + " " +
                                          StringsToTranslate.AU_Type + def.extraDamages[0].damageDef.LabelCap);
                         }
-                        else
+                        else if (def.extraDamages.Count > 1)
                         {
                             s.AppendLine(StringsToTranslate.AU_Extra + " " + "Damage".Translate() + ": ");
                             foreach (var extraDam in def.extraDamages)
@@ -152,14 +122,14 @@ namespace AbilityUser
                             }
                         }
                 if (def.tooltipShowMentalStatesToApply)
-                    if (def.mentalStatesToApply != null && def.mentalStatesToApply.Count > 0)
+                    if (def.mentalStatesToApply != null)
                         if (def.mentalStatesToApply.Count == 1)
                         {
                             s.AppendLine(StringsToTranslate.AU_MentalStateChance + ": " +
                                          def.mentalStatesToApply[0].mentalStateDef.LabelCap + " " +
                                          def.mentalStatesToApply[0].applyChance.ToStringPercent());
                         }
-                        else
+                        else if (def.mentalStatesToApply.Count > 1)
                         {
                             s.AppendLine(StringsToTranslate.AU_MentalStateChance);
                             foreach (var mentalState in def.mentalStatesToApply)
@@ -168,13 +138,13 @@ namespace AbilityUser
                         }
                 if (def.tooltipShowHediffsToApply)
                 {
-                    if (def.hediffsToApply != null && def.hediffsToApply.Count > 0)
+                    if (def.hediffsToApply != null)
                         if (def.hediffsToApply.Count == 1)
                         {
                             s.AppendLine(StringsToTranslate.AU_EffectChance + def.hediffsToApply[0].hediffDef.LabelCap +
                                          " " + def.hediffsToApply[0].applyChance.ToStringPercent());
                         }
-                        else
+                        else if (def.hediffsToApply.Count > 1)
                         {
                             s.AppendLine(StringsToTranslate.AU_EffectChance);
                             foreach (var hediff in def.hediffsToApply)
@@ -184,7 +154,7 @@ namespace AbilityUser
                                     if (hediff.hediffDef.HasComp(typeof(HediffComp_Disappears)))
                                     {
                                         var intDuration =
-                                        ((HediffCompProperties_Disappears) hediff.hediffDef.CompPropsFor(
+                                        ((HediffCompProperties_Disappears)hediff.hediffDef.CompPropsFor(
                                             typeof(HediffComp_Disappears))).disappearsAfterTicks.max;
                                         duration = intDuration.TicksToSeconds();
                                     }
@@ -201,9 +171,9 @@ namespace AbilityUser
                         s.AppendLine(StringsToTranslate.AU_BurstShotCount + " " + def.burstShotCount);
                 }
 
-                result = s.ToString();
+                return s.ToString();
             }
-            return result;
+            return "";
         }
     }
 }

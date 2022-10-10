@@ -1,7 +1,7 @@
 ﻿using System;
 using Verse;
 
-/* 
+/*
  * Author: ChJees
  * Created: 2017-09-23
  */
@@ -25,17 +25,12 @@ namespace AbilityUserAI
 
         public override bool CanContinueTraversing(Pawn caster)
         {
-            if (caster.mindState.enemyTarget == null)
-                return false;
+            var enemyTarget = caster.mindState.enemyTarget;
+            if (enemyTarget == null)
+                return invert;
 
-            var distance = Math.Abs(caster.Position.DistanceTo(caster.mindState.enemyTarget.Position));
-
-            var result = distance >= minDistance && distance < maxDistance;
-
-            if (invert)
-                return !result;
-
-            return result;
+            var distance = Math.Abs(caster.Position.DistanceTo(enemyTarget.Position));
+            return (distance >= minDistance && distance < maxDistance) ^ invert;
         }
     }
 }

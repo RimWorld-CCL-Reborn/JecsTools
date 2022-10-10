@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using AbilityUser;
 using Verse;
 
-/* 
+/*
  * Author: ChJees
  * Created: 2017-09-20
  */
@@ -27,43 +26,44 @@ namespace AbilityUserAI
         /// </summary>
         /// <param name="pawn">Pawn to check.</param>
         /// <returns>Ability user if present. Null if none can be found.</returns>
+        [Obsolete("Use the GetCompAbilityUsers extension method instead")]
         public static CompAbilityUser Abilities(this Pawn pawn)
         {
-            return pawn.GetComp<CompAbilityUser>();
+            return pawn.GetCompAbilityUser();
         }
 
         /// <summary>
         ///     Gets all profiles from the Def database.
+        ///     Returns it as a List, but for backwards compatibility, must return IEnumerable.
         /// </summary>
         /// <returns>All Def Database profiles.</returns>
         public static IEnumerable<AbilityUserAIProfileDef> Profiles()
         {
-            return DefDatabase<AbilityUserAIProfileDef>.AllDefs;
+            return DefDatabase<AbilityUserAIProfileDef>.AllDefsListForReading;
         }
 
         /// <summary>
         ///     Gets all AI profiles which are eligible for this pawn.
+        ///     Returns it as a List, but for backwards compatibility, must return IEnumerable.
         /// </summary>
         /// <param name="pawn">Pawn to get for.</param>
         /// <returns>Matching profiles.</returns>
         public static IEnumerable<AbilityUserAIProfileDef> EligibleAIProfiles(this Pawn pawn)
         {
-            IEnumerable<AbilityUserAIProfileDef> result =
-                from matchingProfileDef in
-
-                    //Initial filtering.
-                    (from thingComp in pawn.AllComps
-                        from profileDef in Profiles()
-                        where thingComp.GetType() == profileDef.compAbilityUserClass
-                        select profileDef)
-
-                //Finer filtering.
-                //where matchingProfileDef.matchingTraits.Count <= 0 || (matchingProfileDef.matchingTraits.Count > 0 && matchingProfileDef.matchingTraits.Any(traitDef => pawn.story.traits.HasTrait(traitDef)))
-                where matchingProfileDef.Worker.ValidProfileFor(matchingProfileDef, pawn)
-                orderby matchingProfileDef.priority descending
-                select matchingProfileDef;
-
-            return result;
+            var eligibleProfiles = new List<AbilityUserAIProfileDef>();
+            foreach (var matchingProfile in (List<AbilityUserAIProfileDef>)Profiles()) // cast to List for performance
+            {
+                if (pawn.GetExactCompAbilityUser(matchingProfile.compAbilityUserClass) != null &&
+                    //(matchingProfile.matchingTraits.Count == 0 ||
+                    //    matchingProfile.matchingTraits.Exists(traitDef => pawn.story.traits.HasTrait(traitDef))) &&
+                    matchingProfile.Worker.ValidProfileFor(matchingProfile, pawn))
+                {
+                    eligibleProfiles.Add(matchingProfile);
+                }
+            }
+            // orderby matchingProfile.priority descending
+            eligibleProfiles.Sort((x, y) => y.priority.CompareTo(x.priority));
+            return eligibleProfiles;
         }
 
         /// <summary>
@@ -78,13 +78,18 @@ namespace AbilityUserAI
             Predicate<Pawn> targetPredicate)
         {
             //With no predicate, just grab everything.
-            if (targetPredicate == null)
-                targetPredicate = thing => true;
+            targetPredicate ??= thing => true;
 
+            var centerCell = center.Cell;
             foreach (Pawn pawn in map.listerThings.ThingsInGroup(ThingRequestGroup.Pawn))
-                if (AbilityMaths.CircleIntersectionTest(pawn.Position.x, pawn.Position.y, 1f, center.Cell.x,
-                        center.Cell.y, radius) && targetPredicate(pawn))
+            {
+                var pawnPos = pawn.Position;
+                if (AbilityMaths.CircleIntersectionTest(pawnPos.x, pawnPos.y, 1f, centerCell.x, centerCell.y, radius) &&
+                    targetPredicate(pawn))
+                {
                     yield return pawn;
+                }
+            }
         }
 
         /// <summary>
@@ -137,10 +142,9 @@ namespace AbilityUserAI
             ShootLeanUtility.LeanShootingSourcesFromTo(caster.Position, target.Cell, caster.Map, tempSourceList);
 
             //See if we can get target from any source cell.
-            if (tempSourceList.Count > 0)
-                foreach (var sourceCell in tempSourceList)
-                    if (GenSight.LineOfSight(sourceCell, target.Cell, caster.Map, skipFirstCell, validator))
-                        return true;
+            foreach (var sourceCell in tempSourceList)
+                if (GenSight.LineOfSight(sourceCell, target.Cell, caster.Map, skipFirstCell, validator))
+                    return true;
 
             return false;
         }

@@ -11,11 +11,10 @@ namespace CompOversizedWeapon
         //public SoundDef soundExtra;
         //public SoundDef soundExtraTwo;
 
-        public Vector3 offset = new Vector3(0,0,0); //No longer in-use.
-        public Vector3 northOffset = new Vector3(0,0,0);
-        public Vector3 eastOffset = new Vector3(0,0,0);
-        public Vector3 southOffset = new Vector3(0,0,0);
-        public Vector3 westOffset = new Vector3(0,0,0);
+        public Vector3 northOffset = new Vector3(0, 0, 0);
+        public Vector3 eastOffset = new Vector3(0, 0, 0);
+        public Vector3 southOffset = new Vector3(0, 0, 0);
+        public Vector3 westOffset = new Vector3(0, 0, 0);
         public bool verticalFlipOutsideCombat = false;
         public bool verticalFlipNorth = false;
         public bool isDualWeapon = false;
@@ -29,6 +28,30 @@ namespace CompOversizedWeapon
         public CompProperties_OversizedWeapon()
         {
             compClass = typeof(CompOversizedWeapon);
+        }
+
+        public float NonCombatAngleAdjustment(Rot4 rotation)
+        {
+            if (rotation == Rot4.North)
+                return angleAdjustmentNorth;
+            else if (rotation == Rot4.East)
+                return angleAdjustmentEast;
+            else if (rotation == Rot4.West)
+                return angleAdjustmentWest;
+            else
+                return angleAdjustmentSouth;
+        }
+
+        public Vector3 OffsetFromRotation(Rot4 rotation)
+        {
+            if (rotation == Rot4.North)
+                return northOffset;
+            else if (rotation == Rot4.East)
+                return eastOffset;
+            else if (rotation == Rot4.West)
+                return westOffset;
+            else
+                return southOffset;
         }
     }
 }

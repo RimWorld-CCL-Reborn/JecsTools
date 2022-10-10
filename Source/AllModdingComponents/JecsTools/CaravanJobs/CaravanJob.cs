@@ -8,6 +8,7 @@ using Verse.AI.Group;
 
 namespace JecsTools
 {
+    // Based off Job.
     public class CaravanJob : IExposable
     {
         public bool attackDoorIfTargetLost;
@@ -53,13 +54,13 @@ namespace JecsTools
 
         public Lord lord;
 
-        public int maxNumMeleeAttacks = 2147483647;
+        public int maxNumMeleeAttacks = int.MaxValue;
 
-        public int maxNumStaticAttacks = 2147483647;
+        public int maxNumStaticAttacks = int.MaxValue;
 
         public bool overeat;
 
-        public List<ListerMergeables> placedThings;
+        public List<ThingCountClass> placedThings;
 
         public ThingDef plantDefToSow;
 
@@ -87,11 +88,11 @@ namespace JecsTools
         {
         }
 
-        public CaravanJob(CaravanJobDef def) : this(def, default(GlobalTargetInfo))
+        public CaravanJob(CaravanJobDef def) : this(def, default)
         {
         }
 
-        public CaravanJob(CaravanJobDef def, GlobalTargetInfo targetA) : this(def, targetA, default(GlobalTargetInfo))
+        public CaravanJob(CaravanJobDef def, GlobalTargetInfo targetA) : this(def, targetA, default)
         {
         }
 
@@ -131,73 +132,67 @@ namespace JecsTools
 
         public void ExposeData()
         {
-            var loadReferenceable = (ILoadReferenceable) commTarget;
-            Scribe_References.Look(ref loadReferenceable, "commTarget", false);
-            commTarget = (ICommunicable) loadReferenceable;
-            Scribe_References.Look(ref verbToUse, "verbToUse", false);
-            Scribe_References.Look(ref bill, "bill", false);
-            Scribe_References.Look(ref lord, "lord", false);
-            Scribe_Defs.Look(ref def, "def");
-            Scribe_TargetInfo.Look(ref targetA, "targetA");
-            Scribe_TargetInfo.Look(ref targetB, "targetB");
-            Scribe_TargetInfo.Look(ref targetC, "targetC");
-            Scribe_Collections.Look(ref targetQueueA, "targetQueueA", LookMode.Undefined);
-            Scribe_Collections.Look(ref targetQueueB, "targetQueueB", LookMode.Undefined);
-            Scribe_Values.Look(ref count, "count", -1, false);
-            Scribe_Collections.Look(ref countQueue, "countQueue", LookMode.Undefined);
-            Scribe_Values.Look(ref startTick, "startTick", -1, false);
-            Scribe_Values.Look(ref expiryInterval, "expiryInterval", -1, false);
-            Scribe_Values.Look(ref checkOverrideOnExpire, "checkOverrideOnExpire", false, false);
-            Scribe_Values.Look(ref playerForced, "playerForced", false, false);
-            Scribe_Collections.Look(ref placedThings, "placedThings", LookMode.Undefined);
-            Scribe_Values.Look(ref maxNumMeleeAttacks, "maxNumMeleeAttacks", 2147483647, false);
-            Scribe_Values.Look(ref maxNumStaticAttacks, "maxNumStaticAttacks", 2147483647, false);
-            Scribe_Values.Look(ref exitMapOnArrival, "exitMapOnArrival", false, false);
-            Scribe_Values.Look(ref failIfCantJoinOrCreateCaravan, "failIfCantJoinOrCreateCaravan", false, false);
-            Scribe_Values.Look(ref killIncappedTarget, "killIncappedTarget", false, false);
-            Scribe_Values.Look(ref haulOpportunisticDuplicates, "haulOpportunisticDuplicates", false, false);
-            Scribe_Values.Look(ref haulMode, "haulMode", HaulMode.Undefined, false);
-            Scribe_Defs.Look(ref plantDefToSow, "plantDefToSow");
-            Scribe_Values.Look(ref locomotionUrgency, "locomotionUrgency", LocomotionUrgency.Jog, false);
-            Scribe_Values.Look(ref ignoreDesignations, "ignoreDesignations", false, false);
-            Scribe_Values.Look(ref canBash, "canBash", false, false);
-            Scribe_Values.Look(ref haulDroppedApparel, "haulDroppedApparel", false, false);
-            Scribe_Values.Look(ref restUntilHealed, "restUntilHealed", false, false);
-            Scribe_Values.Look(ref ignoreJoyTimeAssignment, "ignoreJoyTimeAssignment", false, false);
-            Scribe_Values.Look(ref overeat, "overeat", false, false);
-            Scribe_Values.Look(ref attackDoorIfTargetLost, "attackDoorIfTargetLost", false, false);
-            Scribe_Values.Look(ref takeExtraIngestibles, "takeExtraIngestibles", 0, false);
-            Scribe_Values.Look(ref expireRequiresEnemiesNearby, "expireRequiresEnemiesNearby", false, false);
-            Scribe_Values.Look(ref collideWithCaravans, "collideWithCaravans", false, false);
+            var loadReferenceable = (ILoadReferenceable)commTarget;
+            Scribe_References.Look(ref loadReferenceable, nameof(commTarget));
+            commTarget = (ICommunicable)loadReferenceable;
+            Scribe_References.Look(ref verbToUse, nameof(verbToUse));
+            Scribe_References.Look(ref bill, nameof(bill));
+            Scribe_References.Look(ref lord, nameof(lord));
+            Scribe_Defs.Look(ref def, nameof(def));
+            Scribe_TargetInfo.Look(ref targetA, nameof(targetA));
+            Scribe_TargetInfo.Look(ref targetB, nameof(targetB));
+            Scribe_TargetInfo.Look(ref targetC, nameof(targetC));
+            Scribe_Collections.Look(ref targetQueueA, nameof(targetQueueA), LookMode.GlobalTargetInfo);
+            Scribe_Collections.Look(ref targetQueueB, nameof(targetQueueB), LookMode.GlobalTargetInfo);
+            Scribe_Values.Look(ref count, nameof(count), -1);
+            Scribe_Collections.Look(ref countQueue, nameof(countQueue), LookMode.Value);
+            Scribe_Values.Look(ref startTick, nameof(startTick), -1);
+            Scribe_Values.Look(ref expiryInterval, nameof(expiryInterval), -1);
+            Scribe_Values.Look(ref checkOverrideOnExpire, nameof(checkOverrideOnExpire));
+            Scribe_Values.Look(ref playerForced, nameof(playerForced));
+            Scribe_Collections.Look(ref placedThings, nameof(placedThings), LookMode.Deep);
+            Scribe_Values.Look(ref maxNumMeleeAttacks, nameof(maxNumMeleeAttacks), int.MaxValue);
+            Scribe_Values.Look(ref maxNumStaticAttacks, nameof(maxNumStaticAttacks), int.MaxValue);
+            Scribe_Values.Look(ref exitMapOnArrival, nameof(exitMapOnArrival));
+            Scribe_Values.Look(ref failIfCantJoinOrCreateCaravan, nameof(failIfCantJoinOrCreateCaravan));
+            Scribe_Values.Look(ref killIncappedTarget, nameof(killIncappedTarget));
+            Scribe_Values.Look(ref haulOpportunisticDuplicates, nameof(haulOpportunisticDuplicates));
+            Scribe_Values.Look(ref haulMode, nameof(haulMode));
+            Scribe_Defs.Look(ref plantDefToSow, nameof(plantDefToSow));
+            Scribe_Values.Look(ref locomotionUrgency, nameof(locomotionUrgency), LocomotionUrgency.Jog);
+            Scribe_Values.Look(ref ignoreDesignations, nameof(ignoreDesignations));
+            Scribe_Values.Look(ref canBash, nameof(canBash));
+            Scribe_Values.Look(ref haulDroppedApparel, nameof(haulDroppedApparel));
+            Scribe_Values.Look(ref restUntilHealed, nameof(restUntilHealed));
+            Scribe_Values.Look(ref ignoreJoyTimeAssignment, nameof(ignoreJoyTimeAssignment));
+            Scribe_Values.Look(ref overeat, nameof(overeat));
+            Scribe_Values.Look(ref attackDoorIfTargetLost, nameof(attackDoorIfTargetLost));
+            Scribe_Values.Look(ref takeExtraIngestibles, nameof(takeExtraIngestibles));
+            Scribe_Values.Look(ref expireRequiresEnemiesNearby, nameof(expireRequiresEnemiesNearby));
+            Scribe_Values.Look(ref collideWithCaravans, nameof(collideWithCaravans));
         }
 
         public GlobalTargetInfo GetTarget(TargetIndex ind)
         {
-            switch (ind)
+            return ind switch
             {
-                case TargetIndex.A:
-                    return targetA;
-                case TargetIndex.B:
-                    return targetB;
-                case TargetIndex.C:
-                    return targetC;
-                default:
-                    throw new ArgumentException();
-            }
+                TargetIndex.A => targetA,
+                TargetIndex.B => targetB,
+                TargetIndex.C => targetC,
+                _ => throw new ArgumentException(),
+            };
         }
 
         public List<GlobalTargetInfo> GetTargetQueue(TargetIndex ind)
         {
             if (ind == TargetIndex.A)
             {
-                if (targetQueueA == null)
-                    targetQueueA = new List<GlobalTargetInfo>();
+                targetQueueA ??= new List<GlobalTargetInfo>();
                 return targetQueueA;
             }
             if (ind != TargetIndex.B)
                 throw new ArgumentException();
-            if (targetQueueB == null)
-                targetQueueB = new List<GlobalTargetInfo>();
+            targetQueueB ??= new List<GlobalTargetInfo>();
             return targetQueueB;
         }
 
@@ -226,9 +221,9 @@ namespace JecsTools
 
         public CaravanJobDriver MakeDriver(Caravan driverCaravan)
         {
-            var jobDriver = (CaravanJobDriver) Activator.CreateInstance(def.driverClass);
+            var jobDriver = (CaravanJobDriver)Activator.CreateInstance(def.driverClass);
             jobDriver.caravan = driverCaravan;
-            Log.Message("JecsTools :: MakeDriver Called :: " + def.driverClass);
+            //Log.Message("JecsTools :: MakeDriver Called :: " + def.driverClass);
             return jobDriver;
         }
 
@@ -255,11 +250,11 @@ namespace JecsTools
         {
             var text = def.ToString();
             if (targetA.IsValid)
-                text = text + " A=" + targetA;
+                text += " A=" + targetA;
             if (targetB.IsValid)
-                text = text + " B=" + targetB;
+                text += " B=" + targetB;
             if (targetC.IsValid)
-                text = text + " C=" + targetC;
+                text += " C=" + targetC;
             return text;
         }
     }

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>
+
+	<ShieldNotEquipped>pas de bouclier équipé</ShieldNotEquipped>
+
+	<ShieldBlockMeleeNever>le bouclier ne bloque jamais les attaques de mêlée</ShieldBlockMeleeNever>
+	<ShieldBlockRangedNever>le bouclier ne bloque jamais les attaques à distance</ShieldBlockRangedNever>
+	<ShieldAbsorbDamageNever>le bouclier n'absorbe jamais les dégâts d'une attaque bloquée</ShieldAbsorbDamageNever>
+
+	<ShieldHitPointAutoDiscardThreshold>Seuil de défausse</ShieldHitPointAutoDiscardThreshold>
+	<ShieldHitPointAutoDiscardThresholdEx>Le seuil de pourcentage de points de vie nécessaire pour que le bouclier soit automatiquement défaussé par le porteur</ShieldHitPointAutoDiscardThresholdEx>
+	<ShieldHitPointAutoDiscardThresholdNever>Le bouclier n'est jamais automatiquement rejeté par le porteur</ShieldHitPointAutoDiscardThresholdNever>
+
+	<ShieldDamageToFatigueFactor>Facteur de dommages de fatigue</ShieldDamageToFatigueFactor>
+	<ShieldDamageToFatigueFactorEx>Quel pourcentage des dégâts est converti en dégâts de fatigue lors d'une attaque bloquée.</ShieldDamageToFatigueFactorEx>
+	<ShieldDamageToFatigueFactorNever>Le porteur du bouclier ne se fatigue jamais d'une attaque bloquée</ShieldDamageToFatigueFactorNever>
+
+</LanguageData>

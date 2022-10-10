@@ -5,7 +5,7 @@ namespace JecsTools
 {
     public class HediffComp_ExtraMeleeDamages : HediffComp
     {
-        public HediffCompProperties_ExtraMeleeDamages Props => (HediffCompProperties_ExtraMeleeDamages) props;
+        public HediffCompProperties_ExtraMeleeDamages Props => (HediffCompProperties_ExtraMeleeDamages)props;
 
         public override string CompTipStringExtra
         {
@@ -13,13 +13,14 @@ namespace JecsTools
             {
                 var s = new StringBuilder();
                 var b = base.CompTipStringExtra;
-                if (b != "")
+                if (!b.NullOrEmpty())
                     s.Append(b);
-                if ((Props?.ExtraDamages?.Count ?? 0) > 0)
+                var extraDamages = Props?.ExtraDamages;
+                if (!extraDamages.NullOrEmpty())
                 {
                     s.AppendLine("JT_HI_ExtraDamages".Translate());
-                    for (var i = 0; i < Props.ExtraDamages.Count; i++)
-                        s.AppendLine("  +" + Props.ExtraDamages[i].amount + " " + Props.ExtraDamages[i].def.LabelCap);
+                    for (var i = 0; i < extraDamages.Count; i++)
+                        s.AppendLine("  +" + extraDamages[i].amount + " " + extraDamages[i].def.LabelCap);
                 }
                 return s.ToString().TrimEndNewlines();
             }

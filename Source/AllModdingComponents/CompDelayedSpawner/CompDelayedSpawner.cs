@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Linq;
+using System.Collections.Generic;
 using Verse;
 
 namespace CompDelayedSpawner
@@ -20,11 +20,8 @@ namespace CompDelayedSpawner
         public override void CompTick()
         {
             base.CompTick();
-            //Log.Message("Tick");
             if (parent.Spawned && !isSpawning && Find.TickManager.TicksGame % Props.tickRate == 0)
             {
-                //Log.Message("Tick2");
-
                 if (ticksLeft == -999)
                     ticksLeft = Props.ticksUntilSpawning;
 
@@ -66,10 +63,13 @@ namespace CompDelayedSpawner
 
         private void SpawnPawns(SpawnInfo info)
         {
-            var spawnPosition = Position;
-            if ((from cell in GenAdj.CellsAdjacent8Way(new TargetInfo(Position, Map))
-                where Position.Walkable(Map)
-                select cell).TryRandomElement(out spawnPosition))
+            var walkableAdjCells = new List<IntVec3>();
+            foreach (var cell in GenAdj.CellsAdjacent8Way(new TargetInfo(Position, Map)))
+            {
+                if (Position.Walkable(Map))
+                    walkableAdjCells.Add(cell);
+            }
+            if (walkableAdjCells.TryRandomElement(out var spawnPosition))
             {
                 var pawn = PawnGenerator.GeneratePawn(info.pawnKind,
                     Find.FactionManager.FirstFactionOfDef(info.faction) ?? null);
@@ -82,15 +82,15 @@ namespace CompDelayedSpawner
             }
         }
 
-        private void GiveMentalState(SpawnInfo info, Pawn pawn)
+        private static void GiveMentalState(SpawnInfo info, Pawn pawn)
         {
             if (info.withMentalState != null)
                 pawn.mindState.mentalStateHandler.TryStartMentalState(info.withMentalState);
         }
 
-        private void GiveHediffs(SpawnInfo info, Pawn pawn)
+        private static void GiveHediffs(SpawnInfo info, Pawn pawn)
         {
-            if (!info.withHediffs.NullOrEmpty())
+            if (info.withHediffs != null)
                 foreach (var hediff in info.withHediffs)
                     if (HediffMaker.MakeHediff(hediff, pawn, null) is Hediff tempHediff)
                         pawn.health.AddHediff(tempHediff, null, null);
@@ -108,7 +108,7 @@ namespace CompDelayedSpawner
         {
             if (Props.destroyAfterSpawn)
             {
-                parent.Destroy(DestroyMode.Vanish);
+                parent.Destroy();
                 return;
             }
 
@@ -122,8 +122,8 @@ namespace CompDelayedSpawner
         public override void PostExposeData()
         {
             base.PostExposeData();
-            Scribe_Values.Look(ref isSpawning, "isSpawning", false);
-            Scribe_Values.Look(ref ticksLeft, "ticksLeft", -999);
+            Scribe_Values.Look(ref isSpawning, nameof(isSpawning));
+            Scribe_Values.Look(ref ticksLeft, nameof(ticksLeft), -999);
         }
     }
 }

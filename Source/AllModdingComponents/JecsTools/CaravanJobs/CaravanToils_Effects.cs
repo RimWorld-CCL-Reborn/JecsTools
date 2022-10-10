@@ -14,7 +14,7 @@ namespace JecsTools
             Func<float> progressGetter, bool interpolateBetweenActorAndTarget = false, float offsetZ = -0.5f)
         {
             WorldObject_ProgressBar progressBar = null;
-            CaravanToil.AddPreTickAction(delegate
+            CaravanToil.AddPreTickAction(() =>
             {
                 if (CaravanToil.actor.Faction != Faction.OfPlayer)
                     return;
@@ -24,9 +24,8 @@ namespace JecsTools
                 if (progressBar == null)
                 {
                     progressBar =
-                        (WorldObject_ProgressBar) WorldObjectMaker.MakeWorldObject(
-                            DefDatabase<WorldObjectDef>.GetNamed("WorldObject_ProgressBar"));
-                    progressBar.Tile = Find.World.GetComponent<CaravanJobGiver>().CurJob(CaravanToil.actor)
+                        (WorldObject_ProgressBar)WorldObjectMaker.MakeWorldObject(MiscDefOf.WorldObject_ProgressBar);
+                    progressBar.Tile = CaravanJobsUtility.GetCaravanJobGiver().CurJob(CaravanToil.actor)
                         .GetTarget(ind).Tile;
                     progressBar.offset = offsetZ;
                     Find.WorldObjects.Add(progressBar);
@@ -35,13 +34,13 @@ namespace JecsTools
                 {
                     progressBar.curProgress = Mathf.Clamp01(progressGetter());
                     if (CaravanToil.actor == null || !CaravanToil.actor.Spawned ||
-                        CaravanToil.actor.Tile != Find.World.GetComponent<CaravanJobGiver>().CurJob(CaravanToil.actor)
+                        CaravanToil.actor.Tile != CaravanJobsUtility.GetCaravanJobGiver().CurJob(CaravanToil.actor)
                             .GetTarget(ind).Tile)
                         if (progressBar.Spawned)
                             Find.WorldObjects.Remove(progressBar);
                 }
             });
-            CaravanToil.AddFinishAction(delegate
+            CaravanToil.AddFinishAction(() =>
             {
                 if (progressBar != null && progressBar.Spawned)
                 {

@@ -2,7 +2,7 @@
 using Verse;
 using Verse.AI;
 
-/* 
+/*
  * Author: ChJees
  * Created: 2017-11-05
  */
@@ -62,9 +62,7 @@ namespace AbilityUserAI
 
                 checkedThings.Add(foundThing);
 
-                var foundPawn = foundThing as Pawn;
-
-                if (foundPawn != null)
+                if (foundThing is Pawn foundPawn)
                     if (foundPawn.health.summaryHealth.SummaryHealthPercent < bestHealth)
                     {
                         bestPawn = foundPawn;

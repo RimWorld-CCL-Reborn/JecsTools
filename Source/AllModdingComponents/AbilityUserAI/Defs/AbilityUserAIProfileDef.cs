@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using RimWorld;
 using Verse;
 
-/* 
+/*
  * Author: ChJees
  * Created: 2017-09-22
  */
@@ -54,17 +54,7 @@ namespace AbilityUserAI
         ///     Worker object for this Profile. If workerClass is not specified it will use the default implementation which only
         ///     checks for Traits.
         /// </summary>
-        public AbilityProfileWorker Worker
-        {
-            get
-            {
-                //Instantiate if null.
-                if (intWorkerClass == null)
-                    intWorkerClass = (AbilityProfileWorker) Activator.CreateInstance(workerClass);
-
-                return intWorkerClass;
-            }
-        }
+        public AbilityProfileWorker Worker => intWorkerClass ??= (AbilityProfileWorker)Activator.CreateInstance(workerClass);
 
         /// <summary>
         ///     All tag weights. The higher weight the better score.
@@ -73,10 +63,7 @@ namespace AbilityUserAI
         public override void ResolveReferences()
         {
             base.ResolveReferences();
-
-            //Resolve the decision tree.
-            if (decisionTree != null)
-                decisionTree.Resolve(this);
+            decisionTree?.Resolve(this);
         }
     }
 }

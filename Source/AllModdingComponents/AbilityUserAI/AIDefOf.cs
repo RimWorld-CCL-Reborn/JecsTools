@@ -1,6 +1,6 @@
 ﻿using RimWorld;
 
-/* 
+/*
  * Author: ChJees
  * Created: 2017-09-24
  */
@@ -22,5 +22,7 @@ namespace AbilityUserAI
         /// AI version of AbilityDefOf.CastAbilitySelf.
         /// </summary>
         //public static JobDef CastAbilitySelfAI;
+
+        static AIDefOf() => DefOfHelper.EnsureInitializedInCtor(typeof(AIDefOf));
     }
 }

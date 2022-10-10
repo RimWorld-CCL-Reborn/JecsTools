@@ -1,11 +1,12 @@
-﻿using HarmonyLib;
-using RimWorld;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Text;
+using HarmonyLib;
+using RimWorld;
+using RimWorld.Planet;
 using UnityEngine;
 using Verse;
 using Verse.Sound;
@@ -18,448 +19,266 @@ namespace PawnShields
     [StaticConstructorOnStartup]
     public static class HarmonyPatches
     {
-        private static FieldInfo pawnField_Pawn_HealthTracker;
-        private static FieldInfo pawnField_Pawn_EquipmentTracker;
-        private static FieldInfo pawnField_PawnRenderer;
-        private static FieldInfo statDefField_StatWorker;
-        public static MethodInfo infoTextLineFromGear;
-
-        public static Pawn HealthTracker_GetPawn(object instance)
-        {
-            return (Pawn)pawnField_Pawn_HealthTracker.GetValue(instance);
-        }
-
-        public static Pawn EquipmentTracker_GetPawn(object instance)
-        {
-            return (Pawn)pawnField_Pawn_EquipmentTracker.GetValue(instance);
-        }
-
-        public static Pawn PawnRenderer_GetPawn(object instance)
-        {
-            return (Pawn)pawnField_PawnRenderer.GetValue(instance);
-        }
-
-        public static StatDef StatDefField_StatWorker(object instance)
-        {
-            return (StatDef)statDefField_StatWorker.GetValue(instance);
-        }
-
         static HarmonyPatches()
         {
-            //HarmonyInstance.DEBUG = true;
+            var harmony = new Harmony("jecstools.chjees.shields");
+            var type = typeof(HarmonyPatches);
 
-            // Changed by Tad : New Harmony Instance creation required
-            var instance = new Harmony("jecstools.chjees.shields");
-            //ThingDef
-            //            {
-            //                Type type = typeof(ThingDef);
-            //
-            //                MethodInfo patchMethod = type.GetMethod("SpecialDisplayStats");
-            //                MethodInfo patchCustomMethod = typeof(HarmonyPatches).GetMethod(nameof(Patch_ThingDef_SpecialDisplayStats));
-            //
-            //                Harmony.Patch(
-            //                    patchMethod,
-            //                    null,
-            //                    new HarmonyMethod(patchCustomMethod));
-            //            }
-            //            //Pawn
-            
-            {
-                Type type = typeof(Pawn);
+            harmony.Patch(AccessTools.Method(typeof(PawnGenerator), "GenerateGearFor"),
+                postfix: new HarmonyMethod(type, nameof(Patch_PawnGenerator_GenerateGearFor)));
 
-                MethodInfo patchMethod = type.GetMethod("Tick");
-                MethodInfo patchCustomMethod = typeof(HarmonyPatches).GetMethod(nameof(Patch_Pawn_Tick));
+            harmony.Patch(AccessTools.Method(typeof(PawnRenderer), nameof(PawnRenderer.RenderPawnAt)),
+                postfix: new HarmonyMethod(type, nameof(Patch_PawnRenderer_RenderPawnAt)));
 
-                instance.Patch(
-                    patchMethod,
-                    null,
-                    new HarmonyMethod(patchCustomMethod));
-            }
+            harmony.Patch(AccessTools.Method(typeof(Pawn), nameof(Pawn.DropAndForbidEverything)),
+                postfix: new HarmonyMethod(type, nameof(Patch_Pawn_DropAndForbidEverything)));
 
-            
-            //
-            //            //PawnGenerator
-            {
-                Type type = typeof(PawnGenerator);
+            harmony.Patch(AccessTools.Method(typeof(Pawn_HealthTracker), nameof(Pawn_HealthTracker.CheckForStateChange)),
+                postfix: new HarmonyMethod(type, nameof(Patch_Pawn_HealthTracker_CheckForStateChance)));
+            harmony.Patch(AccessTools.Method(typeof(Pawn_HealthTracker), nameof(Pawn_HealthTracker.PreApplyDamage)),
+                prefix: new HarmonyMethod(type, nameof(Patch_Pawn_HealthTracker_PreApplyDamage)));
 
-                MethodInfo patchMethod = type.GetMethod("GenerateGearFor", BindingFlags.NonPublic | BindingFlags.Static);
-                MethodInfo patchCustomMethod = typeof(HarmonyPatches).GetMethod(nameof(Patch_PawnGenerator_GenerateGearFor));
+            harmony.Patch(AccessTools.Method(typeof(Pawn_EquipmentTracker), nameof(Pawn_EquipmentTracker.MakeRoomFor)),
+                postfix: new HarmonyMethod(type, nameof(Patch_Pawn_EquipmentTracker_MakeRoomFor)));
 
-                instance.Patch(
-                    patchMethod,
-                    null,
-                    new HarmonyMethod(patchCustomMethod));
-            }
-
-            
-            //
-            //            //PawnRenderer
-            {
-                Type type = typeof(PawnRenderer);
-
-                pawnField_PawnRenderer = type.GetField("pawn", BindingFlags.NonPublic | BindingFlags.Instance);
-
-                MethodInfo patchMethod = type.GetMethod("RenderPawnAt", new Type[] { typeof(Vector3), typeof(RotDrawMode), typeof(bool), typeof(bool) });
-                MethodInfo patchCustomMethod = typeof(HarmonyPatches).GetMethod(nameof(Patch_PawnRenderer_RenderPawnAt));
-
-                instance.Patch(
-                    patchMethod,
-                    null,
-                    new HarmonyMethod(patchCustomMethod));
-            }
-
-            
-
-            //Pawn_HealthTracker
-            {
-                Type type = typeof(Pawn_HealthTracker);
-
-                pawnField_Pawn_HealthTracker = type.GetField("pawn", BindingFlags.NonPublic | BindingFlags.Instance);
-
-                MethodInfo patchMethod = type.GetMethod("PreApplyDamage");
-                MethodInfo patchCustomMethod = typeof(HarmonyPatches).GetMethod(nameof(Patch_Pawn_HealthTracker_PreApplyDamage));
-
-                instance.Patch(
-                    patchMethod,
-                    new HarmonyMethod(patchCustomMethod),
-                    null);
-            }
-
-            
-
-            //Pawn_EquipmentTracker
-            {
-                Type type = typeof(Pawn_EquipmentTracker);
-
-                pawnField_Pawn_EquipmentTracker = type.GetField("pawn", BindingFlags.NonPublic | BindingFlags.Instance);
-
-                MethodInfo patchMethod = type.GetMethod("MakeRoomFor");
-                MethodInfo patchCustomMethod = typeof(HarmonyPatches).GetMethod(nameof(Patch_Pawn_EquipmentTracker_MakeRoomFor));
-
-                instance.Patch(
-                    patchMethod,
-                    null,
-                    new HarmonyMethod(patchCustomMethod));
-            }
-
-
-            
-            //StatWorker //TODO - Needs fixing for 1.0
-            {
-                Type type = typeof(StatWorker);
-
-                infoTextLineFromGear = type.GetMethod("InfoTextLineFromGear", BindingFlags.NonPublic | BindingFlags.Static);
-                statDefField_StatWorker = type.GetField("stat", BindingFlags.NonPublic | BindingFlags.Instance);
-
-                MethodInfo patchMethod = type.GetMethod("GetExplanationUnfinalized"); //StatRequest req, ToStringNumberSense numberSense
-                MethodInfo patchCustomMethod = typeof(HarmonyPatches).GetMethod(nameof(Transpiler_StatWorker_GetExplanationUnfinalized));
-
-                instance.Patch(
-                    patchMethod,
-                    null,
-                    null,
-                    new HarmonyMethod(patchCustomMethod));
-            }
-
-            
-
-            {
-                Type type = typeof(StatWorker);
-
-                MethodInfo patchMethod = type.GetMethod("GetValueUnfinalized"); //StatRequest req, ToStringNumberSense numberSense
-                //MethodInfo patchCustomMethod = typeof(HarmonyPatches).GetMethod(nameof(Transpiler_StatWorker_GetValueUnfinalized));
-                MethodInfo patchCustomMethod = typeof(HarmonyPatches).GetMethod(nameof(Patch_StatWorker_GetValueUnfinalized));
-                instance.Patch(
-                    patchMethod,
-                    null,
-                    new HarmonyMethod(patchCustomMethod));
-            }
+            harmony.Patch(AccessTools.Method(typeof(StatWorker), nameof(StatWorker.GetValueUnfinalized)),
+                transpiler: new HarmonyMethod(type, nameof(Transpiler_StatWorker_GetValueUnfinalized)));
+            harmony.Patch(AccessTools.Method(typeof(StatWorker), nameof(StatWorker.GetExplanationUnfinalized)),
+                transpiler: new HarmonyMethod(type, nameof(Transpiler_StatWorker_GetExplanationUnfinalized)));
         }
-//
-//        public static void Patch_ThingDef_SpecialDisplayStats(ThingDef __instance, ref IEnumerable<StatDrawEntry> __result)
-//        {
-//            if(__instance.HasComp(typeof(CompShield)))
-//            {
-//                List<StatDrawEntry> result = new List<StatDrawEntry>(__result);
-//
-//                new StatDrawEntry(StatCategoryDefOf.Apparel, "Covers".Translate(), coveredParts, 100, string.Empty);
-//
-//                __result = result;
-//            }
-//        }
 
         public static void Patch_PawnGenerator_GenerateGearFor(Pawn pawn, ref PawnGenerationRequest request)
         {
-            if (pawn != null)
-                PawnShieldGenerator.TryGenerateShieldFor(pawn, request);
+            PawnShieldGenerator.TryGenerateShieldFor(pawn, request);
         }
 
-        public static float StatWorkerInjection_AddShieldValue(Pawn pawn, StatDef stat)
+        public static IEnumerable<CodeInstruction> Transpiler_StatWorker_GetValueUnfinalized(IEnumerable<CodeInstruction> instructions,
+            MethodBase method, ILGenerator ilGen)
         {
-            ThingWithComps shield = pawn.GetShield();
+            // Transforms following:
+            //  if (pawn.equipment != null && pawn.equipment.Primary != null)
+            //  {
+            //      result += StatOffsetFromGear(pawn.equipment.Primary, stat);
+            //  }
+            // into:
+            //  if (pawn.equipment != null)
+            //  {
+            //      if (pawn.equipment.Primary != null)
+            //          result += StatOffsetFromGear(pawn.equipment.Primary, stat);
+            //      StatWorkerInjection_AddShieldValue(ref result, pawn.equipment, stat);
+            //  }
+
+            var instructionList = instructions.AsList();
+            var locals = new Locals(method, ilGen);
+
+            var pawnEquipmentIndex = instructionList.FindSequenceIndex(
+                instruction => locals.IsLdloc(instruction),
+                instruction => instruction.LoadsField(pawnEquipmentField),
+                instruction => instruction.IsBrfalse());
+            var targetLabel = (Label)instructionList[pawnEquipmentIndex + 2].operand;
+
+            var resultStoreIndex = instructionList.FindIndex(pawnEquipmentIndex + 3,
+                instruction => locals.IsStloc(instruction, out var local) && local.LocalType == typeof(float));
+
+            var insertionIndex = instructionList.FindIndex(pawnEquipmentIndex + 3,
+                instruction => instruction.labels.Contains(targetLabel));
+
+            var labelsToTransfer = instructionList.GetRange(pawnEquipmentIndex + 3, insertionIndex - (pawnEquipmentIndex + 3))
+                .Where(instruction => instruction.operand is Label)
+                .Select(instruction => (Label)instruction.operand);
+            instructionList.SafeInsertRange(insertionIndex, new[]
+            {
+                locals.FromStloc(instructionList[resultStoreIndex]).ToLdloca(), // &result
+                instructionList[pawnEquipmentIndex].Clone(), // pawn...
+                instructionList[pawnEquipmentIndex + 1].Clone(), // ...equipment
+                new CodeInstruction(OpCodes.Ldarg_0), // this...
+                new CodeInstruction(OpCodes.Ldfld, statWorkerStatField), // ...stat
+                new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(HarmonyPatches), nameof(StatWorkerInjection_AddShieldValue))),
+            }, labelsToTransfer);
+
+            return instructionList;
+        }
+
+        private static void StatWorkerInjection_AddShieldValue(ref float result, Pawn_EquipmentTracker equipment, StatDef stat)
+        {
+            var shield = equipment.GetShield();
             if (shield != null)
             {
-                float value = shield.def.equippedStatOffsets.GetStatOffsetFromList(stat);
-                return shield.def.equippedStatOffsets.GetStatOffsetFromList(stat);
+                result += shield.def.equippedStatOffsets.GetStatOffsetFromList(stat);
             }
-
-            return 0f;
         }
 
-        public static void Patch_StatWorker_GetValueUnfinalized(StatWorker __instance, ref float __result, ref StatRequest req, bool applyPostProcess)
+        public static IEnumerable<CodeInstruction> Transpiler_StatWorker_GetExplanationUnfinalized(IEnumerable<CodeInstruction> instructions,
+            MethodBase method, ILGenerator ilGen)
         {
-            Pawn pawn = req.Thing as Pawn;
-            if(pawn != null)
-                __result += StatWorkerInjection_AddShieldValue(pawn, StatDefField_StatWorker(__instance));
-        }
-//
-        public static IEnumerable<CodeInstruction> Transpiler_StatWorker_GetValueUnfinalized(IEnumerable<CodeInstruction> instructions, ILGenerator il)
-        {
-            List<CodeInstruction> instructionList = new List<CodeInstruction>(instructions);
-            List<CodeInstruction> instructionInjectionList = new List<CodeInstruction>();
+            // Transforms following:
+            //  if (pawn.equipment != null && pawn.equipment.Primary != null && GearAffectsStat(pawn.equipment.Primary.def, stat))
+            //  {
+            //      stringBuilder.AppendLine(InfoTextLineFromGear(pawn.equipment.Primary, stat));
+            //  }
+            // into:
+            //  if (pawn.equipment != null)
+            //  {
+            //      if (pawn.equipment.Primary != null && GearAffectsStat(pawn.equipment.Primary.def, stat))
+            //          stringBuilder.AppendLine(InfoTextLineFromGear(pawn.equipment.Primary, stat));
+            //      StatWorkerInjection_BuildShieldString(stringBuilder, pawn.equipment, stat);
+            //  }
 
-            //Look for the Primary part.
-            int desiredPosition = instructionList.FirstIndexOf(instruction => instruction.opcode == OpCodes.Ldfld && instruction.operand == typeof(Pawn).GetField("skills"));
+            var instructionList = instructions.AsList();
+            var locals = new Locals(method, ilGen);
 
-            //Log.Message("#1: desiredPosition is at: " + desiredPosition);
+            var pawnEquipmentIndex = instructionList.FindSequenceIndex(
+                instruction => locals.IsLdloc(instruction),
+                instruction => instruction.LoadsField(pawnEquipmentField),
+                instruction => instruction.IsBrfalse());
+            var targetLabel = (Label)instructionList[pawnEquipmentIndex + 2].operand;
 
-            //Now after it is popped inject our own code.
-            {
-                //Pawn
-                CodeInstruction injectedInstruction = new CodeInstruction(instructionList[desiredPosition]);
-                injectedInstruction.opcode = OpCodes.Ldloc_1;
-                injectedInstruction.operand = null;
-                instructionInjectionList.Add(injectedInstruction);
-            }
-            {
-                //Stat
-                CodeInstruction injectedInstruction = new CodeInstruction(instructionList[desiredPosition]);
-                injectedInstruction.opcode = OpCodes.Ldarg_0;
-                injectedInstruction.operand = null;
-                instructionInjectionList.Add(injectedInstruction);
-            }
-            {
-                //Stat
-                CodeInstruction injectedInstruction = new CodeInstruction(instructionList[desiredPosition]);
-                injectedInstruction.opcode = OpCodes.Ldfld;
-                injectedInstruction.operand = typeof(StatWorker).GetField("stat", BindingFlags.NonPublic | BindingFlags.Instance);
-                instructionInjectionList.Add(injectedInstruction);
-            }
-            {
-                //Load: Inject our own function.
-                CodeInstruction injectedInstruction = new CodeInstruction(instructionList[desiredPosition]);
-                injectedInstruction.opcode = OpCodes.Call;
-                injectedInstruction.operand = typeof(HarmonyPatches).GetMethod(nameof(StatWorkerInjection_AddShieldValue));
-                instructionInjectionList.Add(injectedInstruction);
-            }
-            {
-                //Load: Value being modifier
-                CodeInstruction injectedInstruction = new CodeInstruction(instructionList[desiredPosition]);
-                injectedInstruction.opcode = OpCodes.Ldloc_0;
-                injectedInstruction.operand = null;
-                instructionInjectionList.Add(injectedInstruction);
-            }
-            {
-                //Add both together.
-                CodeInstruction injectedInstruction = new CodeInstruction(instructionList[desiredPosition]);
-                injectedInstruction.opcode = OpCodes.Add;
-                injectedInstruction.operand = null;
-                instructionInjectionList.Add(injectedInstruction);
-            }
-            {
-                //Store: New value.
-                CodeInstruction injectedInstruction = new CodeInstruction(instructionList[desiredPosition]);
-                injectedInstruction.opcode = OpCodes.Stloc_0;
-                injectedInstruction.operand = null;
-                instructionInjectionList.Add(injectedInstruction);
-            }
+            var stringBuilderIndex = instructionList.FindIndex(pawnEquipmentIndex + 3,
+                instruction => locals.IsLdloc(instruction, out var local) && local.LocalType == typeof(StringBuilder));
 
-            if (instructionInjectionList.Count > 0)
-                instructionList.InsertRange(desiredPosition - 1, instructionInjectionList);
+            var insertionIndex = instructionList.FindIndex(pawnEquipmentIndex + 3,
+                instruction => instruction.labels.Contains(targetLabel));
+
+            var labelsToTransfer = instructionList.GetRange(pawnEquipmentIndex + 3, insertionIndex - (pawnEquipmentIndex + 3))
+                .Where(instruction => instruction.operand is Label)
+                .Select(instruction => (Label)instruction.operand);
+            instructionList.SafeInsertRange(insertionIndex, new[]
+            {
+                instructionList[stringBuilderIndex].Clone(), // stringBuilder
+                instructionList[pawnEquipmentIndex].Clone(), // pawn...
+                instructionList[pawnEquipmentIndex + 1].Clone(), // ...equipment
+                new CodeInstruction(OpCodes.Ldarg_0), // this...
+                new CodeInstruction(OpCodes.Ldfld, statWorkerStatField), // ...stat
+                new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(HarmonyPatches), nameof(StatWorkerInjection_BuildShieldString))),
+            }, labelsToTransfer);
 
             return instructionList;
         }
 
-        public static void StatWorkerInjection_BuildShieldString(StringBuilder stringBuilder, Pawn pawn, StatDef stat)
+        private static void StatWorkerInjection_BuildShieldString(StringBuilder stringBuilder, Pawn_EquipmentTracker equipment, StatDef stat)
         {
-            ThingWithComps shield = pawn.GetShield();
-            if(shield != null)
+            var shield = equipment.GetShield();
+            if (shield != null && GearAffectsStats(shield.def, stat))
             {
-                stringBuilder.AppendLine((string)infoTextLineFromGear.Invoke(null, new object[] { shield, stat }));
+                stringBuilder.AppendLine(InfoTextLineFromGear(shield, stat));
             }
         }
 
-        public static IEnumerable<CodeInstruction> Transpiler_StatWorker_GetExplanationUnfinalized(IEnumerable<CodeInstruction> instructions, ILGenerator il)
+        private static readonly FieldInfo pawnEquipmentField = AccessTools.Field(typeof(Pawn), nameof(Pawn.equipment));
+        private static readonly FieldInfo statWorkerStatField = AccessTools.Field(typeof(StatWorker), "stat");
+        private static readonly Func<ThingDef, StatDef, bool> GearAffectsStats =
+            (Func<ThingDef, StatDef, bool>)AccessTools.Method(typeof(StatWorker), "GearAffectsStat")
+                .CreateDelegate(typeof(Func<ThingDef, StatDef, bool>));
+        private static readonly Func<Thing, StatDef, string> InfoTextLineFromGear =
+            (Func<Thing, StatDef, string>)AccessTools.Method(typeof(StatWorker), "InfoTextLineFromGear")
+                .CreateDelegate(typeof(Func<Thing, StatDef, string>));
+
+        public static void Patch_PawnRenderer_RenderPawnAt(Pawn ___pawn, ref Vector3 drawLoc)
         {
-            List<CodeInstruction> instructionList = new List<CodeInstruction>(instructions);
-            List<CodeInstruction> instructionInjectionList = new List<CodeInstruction>();
-
-            //Look for the Primary part.
-            int desiredPosition = instructionList.FirstIndexOf(instruction => instruction.opcode == OpCodes.Callvirt && instruction.operand == typeof(Pawn_EquipmentTracker).GetProperty("Primary").GetGetMethod());
-
-            //Log.Message("#1: desiredPosition is at: " + desiredPosition);
-
-            //Now go forward two System.Text.StringBuilder::AppendLine() calls.
-            MethodInfo appendLineMethod1 = typeof(StringBuilder).GetMethod("AppendLine", new Type[] { typeof(string) });
-            MethodInfo appendLineMethod2 = typeof(StringBuilder).GetMethod("AppendLine", new Type[] {});
-
-            int calls = 0;
-            for(int i = desiredPosition; i < instructionList.Count; i++)
-            {
-                CodeInstruction cil = instructionList[i];
-                if (cil.opcode == OpCodes.Callvirt && (cil.operand == appendLineMethod1 || cil.operand == appendLineMethod2))
-                    calls++;
-
-                if (calls >= 2)
-                {
-                    desiredPosition = i;
-                    break;
-                }
-            }
-
-            desiredPosition -= 2;
-
-            //Log.Message("#2: desiredPosition is at: " + desiredPosition);
-
-            //Now after it is popped inject our own code.
-            {
-                CodeInstruction injectedInstruction = new CodeInstruction(instructionList[desiredPosition]);
-                injectedInstruction.opcode = OpCodes.Ldloc_0;
-                injectedInstruction.operand = null;
-                instructionInjectionList.Add(injectedInstruction);
-            }
-            {
-                CodeInstruction injectedInstruction = new CodeInstruction(instructionList[desiredPosition]);
-                injectedInstruction.opcode = OpCodes.Ldloc_2;
-                injectedInstruction.operand = null;
-                instructionInjectionList.Add(injectedInstruction);
-            }
-            {
-                CodeInstruction injectedInstruction = new CodeInstruction(instructionList[desiredPosition]);
-                injectedInstruction.opcode = OpCodes.Ldarg_0;
-                injectedInstruction.operand = null;
-                instructionInjectionList.Add(injectedInstruction);
-            }
-            {
-                CodeInstruction injectedInstruction = new CodeInstruction(instructionList[desiredPosition]);
-                injectedInstruction.opcode = OpCodes.Ldfld;
-                injectedInstruction.operand = typeof(StatWorker).GetField("stat", BindingFlags.NonPublic | BindingFlags.Instance);
-                instructionInjectionList.Add(injectedInstruction);
-            }
-            {
-                CodeInstruction injectedInstruction = new CodeInstruction(instructionList[desiredPosition]);
-                injectedInstruction.opcode = OpCodes.Call;
-                injectedInstruction.operand = typeof(HarmonyPatches).GetMethod(nameof(StatWorkerInjection_BuildShieldString));
-                instructionInjectionList.Add(injectedInstruction);
-            }
-
-            if (instructionInjectionList.Count > 0)
-                instructionList.InsertRange(desiredPosition + 1, instructionInjectionList);
-
-            return instructionList;
-        }
-
-        public static void Patch_PawnRenderer_RenderPawnAt(PawnRenderer __instance, ref Vector3 drawLoc, ref RotDrawMode bodyDrawType, ref bool headStump)
-        {
-            Pawn pawn = PawnRenderer_GetPawn(__instance);
-
             //Render shield.
-            if(pawn != null && pawn.GetShield() is ThingWithComps shield)
+            if (___pawn.GetShield() is ThingWithComps shield)
             {
-                Vector3 bodyVector = drawLoc;
+                var bodyVector = drawLoc;
 
-                CompShield shieldComp = shield.GetComp<CompShield>();
-                bodyVector += shieldComp.ShieldProps.renderProperties.Rot4ToVector3(pawn.Rotation);
+                var shieldComp = shield.GetCompShield();
+                bodyVector += shieldComp.ShieldProps.renderProperties.OffsetFromRotation(___pawn.Rotation);
 
-                shieldComp.RenderShield(bodyVector, pawn.Rotation, pawn, shield);
+                shieldComp.RenderShield(bodyVector, ___pawn.Rotation, ___pawn, shield);
             }
         }
 
-        public static void Patch_Pawn_EquipmentTracker_MakeRoomFor(Pawn_EquipmentTracker __instance, ref ThingWithComps eq)
+        public static void Patch_Pawn_EquipmentTracker_MakeRoomFor(Pawn_EquipmentTracker __instance, Pawn ___pawn, ThingWithComps eq)
         {
-            CompShield shieldComp = eq.TryGetComp<CompShield>();
-            if(shieldComp != null)
+            var shieldComp = eq.GetCompShield();
+            if (shieldComp != null)
             {
                 //Unequip any existing shield.
-                ThingWithComps shield = __instance.GetShield();
-                if(shield != null)
+                var shield = __instance.GetShield();
+                if (shield != null)
                 {
-                    Pawn pawn = EquipmentTracker_GetPawn(__instance);
-                    ThingWithComps thingWithComps;
-
-                    if (__instance.TryDropEquipment(shield, out thingWithComps, pawn.Position, true))
+                    if (__instance.TryDropEquipment(shield, out var thingWithComps, ___pawn.Position, true))
                     {
-                        if (thingWithComps != null)
-                        {
-                            thingWithComps.SetForbidden(false, true);
-                        }
+                        thingWithComps?.SetForbidden(false, true);
                     }
                     else
                     {
-                        Log.Error(pawn + " couldn't make room for shield " + eq);
+                        Log.Error(___pawn + " couldn't make room for shield " + eq);
                     }
                 }
             }
         }
 
-        public static void Patch_Pawn_Tick(Pawn __instance)
+        public static void Patch_Pawn_DropAndForbidEverything(Pawn __instance)
         {
-            if (__instance.equipment != null && (__instance.ParentHolder != null && !ThingOwnerUtility.ContentsSuspended(__instance.ParentHolder)))
+            if (__instance.InContainerEnclosed && __instance.GetShield() is ThingWithComps shield)
             {
-                //Tick shield.
-                ThingWithComps shield = __instance.GetShield();
-                if (shield == null)
-                    return;
-
-                CompShield shieldComp = shield.GetComp<CompShield>();
-
-                shield.Tick();
+                __instance.equipment.TryTransferEquipmentToContainer(shield, __instance.holdingOwner);
             }
         }
 
-        public static bool Patch_Pawn_HealthTracker_PreApplyDamage(Pawn_HealthTracker __instance, ref DamageInfo dinfo, out bool absorbed)
+        public static void Patch_Pawn_HealthTracker_CheckForStateChance(Pawn_HealthTracker __instance, Pawn ___pawn)
+        {
+            if (!__instance.Downed && !__instance.capacities.CapableOf(PawnCapacityDefOf.Manipulation) && ___pawn.GetShield() is ThingWithComps shield)
+            {
+                if (___pawn.kindDef.destroyGearOnDrop)
+                {
+                    ___pawn.equipment.DestroyEquipment(shield);
+                }
+                else if (___pawn.InContainerEnclosed)
+                {
+                    ___pawn.equipment.TryTransferEquipmentToContainer(shield, ___pawn.holdingOwner);
+                }
+                else if (___pawn.SpawnedOrAnyParentSpawned)
+                {
+                    ___pawn.equipment.TryDropEquipment(shield, out var _, ___pawn.PositionHeld);
+                }
+                else if (___pawn.IsCaravanMember())
+                {
+                    ___pawn.equipment.Remove(shield);
+                    if (!___pawn.inventory.innerContainer.TryAdd(shield))
+                    {
+                        shield.Destroy();
+                    }
+                }
+                else
+                {
+                    ___pawn.equipment.DestroyEquipment(shield);
+                }
+            }
+        }
+
+        public static bool Patch_Pawn_HealthTracker_PreApplyDamage(Pawn ___pawn, ref DamageInfo dinfo, out bool absorbed)
         {
             absorbed = false;
 
-            //Log.Message("Try getting pawn.");
-
-            Pawn pawn = HealthTracker_GetPawn(__instance);
-
-            if (pawn == null)
+            if (___pawn == null)
                 return true;
 
             //Notify of agressor
-            DamageInfo violence = new DamageInfo(dinfo);
+            var violence = new DamageInfo(dinfo);
             violence.SetAmount(0);
-            pawn?.mindState.Notify_DamageTaken(violence);
-
-            //Log.Message("Pawn got. " + pawn.Name);
-
-            if (pawn.equipment == null)
-                return true;
-
-            //Log.Message("Equipment got.");
+            ___pawn.mindState.Notify_DamageTaken(violence);
 
             //Try getting equipped shield.
-            ThingWithComps shield = pawn.GetShield();
+            var shield = ___pawn.GetShield();
             if (shield == null)
                 return true;
 
-            CompShield shieldComp = shield.GetComp<CompShield>();
+            var shieldComp = shield.GetCompShield();
 
-            SoundDef shieldSound = shieldComp.BlockSound ?? shieldComp.ShieldProps.defaultSound;
-            bool discardShield = false;
+            var shieldSound = shieldComp.BlockSound ?? shieldComp.ShieldProps.defaultSound;
+            var discardShield = false;
 
             //Determine if it is a melee or ranged attack.
             if (shieldComp.ShieldProps.canBlockRanged &&
-                (dinfo.Instigator != null &&
-                !dinfo.Instigator.Position.AdjacentTo8WayOrInside(pawn.Position)) ||
+                dinfo.Instigator != null &&
+                !dinfo.Instigator.Position.AdjacentTo8WayOrInside(___pawn.Position) ||
                 dinfo.Def.isExplosive)
             {
                 //Ranged
-                absorbed = shieldComp.AbsorbDamage(pawn, dinfo, true);
-                if(absorbed && shieldSound != null)
-                    shieldSound.PlayOneShot(pawn);
+                absorbed = shieldComp.AbsorbDamage(___pawn, dinfo, true);
+                if (absorbed)
+                    shieldSound?.PlayOneShot(___pawn);
                 //MoteMaker.ThrowText(dinfo.Instigator.DrawPos, dinfo.Instigator.Map, "Ranged absorbed=" + absorbed);
 
                 if (shieldComp.IsBroken)
@@ -468,13 +287,13 @@ namespace PawnShields
                 }
             }
             else if (shieldComp.ShieldProps.canBlockMelee &&
-                (dinfo.Instigator != null &&
-                dinfo.Instigator.Position.AdjacentTo8WayOrInside(pawn.Position)))
+                dinfo.Instigator != null &&
+                dinfo.Instigator.Position.AdjacentTo8WayOrInside(___pawn.Position))
             {
                 //Melee
-                absorbed = shieldComp.AbsorbDamage(pawn, dinfo, false);
-                if (absorbed && shieldSound != null)
-                    shieldSound.PlayOneShot(pawn);
+                absorbed = shieldComp.AbsorbDamage(___pawn, dinfo, false);
+                if (absorbed)
+                    shieldSound?.PlayOneShot(___pawn);
                 //MoteMaker.ThrowText(dinfo.Instigator.DrawPos, dinfo.Instigator.Map, "Melee absorbed=" + absorbed);
 
                 if (shieldComp.IsBroken)
@@ -483,7 +302,8 @@ namespace PawnShields
                 }
             }
 
-            if(shieldComp.ShieldProps.useFatigue && pawn.health.hediffSet.GetFirstHediffOfDef(ShieldHediffDefOf.ShieldFatigue) is Hediff hediff && hediff.Severity >= hediff.def.maxSeverity)
+            if (shieldComp.ShieldProps.useFatigue && ___pawn.health.hediffSet.GetFirstHediffOfDef(ShieldHediffDefOf.ShieldFatigue) is Hediff hediff &&
+                hediff.Severity >= hediff.def.maxSeverity)
             {
                 discardShield = true;
             }
@@ -491,24 +311,17 @@ namespace PawnShields
             //Discard shield either from damage or fatigue.
             if (shieldComp.ShieldProps.canBeAutoDiscarded && discardShield)
             {
-                ThingWithComps thingWithComps;
-                if(pawn.equipment.TryDropEquipment(shield, out thingWithComps, pawn.Position, true))
+                if (___pawn.equipment.TryDropEquipment(shield, out var thingWithComps, ___pawn.Position, true))
                 {
-                    if (thingWithComps != null)
-                    {
-                        thingWithComps.SetForbidden(false, true);
-                    }
+                    thingWithComps?.SetForbidden(false, true);
                 }
                 else
                 {
-                    Log.Error(pawn + " couldn't discard shield " + shield);
+                    Log.Error(___pawn + " couldn't discard shield " + shield);
                 }
             }
 
-            if (absorbed)
-                return false;
-
-            return true;
+            return !absorbed;
         }
     }
 }

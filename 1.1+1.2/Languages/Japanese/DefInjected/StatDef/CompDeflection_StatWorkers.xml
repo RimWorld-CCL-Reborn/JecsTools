@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+
+  <MeleeWeapon_DeflectionChance.label>逸らす確率</MeleeWeapon_DeflectionChance.label>
+  <MeleeWeapon_DeflectionChance.description>近距離武器で遠距離攻撃の発射物を逸らす確率</MeleeWeapon_DeflectionChance.description>
+
+</LanguageData>

@@ -1,5 +1,4 @@
 ﻿using RimWorld.Planet;
-using Verse;
 using Verse.AI;
 
 namespace JecsTools
@@ -8,12 +7,12 @@ namespace JecsTools
     {
         private static Caravan_JobTracker CurTracker(Caravan c)
         {
-            return Find.World.GetComponent<CaravanJobGiver>().Tracker(c);
+            return CaravanJobsUtility.GetCaravanJobGiver().Tracker(c);
         }
 
         private static CaravanJob CurJob(Caravan c)
         {
-            return Find.World.GetComponent<CaravanJobGiver>().CurJob(c);
+            return CaravanJobsUtility.GetCaravanJobGiver().CurJob(c);
         }
 
         public static CaravanToil Goto(TargetIndex ind, CaravanArrivalAction arrivalAction = null)
@@ -25,7 +24,7 @@ namespace JecsTools
         {
             var tileInt = -1;
             var toil = new CaravanToil();
-            toil.initAction = delegate
+            toil.initAction = () =>
             {
                 //Log.Message("GoToObject1");
                 tileInt = CurJob(toil.actor).GetTarget(ind).WorldObject.Tile;
@@ -33,9 +32,10 @@ namespace JecsTools
                 toil.actor.pather.StartPath(tileInt, arrivalAction, true);
                 //Log.Message("GoToObject3");
             };
-            toil.tickAction = delegate
+            toil.tickAction = () =>
             {
-                if (tileInt < 0) tileInt = CurJob(toil.actor).GetTarget(ind).WorldObject.Tile;
+                if (tileInt < 0)
+                    tileInt = CurJob(toil.actor).GetTarget(ind).WorldObject.Tile;
                 if (toil.actor.Tile == tileInt)
                     CurTracker(toil.actor).curDriver.Notify_PatherArrived();
             };
@@ -47,10 +47,10 @@ namespace JecsTools
         public static CaravanToil GotoTile(TargetIndex ind, CaravanArrivalAction arrivalAction = null)
         {
             var toil = new CaravanToil();
-            toil.initAction = delegate
+            toil.initAction = () =>
             {
                 var actor = toil.actor;
-                actor.pather.StartPath(Find.World.GetComponent<CaravanJobGiver>().CurJob(actor).GetTarget(ind).Tile,
+                actor.pather.StartPath(CaravanJobsUtility.GetCaravanJobGiver().CurJob(actor).GetTarget(ind).Tile,
                     arrivalAction);
             };
             toil.defaultCompleteMode = ToilCompleteMode.PatherArrival;

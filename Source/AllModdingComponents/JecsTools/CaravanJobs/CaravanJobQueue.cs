@@ -25,7 +25,7 @@ namespace JecsTools
 
         public void ExposeData()
         {
-            Scribe_Collections.Look(ref jobs, "jobs", LookMode.Deep);
+            Scribe_Collections.Look(ref jobs, nameof(jobs), LookMode.Deep);
         }
 
         public void EnqueueFirst(CaravanJob j, JobTag? tag = null)
@@ -40,7 +40,7 @@ namespace JecsTools
 
         public QueuedCaravanJob Dequeue()
         {
-            if (jobs.NullOrEmpty())
+            if (jobs.Count == 0)
                 return null;
             var result = jobs[0];
             jobs.RemoveAt(0);

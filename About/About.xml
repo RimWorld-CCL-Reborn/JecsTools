@@ -1,24 +1,25 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ModMetaData>
-  <name>JecsTools</name>
-  <author>jecrell</author>
   <packageId>jecrell.jecstools</packageId>
+  <name>JecsTools</name>
+  <author>jecrell and contributors</author>
   <url>https://discord.gg/AaVFA7V</url>
   <supportedVersions>
     <li>1.0</li>
     <li>1.1</li>
+    <li>1.2</li>
+    <li>1.3</li>
+    <li>1.4</li>
   </supportedVersions>
-  <modDependenciesByVersion>
-    <v1.1>
-      <li>
-        <packageId>brrainz.harmony</packageId>
-        <displayName>Harmony</displayName>
-        <steamWorkshopUrl>steam://url/CommunityFilePage/2009463077</steamWorkshopUrl>
-        <downloadUrl>https://github.com/pardeike/HarmonyRimWorld/releases/latest</downloadUrl>
-      </li>
-    </v1.1>
-  </modDependenciesByVersion>
-  <description>1.1.1.2 (03-29-2020)
+  <modDependencies>
+    <li>
+      <packageId>brrainz.harmony</packageId>
+      <displayName>Harmony</displayName>
+      <steamWorkshopUrl>steam://url/CommunityFilePage/2009463077</steamWorkshopUrl>
+      <downloadUrl>https://github.com/pardeike/HarmonyRimWorld/releases/latest</downloadUrl>
+    </li>
+  </modDependencies>
+  <description>1.3.0.5 (10-09-2022)
 
 Adds modding components to RimWorld: vehicles, spell casting, weapon slots, oversized weapons, and more!
 
@@ -52,31 +53,128 @@ CompSlotLoadable
 CompToggleDef (by Roxxploxx)
 - Allows for something to despawn, change its def, and respawn.
 
-CompVehicle (Experimental)
+CompVehicle (experimental for 1.0, removed for 1.1+)
  - Allows for a pawn to be treated as a vehicle that can be loaded with pilots, gunners, crew, and passengers.
 
 CompInstalledPart (WIP)
 - Allows installation and uninstallation of things onto other things. This is particularly useful for weapons on vehicles.
 
-JecsTools.PatchOperationModLoaded
-- Allows modders to use xpath code to check if a mod is loaded before patching code.
-
 Additions by ChJees
 Additions by roxxploxx
 Additions by Swenzi
 Additions and transpilers by Erdelf
-Extensive hours of testing, debugging, and fixes by Xen.
+Extensive hours of testing, debugging, and fixes by Xen
+Improvements by lbmaian
 "Hey, should we make this into a public toolset for people to take advantage of all this cool stuff?" - Jecrell
 "Hell yes - this is awesome stuff - people will love it!" - Xen
 
 Thank you to my Patrons for supporting me in my efforts. Without you, none of this would be possible.
 
 These are the most excellent rim dwellers who support me: 
-Cade Perkinson, Jay Sacane, John Pahl, Tankok1998 also known as the Shermanlover, Vahl Kilmer, Zsolt Biró, Genaeve, JD2.0, Olteanu Laurentiu, Penelope Charli Whitman, Charlie Garnham, Steven Pretswell, Sultan Saltlick, RainerWingel, Daniel Paseka, Kyben, Charles Morris, Chris Seieroe, Robin Gleeson, Lea Stannard, Teres, David Silberstein, Kiya Nicoll, Matt Harris, Paul Fenwick, Michael Whitehead, Robert Alessi, Elodie, Gothi, Audrin Navarro, Михаил Юрченко, Calum, Tim Stillson, Populous25, Don Homer, Adam Bliss, Maaxar, Christopher, TinyFloatingTurtle, John Kanady, Midgeman, Nathan Getman, Sharp Spook, LionsFate, Cristina Shaver, Mark, George Chong Chuang Ming, Oliver White, roxxploxx, Emily Shaw, Justin Andres, Robin Hager, Kevin Reagan, Austin Harbert, Marcus Regan, E_T, Alex Mederer, Alexander, Toss Antilles
+Michael Fisher, Storm D Bain, Luke Salinas, WonkyWoo WeebHoo, Daniel Schott, RainerWingel , Lea Stannard, David Silberstein, Matt Harris, Kiya Nicoll, Paul Fenwick, Elodie , Genaeve , David Turner, Populous25 , Matthew Isom, Charlie Garnham, TinyATuin, Michael Cailler, Jimes Tooper, Landon Cash, Sharp Spook, Don Homer, roxxploxx , Alex Mederer, Justin Andres, Dan Jones, Kaz, Michael Whitehead, iknowdude00, Alexander , Ken Birdwell, Michael Fisher, Storm D Bain, Luke Salinas, WonkyWoo WeebHoo, Daniel Schott, RainerWingel , Lea Stannard, David Silberstein, Matt Harris, Kiya Nicoll, Paul Fenwick, Elodie , Genaeve , David Turner, Populous25 , Matthew Isom, Charlie Garnham, TinyATuin, Michael Cailler, Jimes Tooper, Landon Cash, Sharp Spook, Don Homer, roxxploxx , Alex Mederer, Justin Andres, Dan Jones, Kaz, Michael Whitehead, iknowdude00, Alexander , Ken Birdwell
 
 ========================
 Changelog
 ========================
+1.3.0.4 (08-08-2022)
+========================
+damageTypesToExclude was not working correctly and has been fixed. Grappling a pet will always succeed which should prevent some fustration. Credit for this update goes to Gefallener from our RoM Discord.
+
+1.3.0.3 (07-30-2021)
+========================
+Due to comptability issues, the patch for Enable Oversized Weapons will require additional work. Reverting back to the previous version.
+
+1.3.0.2 (07-29-2021)
+========================
+Carny Senpai's Enable Oversized Weapons is now supported and JecsTools CompOversizedWeapon will yield for it.
+
+1.3.0.1 (07-24-2021)
+========================
+Fix regression in RW 1.1 &amp; 1.2 by using separate defs for 1.1+1.2 and 1.3
+
+1.3.0.0 (07-24-2021)
+========================
+lbmaian's 1.3 and 1.2 updates have been merged and are now available on the main JecsTools branch. Stay tuned for updates to out of date mods as we move into 1.3.
+
+1.2.0.0 (07-24-2021)
+========================
+Note: Starting from this version, changes only apply to RimWorld 1.3+.
+- source branch for assemblies supporting RimWorld 1.1 and 1.2: https://github.com/lbmaian/JecsTools/tree/rw1.2
+- source branch for assemblies supporting RimWorld 1.0: https://github.com/lbmaian/JecsTools/tree/rw1.0
+Preliminary update to support RimWorld 1.3
+Lots of performance improvements (too many to list - look at the individual commit descriptions since commit d0e37a8 for details)
+New features and fixes:
+- CompAbilityUser:
+  - revamped CombatPower-based pawn generation balancing to actually work
+  - PawnAbility.TryCastAbility now checks for matching verbProps again (regression since RW 1.1)
+  - fix AbilityDecisionNode subclasses ignoring the invert field in certain cases
+  - fix various assumptions that there's only a single CompAbilityUser when multiple CompAbilityUsers are common
+- CompOversizedWeapon: improved thing-on-ground detection for graphics
+- CompSlotLoadable:
+  - avoid showing unavailable slot options
+  - improve stats display
+  - fix doesChangeStats only affecting stats display (and not the actual stats value)
+  - updated to latest vanilla logic (exceptions noted in TODOs), centralize most stats logic
+  - avoid bloating save file if slottableThingDefs is same between SlotLoadable and SlotLoadableDef
+- CompToggleDef:
+  - improved GUI to be more like vanilla
+  - add toggle GUI for colonists with toggleable weapons
+  - fix ranged weapon toggles not working properly
+  - changed thing is reselected and has graphics refreshed after toggle
+  - avoid toggling to the same def
+- CompSlotLoadable:
+  - configurable per-body-part amountRange in SlotBonusProps_DefensiveHealChance and SlotBonusProps_VampiricEffect
+  - configurable damageDef and armorPenetration in SlotBonusProps_VampiricEffect
+  - update body part healing to be consistent between DefensiveHealChance and VampiricEffect (randomized, skip already healed body parts)
+- CompAnimated: added layerOffset to CompProperties_AnimatedOver (thanks Aelanna!)
+- BuildingExtension: wipeCategories should now consistently work
+- HediffComp_ExtraMeleeDamages: updated to latest vanilla logic (damage now created just like those from Tool.extraMeleeDamages)
+- HediffComp_DamageSoak: damage soak amount no longer rounded to integer
+- HediffComp_Knockback:
+  - configurable knockbackSound (was broken), KnockImpactDamageType (instead of always Blunt), knockbackSpeed, and knockbackThought
+  - configurable explosiveProps (CompProperties_Explosive)
+  - knockDistance now accepts floating points
+  - add knockDistanceAbsorbedPercentCurve and knockDistanceMassCurve that controls how damage soak and mass affect knock distance
+  - improve push angle algorithm so that it's no longer always a diagonal
+  - prevent multiple knockbacks occurring due to multiple damage infos (e.g. extra damage) for same instigator+target
+  - FlyingObject: configurable props (ProjectileProperties) and accuracyRadius
+  - FlyingObject_Equipable allows equipping apparel along (not just weapons)
+- PawnShields: support generating biocoded shields when generating pawns
+- PlaceWorker_UnderCeiling: works again (regression since RW 1.1)
+- PlaceWorker_OnTopOfWalls: also considers anything with BuildingProperties.isPlaceOverableWall as a wall
+- CaravanJob: fix placedThings type (old regression since RW 1.0)
+- other misc minor fixes, code cleanup, and code documentation
+Deprecated:
+- ApparelExtension:
+  - swapCondition: use vanilla apparel.gender instead
+  - coverage: use vanilla apparel.layers and custom ApparelLayerDef instead
+- AbilityUser.GetCompAbilityUser/AbilityUtility.Abilities: use GetCompAbilityUsers (plural)
+- HediffComp_Knockback explosiveKnockback/explosionDmg/explosionSize: use explosiveProps fields instead
+- FlyingObject speed/impactDamage/explosion: use props.speed/extraDamages/explosionRadius
+- ProjectileExtension: seems to have never worked properly due to incomplete implementation
+- some fields have been deprecated in favor of properties
+Removed:
+- JecsTools' CompConsole and related Faction stuff (broken since RW B19)
+- CompVehicles (broken and commented out since RW 1.1)
+- CompProperties_OversizedWeapon.offset (mostly broken since version 1.0.9.3)
+- some public classes and methods have been moved or removed
+
+1.1.2.3 (05-09-2021)
+========================
+Update French translation (thanks qux!), rebuild to latest RW version
+
+1.1.2.2 (10-23-2020)
+========================
+Fix CompAbilityUser subtype search to not cause errors (such as broken world gen) if another mod's assembly contains references to missing/wrong-version dependencies (even if they are optional dependencies).
+
+1.1.2.1 (08-13-2020)
+========================
+Fix regressions in RW 1.1 version by compiling separate assemblies for RW 1.1 and RW 1.2 to account for different enum/constant values in RW assemblies
+
+1.1.2.0 (08-11-2020)
+========================
+Performance improvements, various fixes, improved stats display for shields and deflectors, code cleanup (full changelog in https://github.com/jecrell/JecsTools/pull/15)
+
 1.1.1.2 (03-29-2020)
 ========================
 Activatable weapons now activate in defense thanks to code from qadsad.

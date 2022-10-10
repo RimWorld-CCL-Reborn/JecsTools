@@ -1,46 +1,68 @@
+﻿using System.Collections.Generic;
 using RimWorld;
-using UnityEngine;
 using Verse;
 
 namespace CompToggleDef
 {
     public class ITab_ToggleDef : ITab
     {
-        public ITab_ToggleDef()
+        // Seperate class since ITab_ToggleDef is loaded (and thus static constructor runs) too early.
+        [StaticConstructorOnStartup]
+        private static class AddITabOnStartup
         {
-            size = ToggleDefCardUtility.CardSize + new Vector2(17f, 17f) * 2f;
+            static AddITabOnStartup()
+            {
+                foreach (var def in DefDatabase<ThingDef>.AllDefsListForReading)
+                {
+                    if (def.category == ThingCategory.Pawn && def.inspectorTabsResolved is List<InspectTabBase> tabs)
+                    {
+                        var toggleDefTab = InspectTabManager.GetSharedInstance(typeof(ITab_ToggleDef));
+                        var gearTabIndex = tabs.FindIndex(tab => tab is ITab_Pawn_Gear);
+                        if (gearTabIndex < 0)
+                            tabs.Add(toggleDefTab);
+                        else
+                            tabs.Insert(gearTabIndex + 1, toggleDefTab);
+                    }
+                }
+            }
         }
 
         public override bool IsVisible
         {
             get
             {
-#pragma warning disable IDE0019 // Use pattern matching
-                var selected = SelThing as ThingWithComps;
-#pragma warning restore IDE0019 // Use pattern matching
-                if (selected != null)
-                {
-                    var td = selected.GetComp<CompToggleDef>();
-                    if (td != null)
-                    {
-                        //Log.Message("ITab_isvisible");
-                        labelKey = td.LabelKey; // defined by the Comp
-                        return true;
-                    }
-                }
-                return false;
+                var compToggleDef = ToggleDefCardUtility.GetCompToggleDef(SelThing);
+                if (compToggleDef == null)
+                    return false;
+                // InspectPaneUtility calls IsVisible before drawing the tab text (labelKey.Translate()),
+                // so this is a convenient hook to set labelKey.
+                labelKey = compToggleDef.Props.labelKey;
+                return true;
             }
+        }
+
+        protected override void UpdateSize()
+        {
+            base.UpdateSize();
+            var compToggleDef = ToggleDefCardUtility.GetCompToggleDef(SelThing);
+            if (compToggleDef == null)
+            {
+                Log.Warning("selected thing has no CompToggleDef for ITab_ToggleDef");
+                return;
+            }
+            size = ToggleDefCardUtility.CardSize(compToggleDef);
         }
 
         protected override void FillTab()
         {
-            var selected = Find.Selector.SingleSelectedThing as ThingWithComps;
-            var td = selected.GetComp<CompToggleDef>();
-            if (td == null) Log.Warning("selected thing has no CompToggleDef for ITab_ToggleDef");
-            labelKey = ((CompProperties_ToggleDef) td.props).labelKey; //"UM_TabToggleDef";//.Translate();
-            if (labelKey == null) labelKey = "TOGGLEDEF";
-            var rect = new Rect(17f, 17f, ToggleDefCardUtility.CardSize.x, ToggleDefCardUtility.CardSize.y);
-            ToggleDefCardUtility.DrawCard(rect, selected);
+            var compToggleDef = ToggleDefCardUtility.GetCompToggleDef(SelThing);
+            if (compToggleDef == null)
+            {
+                Log.Warning("selected thing has no CompToggleDef for ITab_ToggleDef");
+                return;
+            }
+            labelKey = compToggleDef.Props.labelKey;
+            ToggleDefCardUtility.DrawCard(size, compToggleDef);
         }
     }
 }

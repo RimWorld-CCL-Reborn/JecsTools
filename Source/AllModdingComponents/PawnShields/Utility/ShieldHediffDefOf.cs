@@ -1,8 +1,4 @@
 ﻿using RimWorld;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Verse;
 
 namespace PawnShields
@@ -17,5 +13,7 @@ namespace PawnShields
         /// Represents how fatiguing blocking with a shield has been.
         /// </summary>
         public static HediffDef ShieldFatigue;
+
+        static ShieldHediffDefOf() => DefOfHelper.EnsureInitializedInCtor(typeof(ShieldHediffDefOf));
     }
 }

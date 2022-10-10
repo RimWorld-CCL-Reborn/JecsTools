@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -9,32 +10,68 @@ namespace AbilityUser
     ///     A special version of a projectile.
     ///     This one "stores" a base object and "delivers" it.
     /// </summary>
+    // Based off Projectile (and parts of Projectile_Explosive and Bullet).
     public class FlyingObject : ThingWithComps
     {
-        protected Thing usedTarget;
-
+        // TODO: Deprecate/move these settings into a CompProperties_FlyingObject (derived from ProjectileProperties)?
         public bool damageLaunched = true;
-        protected Vector3 destination;
-        public bool explosion;
-        protected Thing flyingThing;
-        public DamageInfo? impactDamage;
-        protected Thing launcher;
-        protected Vector3 origin;
-        protected float speed = 30.0f;
-        protected int ticksToImpact;
+        [Obsolete("Use Props.speed")]
+        protected float speed = 30f;
         public int timesToDamage = 3;
+        public float accuracyRadius = 0.3f;
+        [Obsolete("Use Props.extraDamages")]
+        public DamageInfo? impactDamage; // this can also be set via Launch method
+        [Obsolete("Use Props.explosionRadius > 0f")]
+        public bool explosion;
+        private ProjectileProperties props;
 
-        protected int StartingTicksToImpact
+        // These are set by the Launch method.
+        protected Vector3 origin;
+        protected Vector3 destination;
+        protected int ticksToImpact;
+        protected Thing usedTarget; // TODO: should be a LocalTargetInfo?
+        protected Thing flyingThing;
+        protected ThingDef equipmentDef;
+        protected Thing launcher;
+
+        // TODO: should be CompProperties_FlyingObject (derived from ProjectileProperties)?
+        public ProjectileProperties Props
         {
             get
             {
-                var num = Mathf.RoundToInt((origin - destination).magnitude / (speed / 100f));
-                if (num < 1)
-                    num = 1;
-                return num;
+                if (props == null)
+                {
+                    props = new ProjectileProperties()
+                    // Legacy defaults
+#pragma warning disable CS0618 // Type or member is obsolete
+                    {
+                        speed = speed,
+                    };
+                    if (impactDamage is DamageInfo dinfo)
+                    {
+                        props.extraDamages = DamageInfoToExtraDamages(dinfo);
+                        if (explosion)
+#pragma warning restore CS0618 // Type or member is obsolete
+                        {
+                            props.damageDef = DamageDefOf.Stun;
+                            props.explosionRadius = 0.9f;
+                        }
+                    };
+                }
+                return props;
             }
         }
 
+        protected float StartingTicksToImpact
+        {
+            get
+            {
+                var ticks = (origin - destination).magnitude / Props.SpeedTilesPerTick;
+                if (ticks <= 0f)
+                    ticks = 0.001f;
+                return ticks;
+            }
+        }
 
         protected IntVec3 DestinationCell => new IntVec3(destination);
 
@@ -42,27 +79,30 @@ namespace AbilityUser
         {
             get
             {
-                var b = (destination - origin) * (1f - ticksToImpact / (float) StartingTicksToImpact);
-                return origin + b + Vector3.up * def.Altitude;
+                var b = (destination - origin).Yto0() * Mathf.Clamp01(1f - ticksToImpact / StartingTicksToImpact);
+                return origin.Yto0() + b + Vector3.up * def.Altitude;
             }
         }
 
-        public virtual Quaternion ExactRotation => Quaternion.LookRotation(destination - origin);
+        public virtual Quaternion ExactRotation => Quaternion.LookRotation((destination - origin).Yto0());
 
         public override Vector3 DrawPos => ExactPosition;
 
         public override void ExposeData()
         {
             base.ExposeData();
-            Scribe_Values.Look(ref origin, "origin", default(Vector3), false);
-            Scribe_Values.Look(ref destination, "destination", default(Vector3), false);
-            Scribe_Values.Look(ref ticksToImpact, "ticksToImpact", 0, false);
-            Scribe_Values.Look(ref timesToDamage, "timesToDamage", 0, false);
-            Scribe_Values.Look(ref damageLaunched, "damageLaunched", true);
-            Scribe_Values.Look(ref explosion, "explosion", false);
-            Scribe_References.Look(ref usedTarget, "usedTarget", false);
-            Scribe_References.Look(ref launcher, "launcher", false);
-            Scribe_References.Look(ref flyingThing, "flyingThing");
+            Scribe_Values.Look(ref origin, nameof(origin));
+            Scribe_Values.Look(ref destination, nameof(destination));
+            Scribe_Values.Look(ref ticksToImpact, nameof(ticksToImpact));
+            Scribe_Values.Look(ref timesToDamage, nameof(timesToDamage));
+            Scribe_Values.Look(ref damageLaunched, nameof(damageLaunched), true);
+#pragma warning disable CS0618 // Type or member is obsolete
+            Scribe_Values.Look(ref explosion, nameof(explosion));
+#pragma warning restore CS0618 // Type or member is obsolete
+            Scribe_Deep.Look(ref props, nameof(props));
+            Scribe_References.Look(ref usedTarget, nameof(usedTarget));
+            Scribe_References.Look(ref launcher, nameof(launcher));
+            Scribe_References.Look(ref flyingThing, nameof(flyingThing));
         }
 
         public void Launch(Thing launcher, LocalTargetInfo targ, Thing flyingThing, DamageInfo? impactDamage)
@@ -75,42 +115,69 @@ namespace AbilityUser
             Launch(launcher, Position.ToVector3Shifted(), targ, flyingThing);
         }
 
+        // TODO: New Launch overload that corresponds to latest Projectile.Launch signature?
         public void Launch(Thing launcher, Vector3 origin, LocalTargetInfo targ, Thing flyingThing,
             DamageInfo? newDamageInfo = null)
         {
             //Despawn the object to fly
-            if (flyingThing.Spawned) flyingThing.DeSpawn();
+            if (flyingThing.Spawned)
+                flyingThing.DeSpawn();
 
             this.launcher = launcher;
             this.origin = origin;
-            impactDamage = newDamageInfo;
-            this.flyingThing = flyingThing;
-            if (targ.Thing != null)
-                usedTarget = targ.Thing;
-            destination = targ.Cell.ToVector3Shifted() +
-                          new Vector3(Rand.Range(-0.3f, 0.3f), 0f, Rand.Range(-0.3f, 0.3f));
-            ticksToImpact = StartingTicksToImpact;
+            if (newDamageInfo is DamageInfo impactDamage)
+            {
+                Props.extraDamages = DamageInfoToExtraDamages(impactDamage);
+                equipmentDef = impactDamage.Weapon;
+            }
+            this.flyingThing ??= flyingThing;
+            usedTarget = targ.Thing;
+            destination = targ.Cell.ToVector3Shifted();
+            if (accuracyRadius > 0f)
+            {
+                destination.x += Rand.Range(-accuracyRadius, accuracyRadius);
+                destination.z += Rand.Range(-accuracyRadius, accuracyRadius);
+            }
+            ticksToImpact = Math.Min(1, Mathf.CeilToInt(StartingTicksToImpact));
+            //Log.Message($"FlyingObject.Launch({this})");
+        }
+
+        private static List<Verse.ExtraDamage> DamageInfoToExtraDamages(DamageInfo dinfo)
+        {
+            return new List<Verse.ExtraDamage>
+            {
+                new Verse.ExtraDamage
+                {
+                    def = dinfo.Def,
+                    amount = dinfo.Amount,
+                    armorPenetration = dinfo.ArmorPenetrationInt,
+                }
+            };
         }
 
         public override void Tick()
         {
+            //if (ticksToImpact % 10 == 0) Log.Message($"FlyingObject.Tick({this})");
             base.Tick();
-            var exactPosition = ExactPosition;
             ticksToImpact--;
-            if (!ExactPosition.InBounds(Map))
+            var exactPosition = ExactPosition;
+            if (!exactPosition.InBounds(Map))
             {
                 ticksToImpact++;
-                Position = ExactPosition.ToIntVec3();
-                Destroy(DestroyMode.Vanish);
-                return;
+                exactPosition = ExactPosition;
+                Position = exactPosition.ToIntVec3();
+                Destroy();
             }
-
-            Position = ExactPosition.ToIntVec3();
-            if (ticksToImpact <= 0)
+            else if (ticksToImpact <= 0)
             {
-                if (DestinationCell.InBounds(Map))
-                    Position = DestinationCell;
+                var destinationCell = DestinationCell;
+                Position = destinationCell.InBounds(Map) ? destinationCell : exactPosition.ToIntVec3();
                 ImpactSomething();
+            }
+            else
+            {
+                // TODO: There should be an option to check for impact when entering a new cell.
+                Position = exactPosition.ToIntVec3();
             }
         }
 
@@ -118,13 +185,9 @@ namespace AbilityUser
         {
             if (flyingThing != null)
             {
-                if (flyingThing is Pawn)
+                if (flyingThing is Pawn pawn)
                 {
-                    if (DrawPos == null) return;
-                    if (!DrawPos.ToIntVec3().IsValid) return;
-                    var pawn = flyingThing as Pawn;
                     pawn.Drawer.DrawAt(DrawPos);
-                    //Graphics.DrawMesh(MeshPool.plane10, this.DrawPos, this.ExactRotation, this.flyingThing.def.graphic.MatFront, 0);
                 }
                 else
                 {
@@ -136,16 +199,14 @@ namespace AbilityUser
 
         private void ImpactSomething()
         {
+            //Log.Message($"FlyingObject.ImpactSomething({this})");
             if (usedTarget != null)
             {
-                var pawn = usedTarget as Pawn;
-                if (pawn != null && pawn.GetPosture() != PawnPosture.Standing &&
+                if (usedTarget is Pawn pawn && pawn.GetPosture() != PawnPosture.Standing &&
                     (origin - destination).MagnitudeHorizontalSquared() >= 20.25f && Rand.Value > 0.2f)
-                {
                     Impact(null);
-                    return;
-                }
-                Impact(usedTarget);
+                else
+                    Impact(usedTarget);
             }
             else
             {
@@ -155,22 +216,19 @@ namespace AbilityUser
 
         protected virtual void Impact(Thing hitThing)
         {
-            if (hitThing == null)
-                if (Position.GetThingList(Map).FirstOrDefault(x => x == usedTarget) is Pawn p)
-                    hitThing = p;
+            var map = Map;
+            var pos = Position;
+            var props = Props;
 
+            if (damageLaunched)
+                hitThing = flyingThing;
+            else if (hitThing == null && usedTarget != null && pos.GetThingList(map).Contains(usedTarget))
+                hitThing = usedTarget;
 
-            if (impactDamage != null)
+            if (!props.extraDamages.NullOrEmpty())
             {
+                // Based off Bullet.
                 for (var i = 0; i < timesToDamage; i++)
-<<<<<<< Updated upstream
-                    if (damageLaunched)
-                        flyingThing.TakeDamage(impactDamage.Value);
-                    else
-                        hitThing.TakeDamage(impactDamage.Value);
-                if (explosion)
-                    GenExplosion.DoExplosion(Position, Map, 0.9f, DamageDefOf.Stun, this);
-=======
                 {
                     foreach (var extraDamage in props.extraDamages)
                     {
@@ -232,10 +290,12 @@ namespace AbilityUser
                 foreach (var extraDamage in props.extraDamages)
                     impactDamageStrs.Add($"({Gen.GetNonNullFieldsDebugInfo(extraDamage)})");
                 propsStr = propsStr.Replace(props.extraDamages.ToStringSafe(), "{" + impactDamageStrs.ToStringSafeEnumerable() + "}");
->>>>>>> Stashed changes
             }
-            GenSpawn.Spawn(flyingThing, Position, Map);
-            Destroy(DestroyMode.Vanish);
+            return $"{base.ToString()}(flyingThing={flyingThing.ToStringSafe()}, usedTarget={usedTarget?.ToStringSafe()}, " +
+                $"equipmentDef={equipmentDef.ToStringSafe()}, launcher={launcher.ToStringSafe()}, " +
+                $"origin={origin}, destination={destination}, pos={ExactPosition}, ticksToImpact={ticksToImpact}, " +
+                $"damageLaunched={damageLaunched}, timesToDamage={timesToDamage}, accuracyRadius={accuracyRadius}, " +
+                $"props={propsStr})";
         }
     }
 }

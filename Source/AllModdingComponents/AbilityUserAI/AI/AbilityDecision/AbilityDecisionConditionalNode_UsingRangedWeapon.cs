@@ -1,6 +1,6 @@
 ﻿using Verse;
 
-/* 
+/*
  * Author: ChJees
  * Created: 2017-09-24
  */
@@ -14,12 +14,7 @@ namespace AbilityUserAI
     {
         public override bool CanContinueTraversing(Pawn caster)
         {
-            var result = caster?.equipment.Primary != null && caster.equipment.Primary.def.IsRangedWeapon;
-
-            if (invert)
-                return !result;
-
-            return result;
+            return (caster?.equipment.Primary?.def.IsRangedWeapon ?? false) ^ invert;
         }
     }
 }

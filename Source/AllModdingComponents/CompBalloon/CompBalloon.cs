@@ -1,32 +1,30 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using Verse;
-using Verse.Sound;
 
 namespace CompBalloon
 {
     public class CompBalloon : ThingComp
     {
-        public int curTicks = Int32.MinValue;
+        public int curTicks = int.MinValue;
 
         public bool deflating = true;
 
         public Pawn Ballooner => parent as Pawn;
 
-        public CompProperties_Balloon Props => (CompProperties_Balloon) props;
+        public CompProperties_Balloon Props => (CompProperties_Balloon)props;
 
 
-        private float MaxTicks => (Props.secondsBetweenCycles * 60);
-        
-        private float Range => Props.balloonRange.max - Props.balloonRange.min;
-        
+        private float MaxTicks => Props.secondsBetweenCycles * GenTicks.TicksPerRealSecond;
+
+        //private float Range => Props.balloonRange.max - Props.balloonRange.min;
+
         public void ResolveBaseGraphic()
         {
-            var sizeFactor = 1.0f;
-            var curSizeAdjustment = curTicks * Range;
-            
+            // TODO: sizeFactor and curSizeAdjustment end up being unused, and so I commented them out - what are they for?
+            //var curSizeAdjustment = curTicks * Range;
+
             //Initialize or Deflate
-            if (curTicks == Int32.MinValue ||
+            if (curTicks == int.MinValue ||
                 (!deflating && curTicks >= MaxTicks))
             {
                 curTicks = (int)MaxTicks;
@@ -40,29 +38,21 @@ namespace CompBalloon
                 curTicks = 1;
             }
 
-            if (deflating)
-            {
-                sizeFactor = Props.balloonRange.max - curSizeAdjustment;
-            }
-            else
-            {
-                sizeFactor = Props.balloonRange.min + curSizeAdjustment;
-            }
-            
+            //var sizeFactor = deflating ? Props.balloonRange.max - curSizeAdjustment : Props.balloonRange.min + curSizeAdjustment;
+
             if (Ballooner.Drawer?.renderer?.graphics is PawnGraphicSet pawnGraphicSet)
             {
                 pawnGraphicSet.ClearCache();
-                
+
                 var nakedGraphicDrawSize = pawnGraphicSet.nakedGraphic.drawSize;
-                
+
                 //Duplicated code from -> Verse.PawnGrapic -> ResolveAllGraphics
                 var curKindLifeStage = Ballooner.ageTracker.CurKindLifeStage;
-                if (Ballooner.gender != Gender.Female || curKindLifeStage.femaleGraphicData == null)
-                    pawnGraphicSet.nakedGraphic = curKindLifeStage.bodyGraphicData.Graphic;
-                else
-                    pawnGraphicSet.nakedGraphic = curKindLifeStage.femaleGraphicData.Graphic;
+                pawnGraphicSet.nakedGraphic = Ballooner.gender != Gender.Female || curKindLifeStage.femaleGraphicData == null
+                    ? curKindLifeStage.bodyGraphicData.Graphic
+                    : curKindLifeStage.femaleGraphicData.Graphic;
                 pawnGraphicSet.rottingGraphic = pawnGraphicSet.nakedGraphic.GetColoredVersion(ShaderDatabase.CutoutSkin,
-                    PawnGraphicSet.RottingColor, PawnGraphicSet.RottingColor);
+                    PawnGraphicSet.RottingColorDefault, PawnGraphicSet.RottingColorDefault);
                 if (Ballooner.RaceProps.packAnimal)
                 {
                     pawnGraphicSet.packGraphic = GraphicDatabase.Get<Graphic_Multi>(
@@ -74,20 +64,22 @@ namespace CompBalloon
                         curKindLifeStage.dessicatedBodyGraphicData.GraphicColoredFor(Ballooner);
             }
 
-            if (deflating) curTicks--;
-            else curTicks++;
+            if (deflating)
+                curTicks--;
+            else
+                curTicks++;
         }
 
         public override void CompTick()
         {
             ResolveBaseGraphic();
         }
-        
+
 
         public override void PostExposeData()
         {
             base.PostExposeData();
-            Scribe_Values.Look(ref curTicks, "curTicks", Int32.MinValue);
+            Scribe_Values.Look(ref curTicks, nameof(curTicks), int.MinValue);
         }
     }
 }

@@ -7,7 +7,7 @@ namespace ThinkNodes
     public class ThinkNode_ConditionalHunter : ThinkNode_Conditional
     {
         public bool allowBrawlers = false;
-        
+
         protected override bool Satisfied(Pawn pawn)
         {
             return AmHunter(pawn) && (allowBrawlers || !pawn.story.traits.HasTrait(TraitDefOf.Brawler));

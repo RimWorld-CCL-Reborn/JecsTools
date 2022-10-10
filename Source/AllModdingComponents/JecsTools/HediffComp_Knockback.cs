@@ -1,26 +1,38 @@
-﻿using System.Text;
+﻿//#define DEBUGLOG
+
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Text;
+using AbilityUser;
+using RimWorld;
+using UnityEngine;
 using Verse;
 
 namespace JecsTools
 {
     public class HediffComp_Knockback : HediffComp
     {
-        public HediffCompProperties_Knockback Props => (HediffCompProperties_Knockback) props;
+        public static readonly SimpleCurve AlwaysOneCurve = new SimpleCurve { new CurvePoint(0f, 1f) };
+
+        public HediffCompProperties_Knockback Props => (HediffCompProperties_Knockback)props;
 
         public override string CompTipStringExtra
         {
             get
             {
                 var s = new StringBuilder();
-                s.Append(base.CompTipStringExtra);
-                //Changed by Tad.
-                //s.AppendLine("JT_HI_Knockback".Translate(Props.knockbackChance.ToStringPercent()) + (Props.explosiveKnockback ? " (" + "JT_HI_KnockbackExplosive".Translate() + ")" : ""));
-                s.AppendLine("JT_HI_Knockback".Translate(Props.knockbackChance.ToStringPercent()) +" "+ Props.explosiveKnockback + " " + " (JT_HI_KnockbackExplosive".Translate() + ")");
+                s.Append("JT_HI_Knockback".Translate(Props.knockbackChance.ToStringPercent()));
+                var explosiveProps = Props.explosiveProps;
+                if (explosiveProps != null)
+                {
+                    s.AppendLine().Append("JT_HI_KnockbackExplosive".Translate());
+                    var extraInspectStringKey = explosiveProps.extraInspectStringKey;
+                    if (extraInspectStringKey != null)
+                        s.AppendLine().Append(extraInspectStringKey);
+                }
                 return s.ToString();
             }
         }
-<<<<<<< Updated upstream
-=======
 
         public void ApplyKnockback(Pawn target, float damageAbsorbedPercent)
         {
@@ -246,6 +258,5 @@ namespace JecsTools
         {
             Log.Message(s);
         }
->>>>>>> Stashed changes
     }
 }

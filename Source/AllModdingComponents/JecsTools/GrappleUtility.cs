@@ -19,6 +19,10 @@ namespace JecsTools
             None
         }
 
+        public interface IGrappleModifier
+        {
+            float Resolve(Pawn pawn);
+        }
 
         public static bool TryGrapple(this Pawn grappler, Pawn victim, int grapplerBonusMod = 0, int victimBonusMod = 0)
         {
@@ -27,8 +31,7 @@ namespace JecsTools
             if (!CanGrapple(grappler, victim))
                 return false;
 
-            BodyPartRecord grapplingPart;
-            if (!TryGetGrapplingPart(grappler, out grapplingPart))
+            if (!TryGetGrapplingPart(grappler, out var grapplingPart))
                 return false;
 
             //Special Case Handling
@@ -41,9 +44,7 @@ namespace JecsTools
 
             //Resolve Grapple Rolls
             //---------------------------------------------------------
-            if (IsGrappleSuccessful(grappler, victim, grapplingPart, grapplerBonusMod, victimBonusMod))
-                return true;
-            return false;
+            return IsGrappleSuccessful(grappler, victim, grapplingPart, grapplerBonusMod, victimBonusMod);
         }
 
         public static bool IsGrappleSuccessful(Pawn grappler, Pawn victim, BodyPartRecord grapplingPart,
@@ -64,26 +65,24 @@ namespace JecsTools
             modifierVictim += victimBonusMod;
 
             //Throw a mental warning
-            if (victim?.mindState is Pawn_MindState mind)
+            if (victim.mindState is Pawn_MindState mind)
                 mind.Notify_DamageTaken(new DamageInfo(DamageDefOf.Bite, -1, 0f, -1, grappler));
 
             //Determine success of grapples
             if (rollGrappler + modifierGrappler > rollVictim + modifierVictim)
             {
                 MoteMaker.ThrowText(grappler.DrawPos, grappler.Map,
-                    rollGrappler + " + " + modifierGrappler + " = " + (rollGrappler + modifierGrappler)
-                    + " vs " +
-                    rollVictim + " + " + modifierVictim + " = " + (rollVictim + modifierVictim)
-                    + " : " + "JTGrapple_Success".Translate(), -1f);
+                    $"{rollGrappler} + {modifierGrappler} = {rollGrappler + modifierGrappler} vs " +
+                    $"{rollVictim} + {modifierVictim} = {rollVictim + modifierVictim} : " +
+                    "JTGrapple_Success".Translate());
 
                 TryMakeBattleLog(victim, grappler, grapplingPart);
                 return true;
             }
             MoteMaker.ThrowText(grappler.DrawPos, grappler.Map,
-                rollGrappler + " + " + modifierGrappler + " = " + (rollGrappler + modifierGrappler)
-                + " vs " +
-                rollVictim + " + " + modifierVictim + " = " + (rollVictim + modifierVictim)
-                + " : " + "JTGrapple_Failed".Translate(), -1f);
+                $"{rollGrappler} + {modifierGrappler} = {rollGrappler + modifierGrappler} vs " +
+                $"{rollVictim} + {modifierVictim} = {rollVictim + modifierVictim} : " +
+                "JTGrapple_Failed".Translate());
             return false;
         }
 
@@ -134,23 +133,32 @@ namespace JecsTools
             if (!victim.Awake())
             {
                 if (throwText)
-                    MoteMaker.ThrowText(grappler.DrawPos, grappler.Map, "JTGrapple_SleepingGrapple".Translate(), -1f);
+                    MoteMaker.ThrowText(grappler.DrawPos, grappler.Map, "JTGrapple_SleepingGrapple".Translate());
                 return true;
             }
 
             if (victim.Downed)
             {
                 if (throwText)
-                    MoteMaker.ThrowText(grappler.DrawPos, grappler.Map, "JTGrapple_DownedGrapple".Translate(), -1f);
+                    MoteMaker.ThrowText(grappler.DrawPos, grappler.Map, "JTGrapple_DownedGrapple".Translate());
                 return true;
             }
 
             if (victim.IsPrisonerOfColony && RestraintsUtility.InRestraints(victim))
             {
                 if (throwText)
-                    MoteMaker.ThrowText(grappler.DrawPos, grappler.Map, "JTGrapple_PrisonerGrapple".Translate(), -1f);
+                    MoteMaker.ThrowText(grappler.DrawPos, grappler.Map, "JTGrapple_PrisonerGrapple".Translate());
                 return true;
             }
+
+            // If grappler attempts to grapple an animal from the same faction as him, grapple always succeeds
+            if (victim.Faction != null && victim.Faction == grappler.Faction && victim.RaceProps.Animal)
+            {
+                if (throwText)
+                    MoteMaker.ThrowText(grappler.DrawPos, grappler.Map, "JTGrapple_PetGrapple".Translate());
+                return true;
+            }
+
             return false;
         }
 
@@ -162,14 +170,14 @@ namespace JecsTools
         /// <returns></returns>
         public static bool TryGetGrapplingPart(Pawn grappler, out BodyPartRecord bodyPartRec)
         {
-            BodyPartRecord result = null;
-            if (grappler.health.hediffSet.GetNotMissingParts().ToList().FindAll(x =>
-                        x.def.tags.Contains(BodyPartTagDefOf.ManipulationLimbSegment) ||
-                        x.def.tags.Contains(BodyPartTagDefOf.ManipulationLimbCore)) is
-                    List<BodyPartRecord> recs && !recs.NullOrEmpty())
-                result = recs.RandomElement();
-            bodyPartRec = result;
-            return bodyPartRec != null;
+            var grapplingParts = new List<BodyPartRecord>();
+            foreach (var part in grappler.health.hediffSet.GetNotMissingParts())
+            {
+                if (part.def.tags.Contains(BodyPartTagDefOf.ManipulationLimbSegment) ||
+                    part.def.tags.Contains(BodyPartTagDefOf.ManipulationLimbCore))
+                    grapplingParts.Add(part);
+            }
+            return grapplingParts.TryRandomElement(out bodyPartRec);
         }
 
         /// <summary>
@@ -228,8 +236,51 @@ namespace JecsTools
         /// <returns></returns>
         public static float ResolveToolModifier(Pawn pawn)
         {
-            return pawn?.def?.tools?.Max(x => x.power) ?? 0;
+            var maxPower = 0f;
+            var tools = pawn.def?.tools;
+            if (tools != null)
+            {
+                foreach (var tool in tools)
+                {
+                    if (maxPower < tool.power)
+                        maxPower = tool.power;
+                }
+            }
+            return maxPower;
         }
+
+        private class CompAbilityUserGrappleModifier : IGrappleModifier
+        {
+            // This checks that the CompAbilityUser type is available - if this fails, this GrappleModifier won't be used.
+            static CompAbilityUserGrappleModifier() => typeof(CompAbilityUser).ToString();
+
+            public float Resolve(Pawn pawn)
+            {
+                var result = 0f;
+                var abilityUsers = pawn.GetCompAbilityUsers();
+                foreach (var a in abilityUsers)
+                    result += a.GrappleModifier;
+                return result;
+            }
+        }
+
+        private static readonly IGrappleModifier[] additionalModifiers = GenTypes.AllTypes
+            .Select(type =>
+            {
+                if (type.IsAbstract || !typeof(IGrappleModifier).IsAssignableFrom(type))
+                    return null;
+                try
+                {
+                    return (IGrappleModifier)Activator.CreateInstance(type);
+                }
+                catch
+                {
+                    Log.Message($"{typeof(GrappleUtility).FullName}: couldn't load or create instance of {type} - skipping");
+                    return null;
+                }
+            })
+            .Where(x => x != null)
+            .ToArray();
 
         /// <summary>
         ///     Checks humanoid characters for ability user components and their modifiers.
@@ -239,19 +290,8 @@ namespace JecsTools
         public static float ResolveAdditionalModifiers(Pawn pawn)
         {
             var result = 0f;
-            try
-            {
-                ((Action) (() =>
-                {
-                    var abilityUsers = pawn.GetComps<CompAbilityUser>();
-                    foreach (var a in abilityUsers)
-                        result += a.GrappleModifier;
-                })).Invoke();
-            }
-            catch (TypeLoadException)
-            {
-            }
-
+            for (var i = 0; i < additionalModifiers.Length; i++)
+                result += additionalModifiers[i].Resolve(pawn);
             return result;
         }
 
@@ -263,24 +303,14 @@ namespace JecsTools
         /// <returns></returns>
         public static GrappleType ResolveGrappleType(Pawn grappler, Pawn victim)
         {
-            var grappleType = GrappleType.None;
-
-            if (grappler.RaceProps.Humanlike &&
-                victim.RaceProps.Humanlike)
-                grappleType = GrappleType.Humanoid;
-
-            else if (grappler.RaceProps.Humanlike &&
-                     victim.RaceProps.Animal)
-                grappleType = GrappleType.HumanoidXAnimal;
-
-            else if (grappler.RaceProps.Animal &&
-                     victim.RaceProps.Humanlike)
-                grappleType = GrappleType.AnimalXHumanoid;
-
+            if (grappler.RaceProps.Humanlike && victim.RaceProps.Humanlike)
+                return GrappleType.Humanoid;
+            else if (grappler.RaceProps.Humanlike && victim.RaceProps.Animal)
+                return GrappleType.HumanoidXAnimal;
+            else if (grappler.RaceProps.Animal && victim.RaceProps.Humanlike)
+                return GrappleType.AnimalXHumanoid;
             else
-                grappleType = GrappleType.AnimalXAnimal;
-
-            return grappleType;
+                return GrappleType.AnimalXAnimal;
         }
 
         /// <summary>
@@ -293,19 +323,9 @@ namespace JecsTools
         /// <returns></returns>
         public static bool TryMakeBattleLog(Pawn victim, Pawn grappler, BodyPartRecord grapplingPart)
         {
-            try
-            {
-                Find.BattleLog.Add(
-                    new BattleLogEntry_StateTransition(victim,
-                        RulePackDef.Named("JT_GrappleSuccess"), grappler, null, grapplingPart)
-                );
-                return true;
-            }
-            catch (Exception e)
-            {
-                Log.Warning("TruMakeBattleLog Failed Due To :: " + e);
-            }
-            return false;
+            Find.BattleLog.Add(
+                new BattleLogEntry_StateTransition(victim, MiscDefOf.JT_GrappleSuccess, grappler, null, grapplingPart));
+            return true;
         }
     }
 }

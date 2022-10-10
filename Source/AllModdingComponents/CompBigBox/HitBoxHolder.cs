@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using RimWorld;
-using Verse;
+﻿using Verse;
 
 namespace DefModExtension_BigBox
 {
-    class ThingWithComps_HitBox : ThingWithComps
+    internal class ThingWithComps_HitBox : ThingWithComps
     {
         public Pawn master = null;
 
@@ -23,21 +18,19 @@ namespace DefModExtension_BigBox
 
         public void CheckNeedsDestruction()
         {
-            if (master != null && this.Spawned)
+            if (master != null && Spawned)
             {
                 if (!master.Spawned)
                 {
-                    this.Destroy(0);
-                    return;
+                    Destroy(0);
                 }
-
             }
         }
-        
+
         public override void ExposeData()
         {
             base.ExposeData();
-            Scribe_References.Look<Pawn>(ref this.master, "master", false);
+            Scribe_References.Look(ref master, nameof(master));
         }
     }
 }

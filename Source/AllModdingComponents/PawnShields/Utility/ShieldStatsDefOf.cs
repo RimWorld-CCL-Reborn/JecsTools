@@ -1,8 +1,4 @@
 ﻿using RimWorld;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace PawnShields
 {
@@ -41,5 +37,7 @@ namespace PawnShields
         /// Ranged shield block chance base from pawn.
         /// </summary>
         public static StatDef RangedShieldBlockChance;
+
+        static ShieldStatsDefOf() => DefOfHelper.EnsureInitializedInCtor(typeof(ShieldStatsDefOf));
     }
 }

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using Verse;
 
 namespace PawnShields
@@ -20,5 +17,11 @@ namespace PawnShields
         /// The shields with any of these tags can be used.
         /// </summary>
         public List<string> shieldTags;
+
+        public override IEnumerable<string> ConfigErrors()
+        {
+            if (shieldTags.NullOrEmpty())
+                yield return nameof(shieldTags) + " cannot be null or empty";
+        }
     }
 }

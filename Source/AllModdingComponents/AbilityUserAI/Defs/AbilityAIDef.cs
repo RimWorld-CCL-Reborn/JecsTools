@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using AbilityUser;
 using Verse;
 
-/* 
+/*
  * Author: ChJees
  * Created: 2017-09-20
  */
@@ -88,17 +88,7 @@ namespace AbilityUserAI
         /// <summary>
         ///     Worker object for this Ability. Default implementation is only taking in account for single target abilities.
         /// </summary>
-        public AbilityWorker Worker
-        {
-            get
-            {
-                //Instantiate if null.
-                if (intWorkerClass == null)
-                    intWorkerClass = (AbilityWorker) Activator.CreateInstance(workerClass);
-
-                return intWorkerClass;
-            }
-        }
+        public AbilityWorker Worker => intWorkerClass ??= (AbilityWorker)Activator.CreateInstance(workerClass);
 
         /// <summary>
         ///     Can the caster use this ability at all?
@@ -136,6 +126,11 @@ namespace AbilityUserAI
 
             //Valid ability to use.
             return true;
+        }
+
+        public override string ToString()
+        {
+            return base.ToString() + $" (ability={ability})";
         }
     }
 }
