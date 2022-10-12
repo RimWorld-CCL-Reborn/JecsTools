@@ -3,6 +3,7 @@
   <!-- See also ..\Directory.Build.props, which contains common contents between all the csproj files -->
   <PropertyGroup>
     <AssemblyName>AbilityUserAI</AssemblyName>
+    <Configurations>RW1.3;RW1.3Unstable;RW1.4;RW1.4Unstable</Configurations>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\JecsTools\JecsTools.csproj" />

@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+
+  <MeleeWeapon_DeflectionChance.label>chance de desvío</MeleeWeapon_DeflectionChance.label>
+  <MeleeWeapon_DeflectionChance.description>Chance de desviar un proyectil de rango largo con una arma.</MeleeWeapon_DeflectionChance.description>
+
+
+</LanguageData>

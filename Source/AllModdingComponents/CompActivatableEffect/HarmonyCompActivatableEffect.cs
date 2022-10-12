@@ -23,7 +23,7 @@ namespace CompActivatableEffect
                 postfix: new HarmonyMethod(type, nameof(DrawEquipmentAimingPostFix)));
 
             harmony.Patch(AccessTools.Method(typeof(Verb), nameof(Verb.TryStartCastOn),
-                    new[] { typeof(LocalTargetInfo), typeof(LocalTargetInfo), typeof(bool), typeof(bool), typeof(bool) }),
+                    new[] { typeof(LocalTargetInfo), typeof(LocalTargetInfo), typeof(bool), typeof(bool), typeof(bool), typeof(bool) }),
                 prefix: new HarmonyMethod(type, nameof(TryStartCastOnPrefix)));
 
             harmony.Patch(AccessTools.PropertySetter(typeof(Pawn_DraftController), nameof(Pawn_DraftController.Drafted)),
@@ -33,58 +33,19 @@ namespace CompActivatableEffect
                 prefix: new HarmonyMethod(type, nameof(ExitMap_PreFix)));
         }
 
-        public static void ExitMap_PreFix(Pawn __instance)
+        public static void GetGizmosPostfix(Pawn_EquipmentTracker __instance, ref IEnumerable<Gizmo> __result)
         {
-            if (__instance.equipment?.Primary?.GetCompActivatableEffect() is CompActivatableEffect compActivatableEffect &&
-                compActivatableEffect.CurrentState == CompActivatableEffect.State.Activated)
-                compActivatableEffect.TryDeactivate();
-        }
-
-        public static void set_DraftedPostFix(Pawn_DraftController __instance, bool value)
-        {
-            if (__instance.pawn?.equipment?.Primary?.GetCompActivatableEffect() is CompActivatableEffect compActivatableEffect)
-                if (value == false)
+            if (__instance.Primary?.GetCompActivatableEffect() is CompActivatableEffect compActivatableEffect)
+                if (__instance.pawn.Faction == Faction.OfPlayer)
                 {
-                    if (compActivatableEffect.CurrentState == CompActivatableEffect.State.Activated)
-                        compActivatableEffect.TryDeactivate();
+                    if (compActivatableEffect.GizmosOnEquip)
+                        __result = __result.Concat(compActivatableEffect.EquippedGizmos());
                 }
                 else
                 {
                     if (compActivatableEffect.CurrentState == CompActivatableEffect.State.Deactivated)
-                        compActivatableEffect.TryActivate();
+                        compActivatableEffect.Activate();
                 }
-        }
-
-        public static bool TryStartCastOnPrefix(ref bool __result, Verb __instance)
-        {
-            if (__instance.caster is Pawn pawn && pawn.Spawned && pawn.equipment?.Primary is ThingWithComps thingWithComps &&
-                thingWithComps.GetCompActivatableEffect() is CompActivatableEffect compActivatableEffect)
-            {
-                // EquipmentSource throws errors when checked while casting abilities with a weapon equipped.
-                // to avoid this error preventing our code from executing, we do a try/catch.
-                // TODO: Is this still the case?
-                try
-                {
-                    if (__instance.EquipmentSource != thingWithComps)
-                        return true;
-                }
-                catch (Exception ex)
-                {
-                    Log.ErrorOnce("Verb.TryStartCastOn EquipmentSource threw exception: " + ex,
-                        __instance.GetUniqueLoadID().GetHashCode());
-                }
-
-                if (compActivatableEffect.CurrentState == CompActivatableEffect.State.Activated)
-                    return true;
-                else if (compActivatableEffect.TryActivate())
-                    return true;
-                if (Find.TickManager.TicksGame % GenTicks.TickRareInterval == 0)
-                    Messages.Message("DeactivatedWarning".Translate(pawn.Label),
-                        MessageTypeDefOf.RejectInput);
-                __result = false;
-                return false;
-            }
-            return true;
         }
 
         /// <summary>
@@ -147,6 +108,63 @@ namespace CompActivatableEffect
             Graphics.DrawMesh(flip ? MeshPool.plane10Flip : MeshPool.plane10, matrix, matSingle, 0);
         }
 
+
+        public static bool TryStartCastOnPrefix(ref bool __result, Verb __instance)
+        {
+            if (__instance.caster is Pawn pawn && pawn.Spawned && pawn.equipment?.Primary is ThingWithComps thingWithComps &&
+                thingWithComps.GetCompActivatableEffect() is CompActivatableEffect compActivatableEffect)
+            {
+                // EquipmentSource throws errors when checked while casting abilities with a weapon equipped.
+                // to avoid this error preventing our code from executing, we do a try/catch.
+                // TODO: Is this still the case?
+                try
+                {
+                    if (__instance.EquipmentSource != thingWithComps)
+                        return true;
+                }
+                catch (Exception ex)
+                {
+                    Log.ErrorOnce("Verb.TryStartCastOn EquipmentSource threw exception: " + ex,
+                        __instance.GetUniqueLoadID().GetHashCode());
+                }
+
+                if (compActivatableEffect.CurrentState == CompActivatableEffect.State.Activated)
+                    return true;
+                else if (compActivatableEffect.TryActivate())
+                    return true;
+                if (Find.TickManager.TicksGame % GenTicks.TickRareInterval == 0)
+                    Messages.Message("DeactivatedWarning".Translate(pawn.Label),
+                        MessageTypeDefOf.RejectInput);
+                __result = false;
+                return false;
+            }
+            return true;
+        }
+
+
+        public static void ExitMap_PreFix(Pawn __instance)
+        {
+            if (__instance.equipment?.Primary?.GetCompActivatableEffect() is CompActivatableEffect compActivatableEffect &&
+                compActivatableEffect.CurrentState == CompActivatableEffect.State.Activated)
+                compActivatableEffect.TryDeactivate();
+        }
+
+        public static void set_DraftedPostFix(Pawn_DraftController __instance, bool value)
+        {
+            if (__instance.pawn?.equipment?.Primary?.GetCompActivatableEffect() is CompActivatableEffect compActivatableEffect)
+                if (value == false)
+                {
+                    if (compActivatableEffect.CurrentState == CompActivatableEffect.State.Activated)
+                        compActivatableEffect.TryDeactivate();
+                }
+                else
+                {
+                    if (compActivatableEffect.CurrentState == CompActivatableEffect.State.Deactivated)
+                        compActivatableEffect.TryActivate();
+                }
+        }
+
+
         // Workaround for mod lists that contain other mods with an outdated copy of CompOversizedWeapon that's loaded before ours:
         // avoid calling new code that's in our version.
         private static Vector3 OffsetFromRotation(CompOversizedWeapon.CompProperties_OversizedWeapon weaponComp, Rot4 rotation)
@@ -161,19 +179,5 @@ namespace CompActivatableEffect
                 return weaponComp.southOffset;
         }
 
-        public static void GetGizmosPostfix(Pawn_EquipmentTracker __instance, ref IEnumerable<Gizmo> __result)
-        {
-            if (__instance.Primary?.GetCompActivatableEffect() is CompActivatableEffect compActivatableEffect)
-                if (__instance.pawn.Faction == Faction.OfPlayer)
-                {
-                    if (compActivatableEffect.GizmosOnEquip)
-                        __result = __result.Concat(compActivatableEffect.EquippedGizmos());
-                }
-                else
-                {
-                    if (compActivatableEffect.CurrentState == CompActivatableEffect.State.Deactivated)
-                        compActivatableEffect.Activate();
-                }
-        }
     }
 }

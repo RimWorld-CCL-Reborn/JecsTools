@@ -150,7 +150,7 @@ namespace AbilityUser
             Launch(launcher, targ, targ, hitFlags, preventFriendlyFire, equipment); //TODO
         }
 
-        protected override void Impact(Thing hitThing)
+        protected override void Impact(Thing hitThing, bool blockedByShield = false)
         {
             //Log.Message($"Projectile_AbilityBase.Impact({this}, {hitThing})");
             Impact_Override(hitThing);
@@ -164,7 +164,7 @@ namespace AbilityUser
                         //Log.Message($"Projectile_AbilityBase.Impact({this}, {hitThing}) extraDinfo={extraDinfo}");
                         hitThing.TakeDamage(extraDinfo);
                     }
-            base.Impact(hitThing);
+            base.Impact(hitThing, blockedByShield);
         }
     }
 }

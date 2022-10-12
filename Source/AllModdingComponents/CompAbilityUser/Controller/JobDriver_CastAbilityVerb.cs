@@ -59,12 +59,22 @@ namespace AbilityUser
         }
 
         //from the JobDriver_Wait in Vanilla RimWorld
+        //Updated 10/9/2022
         public static void CheckForAutoAttack(Pawn searcher)
         {
-            if (searcher.Downed || searcher.stances.FullBodyBusy)
+            if (searcher.Downed)
             {
                 return;
             }
+            if (searcher.stances.FullBodyBusy)
+            {
+                return;
+            }
+            if (searcher.IsCarryingPawn(null))
+            {
+                return;
+            }
+            //this.collideWithPawns = false;
             var flag = searcher.story == null || !searcher.WorkTagIsDisabled(WorkTags.Violent);
             var flag2 = searcher.RaceProps.ToolUser && searcher.Faction == Faction.OfPlayer &&
                 !searcher.WorkTagIsDisabled(WorkTags.Firefighting);
@@ -81,17 +91,24 @@ namespace AbilityUser
                         {
                             if (flag)
                             {
-                                if (thingList[j] is Pawn pawn && !pawn.Downed && searcher.HostileTo(pawn))
+                                if (thingList[j] is Pawn pawn &&
+                                    !pawn.Downed && 
+                                    searcher.HostileTo(pawn) &&
+                                    !searcher.ThreatDisabledBecauseNonAggressiveRoamer(pawn) &&
+                                    GenHostility.IsActiveThreatTo(pawn,searcher.Faction))
                                 {
                                     searcher.meleeVerbs.TryMeleeAttack(pawn, null, false);
+                                    //this.collideWithPawns = true;
                                     return;
                                 }
                             }
                             if (flag2)
                             {
-                                if (thingList[j] is Fire fire2 && (fire == null || fire2.fireSize < fire.fireSize || i == 8) &&
-                                    (fire2.parent == null || fire2.parent != searcher))
-                                {
+                                if (thingList[j] is Fire fire2 &&
+                                fire2 != null && 
+                                (fire == null || fire2.fireSize < fire.fireSize || i == 8) 
+                                && (fire2.parent == null || fire2.parent != searcher))
+                                    {
                                     fire = fire2;
                                 }
                             }
@@ -112,7 +129,7 @@ namespace AbilityUser
                     {
                         var targetScanFlags = TargetScanFlags.NeedLOSToPawns | TargetScanFlags.NeedLOSToNonPawns |
                                               TargetScanFlags.NeedThreat;
-                        if (verb.IsIncendiary())
+                        if (verb.IsIncendiary_Ranged())
                         {
                             targetScanFlags |= TargetScanFlags.NeedNonBurning;
                         }
@@ -121,6 +138,7 @@ namespace AbilityUser
                         if (thing != null)
                         {
                             searcher.TryStartAttack(thing);
+                            //this.collideWithPawns = true;
                         }
                     }
                 }

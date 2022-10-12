@@ -56,13 +56,29 @@ namespace JecsTools
                     new TargetInfo(targetPosition, map));
                 effecter.Cleanup();
             }
-            GenExplosion.DoExplosion(targetPosition, map, def.projectile.explosionRadius, def.projectile.damageDef,
-                launcher, def.projectile.GetDamageAmount(1f), 0f, def.projectile.soundExplode, equipmentDef, def, null,
-                def.projectile.postExplosionSpawnThingDef, def.projectile.postExplosionSpawnChance,
-                def.projectile.postExplosionSpawnThingCount, def.projectile.applyDamageToExplosionCellsNeighbors,
-                def.projectile.preExplosionSpawnThingDef, def.projectile.preExplosionSpawnChance,
-                def.projectile.preExplosionSpawnThingCount, def.projectile.explosionChanceToStartFire,
-                def.projectile.explosionDamageFalloff);
+            GenExplosion.DoExplosion(
+                targetPosition, 
+                map, 
+                def.projectile.explosionRadius, 
+                def.projectile.damageDef,
+                launcher, 
+                def.projectile.GetDamageAmount(1f), 
+                0f, 
+                def.projectile.soundExplode, 
+                equipmentDef, 
+                def, 
+                null,
+                def.projectile.postExplosionSpawnThingDef,
+                def.projectile.postExplosionSpawnChance,
+                def.projectile.postExplosionSpawnThingCount,
+                def.projectile.postExplosionGasType,
+                def.projectile.applyDamageToExplosionCellsNeighbors,
+                def.projectile.preExplosionSpawnThingDef, 
+                def.projectile.preExplosionSpawnChance,
+                def.projectile.preExplosionSpawnThingCount, 
+                def.projectile.explosionChanceToStartFire,
+                def.projectile.explosionDamageFalloff
+           );
         }
 
         public override void SpawnSetup(Map map, bool blabla)
@@ -411,7 +427,7 @@ namespace JecsTools
         /// <summary>
         /// Impacts a pawn/object or the ground.
         /// </summary>
-        protected override void Impact(Thing hitThing)
+        protected override void Impact(Thing hitThing, bool blockedByShield = false)
         {
             if (Def.createsExplosion)
             {

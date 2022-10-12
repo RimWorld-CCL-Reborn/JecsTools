@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+
+  <MeleeWeapon_DeflectionChance.label>偏转几率</MeleeWeapon_DeflectionChance.label>
+  <MeleeWeapon_DeflectionChance.description>以近战武器偏转远程抛射物的几率。</MeleeWeapon_DeflectionChance.description>
+
+
+</LanguageData>

@@ -250,14 +250,30 @@ namespace AbilityUser
                     effecter.Trigger(target, target);
                     effecter.Cleanup();
                 }
-                GenExplosion.DoExplosion(center: pos, map, props.explosionRadius, props.damageDef,
-                    instigator: this, props.GetDamageAmount(1f), props.GetArmorPenetration(1f),
-                    props.soundExplode, weapon: null, projectile: null, intendedTarget: null,
-                    props.postExplosionSpawnThingDef, props.postExplosionSpawnChance,
-                    props.postExplosionSpawnThingCount, props.applyDamageToExplosionCellsNeighbors,
-                    props.preExplosionSpawnThingDef, props.preExplosionSpawnChance,
-                    props.preExplosionSpawnThingCount, props.explosionChanceToStartFire,
-                    props.explosionDamageFalloff, direction: null, ignoredThings: null);
+                GenExplosion.DoExplosion(
+                    center: pos, 
+                    map,
+                    props.explosionRadius,
+                    props.damageDef,
+                    instigator: this, 
+                    props.GetDamageAmount(1f),
+                    props.GetArmorPenetration(1f),
+                    props.soundExplode, 
+                    weapon: null, 
+                    projectile: null, 
+                    intendedTarget: null,
+                    props.postExplosionSpawnThingDef,
+                    props.postExplosionSpawnChance,
+                    props.postExplosionSpawnThingCount,
+                    props.postExplosionGasType,
+                    props.applyDamageToExplosionCellsNeighbors,
+                    props.preExplosionSpawnThingDef, 
+                    props.preExplosionSpawnChance,
+                    props.preExplosionSpawnThingCount, 
+                    props.explosionChanceToStartFire,
+                    props.explosionDamageFalloff, 
+                    direction: null, 
+                    ignoredThings: null);
             }
 
             GenSpawn.Spawn(flyingThing, pos, map);

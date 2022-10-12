@@ -57,14 +57,32 @@ namespace JecsTools
                         effecter.Trigger(targetInfo, targetInfo);
                         effecter.Cleanup();
                     }
-                    GenExplosion.DoExplosion(center: pos, map, explosiveProps.explosiveRadius, explosiveProps.explosiveDamageType,
-                        instigator, explosiveProps.damageAmountBase, explosiveProps.armorPenetrationBase,
-                        explosiveProps.explosionSound, weapon: null, projectile: null, intendedTarget: null,
-                        explosiveProps.postExplosionSpawnThingDef, explosiveProps.postExplosionSpawnChance,
-                        explosiveProps.postExplosionSpawnThingCount, explosiveProps.applyDamageToExplosionCellsNeighbors,
-                        explosiveProps.preExplosionSpawnThingDef, explosiveProps.preExplosionSpawnChance,
-                        explosiveProps.preExplosionSpawnThingCount, explosiveProps.chanceToStartFire,
-                        explosiveProps.damageFalloff, direction: null, ignoredThings: null);
+                    GenExplosion.DoExplosion(
+                        center: pos,
+                        map, 
+                        explosiveProps.
+                        explosiveRadius, 
+                        explosiveProps.explosiveDamageType,
+                        instigator, 
+                        explosiveProps.damageAmountBase,
+                        explosiveProps.armorPenetrationBase,
+                        explosiveProps.explosionSound,
+                        weapon: null, 
+                        projectile: null, 
+                        intendedTarget: null,
+                        explosiveProps.postExplosionSpawnThingDef, 
+                        explosiveProps.postExplosionSpawnChance,
+                        explosiveProps.postExplosionSpawnThingCount,
+                        explosiveProps.postExplosionGasType,
+                        explosiveProps.applyDamageToExplosionCellsNeighbors,
+                        explosiveProps.preExplosionSpawnThingDef, 
+                        explosiveProps.preExplosionSpawnChance,
+                        explosiveProps.preExplosionSpawnThingCount, 
+                        explosiveProps.chanceToStartFire,
+                        explosiveProps.damageFalloff, 
+                        direction: null, 
+                        ignoredThings: null
+                   );
                 }
 
                 if (damageAbsorbedPercent < 1f && target != instigator && !target.Dead && !target.Downed && target.Spawned)

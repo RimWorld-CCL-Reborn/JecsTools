@@ -47,7 +47,7 @@ namespace AbilityUser
                 prefix: new HarmonyMethod(type, nameof(get_DirectOwner_Prefix)));
 
             harmony.Patch(AccessTools.Method(typeof(Verb), nameof(Verb.TryStartCastOn),
-                    new[] { typeof(LocalTargetInfo), typeof(LocalTargetInfo), typeof(bool), typeof(bool), typeof(bool) }),
+                    new[] { typeof(LocalTargetInfo), typeof(LocalTargetInfo), typeof(bool), typeof(bool), typeof(bool), typeof(bool) }),
                 prefix: new HarmonyMethod(type, nameof(TryStartCastOn_Prefix)));
         }
 
