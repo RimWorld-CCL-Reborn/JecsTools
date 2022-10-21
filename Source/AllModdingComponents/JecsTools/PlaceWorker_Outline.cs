@@ -15,6 +15,5 @@ namespace JecsTools
                 drawFieldCells.Add(c);
             GenDraw.DrawFieldEdges(drawFieldCells, Color.Lerp(ghostCol, transparentWhite, 0.5f));
         }
-
     }
 }

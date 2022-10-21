@@ -6,9 +6,9 @@
     <Configuration Condition=" '$(Configuration)' == '' ">RW1.4Unstable</Configuration>
     <TargetFramework>net472</TargetFramework>
     <NoStdLib>true</NoStdLib>
-    <LangVersion>9.0</LangVersion>
+    <LangVersion>10.0</LangVersion>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-    <Version>1.3.0.2</Version>
+    <Version>$([System.IO.File]::ReadAllText("..\About\Version.txt"))</Version>
     <!--
     For some reason, although SDK projects should default Deterministic to true, when importing this props file,
     builds become non-deterministic unless Deterministic is explicitly set to true here.
@@ -40,6 +40,6 @@
     </When>
   </Choose>
   <ItemGroup>
-    <PackageReference Include="Lib.Harmony" Version="2.1.*" ExcludeAssets="runtime" />
+    <PackageReference Include="Lib.Harmony" Version="2.2.*" ExcludeAssets="runtime" />
   </ItemGroup>
 </Project>
