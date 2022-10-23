@@ -14,8 +14,8 @@ namespace JecsTools
 
         static bool IsWall(Thing thing)
         {
-            // In RW 1.3+, it seems like BuildingProperties.isPlaceOverableWall indicates whether something is a "wall".
-            if (thing.def.building?.isPlaceOverableWall ?? false)
+            // In RW 1.3+, it seems like BuildingProperties.isPlaceOverableWall or ThingDef.IsSmoothed indicates whether something is a "wall".
+            if (thing.def is { building: { isPlaceOverableWall: true } } or { IsSmoothed: true })
                 return true;
             // Legacy heuristic for mods that don't use isPlaceOverableWall.
             if (thing.def.defName.Contains("Wall"))
