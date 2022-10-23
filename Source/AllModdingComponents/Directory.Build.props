@@ -8,7 +8,7 @@
     <NoStdLib>true</NoStdLib>
     <LangVersion>10.0</LangVersion>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-    <Version>$([System.IO.File]::ReadAllText("C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Workspace\JecsTools\About\Version.txt"))</Version>
+    <Version>$([System.IO.File]::ReadAllText("$(SolutionDir)\..\About\Version.txt"))</Version>
     <!--
     For some reason, although SDK projects should default Deterministic to true, when importing this props file,
     builds become non-deterministic unless Deterministic is explicitly set to true here.
