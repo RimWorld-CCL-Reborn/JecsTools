@@ -19,7 +19,7 @@
       <downloadUrl>https://github.com/pardeike/HarmonyRimWorld/releases/latest</downloadUrl>
     </li>
   </modDependencies>
-  <description>1.4.0.0 (10-21-2022)
+  <description>1.4.1.0 (10-27-2022)
 
 Adds modding components to RimWorld: vehicles, spell casting, weapon slots, oversized weapons, and more!
 
@@ -71,11 +71,15 @@ Improvements by lbmaian
 Thank you to my Patrons for supporting me in my efforts. Without you, none of this would be possible.
 
 These are the most excellent rim dwellers who support me: 
-Michael Fisher, Storm D Bain, Luke Salinas, WonkyWoo WeebHoo, Daniel Schott, RainerWingel , Lea Stannard, David Silberstein, Matt Harris, Kiya Nicoll, Paul Fenwick, Elodie , Genaeve , David Turner, Populous25 , Matthew Isom, Charlie Garnham, TinyATuin, Michael Cailler, Jimes Tooper, Landon Cash, Sharp Spook, Don Homer, roxxploxx , Alex Mederer, Justin Andres, Dan Jones, Kaz, Michael Whitehead, iknowdude00, Alexander , Ken Birdwell, Michael Fisher, Storm D Bain, Luke Salinas, WonkyWoo WeebHoo, Daniel Schott, RainerWingel , Lea Stannard, David Silberstein, Matt Harris, Kiya Nicoll, Paul Fenwick, Elodie , Genaeve , David Turner, Populous25 , Matthew Isom, Charlie Garnham, TinyATuin, Michael Cailler, Jimes Tooper, Landon Cash, Sharp Spook, Don Homer, roxxploxx , Alex Mederer, Justin Andres, Dan Jones, Kaz, Michael Whitehead, iknowdude00, Alexander , Ken Birdwell
+Darcilyn Lynds (darci.andel), Luke Salinas, RainerWingel , Noisy Koi, Lea Stannard, David Silberstein, Matt Harris, Kiya Nicoll, Paul Fenwick, Genaeve , Populous25 , David Turner, TinyATuin, Michael Cailler, Jimes Tooper, Sharp Spook, Don Homer, roxxploxx , Alex Mederer, Dan Jones, Michael Whitehead, iknowdude00, Kaz, Alexander , Ken Birdwell, Darcilyn Lynds (darci.andel), Luke Salinas, RainerWingel , Noisy Koi, Lea Stannard, David Silberstein, Matt Harris, Kiya Nicoll, Paul Fenwick, Genaeve , Populous25 , David Turner, TinyATuin, Michael Cailler, Jimes Tooper, Sharp Spook, Don Homer, roxxploxx , Alex Mederer, Dan Jones, Michael Whitehead, iknowdude00, Kaz, Alexander , Ken Birdwell
 
 ========================
 Changelog
 ========================
+1.4.1.0 (10-27-2022)
+========================
+Modders can now give PawnKindDefs random chances for genetics using JecsTools.PawnKindGeneExtension on PawnKindDefs under modExtensions
+
 1.4.0.0 (10-21-2022)
 ========================
 Initial update for RimWorld 1.4 of JecsTools
