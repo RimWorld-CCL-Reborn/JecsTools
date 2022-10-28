@@ -23,7 +23,6 @@ namespace JecsTools
     ///     are loaded into FloatMenuOptionList;
     ///     Next, I've created two harmony patches to make a saved list
     ///     of float menu options with a unique ID tag.
-    ///     Using this system should lower
     /// </summary>
     [StaticConstructorOnStartup]
     public static class _HumanlikeOrdersUtility
