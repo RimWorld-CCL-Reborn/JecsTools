@@ -7,6 +7,7 @@ namespace JecsTools
     public class ChancedGeneEntry
     {
         public string defName;
+        public bool xenogene = false;
         public float chance = 100;
     }
     

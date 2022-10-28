@@ -19,7 +19,7 @@
       <downloadUrl>https://github.com/pardeike/HarmonyRimWorld/releases/latest</downloadUrl>
     </li>
   </modDependencies>
-  <description>1.4.1.0 (10-27-2022)
+  <description>1.4.1.1 (10-28-2022)
 
 Adds modding components to RimWorld: vehicles, spell casting, weapon slots, oversized weapons, and more!
 
@@ -76,6 +76,10 @@ Darcilyn Lynds (darci.andel), Luke Salinas, RainerWingel , Noisy Koi, Lea Stanna
 ========================
 Changelog
 ========================
+1.4.1.1 (10-28-2022)
+========================
+Added xenotype boolean for PawnkindGeneExtension. Code housekeeping done as well
+
 1.4.1.0 (10-27-2022)
 ========================
 Modders can now give PawnKindDefs random chances for genetics using JecsTools.PawnKindGeneExtension on PawnKindDefs under modExtensions
