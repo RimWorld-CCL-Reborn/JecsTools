@@ -46,7 +46,7 @@ namespace PawnShields
         {
             if (req.Def is ThingDef def)
             {
-                var shieldProps = def.GetCompProperties<CompProperties_Shield>();
+                var shieldProps = def.GetCompShieldProperties();
                 if (shieldProps != null && IsDisabledForShield(shieldProps))
                     return true;
             }

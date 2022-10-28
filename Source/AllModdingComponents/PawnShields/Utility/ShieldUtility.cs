@@ -33,6 +33,20 @@ namespace PawnShields
             return false;
         }
 
+        // Avoiding ThingDef.GetCompProperties<T> and implementing a specific non-generic version of it here.
+        // That method is slow because the `isinst` instruction with generic type arg operands is very slow,
+        // while `isinst` instruction against non-generic type operand like used below is fast.
+        public static CompProperties_Shield GetCompShieldProperties(this ThingDef def)
+        {
+            var allProps = def.comps;
+            for (int i = 0, count = allProps.Count; i < count; i++)
+            {
+                if (allProps[i] is CompProperties_Shield props)
+                    return props;
+            }
+            return null;
+        }
+
         // Avoiding Def.GetModExtension<T> and implementing a specific non-generic version of it here.
         // That method is slow because the `isinst` instruction with generic type arg operands is very slow,
         // while `isinst` instruction against non-generic type operand like used below is fast.

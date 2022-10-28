@@ -135,6 +135,7 @@ namespace JecsTools
             var targetLoc = originLoc + direction * distance;
             var targetCell = targetLoc.ToIntVec3();
             var prevCell = originCell;
+            var pathGrid = (thingToPush is Pawn pawnToPush ? map.pathing.For(pawnToPush) : map.pathing.Normal).pathGrid;
             var state = PushSearchState.NoCollision;
 
             // Using GenSight, which isn't ideal since it's IntVec3-based rather than Vector-based,
@@ -153,7 +154,7 @@ namespace JecsTools
                 {
                     state = PushSearchState.OutOfBounds;
                 }
-                else if (map.pathing.Normal.pathGrid.WalkableFast(cell) && !cell.Impassable(map))
+                else if (pathGrid.WalkableFast(cell) && !cell.Impassable(map))
                 {
                     if (cell.GetEdifice(map) is Building_Door door && !door.Open)
                         state = PushSearchState.ClosedDoor;
