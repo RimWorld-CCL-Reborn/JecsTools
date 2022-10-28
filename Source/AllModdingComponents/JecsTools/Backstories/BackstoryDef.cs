@@ -12,7 +12,6 @@ namespace JecsTools
     //Link -> https://github.com/RimWorld-CCL-Reborn/AlienRaces/blob/94bf6b6d7a91e9587bdc40e8a231b18515cb6bb7/Source/AlienRace/AlienRace/BackstoryDef.cs
     public class BackstoryDef : RimWorld.BackstoryDef
     {
-
         public static HashSet<BackstoryDef> checkBodyType = new HashSet<BackstoryDef>();
 
         public List<ChancedTraitEntry> forcedTraitsChance = new List<ChancedTraitEntry>();
@@ -27,21 +26,33 @@ namespace JecsTools
         public IntRange chronoAgeRange;
         public List<ThingDefCountRangeClass> forcedItems = new List<ThingDefCountRangeClass>();
 
-        public bool CommonalityApproved(Gender g) => Rand.Range(min: 0, max: 100) < (g == Gender.Female ? this.femaleCommonality : this.maleCommonality);
+        public bool CommonalityApproved(Gender g) => Rand.Range(min: 0, max: 100) <
+                                                     (g == Gender.Female
+                                                         ? this.femaleCommonality
+                                                         : this.maleCommonality);
 
         public bool Approved(Pawn p) => this.CommonalityApproved(p.gender) &&
-                                        (this.bioAgeRange == default || (this.bioAgeRange.min < p.ageTracker.AgeBiologicalYears && p.ageTracker.AgeBiologicalYears < this.bioAgeRange.max)) &&
-                                        (this.chronoAgeRange == default || (this.chronoAgeRange.min < p.ageTracker.AgeChronologicalYears && p.ageTracker.AgeChronologicalYears < this.chronoAgeRange.max));
+                                        (this.bioAgeRange == default ||
+                                         (this.bioAgeRange.min < p.ageTracker.AgeBiologicalYears &&
+                                          p.ageTracker.AgeBiologicalYears < this.bioAgeRange.max)) &&
+                                        (this.chronoAgeRange == default ||
+                                         (this.chronoAgeRange.min < p.ageTracker.AgeChronologicalYears &&
+                                          p.ageTracker.AgeChronologicalYears < this.chronoAgeRange.max));
 
         public override void ResolveReferences()
         {
             this.identifier = this.defName;
             base.ResolveReferences();
 
-            this.forcedTraits = (this.forcedTraits ??= new List<BackstoryTrait>()).
-                                Concat(this.forcedTraitsChance.Where(predicate: trait => Rand.Range(min: 0, max: 100) < trait.chance).ToList().ConvertAll(converter: trait => new BackstoryTrait { def = trait.defName, degree = trait.degree })).ToList();
-            this.disallowedTraits = (this.disallowedTraits ??= new List<BackstoryTrait>()).
-                                    Concat(this.disallowedTraitsChance.Where(predicate: trait => Rand.Range(min: 0, max: 100) < trait.chance).ToList().ConvertAll(converter: trait => new BackstoryTrait { def = trait.defName, degree = trait.degree })).ToList();
+            this.forcedTraits = (this.forcedTraits ??= new List<BackstoryTrait>()).Concat(this.forcedTraitsChance
+                    .Where(predicate: trait => Rand.Range(min: 0, max: 100) < trait.chance).ToList()
+                    .ConvertAll(converter: trait => new BackstoryTrait { def = trait.defName, degree = trait.degree }))
+                .ToList();
+            this.disallowedTraits = (this.disallowedTraits ??= new List<BackstoryTrait>()).Concat(this
+                    .disallowedTraitsChance.Where(predicate: trait => Rand.Range(min: 0, max: 100) < trait.chance)
+                    .ToList()
+                    .ConvertAll(converter: trait => new BackstoryTrait { def = trait.defName, degree = trait.degree }))
+                .ToList();
             this.workDisables = (this.workAllows & WorkTags.AllWork) != 0 ? this.workDisables : ~this.workAllows;
 
             if (this.bodyTypeGlobal == null && this.bodyTypeFemale == null && this.bodyTypeMale == null)
