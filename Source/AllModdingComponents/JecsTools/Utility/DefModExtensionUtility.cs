@@ -46,5 +46,19 @@ namespace JecsTools
             }
             return null;
         }
+        
+        
+        public static PawnKindGeneExtension GetPawnKindGeneExtension(this Def def)
+        {
+            var modExtensions = def.modExtensions;
+            if (modExtensions == null)
+                return null;
+            for (int i = 0, count = modExtensions.Count; i < count; i++)
+            {
+                if (modExtensions[i] is PawnKindGeneExtension modExtension)
+                    return modExtension;
+            }
+            return null;
+        }
     }
 }

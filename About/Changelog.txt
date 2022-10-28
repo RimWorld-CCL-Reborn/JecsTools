@@ -1,3 +1,11 @@
+1.4.1.1 (10-28-2022)
+========================
+Added xenotype boolean for PawnkindGeneExtension. Code housekeeping done as well
+
+1.4.1.0 (10-27-2022)
+========================
+Modders can now give PawnKindDefs random chances for genetics using JecsTools.PawnKindGeneExtension on PawnKindDefs under modExtensions
+
 1.4.0.0 (10-21-2022)
 ========================
 Initial update for RimWorld 1.4 of JecsTools
