@@ -3,10 +3,10 @@
 ==============================
 
 JecsTools Update
-v1.4.1.0 (10-27-2022)
+v1.4.1.1 (10-28-2022)
 ====================
 
-Modders can now give PawnKindDefs random chances for genetics using JecsTools.PawnKindGeneExtension on PawnKindDefs under modExtensions
+Added xenotype boolean for PawnkindGeneExtension. Code housekeeping done as well
 --------------------
 
 Download now on...
@@ -25,9 +25,9 @@ Discuss the mod on...
 [img width=260]https://raw.githubusercontent.com/jecrell/JecsTools/master/About/Preview.png[/img]
 [hr]
 [b]JecsTools
-Version: 1.4.1.0
-Updated: 10-27-2022
-Description: [color=orange]Modders can now give PawnKindDefs random chances for genetics using JecsTools.PawnKindGeneExtension on PawnKindDefs under modExtensions[/color]
+Version: 1.4.1.1
+Updated: 10-28-2022
+Description: [color=orange]Added xenotype boolean for PawnkindGeneExtension. Code housekeeping done as well[/color]
 [hr]
 [b]Download now on...[/b]
 [url=https://www.patreon.com/posts/73617775]Patreon[/url]
